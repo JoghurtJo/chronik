@@ -1082,21 +1082,6 @@
 </div>
 </sc-if>
 
-<sc-if value="{{ auth.showCode }}" hint-placeholder-val="{{ false }}">
-  <div data-noprint="" data-screen-label="Wiederherstellungscode" style="position: fixed; inset: 0; z-index: 130; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 38%, transparent);">
-    <div style="width: min(480px, 100%); background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: var(--space-6); animation-name: tl-pop; animation-duration: 320ms; animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); animation-fill-mode: both;">
-      <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">Einmalig sichtbar</div>
-      <h2 style="margin: 4px 0 0; font-size: 27px; line-height: 1.08;">Dein Wiederherstellungscode</h2>
-      <div style="height: 3px; background: var(--color-text); margin: var(--space-3) 0 var(--space-4);"></div>
-      <div style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 21px; letter-spacing: 0.1em; padding: 13px 15px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-text);">{{ auth.code2 }}</div>
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--color-neutral-700); margin: var(--space-4) 0 0; text-wrap: pretty;">Damit setzt du dein Passwort neu, falls du es vergisst — diese Chronik kann ohne Server keine E-Mail verschicken. Schreib den Code auf oder schick ihn dir selbst per Mail. Er wird nie wieder angezeigt; einen neuen kann die Inhaberin oder der Inhaber unter ‚Zugänge‘ erzeugen.</p>
-      <div style="display: flex; justify-content: flex-end; margin-top: var(--space-6);">
-        <button class="btn btn-primary" style="white-space: nowrap;" onClick="{{ auth.clearCode }}">Notiert — weiter</button>
-      </div>
-    </div>
-  </div>
-</sc-if>
-
 <sc-if value="{{ limit.open }}" hint-placeholder-val="{{ false }}">
   <div data-noprint="" data-screen-label="Grenze erreicht" style="position: fixed; inset: 0; z-index: 140; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 38%, transparent);">
     <div style="width: min(520px, 100%); background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: var(--space-6); animation-name: tl-pop; animation-duration: 300ms; animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); animation-fill-mode: both;">
@@ -1107,7 +1092,7 @@
       <sc-if value="{{ limit.again }}" hint-placeholder-val="{{ false }}">
         <p style="font-size: 14.5px; line-height: 1.55; margin: var(--space-3) 0 0; color: var(--color-accent-700);">{{ limit.again }}</p>
       </sc-if>
-      <p style="font-size: 12.5px; line-height: 1.5; margin: var(--space-4) 0 0; color: var(--color-neutral-700);">Es wurde nichts abgeschickt und nichts kaputtgemacht — die Chronik hält nur die kostenlosen Grenzen ein, damit keine Rechnung entsteht.</p>
+      <p style="font-size: 12.5px; line-height: 1.5; margin: var(--space-4) 0 0; color: var(--color-neutral-700);">Es wurde nichts abgeschickt und nichts kaputtgemacht — die Chronik hält nur die kostenlosen Grenzen ein, damit keine Rechnung entsteht :) </p>
       <div style="display: flex; justify-content: flex-end; margin-top: var(--space-6);">
         <button class="btn btn-primary" style="white-space: nowrap;" onClick="{{ limit.close }}">Verstanden</button>
       </div>
