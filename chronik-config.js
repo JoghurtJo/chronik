@@ -14,20 +14,20 @@ window.CHRONIK_CONFIG = {
        url     = "Project URL"
        anonKey = "anon public" (der lange Text mit ey… am Anfang)
      Leer lassen = Einzelplatz-Modus, alles bleibt im Browser.   */
-  url: "",
-  anonKey: "",
+  url: "https://mhdjmuyfccyfeoffplbk.supabase.co/rest/v1",
+  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1oZGptdXlmY2N5ZmVvZmZwbGJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Nzc5NDIsImV4cCI6MjEwMzI1Mzk0Mn0.bIIEMuwjjRglIa74A-4xVUixiVKKdJiYzb2p1SH9FAE",
 
   /* --- 2. Cloudflare R2: die Bilder -----------------------
      Adresse deines Workers, ohne Schrägstrich am Ende, z. B.
      "https://chronik-bilder.deinname.workers.dev"
      Leer lassen = Bilder gehen in den Supabase-Speicher.        */
-  r2Worker: "",
+  r2Worker: "chronik-bilder.jos-ba-951.workers.dev",
 
   /* --- 3. Cloudflare Turnstile: Schutz vor Bots ------------
      Cloudflare → Turnstile → Add site → "Site Key" hierher.
      Leer lassen = die Chronik stellt stattdessen selbst eine
      kleine Rechenaufgabe.                                      */
-  turnstileSiteKey: "",
+  turnstileSiteKey: "0x4AAAAAAEcFE9bsQTXXCkkq",
 
   /* --- 4. Grenzen der Gratis-Tarife -----------------------
      Bewusst unter den echten Grenzen (Sicherheitsabstand), damit
