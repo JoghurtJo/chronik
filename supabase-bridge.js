@@ -5,14 +5,44 @@
   var CFG = window.CHRONIK_CONFIG || {};
   var SDK = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
   var BUCKET = "bilder";
-  var enabled = !!(CFG.url && CFG.anonKey);
-  var R2 = String(CFG.r2Worker || "").replace(/\/+$/, "");
+
+  /* Adresse geradeziehen: Leerzeichen, Schrägstriche und mitkopierte
+     Pfade wie /rest/v1 sind der häufigste Einrichtungsfehler. */
+  function cleanUrl(v) {
+    var u = String(v || "").trim().replace(/^["']|["']$/g, "");
+    if (!u) return "";
+    if (!/^https?:\/\//i.test(u)) u = "https://" + u;
+    u = u.replace(/\/+$/, "");
+    u = u.replace(/\/(rest|auth|storage|realtime)\/v1.*$/i, "");
+    u = u.replace(/\/+$/, "");
+    return u;
+  }
+
+  var URL_OK = /^https:\/\/[a-z0-9-]+\.supabase\.(co|in)$/i;
+  var KEY_OK = /^ey[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/;
+
+  var rawUrl = String(CFG.url || "").trim();
+  var rawKey = String(CFG.anonKey || "").trim().replace(/^["']|["']$/g, "");
+  var url = cleanUrl(rawUrl);
+
+  /* Was ist faul? Klartext für die Anmeldeseite. */
+  var configFault = "";
+  if (rawUrl || rawKey) {
+    if (!rawUrl) configFault = "In chronik-config.js fehlt die Adresse (url). Sie steht in Supabase unter Project Settings → API als ‚Project URL‘.";
+    else if (!URL_OK.test(url)) configFault = "Die Adresse in chronik-config.js sieht nicht wie eine Supabase-Adresse aus. Erwartet wird genau ‚https://xxxx.supabase.co‘ — ohne Schrägstrich und ohne Zusatz am Ende. Eingetragen ist: " + rawUrl;
+    else if (!rawKey) configFault = "In chronik-config.js fehlt der Schlüssel (anonKey) — in Supabase unter Project Settings → API als ‚anon public‘.";
+    else if (!KEY_OK.test(rawKey)) configFault = "Der Schlüssel in chronik-config.js ist unvollständig. Er ist sehr lang, beginnt mit ‚ey‘ und enthält zwei Punkte — bitte in Supabase noch einmal ganz kopieren.";
+  }
+
+  var enabled = !!(url && rawKey && !configFault);
+  var R2 = cleanUrl(CFG.r2Worker).replace(/\/(upload|img|state).*$/i, "");
   var LIM = Object.assign({
     dbRows: 4000, writesPerDay: 1500, readsPerDay: 8000, uploadsPerDay: 300,
     getsPerDay: 50000, storageBytes: 8000000000, egressPerMonth: 4000000000, emailsPerHour: 3
   }, CFG.limits || {});
   var sb = null, loading = null, snap = null, snapAt = 0;
   var urlCache = {};
+  var legacySchema = false;
 
   function loadSdk() {
     if (window.supabase && window.supabase.createClient) return Promise.resolve();
@@ -28,10 +58,10 @@
   }
 
   async function client() {
-    if (!enabled) throw new Error("Keine Zugangsdaten in chronik-config.js.");
+    if (!enabled) throw new Error(configFault || "Keine Zugangsdaten in chronik-config.js.");
     if (sb) return sb;
     await loadSdk();
-    sb = window.supabase.createClient(CFG.url, CFG.anonKey, {
+    sb = window.supabase.createClient(url, rawKey, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
     });
     return sb;
@@ -47,6 +77,11 @@
     if (/row-level security|violates row-level/i.test(t)) return "Dafür fehlt die Berechtigung. Wenn du gesperrt wurdest, wende dich an die Inhaberin oder den Inhaber.";
     if (/duplicate key|profiles_username/i.test(t)) return "Dieser Benutzername ist schon belegt.";
     if (/Password should be at least/i.test(t)) return "Das Passwort ist zu kurz.";
+    if (/schema cache|column .* does not exist|Could not find the/i.test(t)) return "Die Datenbank ist noch nicht auf dem neuesten Stand. Bitte supabase-setup.sql einmal im SQL Editor ausführen (Anleitung, Schritt A4) — danach geht es.";
+    if (/Error sending confirmation email|error sending.*email|smtp/i.test(t)) return "Das Konto wurde nicht angelegt, weil die Bestätigungsmail nicht rausging. Der Mailversand (Brevo) muss die Absende-Adresse von Supabase erst freigeben — siehe Anleitung, Schritt A15. Danach einfach nochmal versuchen.";
+    if (/invalid path|no Route matched|not found/i.test(t)) return "Die Adresse der Datenbank stimmt nicht. In chronik-config.js muss bei url genau ‚https://xxxx.supabase.co‘ stehen — ohne Schrägstrich und ohne Zusatz wie /rest/v1 am Ende.";
+    if (/Invalid API key|JWSError|JWT/i.test(t)) return "Der Schlüssel in chronik-config.js passt nicht. Es muss der ‚anon public‘-Schlüssel sein — bitte in Supabase noch einmal ganz kopieren.";
+    if (/Failed to fetch|NetworkError|Load failed/i.test(t)) return "Die Datenbank ist nicht erreichbar. Internetverbindung prüfen — oder das Supabase-Projekt pausiert (im Dashboard auf ‚Restore‘).";
     return t || "Unbekannter Fehler.";
   }
 
@@ -161,7 +196,7 @@
     var c = await client();
     if (await emailTaken(email)) throw new Error("Für diese E-Mail gibt es schon ein Konto. Melde dich an oder setze das Passwort neu.");
     if (await nameTaken(username)) throw new Error("Dieser Benutzername ist schon belegt — bitte einen anderen wählen.");
-    var opts = { data: { username: username } };
+    var opts = { data: { username: username }, emailRedirectTo: backHere() };
     if (captchaToken) opts.captchaToken = captchaToken;
     var r = await c.auth.signUp({ email: email, password: pw, options: opts });
     if (r.error) throw new Error(msg(r.error));
@@ -190,9 +225,17 @@
     return s ? s.access_token : "";
   }
 
+  /* Genau diese Seite — mit Dateinamen, damit der Link aus der Mail
+     nicht auf einer 404-Seite von GitHub Pages landet. */
+  function backHere() {
+    var u = location.origin + location.pathname;
+    if (/\/$/.test(u)) u = u + "index.html";
+    return u;
+  }
+
   async function sendReset(email) {
     var c = await client();
-    var r = await c.auth.resetPasswordForEmail(email, { redirectTo: location.href.split("#")[0] });
+    var r = await c.auth.resetPasswordForEmail(email, { redirectTo: backHere() });
     if (r.error) throw new Error(msg(r.error));
     bump({ p_emails: 1 });
     return true;
@@ -374,9 +417,24 @@
 
     var c = await client();
     var row = eventToRow(e);
-    var r = isNew
-      ? await c.from("events").insert(row).select("id")
-      : await c.from("events").update(row).eq("id", e.id).select("id");
+    if (legacySchema) delete row.gwho;
+
+    async function push(payload) {
+      return isNew
+        ? await c.from("events").insert(payload).select("id")
+        : await c.from("events").update(payload).eq("id", e.id).select("id");
+    }
+
+    var r = await push(row);
+    /* Ältere Datenbank ohne Gruppen-Spalte: Gruppen zu Personen
+       auflösen und ohne gwho erneut senden. */
+    if (r.error && /gwho/i.test(String(r.error.message || ""))) {
+      legacySchema = true;
+      var flat = Object.assign({}, row);
+      delete flat.gwho;
+      if ((e.resolvedWho || []).length) flat.who = e.resolvedWho;
+      r = await push(flat);
+    }
     if (r.error) throw new Error(msg(r.error));
     bump({ p_writes: 1 });
     return (r.data && r.data[0] && r.data[0].id) || e.id;
@@ -451,6 +509,8 @@
 
   window.ChronikCloud = {
     enabled: enabled,
+    configFault: configFault,
+    cleanedUrl: url,
     hasR2: !!R2,
     turnstileKey: CFG.turnstileSiteKey || "",
     limits: LIM,
@@ -461,6 +521,7 @@
     groups: groups, saveGroup: saveGroup, removeGroup: removeGroup,
     loadEvents: loadEvents, saveEvent: saveEvent, removeEvent: removeEvent,
     addComment: addComment, uploadImage: uploadImage, onChange: onChange,
-    snapshot: snapshot, budget: budget, guard: guard
+    snapshot: snapshot, budget: budget, guard: guard,
+    isLegacy: function () { return legacySchema; }
   };
 })();
