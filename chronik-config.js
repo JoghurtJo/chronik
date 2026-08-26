@@ -14,7 +14,7 @@ window.CHRONIK_CONFIG = {
        url     = "Project URL"
        anonKey = "anon public" (der lange Text mit ey… am Anfang)
      Leer lassen = Einzelplatz-Modus, alles bleibt im Browser.   */
-  url: "https://mhdjmuyfccyfeoffplbk.supabase.co/rest/v1",
+  url: "https://mhdjmuyfccyfeoffplbk.supabase.co",
   anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1oZGptdXlmY2N5ZmVvZmZwbGJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Nzc5NDIsImV4cCI6MjEwMzI1Mzk0Mn0.bIIEMuwjjRglIa74A-4xVUixiVKKdJiYzb2p1SH9FAE",
 
   /* --- 2. Cloudflare R2: die Bilder -----------------------
