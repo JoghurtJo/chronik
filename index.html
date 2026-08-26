@@ -3424,7 +3424,7 @@ class Component extends DCLogic {
             : "Willkommen zurück — deine Chronik wartet.")
           : st.authMode === "reset"
           ? "Trage den Wiederherstellungscode ein, den du bei der Registrierung bekommen hast. Ohne Server kann diese Chronik keine E-Mail verschicken — der Code ersetzt die Mail. Hast du keinen, erzeugt die Inhaberin oder der Inhaber unter ‚Zugänge‘ einen neuen."
-          : st.users.length === 0 ? "Das erste Konto wird Inhaber und darf alles — inklusive Rechte vergeben."
+          : st.users.length === 0 ? ""
           : st.authMode === "register" ? "Gleich nach dem Anlegen bekommst du einen Rettungscode zu sehen — kurz notieren, dann kann dir nichts passieren."
           : "",
         submit: this.submitAuth
