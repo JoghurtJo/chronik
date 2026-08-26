@@ -54,18 +54,34 @@
 <sc-if value="{{ locked }}" hint-placeholder-val="{{ true }}">
   <div data-noprint="" data-screen-label="Anmeldung" style="min-height: 100vh; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); display: grid; grid-template-columns: 1.05fr 0.95fr; gap: var(--space-8); align-items: start; padding: var(--space-8);">
     <div>
-      <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">Zeitstrahl-Werkstatt</div>
-      <h1 style="margin: 6px 0 0; font-size: 74px; line-height: 0.94; letter-spacing: -0.03em;">Chronik</h1>
+      <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">Was ihr erlebt habt, in einer Linie</div>
+      <h1 style="margin: 8px 0 0; font-size: 86px; line-height: 0.9; letter-spacing: -0.035em;">Chronik</h1>
       <div style="height: 5px; background: var(--color-text); margin-top: var(--space-4);"></div>
       <div style="display: flex; justify-content: space-between; gap: var(--space-4); padding: 7px 0; font-size: 11.5px; letter-spacing: 0.13em; text-transform: uppercase;">
-        <span>Ereignisse · Personen · Bilder</span>
+        <span>Aus vielen Abenden wird eine Geschichte</span>
         <span>{{ today }}</span>
       </div>
       <div style="height: 1px; background: var(--color-text);"></div>
-      <p style="max-width: 46ch; font-size: 18px; line-height: 1.5; margin-top: var(--space-6); text-wrap: pretty;">{{ auth.intro }}</p>
-      <div style="max-width: 52ch; margin-top: var(--space-8); font-size: 12.5px; line-height: 1.55; color: var(--color-neutral-700);">
-        <strong style="color: var(--color-text);"></strong> {{ auth.security }}
+
+      <p style="max-width: 30ch; font-size: 34px; line-height: 1.12; letter-spacing: -0.018em; margin: var(--space-6) 0 0; text-wrap: pretty;">Der Sommer, in dem alles anfing. Die Hochzeit im Regen. Das Fest, von dem noch geredet wird.</p>
+      <p style="max-width: 44ch; font-size: 17px; line-height: 1.5; margin: var(--space-4) 0 0; color: var(--color-neutral-700); text-wrap: pretty;">Legt die Erinnerungen hier ab und erlebt alles nochmal.</p>
+
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5) var(--space-6); max-width: 54ch; margin-top: var(--space-8);">
+        <div>
+          <div style="font-size: 22px; line-height: 1.15; letter-spacing: -0.01em;">Alle schreiben mit</div>
+          <p style="font-size: 14px; line-height: 1.5; margin: 4px 0 0; color: var(--color-neutral-700);">Jeder kann eigene Ereignisse anlegen, Fotos hochladen oder kommentieren.</p>
+        </div>
+        <div>
+          <div style="font-size: 22px; line-height: 1.15; letter-spacing: -0.01em;">Verschiedene Styles</div>
+          <p style="font-size: 14px; line-height: 1.5; margin: 4px 0 0; color: var(--color-neutral-700);">Von Zeitungssatz bis Terminal — such dir aus, wie deine Chronik aussehen soll.</p>
+        </div>
+        <div>
+          <div style="font-size: 22px; line-height: 1.15; letter-spacing: -0.01em;">Erlebnisse zum Wiedererleben</div>
+          <p style="font-size: 14px; line-height: 1.5; margin: 4px 0 0; color: var(--color-neutral-700);">Fotoshow mit Musik, Sticker zum Aufkleben, und alles druckbar als endlose Bahn.</p>
+        </div>
       </div>
+
+      <div style="margin-top: var(--space-8); padding-top: var(--space-4); border-top: 1px solid var(--color-divider); max-width: 54ch; font-size: 13px; line-height: 1.5; color: var(--color-neutral-700);">{{ auth.footline }}</div>
     </div>
 
     <div style="width: 100%; max-width: 430px;">
@@ -87,7 +103,7 @@
         </sc-if>
         <div class="field"><label>{{ auth.pwLabel }}</label>
           <div style="position: relative;">
-            <input class="input" type="{{ auth.pwType }}" autoComplete="{{ auth.pwAuto }}" value="{{ auth.pw }}" onChange="{{ auth.onPw }}" onKeyDown="{{ auth.onKey }}" placeholder="mindestens 10 Zeichen, mit Zahlen und Sonderzeichen" style="width: 100%; padding-right: 42px;">
+            <input class="input" type="{{ auth.pwType }}" autoComplete="{{ auth.pwAuto }}" value="{{ auth.pw }}" onChange="{{ auth.onPw }}" onKeyDown="{{ auth.onKey }}" placeholder="mindestens 10 Zeichen" style="width: 100%; padding-right: 42px;">
             <button onClick="{{ auth.togglePw }}" title="{{ auth.pwToggle }}" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 26px; height: 26px; padding: 0; background: none; border: 0; cursor: pointer; color: var(--color-neutral-700);">
               <sc-if value="{{ auth.pwHidden }}" hint-placeholder-val="{{ true }}">
                 <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path fill="currentColor" d="M12 5.5c-5 0-8.7 4-9.8 6 1.1 2 4.8 6 9.8 6s8.7-4 9.8-6c-1.1-2-4.8-6-9.8-6Zm0 2a4 4 0 1 1 0 8 4 4 0 0 1 0-8Zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"></path></svg>
@@ -109,6 +125,11 @@
                 </sc-for>
               </div>
               <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700);">{{ auth.strength }}</span>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <sc-for list="{{ auth.rules }}" as="r" hint-placeholder-count="4">
+                <span style="{{ r.style }}">{{ r.mark }} {{ r.label }}</span>
+              </sc-for>
             </div>
           </div>
         </sc-if>
@@ -161,8 +182,8 @@
   <header style="padding: var(--space-6) var(--space-8) 0;">
     <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-6); flex-wrap: wrap;">
       <div>
-        <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">Zeitstrahl-Werkstatt</div>
-        <h1 style="margin: 4px 0 0; font-size: 46px; line-height: 1.0; letter-spacing: -0.022em;">{{ meta.title }}</h1>
+        <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">{{ meta.kicker }}</div>
+        <h1 style="margin: 4px 0 0; font-size: 46px; line-height: 1.0; letter-spacing: -0.022em; cursor: text;" contentEditable="{{ titleEditable }}" suppressContentEditableWarning="{{ true }}" onBlur="{{ onTitleBlur }}" title="{{ titleHint }}">{{ meta.title }}</h1>
       </div>
       <div style="display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; padding-bottom: 4px;">
         <sc-if value="{{ canCreate }}" hint-placeholder-val="{{ true }}">
@@ -219,7 +240,40 @@
           <span style="min-width: 42px; color: var(--color-text);">{{ zoomLabel }}</span>
         </div>
         <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ togglePlay }}">{{ playLabel }}</button>
+        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ stick.toggle }}">{{ stick.label }}</button>
       </div>
+      <sc-if value="{{ stick.on }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; padding: var(--space-2) 0 var(--space-3); border-top: 1px solid var(--color-divider);">
+          <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+            <sc-for list="{{ stick.sheet }}" as="sk" hint-placeholder-count="10">
+              <button onClick="{{ sk.pick }}" title="{{ sk.label }}" style="{{ sk.chip }}"><span style="{{ sk.style }}">{{ sk.glyph }}</span></button>
+            </sc-for>
+          </div>
+          <div class="field" style="margin: 0; width: 150px;"><label>Farbwelt</label>
+            <select class="input" value="{{ stick.pal }}" onChange="{{ stick.onPal }}">
+              <sc-for list="{{ stick.pals }}" as="o" hint-placeholder-count="6">
+                <option value="{{ o.value }}">{{ o.label }}</option>
+              </sc-for>
+            </select>
+          </div>
+          <sc-if value="{{ stick.hasSel }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;">
+              <label style="display: grid; gap: 2px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">Größe
+                <input type="range" min="0.6" max="4" step="0.1" value="{{ stick.selScale }}" onChange="{{ stick.onScale }}" style="width: 110px; accent-color: var(--color-accent);">
+              </label>
+              <label style="display: grid; gap: 2px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">Drehung
+                <input type="range" min="-60" max="60" step="1" value="{{ stick.selRot }}" onChange="{{ stick.onRot }}" style="width: 110px; accent-color: var(--color-accent);">
+              </label>
+              <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ stick.del }}">Diesen entfernen</button>
+            </div>
+          </sc-if>
+          <span style="flex: 1;"></span>
+          <span style="font-size: 11.5px; color: var(--color-neutral-700); max-width: 34ch; line-height: 1.4;">{{ stick.hint }}</span>
+          <sc-if value="{{ stick.any }}" hint-placeholder-val="{{ false }}">
+            <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ stick.clearAll }}">Alle ablösen</button>
+          </sc-if>
+        </div>
+      </sc-if>
     </sc-if>
 
     <sc-if value="{{ tabFilter }}" hint-placeholder-val="{{ false }}">
@@ -273,7 +327,12 @@
   </div>
 
   <div style="padding: var(--space-4) var(--space-8) var(--space-8);" data-screen-label="Zeitstrahl">
-    <div data-stage="" ref="{{ stageRef }}" onScroll="{{ onScroll }}" style="position: relative; overflow-x: auto; overflow-y: hidden; background-color: var(--t-bg, #f3f2f2); border-radius: var(--radius-lg); box-shadow: inset 0 0 0 1px var(--color-divider);">
+    <div style="{{ shellStyle }}">
+    <div data-stage="" ref="{{ stageRef }}" onScroll="{{ onScroll }}" onPointerDown="{{ stick.place }}" onPointerMove="{{ stick.move }}" onPointerUp="{{ stick.up }}" onPointerLeave="{{ stick.up }}" style="position: relative; overflow-x: auto; overflow-y: hidden; background-color: var(--t-bg, #f3f2f2); border-radius: var(--radius-lg); box-shadow: inset 0 0 0 1px var(--color-divider); cursor: {{ stick.cursor }};">
+      <div style="{{ skinFx }}"></div>
+      <sc-for list="{{ free }}" as="fs" hint-placeholder-count="0">
+        <div onPointerDown="{{ fs.onDown }}" style="{{ fs.style }}">{{ fs.glyph }}</div>
+      </sc-for>
       <div style="{{ stageStyle }}">
       <div style="position: absolute; inset: 0; background-image: var(--t-pattern, none); background-size: var(--t-pattern-size, auto); background-position: var(--t-parallax, 0) 0; font-family: var(--t-font-body, var(--font-body)); color: var(--t-ink, #201e1d);">
         <sc-if value="{{ hasEvents }}" hint-placeholder-val="{{ true }}">
@@ -364,6 +423,9 @@
                                   <span style="font-size: 13px;">{{ p.name }}</span>
                                   <span style="font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: color-mix(in srgb, var(--t-ink, #201e1d) 55%, var(--t-card, #eae9e9));">{{ p.role }}</span>
                                 </span>
+                                <sc-if value="{{ p.linked }}" hint-placeholder-val="{{ false }}">
+                                  <span title="mit einem Konto verknüpft" style="width: 15px; height: 15px; border-radius: 99px; display: grid; place-items: center; font-size: 9px; background: var(--t-accent, #0088b0); color: var(--t-card, #eae9e9);">✓</span>
+                                </sc-if>
                               </div>
                             </sc-for>
                           </div>
@@ -455,6 +517,7 @@
       </div>
       </div>
     </div>
+    </div>
     <div style="display: flex; justify-content: space-between; gap: var(--space-4); padding-top: var(--space-2); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-600);">
       <span>Klick auf eine Karte oder einen Marker öffnet das Ereignis · ← → blättert</span>
       <span>{{ stats.hint }}</span>
@@ -475,6 +538,16 @@
         </div>
 
         <div style="height: 3px; background: var(--color-text); margin: var(--space-4) 0 var(--space-4);"></div>
+
+        <div style="display: grid; gap: 7px; margin-bottom: var(--space-5);">
+          <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Name der Chronik</div>
+          <input class="input" type="text" value="{{ meta.title }}" onChange="{{ onMetaTitle }}" placeholder="Deine Chronik">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+            <input class="input" type="text" value="{{ meta.kicker }}" onChange="{{ onMetaKicker }}" placeholder="kleine Zeile oben">
+            <input class="input" type="text" value="{{ meta.subtitle }}" onChange="{{ onMetaSub }}" placeholder="Untertitel">
+          </div>
+          <div style="font-size: 11.5px; color: var(--color-neutral-700); line-height: 1.45;">Den Titel kannst du auch oben in der Kopfzeile direkt anklicken und überschreiben.</div>
+        </div>
 
         <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: var(--space-2);">Vorlagen · {{ presetCount }}</div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
@@ -663,6 +736,43 @@
             </div>
           </sc-for>
         </div>
+        <div style="height: 1px; background: var(--color-divider); margin: var(--space-6) 0 var(--space-4);"></div>
+        <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: var(--space-2);">Personengruppen</div>
+        <p style="font-size: 12px; line-height: 1.5; margin: 0 0 var(--space-3); color: var(--color-neutral-700);">Gruppen sind Abkürzungen fürs Freigeben: einmal anlegen, dann bei jedem Ereignis mit einem Klick wählen. Wer später dazukommt, sieht auch die älteren Ereignisse dieser Gruppe.</p>
+        <div style="display: grid; gap: 5px; margin-bottom: var(--space-3);">
+          <sc-for list="{{ pgroups }}" as="g" hint-placeholder-count="0">
+            <div style="display: flex; align-items: baseline; gap: 8px; font-size: 13px;">
+              <span style="width: 8px; height: 8px; border-radius: 2px; background: var(--color-accent-2); display: block;"></span>
+              <span>{{ g.name }}</span>
+              <span style="color: var(--color-neutral-700); font-size: 11.5px;">{{ g.count }}</span>
+              <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
+              <button onClick="{{ g.edit }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-accent-700); text-decoration: underline; white-space: nowrap;">Ändern</button>
+              <button onClick="{{ g.remove }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-accent-2-700); text-decoration: underline; white-space: nowrap;">Löschen</button>
+            </div>
+          </sc-for>
+          <sc-if value="{{ pgroupsEmpty }}" hint-placeholder-val="{{ true }}">
+            <div style="font-size: 12.5px; color: var(--color-neutral-600);">Noch keine Gruppe — zum Beispiel ‚Familie‘, ‚Wandergruppe‘ oder ‚Nachbarn‘.</div>
+          </sc-if>
+        </div>
+        <div style="display: grid; gap: 7px; padding: 11px 12px; border-radius: var(--radius-md); background: var(--color-surface);">
+          <div class="field" style="margin: 0;"><label>{{ gForm.label }}</label><input class="input" type="text" value="{{ gForm.name }}" onChange="{{ gForm.onName }}" placeholder="z. B. Wandergruppe"></div>
+          <div style="max-height: 150px; overflow-y: auto; display: grid; gap: 2px;">
+            <sc-for list="{{ gForm.people }}" as="p" hint-placeholder-count="3">
+              <button onClick="{{ p.toggle }}" style="{{ p.style }}">
+                <span style="{{ p.box }}">{{ p.mark }}</span>
+                <span style="font-size: 13px;">{{ p.name }}</span>
+              </button>
+            </sc-for>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <button class="btn btn-primary" style="white-space: nowrap;" onClick="{{ gForm.save }}">{{ gForm.cta }}</button>
+            <sc-if value="{{ gForm.editing }}" hint-placeholder-val="{{ false }}">
+              <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ gForm.cancel }}">Abbrechen</button>
+            </sc-if>
+            <span style="font-size: 11.5px; color: var(--color-neutral-700);">{{ gForm.count }}</span>
+          </div>
+        </div>
+
         <sc-if value="{{ transfer.show }}" hint-placeholder-val="{{ false }}">
           <div style="height: 1px; background: var(--color-divider); margin: var(--space-6) 0 var(--space-4);"></div>
           <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: var(--space-2);">Auf ein anderes Gerät übertragen</div>
@@ -720,12 +830,23 @@
           <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Personen</div>
           <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ form.addPerson }}">＋ Person</button>
         </div>
+        <div style="font-size: 11.5px; line-height: 1.45; color: var(--color-neutral-700); margin-bottom: var(--space-2);">Im Auswahlfeld darunter kannst du die Person einem echten Konto zuordnen — dann findet man sie über den Filter ‚Personen‘ wieder.</div>
         <div style="display: grid; gap: 6px;">
           <sc-for list="{{ form.people }}" as="r" hint-placeholder-count="2">
-            <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 6px;">
-              <input class="input" type="text" value="{{ r.name }}" onChange="{{ r.onName }}" placeholder="Name">
-              <input class="input" type="text" value="{{ r.role }}" onChange="{{ r.onRole }}" placeholder="Rolle">
-              <button class="btn btn-secondary btn-icon" onClick="{{ r.remove }}">✕</button>
+            <div style="display: grid; gap: 4px; padding-bottom: 4px;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 6px;">
+                <input class="input" type="text" value="{{ r.name }}" onChange="{{ r.onName }}" placeholder="Name">
+                <input class="input" type="text" value="{{ r.role }}" onChange="{{ r.onRole }}" placeholder="Rolle">
+                <button class="btn btn-secondary btn-icon" onClick="{{ r.remove }}">✕</button>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <select class="input" value="{{ r.uid }}" onChange="{{ r.onAccount }}" style="flex: 1; font-size: 12.5px; padding-top: 4px; padding-bottom: 4px;">
+                  <sc-for list="{{ r.accounts }}" as="a" hint-placeholder-count="3">
+                    <option value="{{ a.value }}">{{ a.label }}</option>
+                  </sc-for>
+                </select>
+                <span style="{{ r.linkStyle }}">{{ r.linkLabel }}</span>
+              </div>
             </div>
           </sc-for>
         </div>
@@ -832,6 +953,16 @@
             <label class="seg-opt"><input type="radio" name="evvis" checked="{{ form.vis.isPublic }}" onChange="{{ form.vis.setPublic }}" style="position: absolute; opacity: 0; pointer-events: none;">Öffentlich</label>
           </div>
           <sc-if value="{{ form.vis.isSelected }}" hint-placeholder-val="{{ false }}">
+            <sc-if value="{{ form.vis.hasGroups }}" hint-placeholder-val="{{ false }}">
+              <div style="display: grid; gap: 5px; margin-bottom: var(--space-2);">
+                <div style="font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">Gruppen</div>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                  <sc-for list="{{ form.vis.groups }}" as="g" hint-placeholder-count="2">
+                    <button onClick="{{ g.toggle }}" style="{{ g.style }}">{{ g.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
             <div style="display: grid; gap: 6px;">
               <input class="input" type="search" value="{{ form.vis.q }}" onChange="{{ form.vis.onQ }}" placeholder="Person suchen …">
               <div style="max-height: 168px; overflow-y: auto; display: grid; gap: 2px; padding-right: 4px;">
@@ -1055,23 +1186,23 @@ const T = function (o) {
     bg: "#f3f2f2", ink: "#201e1d", card: "#eae9e9", accent: "#0088b0", accent2: "#d6006c", line: "#201e1d",
     fontHead: "Source Serif 4", fontBody: "Source Serif 4", headWeight: 600, headTransform: "none", headTracking: 0,
     radius: 2, shadow: "sm", lineWidth: 2, lineStyle: "solid", marker: "square", pattern: "dots",
-    anim: "glide", animDur: 620, density: 1, imgShape: "rect"
+    anim: "glide", animDur: 620, density: 1, imgShape: "rect", skin: "none"
   }, o);
 };
 
 const PRESETS = [
-  T({ id: "zeitung", name: "Zeitung", kicker: "Werksatz" }),
-  T({ id: "notizbuch", name: "Notizbuch", kicker: "Kladde", bg: "#f7f1e4", ink: "#33291f", card: "#fffdf6", accent: "#b4531f", accent2: "#5b7a52", line: "#b4531f", fontHead: "Libre Baskerville", fontBody: "Libre Baskerville", radius: 3, lineStyle: "dashed", marker: "circle", pattern: "lines", anim: "tilt", imgShape: "polaroid", density: 1.05 }),
-  T({ id: "mitternacht", name: "Mitternacht", kicker: "Dunkel", bg: "#14161b", ink: "#e9e6df", card: "#1c1f26", accent: "#7ec8e3", accent2: "#e3b87e", line: "#7ec8e3", fontHead: "Cormorant Garamond", fontBody: "DM Sans", headWeight: 700, radius: 6, shadow: "lg", lineWidth: 3, lineStyle: "double", marker: "diamond", anim: "rise", imgShape: "round", density: 1.1 }),
-  T({ id: "riso", name: "Riso", kicker: "Zwei Farben", bg: "#efeade", ink: "#191919", card: "#ffffff", accent: "#ff4d3d", accent2: "#2b50ff", line: "#191919", fontHead: "Space Grotesk", fontBody: "Space Grotesk", headWeight: 700, headTransform: "uppercase", headTracking: -0.01, radius: 0, shadow: "hard", lineWidth: 4, marker: "square", pattern: "halftone", anim: "pop", density: 0.95 }),
-  T({ id: "botanik", name: "Botanik", kicker: "Weich", bg: "#f1f5f0", ink: "#1f3327", card: "#ffffff", accent: "#4a7c59", accent2: "#a8763e", line: "#4a7c59", fontHead: "Cormorant Garamond", fontBody: "DM Sans", headWeight: 600, radius: 14, shadow: "md", lineWidth: 1, marker: "ring", pattern: "grid", anim: "glide", imgShape: "round", density: 1.15 }),
-  T({ id: "bauhaus", name: "Bauhaus", kicker: "Plakat", bg: "#f0ece2", ink: "#141414", card: "#ffffff", accent: "#e63b19", accent2: "#1b4bbf", line: "#141414", fontHead: "Bebas Neue", fontBody: "Space Grotesk", headWeight: 400, headTransform: "uppercase", headTracking: 0.02, radius: 0, shadow: "hard", lineWidth: 6, marker: "diamond", pattern: "none", anim: "flip", density: 0.95 }),
-  T({ id: "terminal", name: "Terminal", kicker: "Monospace", bg: "#0b0f0c", ink: "#d8ffe4", card: "#111713", accent: "#35ff8b", accent2: "#ffd166", line: "#35ff8b", fontHead: "JetBrains Mono", fontBody: "JetBrains Mono", headWeight: 700, headTransform: "uppercase", radius: 0, shadow: "none", lineWidth: 1, lineStyle: "dotted", marker: "bar", pattern: "scan", anim: "type", animDur: 720, density: 0.9 }),
-  T({ id: "pastell", name: "Pastell", kicker: "Rund", bg: "#fdf6fb", ink: "#4a3a4f", card: "#ffffff", accent: "#d47bab", accent2: "#7ea3e0", line: "#d47bab", fontHead: "DM Sans", fontBody: "DM Sans", headWeight: 700, radius: 22, shadow: "md", lineWidth: 3, marker: "circle", pattern: "glow", anim: "bounce", animDur: 760, imgShape: "circle", density: 1.2 }),
-  T({ id: "museum", name: "Museum", kicker: "Kabinett", bg: "#efece7", ink: "#2a2724", card: "#f7f5f1", accent: "#8a7355", accent2: "#3f4f5f", line: "#2a2724", fontHead: "Playfair Display", fontBody: "Source Serif 4", headWeight: 500, radius: 2, lineWidth: 1, lineStyle: "double", marker: "circle", pattern: "none", anim: "rise", density: 1.25 }),
-  T({ id: "neon", name: "Neon", kicker: "Raster", bg: "#0d0b16", ink: "#f1eaff", card: "#171327", accent: "#b06bff", accent2: "#35e6ff", line: "#b06bff", fontHead: "Space Grotesk", fontBody: "Space Grotesk", headWeight: 700, radius: 8, shadow: "lg", marker: "diamond", pattern: "grid", anim: "pop", imgShape: "round", density: 1.05 }),
-  T({ id: "sepia", name: "Sepia", kicker: "Album", bg: "#f0e6d6", ink: "#3b3027", card: "#fbf5ea", accent: "#9c6b3f", accent2: "#6d7f6b", line: "#3b3027", fontHead: "Libre Baskerville", fontBody: "Libre Baskerville", radius: 2, shadow: "md", marker: "circle", pattern: "halftone", anim: "tilt", imgShape: "polaroid", density: 1.1 }),
-  T({ id: "schiefer", name: "Schiefer", kicker: "Sachlich", bg: "#e7ecef", ink: "#1d2b33", card: "#f8fbfc", accent: "#29647d", accent2: "#a35b3c", line: "#1d2b33", fontHead: "Source Serif 4", fontBody: "DM Sans", radius: 4, marker: "square", pattern: "grid", anim: "glide" })
+  T({ id: "zeitung", name: "Zeitung", kicker: "Werksatz", skin: "paper" }),
+  T({ id: "notizbuch", name: "Notizbuch", kicker: "Kladde", bg: "#f7f1e4", ink: "#33291f", card: "#fffdf6", accent: "#b4531f", accent2: "#5b7a52", line: "#b4531f", fontHead: "Libre Baskerville", fontBody: "Libre Baskerville", radius: 3, lineStyle: "dashed", marker: "circle", pattern: "lines", anim: "tilt", imgShape: "polaroid", density: 1.05, skin: "ruled" }),
+  T({ id: "mitternacht", name: "Mitternacht", kicker: "Dunkel", bg: "#14161b", ink: "#e9e6df", card: "#1c1f26", accent: "#7ec8e3", accent2: "#e3b87e", line: "#7ec8e3", fontHead: "Cormorant Garamond", fontBody: "DM Sans", headWeight: 700, radius: 6, shadow: "lg", lineWidth: 3, lineStyle: "double", marker: "diamond", anim: "rise", imgShape: "round", density: 1.1, skin: "vignette" }),
+  T({ id: "riso", name: "Riso", kicker: "Zwei Farben", bg: "#efeade", ink: "#191919", card: "#ffffff", accent: "#ff4d3d", accent2: "#2b50ff", line: "#191919", fontHead: "Space Grotesk", fontBody: "Space Grotesk", headWeight: 700, headTransform: "uppercase", headTracking: -0.01, radius: 0, shadow: "hard", lineWidth: 4, marker: "square", pattern: "halftone", anim: "pop", density: 0.95, skin: "grain" }),
+  T({ id: "botanik", name: "Botanik", kicker: "Weich", bg: "#f1f5f0", ink: "#1f3327", card: "#ffffff", accent: "#4a7c59", accent2: "#a8763e", line: "#4a7c59", fontHead: "Cormorant Garamond", fontBody: "DM Sans", headWeight: 600, radius: 14, shadow: "md", lineWidth: 1, marker: "ring", pattern: "grid", anim: "glide", imgShape: "round", density: 1.15, skin: "none" }),
+  T({ id: "bauhaus", name: "Bauhaus", kicker: "Plakat", bg: "#f0ece2", ink: "#141414", card: "#ffffff", accent: "#e63b19", accent2: "#1b4bbf", line: "#141414", fontHead: "Bebas Neue", fontBody: "Space Grotesk", headWeight: 400, headTransform: "uppercase", headTracking: 0.02, radius: 0, shadow: "hard", lineWidth: 6, marker: "diamond", pattern: "none", anim: "flip", density: 0.95, skin: "blocks" }),
+  T({ id: "terminal", name: "Terminal", kicker: "Monospace", bg: "#0b0f0c", ink: "#d8ffe4", card: "#111713", accent: "#35ff8b", accent2: "#ffd166", line: "#35ff8b", fontHead: "JetBrains Mono", fontBody: "JetBrains Mono", headWeight: 700, headTransform: "uppercase", radius: 0, shadow: "none", lineWidth: 1, lineStyle: "dotted", marker: "bar", pattern: "scan", anim: "type", animDur: 720, density: 0.9, skin: "crt" }),
+  T({ id: "pastell", name: "Pastell", kicker: "Rund", bg: "#fdf6fb", ink: "#4a3a4f", card: "#ffffff", accent: "#d47bab", accent2: "#7ea3e0", line: "#d47bab", fontHead: "DM Sans", fontBody: "DM Sans", headWeight: 700, radius: 22, shadow: "md", lineWidth: 3, marker: "circle", pattern: "glow", anim: "bounce", animDur: 760, imgShape: "circle", density: 1.2, skin: "none" }),
+  T({ id: "museum", name: "Museum", kicker: "Kabinett", bg: "#efece7", ink: "#2a2724", card: "#f7f5f1", accent: "#8a7355", accent2: "#3f4f5f", line: "#2a2724", fontHead: "Playfair Display", fontBody: "Source Serif 4", headWeight: 500, radius: 2, lineWidth: 1, lineStyle: "double", marker: "circle", pattern: "none", anim: "rise", density: 1.25, skin: "matte" }),
+  T({ id: "neon", name: "Neon", kicker: "Raster", bg: "#0d0b16", ink: "#f1eaff", card: "#171327", accent: "#b06bff", accent2: "#35e6ff", line: "#b06bff", fontHead: "Space Grotesk", fontBody: "Space Grotesk", headWeight: 700, radius: 8, shadow: "lg", marker: "diamond", pattern: "grid", anim: "pop", imgShape: "round", density: 1.05, skin: "glow" }),
+  T({ id: "sepia", name: "Sepia", kicker: "Album", bg: "#f0e6d6", ink: "#3b3027", card: "#fbf5ea", accent: "#9c6b3f", accent2: "#6d7f6b", line: "#3b3027", fontHead: "Libre Baskerville", fontBody: "Libre Baskerville", radius: 2, shadow: "md", marker: "circle", pattern: "halftone", anim: "tilt", imgShape: "polaroid", density: 1.1, skin: "vintage" }),
+  T({ id: "schiefer", name: "Schiefer", kicker: "Sachlich", bg: "#e7ecef", ink: "#1d2b33", card: "#f8fbfc", accent: "#29647d", accent2: "#a35b3c", line: "#1d2b33", fontHead: "Source Serif 4", fontBody: "DM Sans", radius: 4, marker: "square", pattern: "grid", anim: "glide", skin: "blueprint" })
 ];
 
 const PATTERNS = {
@@ -1151,11 +1282,35 @@ const pwScore = function (p) {
   let n = 0;
   if (s.length >= 10) n++;
   if (s.length >= 14) n++;
-  if (/[a-zäöüß]/.test(s) && /[A-ZÄÖÜ]/.test(s)) n++;
-  if (/\d/.test(s)) n++;
+  if (/[a-z]/.test(s) && /[A-Z]/.test(s)) n++;
+  if (/[0-9]/.test(s)) n++;
   if (/[^A-Za-z0-9]/.test(s)) n++;
   return Math.min(4, n);
 };
+
+/* Pflichtregeln fürs Passwort — gibt "" zurück, wenn alles passt. */
+const pwProblem = function (p) {
+  const s = String(p || "");
+  if (s.length < 10) return "Das Passwort braucht mindestens 10 Zeichen.";
+  if (!/[0-9]/.test(s)) return "Im Passwort fehlt eine Zahl (0–9).";
+  if (!/[^A-Za-z0-9]/.test(s)) return "Im Passwort fehlt ein Sonderzeichen, zum Beispiel ! ? · - _ @ # oder €.";
+  if (!/[a-z]/.test(s) || !/[A-Z]/.test(s)) return "Bitte groß UND klein schreiben — mindestens ein Großbuchstabe und ein Kleinbuchstabe.";
+  if (/^(.)\1+$/.test(s)) return "Das ist nur ein wiederholtes Zeichen — bitte etwas Eigenes.";
+  return "";
+};
+
+const pwRules = function (p) {
+  const s = String(p || "");
+  return [
+    { key: "r1", label: "10 Zeichen oder mehr", ok: s.length >= 10 },
+    { key: "r2", label: "eine Zahl", ok: /[0-9]/.test(s) },
+    { key: "r3", label: "ein Sonderzeichen", ok: /[^A-Za-z0-9]/.test(s) },
+    { key: "r4", label: "groß und klein", ok: /[a-z]/.test(s) && /[A-Z]/.test(s) }
+  ];
+};
+
+const normName = function (s) { return String(s || "").trim().toLowerCase().replace(/\s+/g, " "); };
+
 const sameHex = function (a, b) {
   if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
   let diff = 0;
@@ -1371,7 +1526,7 @@ const randomBytes = function (n) {
 
 class Component extends DCLogic {
   state = {
-    meta: { title: "Familien- & Vereinschronik", subtitle: "Neun Ereignisse in Zeit gesetzt" },
+    meta: { title: "Deine Chronik", subtitle: "Ereignisse in Zeit gesetzt", kicker: "Zeitstrahl" },
     events: DEMO,
     themeId: null,
     custom: [],
@@ -1417,6 +1572,13 @@ class Component extends DCLogic {
     histList: null,
     transfer: "",
     transferIn: "",
+    groups: [],
+    gDraft: { name: "", members: [] },
+    gEdit: null,
+    gQ: "",
+    stickMode: false,
+    stickPick: "stern",
+    freeSel: null,
     show: { open: false, idx: 0, playing: true, speed: 5, transition: "fade", scope: "all", ref: "", music: "", musicUrl: "", musicName: "keine", volume: 0.7 }
   };
 
@@ -1432,7 +1594,7 @@ class Component extends DCLogic {
         const raw = window.localStorage.getItem("chronik.v1");
         if (raw) {
           const s = JSON.parse(raw);
-          this.setState({ custom: s.custom || [], themeId: s.themeId || null, override: s.override || {}, mode: s.mode || "proportional", zoom: s.zoom || 1 });
+          this.setState({ custom: s.custom || [], themeId: s.themeId || null, override: s.override || {}, mode: s.mode || "proportional", zoom: s.zoom || 1, groups: Array.isArray(s.groups) ? s.groups : [], meta: Object.assign({}, this.state.meta, s.meta || {}, (s.meta && s.meta.title === "Familien- & Vereinschronik") ? { title: "Deine Chronik" } : {}) });
         }
       } catch (e) { /* egal */ }
       return;
@@ -1442,8 +1604,9 @@ class Component extends DCLogic {
       if (raw) {
         const s = JSON.parse(raw);
         this.setState({
-          meta: s.meta || this.state.meta,
+          meta: Object.assign({}, this.state.meta, s.meta || {}, (s.meta && s.meta.title === "Familien- & Vereinschronik") ? { title: "Deine Chronik" } : {}),
           events: Array.isArray(s.events) ? s.events : this.state.events,
+          groups: Array.isArray(s.groups) ? s.groups : [],
           custom: s.custom || [],
           themeId: s.themeId || null,
           override: s.override || {},
@@ -1513,7 +1676,9 @@ class Component extends DCLogic {
     try {
       const users = await CC.profiles();
       const events = await CC.loadEvents();
-      this.setState({ users: users, events: events, cloudErr: "" });
+      let gs = this.state.groups;
+      try { gs = await CC.groups(); } catch (e) { /* Gruppen sind optional */ }
+      this.setState({ users: users, events: events, groups: gs, cloudErr: "" });
     } catch (e) {
       this.setState({ cloudErr: String(e.message || e) });
     }
@@ -1675,11 +1840,134 @@ class Component extends DCLogic {
     }
   };
 
+  /* ---------- Titel der Chronik ---------- */
+
+  onTitleBlur = (ev) => {
+    const v = String(ev.target.textContent || "").trim().slice(0, 70);
+    if (!v) { ev.target.textContent = this.state.meta.title; return; }
+    if (v === this.state.meta.title) return;
+    this.setState({ meta: Object.assign({}, this.state.meta, { title: v }) });
+  };
+
+  setMeta(key) {
+    return (ev) => this.setState({ meta: Object.assign({}, this.state.meta, { [key]: String(ev.target.value).slice(0, 90) }) });
+  }
+
+  /* ---------- Personengruppen ---------- */
+
+  saveGroup = () => {
+    const d = this.state.gDraft;
+    const name = String(d.name || "").trim();
+    if (!name) return;
+    if (this.state.cloud) {
+      window.ChronikCloud.saveGroup({ id: this.state.gEdit, name: name, members: (d.members || []).slice() })
+        .then(() => { this.setState({ gDraft: { name: "", members: [] }, gEdit: null }); return this.cloudSync(); })
+        .catch((e) => this.handleCloudError(e));
+      return;
+    }
+    const gs = (this.state.groups || []).slice();
+    if (this.state.gEdit) {
+      const at = gs.findIndex((g) => g.id === this.state.gEdit);
+      if (at >= 0) gs[at] = { id: gs[at].id, name: name, members: (d.members || []).slice() };
+    } else {
+      gs.push({ id: "g" + uid(), name: name, members: (d.members || []).slice() });
+    }
+    this.setState({ groups: gs, gDraft: { name: "", members: [] }, gEdit: null });
+  };
+
+  editGroup = (id) => {
+    const g = (this.state.groups || []).filter((x) => x.id === id)[0];
+    if (!g) return;
+    this.setState({ gEdit: id, gDraft: { name: g.name, members: (g.members || []).slice() } });
+  };
+
+  removeGroup = (id) => {
+    if (this.state.cloud) {
+      window.ChronikCloud.removeGroup(id)
+        .then(() => { this.setState({ gEdit: this.state.gEdit === id ? null : this.state.gEdit }); return this.cloudSync(); })
+        .catch((e) => this.handleCloudError(e));
+      return;
+    }
+    this.setState({
+      groups: (this.state.groups || []).filter((g) => g.id !== id),
+      gEdit: this.state.gEdit === id ? null : this.state.gEdit,
+      gDraft: this.state.gEdit === id ? { name: "", members: [] } : this.state.gDraft
+    });
+  };
+
+  toggleGroupMember = (uid2) => {
+    const m = (this.state.gDraft.members || []).slice();
+    const at = m.indexOf(uid2);
+    if (at >= 0) m.splice(at, 1); else m.push(uid2);
+    this.setState({ gDraft: Object.assign({}, this.state.gDraft, { members: m }) });
+  };
+
+  /* Wer steckt in dieser Auswahl? Gruppen werden zu Personen aufgelöst. */
+  resolveWho(who, gwho) {
+    const out = {};
+    (who || []).forEach((id) => { out[id] = true; });
+    (gwho || []).forEach((gid) => {
+      const g = (this.state.groups || []).filter((x) => x.id === gid)[0];
+      if (g) (g.members || []).forEach((id) => { out[id] = true; });
+    });
+    return Object.keys(out);
+  }
+
+  /* ---------- Freie Sticker auf dem Zeitstrahl ---------- */
+
+  placeFree = (ev) => {
+    if (!this.state.stickMode) return;
+    const host = ev.currentTarget;
+    if (ev.target !== host) return;
+    const box = host.getBoundingClientRect();
+    const list = ((this.state.meta.free || []).slice());
+    list.push({
+      i: "f" + uid(), k: this.state.stickPick,
+      x: Math.round(ev.clientX - box.left + host.scrollLeft), y: Math.round(ev.clientY - box.top),
+      s: 1.3, r: Math.round(-14 + Math.random() * 28), c: list.length % 5
+    });
+    this.setState({ meta: Object.assign({}, this.state.meta, { free: list }), freeSel: list[list.length - 1].i });
+  };
+
+  freeDown = (id) => {
+    return (ev) => {
+      if (!this.state.stickMode) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      this.dragFree = id;
+      this.setState({ freeSel: id });
+    };
+  };
+
+  freeMove = (ev) => {
+    if (!this.dragFree) return;
+    const host = ev.currentTarget;
+    const box = host.getBoundingClientRect();
+    this.freeSet(this.dragFree, {
+      x: Math.round(ev.clientX - box.left + host.scrollLeft),
+      y: Math.round(clampN(ev.clientY - box.top, 4, box.height - 4))
+    });
+  };
+
+  freeUp = () => { this.dragFree = null; };
+
+  freeSet(id, patch) {
+    const list = (this.state.meta.free || []).map((f) => (f.i === id ? Object.assign({}, f, patch) : f));
+    this.setState({ meta: Object.assign({}, this.state.meta, { free: list }) });
+  }
+
+  freeDel = (id) => {
+    this.setState({
+      meta: Object.assign({}, this.state.meta, { free: (this.state.meta.free || []).filter((f) => f.i !== id) }),
+      freeSel: null
+    });
+  };
+
   persist() {
     if (this.state.cloud) {
       try {
         window.localStorage.setItem("chronik.v1", JSON.stringify({
-          custom: this.state.custom, themeId: this.state.themeId,
+          custom: this.state.custom, themeId: this.state.themeId, groups: this.state.groups, meta: this.state.meta,
           override: this.state.override, mode: this.state.mode, zoom: this.state.zoom
         }));
       } catch (e) { /* quota */ }
@@ -1687,7 +1975,7 @@ class Component extends DCLogic {
     }
     try {
       window.localStorage.setItem("chronik.v1", JSON.stringify({
-        meta: this.state.meta, events: this.state.events, custom: this.state.custom,
+        meta: this.state.meta, events: this.state.events, custom: this.state.custom, groups: this.state.groups,
         themeId: this.state.themeId, override: this.state.override, mode: this.state.mode, zoom: this.state.zoom
       }));
       window.localStorage.setItem("chronik.auth.v1", JSON.stringify({ users: this.state.users, access: this.state.access }));
@@ -1732,9 +2020,9 @@ class Component extends DCLogic {
       if (name.length < 3) return this.setState({ authError: "Der Benutzername braucht mindestens 3 Zeichen." });
       if (!emailOk(id)) return this.setState({ authError: "Diese E-Mail-Adresse sieht nicht gültig aus." });
       if (this.state.users.some((u) => u.email.toLowerCase() === id.toLowerCase())) return this.setState({ authError: "Für diese E-Mail gibt es schon ein Konto." });
-      if (this.state.users.some((u) => u.username.toLowerCase() === name.toLowerCase())) return this.setState({ authError: "Dieser Benutzername ist belegt." });
-      if (String(f.pw).length < 10) return this.setState({ authError: "Das Passwort braucht mindestens 10 Zeichen." });
-      if (pwScore(f.pw) < 3) return this.setState({ authError: "Das Passwort ist zu einfach — mische Groß- und Kleinbuchstaben, Zahlen oder Zeichen." });
+      if (this.state.users.some((u) => normName(u.username) === normName(name))) return this.setState({ authError: "Dieser Benutzername ist schon belegt — bitte einen anderen wählen." });
+      const pwBad = pwProblem(f.pw);
+      if (pwBad) return this.setState({ authError: pwBad });
       if (f.pw !== f.pw2) return this.setState({ authError: "Die beiden Passwörter stimmen nicht überein." });
       this.setState({ authBusy: true, authError: "" });
       try {
@@ -1798,8 +2086,8 @@ class Component extends DCLogic {
     if (!u.rcHash) return this.setState({ authError: "Für dieses Konto ist kein Wiederherstellungscode hinterlegt — bitte die Inhaberin oder den Inhaber der Chronik um einen neuen Code." });
     const code = normCode(f.code);
     if (code.length < 8) return this.setState({ authError: "Bitte den vollständigen Wiederherstellungscode eintragen." });
-    if (String(f.pw).length < 10) return this.setState({ authError: "Das neue Passwort braucht mindestens 10 Zeichen." });
-    if (pwScore(f.pw) < 3) return this.setState({ authError: "Das neue Passwort ist zu einfach — mische Groß- und Kleinbuchstaben, Zahlen oder Zeichen." });
+    const pwBad = pwProblem(f.pw);
+    if (pwBad) return this.setState({ authError: pwBad });
     if (f.pw !== f.pw2) return this.setState({ authError: "Die beiden Passwörter stimmen nicht überein." });
     this.setState({ authBusy: true, authError: "" });
     try {
@@ -1849,9 +2137,11 @@ class Component extends DCLogic {
       if (mode === "register") {
         const name = String(f.username || "").trim();
         if (name.length < 3) throw new Error("Der Benutzername braucht mindestens 3 Zeichen.");
+        if (this.state.users.some((u) => normName(u.username) === normName(name))) throw new Error("Dieser Benutzername ist schon belegt \u2014 bitte einen anderen wählen.");
+        if (await CC.nameTaken(name)) throw new Error("Dieser Benutzername ist schon belegt \u2014 bitte einen anderen wählen.");
         if (!emailOk(mail)) throw new Error("Diese E-Mail-Adresse sieht nicht gültig aus.");
-        if (String(f.pw).length < 10) throw new Error("Das Passwort braucht mindestens 10 Zeichen.");
-        if (pwScore(f.pw) < 3) throw new Error("Das Passwort ist zu einfach — mische Groß- und Kleinbuchstaben, Zahlen oder Zeichen.");
+        const pwBad = pwProblem(f.pw);
+        if (pwBad) throw new Error(pwBad);
         if (f.pw !== f.pw2) throw new Error("Die beiden Passwörter stimmen nicht überein.");
         const r = await CC.signUp(mail, f.pw, name, this.state.tsToken);
         if (r.needsConfirm) {
@@ -1869,8 +2159,8 @@ class Component extends DCLogic {
         return;
       }
       if (mode === "newpw") {
-        if (String(f.pw).length < 10) throw new Error("Das neue Passwort braucht mindestens 10 Zeichen.");
-        if (pwScore(f.pw) < 3) throw new Error("Das neue Passwort ist zu einfach.");
+        const pwBad2 = pwProblem(f.pw);
+        if (pwBad2) throw new Error(pwBad2);
         if (f.pw !== f.pw2) throw new Error("Die beiden Passwörter stimmen nicht überein.");
         await CC.updatePassword(f.pw);
         try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { /* egal */ }
@@ -1928,7 +2218,7 @@ class Component extends DCLogic {
     if (e && e.by) {
       const vis = e.vis || "public";
       let v = 0;
-      if (vis === "public" || (vis === "selected" && (e.who || []).indexOf(u.id) >= 0)) v = RANK[e.share || "view"] || 1;
+      if (vis === "public" || (vis === "selected" && this.resolveWho(e.who, e.gwho).indexOf(u.id) >= 0)) v = RANK[e.share || "view"] || 1;
       return Math.max(v, ruleLvl == null ? 0 : ruleLvl);
     }
     return ruleLvl == null ? 1 : ruleLvl;
@@ -2235,7 +2525,7 @@ class Component extends DCLogic {
 
   newEvent = () => {
     const today = new Date().toISOString().slice(0, 10);
-    this.setState({ draft: { id: null, name: "", date: today, end: "", place: "", kicker: "", note: "", infos: [{ label: "", value: "" }], people: [], images: [], deco: { fx: [], pal: "thema", stickers: [] }, vis: "public", who: [], share: "comment", by: (this.me() || {}).id || "", url: "", partial: false }, decoSel: null, pickQ: "", drawer: false, admin: false });
+    this.setState({ draft: { id: null, name: "", date: today, end: "", place: "", kicker: "", note: "", infos: [{ label: "", value: "" }], people: [], images: [], deco: { fx: [], pal: "thema", stickers: [] }, vis: "public", who: [], gwho: [], share: "comment", by: (this.me() || {}).id || "", url: "", partial: false }, decoSel: null, pickQ: "", drawer: false, admin: false });
   };
 
   editEvent(id) {
@@ -2256,7 +2546,7 @@ class Component extends DCLogic {
           pal: (e.deco || {}).pal || "thema",
           stickers: ((e.deco || {}).stickers || []).map((r) => Object.assign({}, r))
         },
-        by: e.by || "", vis: e.vis || "public", who: (e.who || []).slice(), share: e.share || "view",
+        by: e.by || "", vis: e.vis || "public", who: (e.who || []).slice(), gwho: (e.gwho || []).slice(), share: e.share || "view",
         url: "", partial: lvl < 4
       }
     });
@@ -2285,6 +2575,7 @@ class Component extends DCLogic {
       by: d.by || (old && old.by) || ((this.me() || {}).id || ""),
       vis: d.vis || (old && old.vis) || "public",
       who: (d.who || (old && old.who) || []).slice(),
+      gwho: (d.gwho || (old && old.gwho) || []).slice(),
       share: d.share || (old && old.share) || "view"
     };
     if (this.state.cloud) {
@@ -2688,7 +2979,7 @@ class Component extends DCLogic {
         editLabel: lvl >= 4 ? "Bearbeiten" : "Inhalte pflegen",
         rights: lvl >= 4 ? "" : lvl >= 3 ? "Teilrechte" : lvl >= 2 ? "Kommentieren erlaubt" : "Nur ansehen",
         infos: (e.infos || []).map((r, j) => ({ key: "i" + j, label: r.label, value: r.value })),
-        people: (e.people || []).map((r, j) => ({ key: "p" + j, name: r.name, role: r.role || "", photo: r.photo || "", noPhoto: !r.photo, initials: initials(r.name) })),
+        people: (e.people || []).map((r, j) => ({ key: "p" + j, name: r.name, role: r.role || "", photo: r.photo || "", noPhoto: !r.photo, initials: initials(r.name), linked: !!(r.uid && st.users.some((u) => u.id === r.uid)) })),
         images: (e.images || []).map((r, j) => ({
           key: "m" + j, src: r.src || "", empty: !r.src, caption: r.caption || "bild",
           comments: (r.comments || []).map((cm, k) => ({ key: "c" + k, who: cm.who, text: cm.text })),
@@ -2825,10 +3116,32 @@ class Component extends DCLogic {
       onName: this.dset("name"), onDate: this.dset("date"), onEnd: this.dset("end"), onPlace: this.dset("place"),
       onKicker: this.dset("kicker"), onNote: this.dset("note"), onUrl: this.dset("url"),
       infos: (d0.infos || []).map((r, i) => ({ key: "fi" + i, label: r.label || "", value: r.value || "", onLabel: this.rowSet("infos", i, "label"), onValue: this.rowSet("infos", i, "value"), remove: this.rowDel("infos", i) })),
-      people: (d0.people || []).map((r, i) => ({ key: "fp" + i, name: r.name || "", role: r.role || "", onName: this.rowSet("people", i, "name"), onRole: this.rowSet("people", i, "role"), remove: this.rowDel("people", i) })),
+      people: (d0.people || []).map((r, i) => {
+        const acc = r.uid ? (st.users.filter((u) => u.id === r.uid)[0] || null) : null;
+        return {
+          key: "fp" + i, name: r.name || "", role: r.role || "",
+          onName: this.rowSet("people", i, "name"), onRole: this.rowSet("people", i, "role"), remove: this.rowDel("people", i),
+          uid: r.uid || "",
+          linked: !!acc, linkLabel: acc ? "✓ " + acc.username : "nicht verknüpft",
+          linkStyle: {
+            fontSize: "10.5px", letterSpacing: "0.06em", whiteSpace: "nowrap",
+            color: acc ? "var(--color-accent-700)" : "var(--color-neutral-600)"
+          },
+          accounts: [{ key: "n0", value: "", label: "— keinem Konto zugeordnet —" }].concat(
+            st.users.map((u) => ({ key: "n" + u.id, value: u.id, label: u.username + (me && u.id === me.id ? " (du)" : "") }))
+          ),
+          onAccount: (ev) => {
+            const id = ev.target.value;
+            const acct = st.users.filter((u) => u.id === id)[0];
+            const rows = (this.state.draft.people || []).slice();
+            rows[i] = Object.assign({}, rows[i], { uid: id, name: acct && !String(rows[i].name || "").trim() ? acct.username : rows[i].name });
+            this.setState({ draft: Object.assign({}, this.state.draft, { people: rows }) });
+          }
+        };
+      }),
       images: (d0.images || []).map((r, i) => ({ key: "fm" + i, src: r.src || "", empty: !r.src, caption: r.caption || "", onCaption: this.rowSet("images", i, "caption"), remove: this.rowDel("images", i) })),
       addInfo: this.rowAdd("infos", { label: "", value: "" }),
-      addPerson: this.rowAdd("people", { name: "", role: "" }),
+      addPerson: this.rowAdd("people", { name: "", role: "", uid: "" }),
       addUrl: () => {
         const u = (this.state.draft.url || "").trim();
         if (!u) return;
@@ -2850,8 +3163,30 @@ class Component extends DCLogic {
         const others = st.users.filter((u) => !me || u.id !== me.id);
         const shown = others.filter((u) => !pq || (u.username + " " + u.email).toLowerCase().indexOf(pq) >= 0);
         const who = d0.who || [];
+        const gwho = d0.gwho || [];
+        const groups = st.groups || [];
+        const reach = self.resolveWho(who, gwho).length;
         return {
           mine: mine,
+          hasGroups: groups.length > 0,
+          groups: groups.map((g) => {
+            const on = gwho.indexOf(g.id) >= 0;
+            return {
+              key: g.id,
+              label: g.name + " · " + (g.members || []).length,
+              style: {
+                font: "inherit", fontSize: "11.5px", letterSpacing: "0.04em", padding: "4px 11px", cursor: "pointer",
+                whiteSpace: "nowrap", borderRadius: "99px",
+                border: "1px solid " + (on ? "var(--color-accent-2)" : "var(--color-divider)"),
+                background: on ? "var(--color-accent-2)" : "transparent",
+                color: on ? "var(--color-bg)" : "var(--color-text)"
+              },
+              toggle: () => {
+                const next = on ? gwho.filter((x) => x !== g.id) : gwho.concat([g.id]);
+                self.setState({ draft: Object.assign({}, st.draft, { gwho: next, vis: "selected" }) });
+              }
+            };
+          }),
           isPrivate: vis === "private", isSelected: vis === "selected", isPublic: vis === "public",
           setPrivate: () => self.setState({ draft: Object.assign({}, st.draft, { vis: "private" }) }),
           setSelected: () => self.setState({ draft: Object.assign({}, st.draft, { vis: "selected" }) }),
@@ -2861,15 +3196,18 @@ class Component extends DCLogic {
           shares: SHARE_OPTS.map((o) => ({ key: o[0], value: o[0], label: o[1] })),
           onShare: (ev) => self.setState({ draft: Object.assign({}, st.draft, { share: ev.target.value }) }),
           q: st.pickQ || "", onQ: (ev) => self.setState({ pickQ: ev.target.value }),
-          count: vis === "private" ? "nur du" : vis === "public" ? "alle " + st.users.length + " Konten" : who.length + " von " + others.length + " gewählt",
+          count: vis === "private" ? "nur du" : vis === "public" ? "alle " + st.users.length + " Konten" : reach + " " + (reach === 1 ? "Person" : "Personen") + " erreichen es",
           none: shown.length === 0,
           noneLabel: others.length === 0 ? "Es gibt noch keine weiteren Konten." : "Keine Person gefunden.",
           people: shown.map((u) => {
             const on = who.indexOf(u.id) >= 0;
+            const viaG = groups.filter((g) => gwho.indexOf(g.id) >= 0 && (g.members || []).indexOf(u.id) >= 0);
+            const via = viaG.length ? viaG.map((g) => g.name).join(", ") : "";
             return {
-              key: u.id, name: u.username + (u.role === "owner" ? " · Inhaber" : ""), email: u.email,
-              mark: on ? "✓" : "",
-              box: { width: "18px", height: "18px", borderRadius: "3px", display: "grid", placeItems: "center", fontSize: "12px", flex: "0 0 auto", background: on ? "var(--color-accent)" : "transparent", color: "var(--color-bg)", border: "1px solid " + (on ? "var(--color-accent)" : "var(--color-divider)") },
+              key: u.id, name: u.username + (u.role === "owner" ? " · Inhaber" : ""),
+              email: via ? "über Gruppe: " + via : u.email,
+              mark: on ? "✓" : via ? "·" : "",
+              box: { width: "18px", height: "18px", borderRadius: "3px", display: "grid", placeItems: "center", fontSize: "12px", flex: "0 0 auto", background: on ? "var(--color-accent)" : via ? "var(--color-accent-2-200)" : "transparent", color: on ? "var(--color-bg)" : "var(--color-accent-2-700)", border: "1px solid " + (on ? "var(--color-accent)" : via ? "var(--color-accent-2-300)" : "var(--color-divider)") },
               style: { display: "flex", alignItems: "center", gap: "9px", width: "100%", font: "inherit", textAlign: "left", cursor: "pointer", padding: "5px 7px", borderRadius: "var(--radius-md)", border: 0, background: on ? "color-mix(in srgb, var(--color-accent) 9%, transparent)" : "transparent", color: "var(--color-text)" },
               toggle: () => {
                 const next = on ? who.filter((x) => x !== u.id) : who.concat([u.id]);
@@ -2879,7 +3217,7 @@ class Component extends DCLogic {
           }),
           hint: vis === "private"
             ? "Nur du siehst dieses Ereignis — niemand sonst, auch nicht die Inhaberin oder der Inhaber der Chronik."
-            : vis === "selected" ? "Nur die angehakten Personen sehen dieses Ereignis im Zeitstrahl, in der Fotoshow und im PDF."
+            : vis === "selected" ? "Nur die angehakten Personen und die gewählten Gruppen sehen dieses Ereignis — im Zeitstrahl, in der Fotoshow und im PDF. Gruppen bleiben lebendig: kommt jemand später dazu, sieht er es auch."
             : "Alle angemeldeten Personen sehen dieses Ereignis."
         };
       })(this) : null
@@ -3030,12 +3368,19 @@ class Component extends DCLogic {
         needsRepeat: st.authMode === "register" || st.authMode === "reset" || st.authMode === "newpw",
         needsEmail: st.authMode !== "newpw",
         needsCode: st.authMode === "reset" && !st.cloud,
+        rules: pwRules(st.authForm.pw).map((r) => ({
+          key: r.key, label: r.label, mark: r.ok ? "✓" : "·",
+          style: { fontSize: "11.5px", letterSpacing: "0.02em", color: r.ok ? "var(--color-accent-700)" : "var(--color-neutral-600)" }
+        })),
+        footline: st.cloud
+          ? "Gemeinsame Chronik · alle sehen dieselben Ereignisse. Passwort vergessen? Es kommt eine Mail."
+          : "Läuft ganz in diesem Browser — nichts wird irgendwohin geschickt.",
         intro: st.cloud
-          ? "Ereignisse als Zeitstrahl: Erstelle deinen persönlichen Zeitstrahl und teile ihn, mit wem du willst. Alles liegt in der gemeinsamen Chronik: was du änderst, sehen die anderen sofort."
-          : "Ereignisse als Zeitstrahl: Erstelle deinen persönlichen Zeitstrahl und teile ihn, mit wem du willst.",
+          ? "Ereignisse als Zeitstrahl: Datum, Dauer, Infos, Personen und Bilder. Jede Person legt eigene Ereignisse an, dekoriert sie und entscheidet selbst, wer sie sehen darf — privat, ausgewählte Personen oder alle. Alles liegt in der gemeinsamen Chronik: was du änderst, sehen die anderen sofort."
+          : "Ereignisse als Zeitstrahl: Datum, Dauer, Infos, Personen und Bilder. Jede Person legt eigene Ereignisse an, dekoriert sie und entscheidet selbst, wer sie sehen darf — privat, ausgewählte Personen oder alle.",
         security: st.cloud
-          ? "Passwort vergessen? Unten auf ‚Passwort vergessen?‘ tippen, dann kommt eine Mail mit Link."
-          : "",
+          ? "Anmeldung, Passwörter und Bilder liegen bei Supabase; die Chronik selbst sieht dein Passwort nie. Wer welches Ereignis lesen darf, entscheidet die Datenbank — private Ereignisse werden gar nicht erst ausgeliefert. Passwort vergessen? Unten auf ‚Passwort vergessen?‘ tippen, dann kommt eine Mail mit Link."
+          : "Passwörter werden nie gespeichert. Aus dem Passwort wird mit PBKDF2 (SHA-256, 210.000 Runden, eigener Zufallssalt pro Konto) ein Schlüssel abgeleitet und nur dieser abgelegt — plus eine Sitzung, die nach zwölf Stunden verfällt. Nach fünf Fehlversuchen sperrt das Konto für eine Minute. Passwort vergessen? Beim Anlegen des Kontos bekommst du einmalig einen Wiederherstellungscode — damit setzt du es selbst neu. Alles liegt ausschließlich in diesem Browser.",
         toLogin: () => this.setState({ authMode: "login", authError: "" }),
         toRegister: () => this.setState({ authMode: "register", authError: "" }),
         toggleReset: () => this.setState({ authMode: st.authMode === "reset" ? "login" : "reset", authError: "", authNotice: "", authCode: "" }),
@@ -3083,15 +3428,48 @@ class Component extends DCLogic {
           ? (st.authMode === "reset" ? "Du bekommst eine E-Mail mit einem Link. Klick ihn an — die Chronik fragt dann nach dem neuen Passwort."
             : st.authMode === "register" ? "Nach dem Anlegen kommt eine Bestätigungsmail. Danach darfst du eigene Ereignisse anlegen und selbst bestimmen, wer sie sieht."
             : st.authMode === "newpw" ? "Der Link aus der Mail ist erkannt — vergib jetzt dein neues Passwort."
-            : "Gemeinsame Chronik · alle sehen dieselben Ereignisse.")
+            : "Willkommen zurück — deine Chronik wartet.")
           : st.authMode === "reset"
           ? "Trage den Wiederherstellungscode ein, den du bei der Registrierung bekommen hast. Ohne Server kann diese Chronik keine E-Mail verschicken — der Code ersetzt die Mail. Hast du keinen, erzeugt die Inhaberin oder der Inhaber unter ‚Zugänge‘ einen neuen."
-          : st.users.length === 0 ? "Hast du dein Passwort vergessen? Hier klicken =>"
-          : st.authMode === "register" ? "Nach der Registrierung bekommst du einen Wiederherstellungscode — bitte sichern. Du darfst eigene Ereignisse anlegen und selbst entscheiden, wer sie sieht."
-          : "Die Sitzung läuft nach zwölf Stunden ab.",
+          : st.users.length === 0 ? "Das erste Konto wird Inhaber und darf alles — inklusive Rechte vergeben."
+          : st.authMode === "register" ? "Gleich nach dem Anlegen bekommst du einen Rettungscode zu sehen — kurz notieren, dann kann dir nichts passieren."
+          : "Nach zwölf Stunden fragt die Chronik nochmal nach dem Passwort — der Ordnung halber.",
         submit: this.submitAuth
       },
       meta: st.meta,
+      onMetaTitle: this.setMeta("title"),
+      onMetaKicker: this.setMeta("kicker"),
+      onMetaSub: this.setMeta("subtitle"),
+      titleEditable: true,
+      titleHint: "Anklicken und überschreiben",
+      onTitleBlur: this.onTitleBlur,
+      pgroups: (st.groups || []).map((g) => ({
+        key: g.id, name: g.name,
+        count: (g.members || []).length === 1 ? "1 Person" : (g.members || []).length + " Personen",
+        edit: () => this.editGroup(g.id),
+        remove: () => this.removeGroup(g.id)
+      })),
+      pgroupsEmpty: (st.groups || []).length === 0,
+      gForm: {
+        label: st.gEdit ? "Gruppe ändern" : "Neue Gruppe",
+        name: st.gDraft.name,
+        onName: (ev) => this.setState({ gDraft: Object.assign({}, st.gDraft, { name: ev.target.value }) }),
+        cta: st.gEdit ? "Änderung speichern" : "Gruppe anlegen",
+        editing: !!st.gEdit,
+        cancel: () => this.setState({ gEdit: null, gDraft: { name: "", members: [] } }),
+        save: this.saveGroup,
+        count: (st.gDraft.members || []).length + " gewählt",
+        people: st.users.map((u) => {
+          const on = (st.gDraft.members || []).indexOf(u.id) >= 0;
+          return {
+            key: u.id, name: u.username + (me && u.id === me.id ? " (du)" : ""),
+            mark: on ? "✓" : "",
+            box: { width: "17px", height: "17px", borderRadius: "3px", display: "grid", placeItems: "center", fontSize: "11px", flex: "0 0 auto", background: on ? "var(--color-accent-2)" : "transparent", color: "var(--color-bg)", border: "1px solid " + (on ? "var(--color-accent-2)" : "var(--color-divider)") },
+            style: { display: "flex", alignItems: "center", gap: "8px", width: "100%", font: "inherit", textAlign: "left", cursor: "pointer", padding: "4px 6px", borderRadius: "var(--radius-md)", border: 0, background: on ? "color-mix(in srgb, var(--color-accent-2) 9%, transparent)" : "transparent", color: "var(--color-text)" },
+            toggle: () => this.toggleGroupMember(u.id)
+          };
+        })
+      },
       stats: {
         count: all.length, people: nPeople,
         shown: evs.length === all.length ? plural(all.length, "Ereignis", "Ereignisse") : evs.length + " von " + all.length + " Ereignissen",
@@ -3139,6 +3517,93 @@ class Component extends DCLogic {
       togglePlay: this.togglePlay,
       stop: (ev) => ev.stopPropagation(),
       stageRef: (el) => { this.stage = el; },
+      free: (function (self) {
+        const pal = palOf(st.meta.pal || "thema", t);
+        return (st.meta.free || []).map((f) => {
+          const base = stickerStyle({ k: f.k, c: f.c, s: f.s, r: f.r }, pal, st.stickMode ? "edit" : "view", st.stickMode && st.freeSel === f.i);
+          return {
+            key: f.i, glyph: stickerDef(f.k).g,
+            style: Object.assign({}, base, { left: f.x + "px", top: f.y + "px", zIndex: 6, transform: "translate(-50%, -50%) rotate(" + (f.r || 0) + "deg) scale(" + (f.s == null ? 1 : f.s) + ")" }),
+            onDown: self.freeDown(f.i)
+          };
+        });
+      })(this),
+      stick: {
+        on: !!st.stickMode,
+        label: st.stickMode ? "◉ Aufkleben beenden" : "○ Sticker aufkleben",
+        toggle: () => this.setState({ stickMode: !st.stickMode, freeSel: null }),
+        place: this.placeFree, move: this.freeMove, up: this.freeUp,
+        cursor: st.stickMode ? "copy" : "default",
+        hint: st.freeSel ? "Ziehen zum Verschieben · Regler für Größe und Drehung" : "Sticker wählen, dann auf eine freie Stelle im Zeitstrahl klicken",
+        sheet: STICKERS.map((sk) => ({
+          key: sk.k, glyph: sk.g, label: sk.label,
+          chip: {
+            display: "grid", placeItems: "center", width: "36px", height: "36px", padding: 0, cursor: "pointer",
+            overflow: "hidden", font: "inherit", borderRadius: "var(--radius-md)",
+            background: st.stickPick === sk.k ? "color-mix(in srgb, var(--color-accent) 14%, var(--color-surface))" : "var(--color-surface)",
+            border: "1px solid " + (st.stickPick === sk.k ? "var(--color-accent)" : "var(--color-divider)")
+          },
+          style: stickerStyle({ k: sk.k, c: 0 }, palOf(st.meta.pal || "thema", t), "chip"),
+          pick: () => this.setState({ stickPick: sk.k })
+        })),
+        pal: st.meta.pal || "thema",
+        pals: PALETTES.map((p) => ({ key: p[0], value: p[0], label: p[1] })),
+        onPal: (ev) => this.setState({ meta: Object.assign({}, st.meta, { pal: ev.target.value }) }),
+        hasSel: !!st.freeSel,
+        selScale: st.freeSel ? ((st.meta.free || []).filter((f) => f.i === st.freeSel)[0] || {}).s || 1 : 1,
+        selRot: st.freeSel ? ((st.meta.free || []).filter((f) => f.i === st.freeSel)[0] || {}).r || 0 : 0,
+        onScale: (ev) => this.freeSet(st.freeSel, { s: Number(ev.target.value) }),
+        onRot: (ev) => this.freeSet(st.freeSel, { r: Number(ev.target.value) }),
+        del: () => this.freeDel(st.freeSel),
+        any: (st.meta.free || []).length > 0,
+        clearAll: () => this.setState({ meta: Object.assign({}, st.meta, { free: [] }), freeSel: null })
+      },
+      skinFx: (function (id) {
+        const base = { position: "absolute", inset: 0, pointerEvents: "none", zIndex: 4 };
+        if (id === "crt") return Object.assign({}, base, {
+          backgroundImage: "repeating-linear-gradient(to bottom, rgba(0,0,0,0.34) 0 1px, transparent 1px 3px)",
+          boxShadow: "inset 0 0 110px 22px rgba(0,0,0,0.52), inset 0 0 26px 4px " + t.accent + "22",
+          mixBlendMode: "multiply"
+        });
+        if (id === "glow") return Object.assign({}, base, {
+          background: "radial-gradient(120% 80% at 50% 0%, " + t.accent + "1f, transparent 62%)",
+          boxShadow: "inset 0 0 90px 12px rgba(0,0,0,0.42)"
+        });
+        if (id === "vignette") return Object.assign({}, base, { boxShadow: "inset 0 0 120px 24px rgba(0,0,0,0.45)" });
+        if (id === "grain") return Object.assign({}, base, {
+          backgroundImage: "radial-gradient(" + t.ink + "22 0.6px, transparent 0.7px)", backgroundSize: "3px 3px", opacity: 0.7
+        });
+        if (id === "vintage") return Object.assign({}, base, {
+          background: "radial-gradient(130% 95% at 50% 45%, transparent 46%, " + t.ink + "26 100%)"
+        });
+        if (id === "blueprint") return Object.assign({}, base, {
+          backgroundImage: "linear-gradient(" + t.accent + "14 1px, transparent 1px), linear-gradient(90deg, " + t.accent + "14 1px, transparent 1px)",
+          backgroundSize: "22px 22px"
+        });
+        if (id === "blocks") return Object.assign({}, base, {
+          backgroundImage: "linear-gradient(135deg, " + t.accent + "1c 0 12px, transparent 12px 24px)", backgroundSize: "24px 24px", opacity: 0.5
+        });
+        if (id === "ruled") return Object.assign({}, base, {
+          backgroundImage: "repeating-linear-gradient(to bottom, transparent 0 25px, " + t.accent + "1a 25px 26px)"
+        });
+        if (id === "matte") return Object.assign({}, base, { boxShadow: "inset 0 0 0 12px " + t.bg + ", inset 0 0 0 13px " + t.ink + "22" });
+        if (id === "paper") return Object.assign({}, base, { boxShadow: "inset 0 0 0 1px " + t.ink + "14" });
+        return { display: "none" };
+      })(t.skin),
+      shellStyle: (function (id) {
+        const inner = "inset 0 0 0 1px color-mix(in srgb, " + t.ink + " 16%, transparent)";
+        if (id === "crt") return {
+          padding: "14px", borderRadius: "18px",
+          background: "linear-gradient(#26302a, #141a16)",
+          boxShadow: "0 18px 40px -20px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.08)"
+        };
+        if (id === "glow") return { padding: "10px", borderRadius: "14px", background: "linear-gradient(" + t.accent + "33, " + t.accent2 + "22)" };
+        if (id === "matte") return { padding: "12px", borderRadius: "4px", background: t.ink + "12" };
+        if (id === "blocks") return { padding: "8px", borderRadius: "0", background: t.accent };
+        if (id === "ruled" || id === "vintage") return { padding: "9px", borderRadius: "6px", background: t.ink + "10", boxShadow: inner };
+        return { padding: "0", borderRadius: "var(--radius-md)", background: "transparent" };
+      })(t.skin),
+      crt: t.skin === "crt",
       printRef: (el) => { this.print = el; },
       onScroll: this.onScroll,
       stageStyle: { position: "relative", width: (L.width + padL) + "px", height: Math.max(560, totalH) + "px" },

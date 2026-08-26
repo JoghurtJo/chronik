@@ -148,9 +148,19 @@
     } catch (e) { return false; }
   }
 
+  async function nameTaken(name) {
+    try {
+      var c = await client();
+      var r = await c.from("profiles").select("id").ilike("username", String(name || "").trim()).limit(1);
+      if (r.error) return false;
+      return (r.data || []).length > 0;
+    } catch (e) { return false; }
+  }
+
   async function signUp(email, pw, username, captchaToken) {
     var c = await client();
     if (await emailTaken(email)) throw new Error("Für diese E-Mail gibt es schon ein Konto. Melde dich an oder setze das Passwort neu.");
+    if (await nameTaken(username)) throw new Error("Dieser Benutzername ist schon belegt — bitte einen anderen wählen.");
     var opts = { data: { username: username } };
     if (captchaToken) opts.captchaToken = captchaToken;
     var r = await c.auth.signUp({ email: email, password: pw, options: opts });
@@ -222,6 +232,31 @@
 
   /* ---------------- Verlauf ---------------- */
 
+  async function groups() {
+    var c = await client();
+    var r = await c.from("groups").select("id, name, members").order("name");
+    if (r.error) throw new Error(msg(r.error));
+    return (r.data || []).map(function (g) { return { id: g.id, name: g.name || "", members: g.members || [] }; });
+  }
+
+  async function saveGroup(g) {
+    var c = await client();
+    var row = { name: g.name || "", members: g.members || [] };
+    var r = g.id && String(g.id).length > 20
+      ? await c.from("groups").update(row).eq("id", g.id).select("id")
+      : await c.from("groups").insert(row).select("id");
+    if (r.error) throw new Error(msg(r.error));
+    bump({ p_writes: 1 });
+    return (r.data && r.data[0] && r.data[0].id) || g.id;
+  }
+
+  async function removeGroup(id) {
+    var c = await client();
+    var r = await c.from("groups").delete().eq("id", id);
+    if (r.error) throw new Error(msg(r.error));
+    bump({ p_writes: 1 });
+  }
+
   async function history(limit) {
     var c = await client();
     var r = await c.from("event_history")
@@ -260,7 +295,7 @@
       place: row.place || "", kicker: row.kicker || "", note: d.note || "",
       infos: d.infos || [], people: d.people || [], images: imgs,
       deco: d.deco || { fx: [], pal: "thema", stickers: [] },
-      vis: row.vis || "public", who: row.who || [], share: row.share || "view",
+      vis: row.vis || "public", who: row.who || [], gwho: row.gwho || [], share: row.share || "view",
       changedBy: row.changed_by || ""
     };
   }
@@ -269,7 +304,7 @@
     return {
       name: e.name || "", date: e.date || null, end_date: e.end || null,
       place: e.place || "", kicker: e.kicker || "",
-      vis: e.vis || "public", who: e.who || [], share: e.share || "view",
+      vis: e.vis || "public", who: e.who || [], gwho: e.gwho || [], share: e.share || "view",
       data: {
         note: e.note || "", infos: e.infos || [], people: e.people || [], deco: e.deco || null,
         images: (e.images || []).map(function (im) {
@@ -410,6 +445,7 @@
     c.channel("chronik-live")
       .on("postgres_changes", { event: "*", schema: "public", table: "events" }, cb)
       .on("postgres_changes", { event: "*", schema: "public", table: "comments" }, cb)
+      .on("postgres_changes", { event: "*", schema: "public", table: "groups" }, cb)
       .subscribe();
   }
 
@@ -420,8 +456,9 @@
     limits: LIM,
     signUp: signUp, signIn: signIn, signOut: signOut, session: session,
     sendReset: sendReset, updatePassword: updatePassword, recoveryPending: recoveryPending, onAuth: onAuth,
-    emailTaken: emailTaken,
+    emailTaken: emailTaken, nameTaken: nameTaken,
     profiles: profiles, setBlocked: setBlocked, history: history, undo: undo,
+    groups: groups, saveGroup: saveGroup, removeGroup: removeGroup,
     loadEvents: loadEvents, saveEvent: saveEvent, removeEvent: removeEvent,
     addComment: addComment, uploadImage: uploadImage, onChange: onChange,
     snapshot: snapshot, budget: budget, guard: guard
