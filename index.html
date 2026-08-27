@@ -104,7 +104,7 @@
 
     <div style="width: 100%; max-width: 430px;">
       <div class="seg" role="group" style="margin-bottom: var(--space-4);">
-        <label class="seg-opt"><input type="radio" name="authmode" checked="{{ auth.isLogin }}" onChange="{{ auth.toLogin }}" style="position: absolute; opacity: 0; pointer-events: none;">Anmelden</label>
+        <label class="seg-opt"><input type="radio" name="authmode" checked="{{ auth.isLogin }}" onChange="{{ auth.toLogin }}" style="position: absolute; opacity: 0; pointer-events: none;">Anmelden!</label>
         <label class="seg-opt"><input type="radio" name="authmode" checked="{{ auth.isRegister }}" onChange="{{ auth.toRegister }}" style="position: absolute; opacity: 0; pointer-events: none;">Registrieren</label>
       </div>
       <h2 style="margin: 0 0 var(--space-3); font-size: 30px; line-height: 1.05;">{{ auth.title }}</h2>
@@ -3408,7 +3408,7 @@ class Component extends DCLogic {
         })),
         strength: strengthWords[score],
         error: errLabel(st.authError), notice: st.authNotice, busy: st.authBusy,
-        cta: st.authBusy ? "Prüfe …" : st.authMode === "newpw" ? "Passwort speichern" : st.authMode === "reset" ? (st.cloud ? "Mail mit Link schicken" : "Passwort neu setzen") : st.authMode === "register" ? "Konto anlegen" : "Anmelden",
+        cta: st.authBusy ? "Prüfe …" : st.authMode === "newpw" ? "Passwort speichern" : st.authMode === "reset" ? (st.cloud ? "Mail mit Link schicken" : "Passwort neu setzen") : st.authMode === "register" ? "Konto anlegen" : "!Anmelden",
         footnote: st.cloud
           ? (st.authMode === "reset" ? "Du bekommst eine E-Mail mit einem Link. Klick ihn an — die Chronik fragt dann nach dem neuen Passwort."
             : st.authMode === "register" ? "Nach dem Anlegen kommt eine Bestätigungsmail. Danach darfst du eigene Ereignisse anlegen und selbst bestimmen, wer sie sieht."
