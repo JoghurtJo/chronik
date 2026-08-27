@@ -522,6 +522,18 @@
   /* ---------------- Bilder ---------------- */
 
   /* Einzelnes Bild erneut besorgen (nach Neuladen oder wenn die Vorschau fehlt). */
+  async function storeCheck() {
+    if (!R2) return { ok: false, reason: "kein-worker" };
+    try {
+      var tk = await token();
+      var res = await fetch(R2 + "/state", { headers: { Authorization: "Bearer " + tk } });
+      var out = await res.json().catch(function () { return {}; });
+      return { ok: !!res.ok && !!out.ok, status: res.status, detail: out };
+    } catch (e) {
+      return { ok: false, reason: "nicht-erreichbar", detail: String((e && e.message) || e) };
+    }
+  }
+
   async function imageUrl(keyOrPath) {
     var id = String(keyOrPath || "");
     if (!id) return "";
@@ -547,7 +559,13 @@
     var fd = new FormData();
     fd.append("file", file, file.name || "bild.jpg");
     fd.append("name", file.name || "bild.jpg");
-    var res = await fetch(R2 + "/upload", { method: "POST", headers: { Authorization: "Bearer " + tk }, body: fd });
+    var res;
+    try {
+      res = await fetch(R2 + "/upload", { method: "POST", headers: { Authorization: "Bearer " + tk }, body: fd });
+    } catch (netErr) {
+      if (window.console && console.warn) console.warn("Chronik: Der Bildspeicher-Worker ist nicht erreichbar.", R2, netErr);
+      throw new Error("Bildspeicher antwortet nicht.");
+    }
     var out = await res.json().catch(function () { return {}; });
     if (!res.ok) {
       var e2 = new Error(out.message || out.error || "Das Bild konnte nicht hochgeladen werden.");
@@ -561,6 +579,7 @@
       if (r3.ok) { url = URL.createObjectURL(await r3.blob()); urlCache[out.key] = url; }
     } catch (e) { /* Vorschau bleibt leer */ }
     bump({ p_uploads: 1, p_bytes: file.size || 0 });
+
     return { key: out.key, path: "", src: url };
   }
 
@@ -606,7 +625,7 @@
     groups: groups, saveGroup: saveGroup, removeGroup: removeGroup, saveLook: saveLook,
     friends: friends, askFriend: askFriend, answerFriend: answerFriend, unfriend: unfriend,
     loadEvents: loadEvents, saveEvent: saveEvent, removeEvent: removeEvent,
-    addComment: addComment, uploadImage: uploadImage, imageUrl: imageUrl, onChange: onChange,
+    addComment: addComment, uploadImage: uploadImage, imageUrl: imageUrl, storeCheck: storeCheck, onChange: onChange,
     snapshot: snapshot, budget: budget, guard: guard,
     isLegacy: function () { return legacySchema; },
     lastR2Error: function () { return lastR2Error; }
