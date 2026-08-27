@@ -43,6 +43,7 @@
   var sb = null, loading = null, snap = null, snapAt = 0;
   var urlCache = {};
   var legacySchema = false;
+  var lastR2Error = "";
 
   function loadSdk() {
     if (window.supabase && window.supabase.createClient) return Promise.resolve();
@@ -433,9 +434,13 @@
         if (im.key) r2keys.push(im.key); else if (im.path) spaths.push(im.path);
       });
     });
+    /* Ältere Bilder, die noch im Supabase-Speicher liegen, bleiben sichtbar.
+       Neue Bilder gehen ausschließlich nach Cloudflare R2. */
     if (spaths.length) {
-      var sg = await c.storage.from(BUCKET).createSignedUrls(spaths, 60 * 60 * 12);
-      (sg.data || []).forEach(function (s) { if (s.path && s.signedUrl) urls[s.path] = s.signedUrl; });
+      try {
+        var sg = await c.storage.from(BUCKET).createSignedUrls(spaths, 60 * 60 * 12);
+        (sg.data || []).forEach(function (s) { if (s.path && s.signedUrl) urls[s.path] = s.signedUrl; });
+      } catch (e) { /* Speicher nicht vorhanden: Bild bleibt leer */ }
     }
     if (r2keys.length && R2) {
       var gg = await guard("get");
@@ -528,6 +533,7 @@
         if (res.ok) { urlCache[id] = URL.createObjectURL(await res.blob()); return urlCache[id]; }
       } catch (e) { /* leer lassen */ }
     }
+    /* Nur für Altbestand im Supabase-Speicher. */
     try {
       var c = await client();
       var sg = await c.storage.from(BUCKET).createSignedUrl(id, 60 * 60 * 12);
@@ -535,41 +541,43 @@
     } catch (e) { return ""; }
   }
 
+  /* Weg 1: Cloudflare R2 über den eigenen Worker. */
+  async function uploadToR2(file) {
+    var tk = await token();
+    var fd = new FormData();
+    fd.append("file", file, file.name || "bild.jpg");
+    fd.append("name", file.name || "bild.jpg");
+    var res = await fetch(R2 + "/upload", { method: "POST", headers: { Authorization: "Bearer " + tk }, body: fd });
+    var out = await res.json().catch(function () { return {}; });
+    if (!res.ok) {
+      var e2 = new Error(out.message || out.error || "Das Bild konnte nicht hochgeladen werden.");
+      if (out.error === "limit") e2.block = { scope: out.scope, message: out.message, again: "" };
+      e2.status = res.status;
+      throw e2;
+    }
+    var url = "";
+    try {
+      var r3 = await fetch(R2 + "/img/" + encodeURIComponent(out.key), { headers: { Authorization: "Bearer " + tk } });
+      if (r3.ok) { url = URL.createObjectURL(await r3.blob()); urlCache[out.key] = url; }
+    } catch (e) { /* Vorschau bleibt leer */ }
+    bump({ p_uploads: 1, p_bytes: file.size || 0 });
+    return { key: out.key, path: "", src: url };
+  }
+
   async function uploadImage(file) {
     var g = await guard("upload", file.size);
     if (!g.ok) { var err = new Error(g.block.message); err.block = g.block; throw err; }
 
-    if (R2) {
-      var tk = await token();
-      var fd = new FormData();
-      fd.append("file", file);
-      fd.append("name", file.name || "bild");
-      var res = await fetch(R2 + "/upload", { method: "POST", headers: { Authorization: "Bearer " + tk }, body: fd });
-      var out = await res.json().catch(function () { return {}; });
-      if (!res.ok) {
-        var e2 = new Error(out.message || out.error || "Das Bild konnte nicht hochgeladen werden.");
-        if (out.error === "limit") e2.block = { scope: out.scope, message: out.message, again: "" };
-        throw e2;
-      }
-      var url = "";
-      try {
-        var r3 = await fetch(R2 + "/img/" + encodeURIComponent(out.key), { headers: { Authorization: "Bearer " + tk } });
-        if (r3.ok) { url = URL.createObjectURL(await r3.blob()); urlCache[out.key] = url; }
-      } catch (e) { /* Vorschau bleibt leer */ }
-      bump({ p_uploads: 1, p_bytes: file.size || 0 });
-      return { key: out.key, path: "", src: url };
+    if (!R2) {
+      throw new Error("Der Bildspeicher ist nicht eingerichtet: in chronik-config.js fehlt die Worker-Adresse (r2Worker). Bilder werden ausschließlich bei Cloudflare gespeichert.");
     }
-
-    var c = await client();
-    var s = await c.auth.getUser();
-    var uid = (s.data && s.data.user && s.data.user.id) || "anon";
-    var clean = String(file.name || "bild").toLowerCase().replace(/[^a-z0-9.]+/g, "-").slice(-40);
-    var path = uid + "/" + Date.now() + "-" + clean;
-    var up = await c.storage.from(BUCKET).upload(path, file, { cacheControl: "3600", upsert: false });
-    if (up.error) throw new Error(msg(up.error));
-    var sg = await c.storage.from(BUCKET).createSignedUrl(path, 60 * 60 * 12);
-    bump({ p_uploads: 1, p_bytes: file.size });
-    return { path: path, src: (sg.data && sg.data.signedUrl) || "" };
+    try {
+      return await uploadToR2(file);
+    } catch (e) {
+      if (window.console && console.warn) console.warn("Chronik: R2-Upload fehlgeschlagen.", e);
+      lastR2Error = String((e && e.message) || e);
+      throw e;
+    }
   }
 
   /* ---------------- Live ---------------- */
@@ -588,7 +596,7 @@
     enabled: enabled,
     configFault: configFault,
     cleanedUrl: url,
-    hasR2: !!R2,
+    hasR2: !!R2, r2Only: true,
     turnstileKey: CFG.turnstileSiteKey || "",
     limits: LIM,
     signUp: signUp, signIn: signIn, signOut: signOut, session: session,
@@ -600,6 +608,7 @@
     loadEvents: loadEvents, saveEvent: saveEvent, removeEvent: removeEvent,
     addComment: addComment, uploadImage: uploadImage, imageUrl: imageUrl, onChange: onChange,
     snapshot: snapshot, budget: budget, guard: guard,
-    isLegacy: function () { return legacySchema; }
+    isLegacy: function () { return legacySchema; },
+    lastR2Error: function () { return lastR2Error; }
   };
 })();
