@@ -257,12 +257,17 @@
 
   async function profiles() {
     var c = await client();
-    var r = await c.from("profiles").select("id, username, email, role, blocked").order("username");
+    var r = await c.from("profiles").select("id, username, email, role, blocked, look").order("username");
+    /* Ältere Datenbank ohne look-Spalte: ohne sie nochmal fragen. */
+    if (r.error && /look/i.test(String(r.error.message || ""))) {
+      r = await c.from("profiles").select("id, username, email, role, blocked").order("username");
+    }
     if (r.error) throw new Error(msg(r.error));
     return (r.data || []).map(function (p) {
       return {
         id: p.id, username: p.username || (p.email || "").split("@")[0],
-        email: p.email || "", role: p.role || "member", blocked: !!p.blocked
+        email: p.email || "", role: p.role || "member", blocked: !!p.blocked,
+        look: p.look || {}
       };
     });
   }
@@ -308,6 +313,16 @@
     var r = await c.from("contacts").delete().eq("id", id);
     if (r.error) throw new Error(msg(r.error));
     bump({ p_writes: 1 });
+  }
+
+  /* Aussehen und Titel gehören zur Person und reisen mit aufs nächste Gerät. */
+  async function saveLook(look) {
+    var c = await client();
+    var s = await c.auth.getUser();
+    var id = s && s.data && s.data.user && s.data.user.id;
+    if (!id) return;
+    var r = await c.from("profiles").update({ look: look || {} }).eq("id", id);
+    if (r.error && !/look/i.test(String(r.error.message || ""))) throw new Error(msg(r.error));
   }
 
   async function groups() {
@@ -560,7 +575,7 @@
     sendReset: sendReset, updatePassword: updatePassword, recoveryPending: recoveryPending, onAuth: onAuth,
     emailTaken: emailTaken, nameTaken: nameTaken,
     profiles: profiles, setBlocked: setBlocked, history: history, undo: undo,
-    groups: groups, saveGroup: saveGroup, removeGroup: removeGroup,
+    groups: groups, saveGroup: saveGroup, removeGroup: removeGroup, saveLook: saveLook,
     friends: friends, askFriend: askFriend, answerFriend: answerFriend, unfriend: unfriend,
     loadEvents: loadEvents, saveEvent: saveEvent, removeEvent: removeEvent,
     addComment: addComment, uploadImage: uploadImage, onChange: onChange,
