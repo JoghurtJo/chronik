@@ -96,9 +96,9 @@
       </div>
 
       <div style="display: flex; gap: var(--space-6); flex-wrap: wrap; margin-top: var(--space-6); font-size: 13.5px; line-height: 1.4; color: var(--color-neutral-700);">
-        <span>Dein Leben</span>
-        <span>Deine Highlights</span>
-        <span>Jederzeit mit deinen Liebsten wieder erleben</span>
+        <span>Alle schreiben mit</span>
+        <span>Du gibst frei, wer was sieht</span>
+        <span>Achtzehn Gesichter zur Wahl</span>
       </div>
     </div>
 
@@ -854,6 +854,9 @@
           <span style="font-size: 13.5px; line-height: 1.4;">{{ form.dropLabel }}</span>
           <span style="font-size: 11px; letter-spacing: 0.06em; color: var(--color-neutral-600);">{{ form.dropHint }}</span>
         </label>
+        <sc-if value="{{ form.noStore }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top: 7px; font-size: 12.5px; line-height: 1.45; padding: 8px 11px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700);">Der Bildspeicher bei Cloudflare ist noch nicht angeschlossen — Bilder können darum nicht hochgeladen werden. In <strong>chronik-config.js</strong> fehlt die Worker-Adresse (Anleitung, Teil B).</div>
+        </sc-if>
         <sc-if value="{{ form.imgBusy }}" hint-placeholder-val="{{ false }}">
           <div style="margin-top: 7px; font-size: 12.5px; padding: 7px 10px; border-radius: var(--radius-md); background: var(--color-accent-100); color: var(--color-accent-700);">{{ form.imgBusy }}</div>
         </sc-if>
@@ -1258,37 +1261,38 @@ const RANK = { none: 0, view: 1, comment: 2, edit: 3, full: 4 };
 /* Fehlertexte werden nach außen nur als Code gezeigt.
    Die Klartext-Liste steht in Fehlercodes.dc.html. */
 const ERRCODES = [
-  ["A-01"],
-  ["A-02"],
-  ["A-03"],
-  ["A-04"],
-  ["A-05"],
-  ["A-06"],
-  ["A-07"],
-  ["A-08"],
-  ["A-09"],
-  ["A-10"],
-  ["A-11"],
-  ["A-12"],
-  ["A-13"],
-  ["A-14"],
-  ["A-15"],
-  ["A-16"],
-  ["A-17"],
-  ["V-01"],
-  ["V-02"],
-  ["V-03"],
-  ["V-04"],
-  ["D-01"],
-  ["D-02"],
-  ["D-03"],
-  ["D-04"],
-  ["D-05"],
-  ["D-06"],
-  ["K-01"],
-  ["K-02"],
-  ["K-03"],
-  ["K-04"]
+  ["A-01", /Benutzername braucht mindestens/i],
+  ["A-02", /Benutzername ist schon belegt|Benutzername ist belegt/i],
+  ["A-03", /E-Mail-Adresse sieht nicht g/i],
+  ["A-04", /diese E-Mail gibt es schon|already registered|User already/i],
+  ["A-05", /Passwort braucht mindestens|should be at least|zu kurz/i],
+  ["A-06", /fehlt eine Zahl/i],
+  ["A-07", /fehlt ein Sonderzeichen/i],
+  ["A-08", /gro\u00df UND klein/i],
+  ["A-09", /stimmen nicht \u00fcberein/i],
+  ["A-10", /Passwort stimmt nicht|Invalid login|invalid credentials/i],
+  ["A-11", /Fehlversuche|zu viele Versuche|Sekunden warten/i],
+  ["A-12", /noch nicht best\u00e4tigt|not confirmed/i],
+  ["A-13", /Best\u00e4tigungsmail|sending confirmation|smtp/i],
+  ["A-14", /Best\u00e4tige bitte|captcha|Rechenaufgabe|Sicherheitsfrage/i],
+  ["A-15", /zu schnell|Bot/i],
+  ["A-16", /wiederholtes Zeichen/i],
+  ["A-17", /gesperrt/i],
+  ["V-01", /Keine Zugangsdaten/i],
+  ["V-02", /Adresse in chronik-config|nicht wie eine Supabase-Adresse|invalid path|no Route matched/i],
+  ["V-03", /Schl\u00fcssel in chronik-config|Invalid API key|JWT/i],
+  ["V-04", /nicht erreichbar|Failed to fetch|NetworkError|Load failed|pausiert/i],
+  ["D-01", /nicht auf dem neuesten Stand|schema cache|Could not find the/i],
+  ["D-02", /row-level security|keine Berechtigung|not allowed|permission denied/i],
+  ["D-03", /Speichern|insert|update/i],
+  ["D-04", /nicht gefunden|not found/i],
+  ["D-05", /Bild ist zu gro|zu gro\u00df/i],
+  ["D-07", /Bildspeicher ist nicht eingerichtet/i],
+  ["D-06", /Upload|Worker|R2/i],
+  ["K-01", /niemand gefunden|kein Konto mit/i],
+  ["K-02", /Anfrage l\u00e4uft schon|schon angefragt/i],
+  ["K-03", /schon verbunden/i],
+  ["K-04", /dich selbst/i]
 ];
 const errCode = function (m) {
   const t = String((m && m.message) || m || "");
@@ -2779,6 +2783,15 @@ class Component extends DCLogic {
     return /\.(jpe?g|png|gif|webp|heic|heif|avif|bmp|tiff?)$/i.test(f.name || "");
   }
 
+  readAsDataUrl(file) {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => res(String(r.result));
+      r.onerror = () => rej(new Error("Diese Datei konnte nicht gelesen werden."));
+      r.readAsDataURL(file);
+    });
+  }
+
   async shrinkImage(file, maxPx, quality) {
     const url = URL.createObjectURL(file);
     try {
@@ -2812,7 +2825,7 @@ class Component extends DCLogic {
 
   addFiles = async (files) => {
     const all = Array.prototype.slice.call(files || []);
-    const list = all.filter((f) => this.looksLikeImage(f)).slice(0, 8);
+    const list = all.filter((f) => this.looksLikeImage(f)).slice(0, 40);
     this.setState({ dragOver: false, imgErr: "" });
     if (!list.length) {
       this.setState({ imgErr: "Keine Bilddatei erkannt — bitte JPG, PNG, HEIC oder WEBP wählen." });
@@ -2824,20 +2837,32 @@ class Component extends DCLogic {
     const rows = [];
     let failed = 0;
     for (let i = 0; i < list.length; i++) {
-      this.setState({ imgBusy: "Bild " + (i + 1) + " von " + list.length + " wird vorbereitet …" });
+      this.setState({ imgBusy: "Bild " + (i + 1) + " von " + list.length + " …" });
       try {
-        const prep = await this.shrinkImage(list[i], maxPx, quality);
+        const raw = list[i];
+        const name = String(raw.name || "bild").replace(/\.[a-z0-9]+$/i, "") || "bild";
+        let prep = null;
+        try {
+          prep = await this.shrinkImage(raw, maxPx, quality);
+        } catch (e) {
+          /* Kann der Browser das Format nicht öffnen (oft HEIC vom iPhone),
+             wird die Datei unverändert weitergegeben statt aufzugeben. */
+          if (window.console && console.warn) console.warn("Chronik: Verkleinern nicht möglich, nehme Originaldatei.", e);
+          prep = null;
+        }
         if (cloud) {
-          const r = await window.ChronikCloud.uploadImage(prep.file);
           /* key = Cloudflare R2, path = Supabase-Speicher — beides mitnehmen,
              sonst findet die Chronik das Bild nach dem Neuladen nicht wieder. */
-          rows.push({ src: r.src || "", key: r.key || "", path: r.path || "", caption: prep.caption, comments: [] });
+          const r = await window.ChronikCloud.uploadImage(prep ? prep.file : raw);
+          rows.push({ src: r.src || "", key: r.key || "", path: r.path || "", caption: prep ? prep.caption : name, comments: [] });
         } else {
-          rows.push({ src: prep.dataUrl, caption: prep.caption, comments: [] });
+          const dataUrl = prep ? prep.dataUrl : await this.readAsDataUrl(raw);
+          rows.push({ src: dataUrl, caption: name, comments: [] });
         }
       } catch (e) {
         failed++;
         if (e && e.block) { this.setState({ imgBusy: "" }); this.noteLimit(e.block); return; }
+        if (window.console && console.warn) console.warn("Chronik: Bild " + (i + 1) + " nicht übernommen.", e);
         this.lastImgError = e;
       }
     }
@@ -2845,7 +2870,9 @@ class Component extends DCLogic {
     d.images = (d.images || []).concat(rows);
     this.setState({
       draft: d, imgBusy: "", cloudBusy: false,
-      imgErr: failed ? (failed + " von " + list.length + " nicht übernommen · " + errLabel(this.lastImgError)) : ""
+      imgErr: failed
+        ? (failed + " von " + list.length + " nicht übernommen · " + errLabel(this.lastImgError) + " · Einzelheiten stehen in der Browser-Konsole")
+        : ""
     });
   };
 
@@ -3331,10 +3358,11 @@ class Component extends DCLogic {
         this.addFiles(dropped);
       },
       hasCamera: isTouch(),
+      noStore: !!(st.cloud && window.ChronikCloud && !window.ChronikCloud.hasR2),
       imgBusy: st.imgBusy || "",
       imgErr: st.imgErr || "",
       dropLabel: st.dragOver ? "Loslassen — Bilder werden übernommen" : isTouch() ? "Hier tippen und Fotos auswählen" : "Bilder hierher ziehen oder hier klicken",
-      dropHint: "bis zu 8 auf einmal · werden automatisch verkleinert",
+      dropHint: "bis zu 40 auf einmal · werden automatisch verkleinert",
       dropStyle: { display: "grid", placeItems: "center", gap: "4px", padding: isTouch() ? "26px 20px" : "20px", minHeight: isTouch() ? "88px" : "auto", textAlign: "center", cursor: "pointer", border: "1px dashed " + (st.dragOver ? "var(--color-accent)" : "var(--color-divider)"), borderRadius: "var(--radius-md)", background: st.dragOver ? "color-mix(in srgb, var(--color-accent) 10%, transparent)" : "var(--color-surface)", color: "var(--color-neutral-700)" },
       deco: decoUI,
       vis: dk ? (function (self) {
