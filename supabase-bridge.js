@@ -516,6 +516,25 @@
 
   /* ---------------- Bilder ---------------- */
 
+  /* Einzelnes Bild erneut besorgen (nach Neuladen oder wenn die Vorschau fehlt). */
+  async function imageUrl(keyOrPath) {
+    var id = String(keyOrPath || "");
+    if (!id) return "";
+    if (urlCache[id]) return urlCache[id];
+    if (R2) {
+      try {
+        var tk = await token();
+        var res = await fetch(R2 + "/img/" + encodeURIComponent(id), { headers: { Authorization: "Bearer " + tk } });
+        if (res.ok) { urlCache[id] = URL.createObjectURL(await res.blob()); return urlCache[id]; }
+      } catch (e) { /* leer lassen */ }
+    }
+    try {
+      var c = await client();
+      var sg = await c.storage.from(BUCKET).createSignedUrl(id, 60 * 60 * 12);
+      return (sg.data && sg.data.signedUrl) || "";
+    } catch (e) { return ""; }
+  }
+
   async function uploadImage(file) {
     var g = await guard("upload", file.size);
     if (!g.ok) { var err = new Error(g.block.message); err.block = g.block; throw err; }
@@ -537,7 +556,8 @@
         var r3 = await fetch(R2 + "/img/" + encodeURIComponent(out.key), { headers: { Authorization: "Bearer " + tk } });
         if (r3.ok) { url = URL.createObjectURL(await r3.blob()); urlCache[out.key] = url; }
       } catch (e) { /* Vorschau bleibt leer */ }
-      return { key: out.key, src: url };
+      bump({ p_uploads: 1, p_bytes: file.size || 0 });
+      return { key: out.key, path: "", src: url };
     }
 
     var c = await client();
@@ -578,7 +598,7 @@
     groups: groups, saveGroup: saveGroup, removeGroup: removeGroup, saveLook: saveLook,
     friends: friends, askFriend: askFriend, answerFriend: answerFriend, unfriend: unfriend,
     loadEvents: loadEvents, saveEvent: saveEvent, removeEvent: removeEvent,
-    addComment: addComment, uploadImage: uploadImage, onChange: onChange,
+    addComment: addComment, uploadImage: uploadImage, imageUrl: imageUrl, onChange: onChange,
     snapshot: snapshot, budget: budget, guard: guard,
     isLegacy: function () { return legacySchema; }
   };
