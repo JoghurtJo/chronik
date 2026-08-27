@@ -64,18 +64,10 @@
       <div style="height: 1px; background: var(--color-text);"></div>
 
       <sc-if value="{{ auth.configFault }}" hint-placeholder-val="{{ false }}">
-        <div style="display: grid; gap: 7px; margin-top: var(--space-6); padding: 14px 16px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700); max-width: 56ch;">
-          <div style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;">Verbindung stimmt nicht</div>
-          <div style="font-size: 15px; line-height: 1.45; color: var(--color-text); text-wrap: pretty;">{{ auth.configFault }}</div>
-          <div style="font-size: 12.5px; line-height: 1.5;">Bis das behoben ist, läuft die Chronik nur in diesem Browser — andere Geräte sehen ihre eigene, leere Liste.</div>
-        </div>
+        <div style="margin-top: var(--space-6); padding: 12px 15px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700); font-size: 15px; max-width: 40ch;">{{ auth.configFault }}</div>
       </sc-if>
       <sc-if value="{{ auth.soloWarn }}" hint-placeholder-val="{{ false }}">
-        <div style="display: grid; gap: 6px; margin-top: var(--space-6); padding: 14px 16px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700); max-width: 54ch;">
-          <div style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;">Nur dieser Browser</div>
-          <div style="font-size: 15px; line-height: 1.45; color: var(--color-text);">Diese Chronik ist noch nicht mit der Datenbank verbunden. Jedes Gerät hat darum seine eigenen Konten — deshalb kannst du dich woanders nicht anmelden.</div>
-          <div style="font-size: 12.5px; line-height: 1.5;">Zum Verbinden fehlen die zwei Werte in <strong>chronik-config.js</strong> (Anleitung, Schritt C3). Vorsicht beim Hochladen: die Beispieldatei aus dem Ordner überschreibt deine ausgefüllte.</div>
-        </div>
+        <div style="margin-top: var(--space-6); padding: 12px 15px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700); font-size: 15px; max-width: 40ch;">Fehler V-01</div>
       </sc-if>
 
       <p style="{{ lay.loginClaim }}">Aus vielen Abenden wird eine Geschichte.</p>
@@ -855,7 +847,7 @@
           <span style="font-size: 11px; letter-spacing: 0.06em; color: var(--color-neutral-600);">{{ form.dropHint }}</span>
         </label>
         <sc-if value="{{ form.noStore }}" hint-placeholder-val="{{ false }}">
-          <div style="margin-top: 7px; font-size: 12.5px; line-height: 1.45; padding: 8px 11px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700);">Der Bildspeicher bei Cloudflare ist noch nicht angeschlossen — Bilder können darum nicht hochgeladen werden. In <strong>chronik-config.js</strong> fehlt die Worker-Adresse (Anleitung, Teil B).</div>
+          <div style="margin-top: 7px; font-size: 12.5px; padding: 8px 11px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700);">Fehler D-07</div>
         </sc-if>
         <sc-if value="{{ form.imgBusy }}" hint-placeholder-val="{{ false }}">
           <div style="margin-top: 7px; font-size: 12.5px; padding: 7px 10px; border-radius: var(--radius-md); background: var(--color-accent-100); color: var(--color-accent-700);">{{ form.imgBusy }}</div>
@@ -1272,12 +1264,17 @@ const ERRCODES = [
   ["A-09", /stimmen nicht \u00fcberein/i],
   ["A-10", /Passwort stimmt nicht|Invalid login|invalid credentials/i],
   ["A-11", /Fehlversuche|zu viele Versuche|Sekunden warten/i],
+  ["A-18", /Anmeldung abgelaufen/i],
   ["A-12", /noch nicht best\u00e4tigt|not confirmed/i],
   ["A-13", /Best\u00e4tigungsmail|sending confirmation|smtp/i],
   ["A-14", /Best\u00e4tige bitte|captcha|Rechenaufgabe|Sicherheitsfrage/i],
   ["A-15", /zu schnell|Bot/i],
   ["A-16", /wiederholtes Zeichen/i],
   ["A-17", /gesperrt/i],
+  ["D-07", /Bildspeicher ist nicht eingerichtet/i],
+  ["D-08", /Keine Bilddatei erkannt/i],
+  ["D-05", /größer als \d+ ?MB|zu groß/i],
+  ["D-06", /Bildspeicher antwortet nicht|R2-Speicher|nicht hochgeladen werden|Upload|Worker|Ungültiger Dateiname|keine Bilddatei/i],
   ["V-01", /Keine Zugangsdaten/i],
   ["V-02", /Adresse in chronik-config|nicht wie eine Supabase-Adresse|invalid path|no Route matched/i],
   ["V-03", /Schl\u00fcssel in chronik-config|Invalid API key|JWT/i],
@@ -1287,8 +1284,7 @@ const ERRCODES = [
   ["D-03", /Speichern|insert|update/i],
   ["D-04", /nicht gefunden|not found/i],
   ["D-05", /Bild ist zu gro|zu gro\u00df/i],
-  ["D-07", /Bildspeicher ist nicht eingerichtet/i],
-  ["D-06", /Upload|Worker|R2/i],
+  ["K-05", /Suchbegriff zu kurz/i],
   ["K-01", /niemand gefunden|kein Konto mit/i],
   ["K-02", /Anfrage l\u00e4uft schon|schon angefragt/i],
   ["K-03", /schon verbunden/i],
@@ -2364,7 +2360,7 @@ class Component extends DCLogic {
 
   searchPeople = () => {
     const q = String(this.state.fq || "").trim().toLowerCase();
-    if (q.length < 2) return this.setState({ fFound: [], fMsg: "Bitte mindestens zwei Zeichen eingeben." });
+    if (q.length < 2) return this.setState({ fFound: [], fMsg: errLabel("Suchbegriff zu kurz") });
     const me = this.me();
     const hits = this.state.users.filter((u) =>
       u.id !== (me || {}).id &&
@@ -2828,7 +2824,7 @@ class Component extends DCLogic {
     const list = all.filter((f) => this.looksLikeImage(f)).slice(0, 40);
     this.setState({ dragOver: false, imgErr: "" });
     if (!list.length) {
-      this.setState({ imgErr: "Keine Bilddatei erkannt — bitte JPG, PNG, HEIC oder WEBP wählen." });
+      this.setState({ imgErr: errLabel("Keine Bilddatei erkannt") });
       return;
     }
     const cloud = this.state.cloud;
@@ -2870,9 +2866,7 @@ class Component extends DCLogic {
     d.images = (d.images || []).concat(rows);
     this.setState({
       draft: d, imgBusy: "", cloudBusy: false,
-      imgErr: failed
-        ? (failed + " von " + list.length + " nicht übernommen · " + errLabel(this.lastImgError) + " · Einzelheiten stehen in der Browser-Konsole")
-        : ""
+      imgErr: failed ? (failed + " von " + list.length + " · " + errLabel(this.lastImgError)) : ""
     });
   };
 
@@ -3699,7 +3693,7 @@ class Component extends DCLogic {
         needsRepeat: st.authMode === "register" || st.authMode === "reset" || st.authMode === "newpw",
         needsEmail: st.authMode !== "newpw",
         soloWarn: !(window.ChronikCloud || {}).enabled && !(window.ChronikCloud || {}).configFault && !/^(localhost|127\.0\.0\.1|)$/.test(location.hostname) && location.protocol !== "file:",
-        configFault: (window.ChronikCloud || {}).configFault || "",
+        configFault: (window.ChronikCloud || {}).configFault ? errLabel((window.ChronikCloud || {}).configFault) : "",
         demo: [
           { y: "2019", up: true, w: 118, g: "★", a: 1 },
           { y: "2021", up: false, w: 96, g: "", a: 0 },
