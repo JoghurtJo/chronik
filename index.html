@@ -96,15 +96,15 @@
       </div>
 
       <div style="display: flex; gap: var(--space-6); flex-wrap: wrap; margin-top: var(--space-6); font-size: 13.5px; line-height: 1.4; color: var(--color-neutral-700);">
-        <span>Alle schreiben mit</span>
-        <span>Du gibst frei, wer was sieht</span>
-        <span>Achtzehn Gesichter zur Wahl</span>
+        <span>Dein Leben</span>
+        <span>Deine Events</span>
+        <span>Jederzeit mit deinen Liebsten wieder erleben</span>
       </div>
     </div>
 
     <div style="width: 100%; max-width: 430px;">
       <div class="seg" role="group" style="margin-bottom: var(--space-4);">
-        <label class="seg-opt"><input type="radio" name="authmode" checked="{{ auth.isLogin }}" onChange="{{ auth.toLogin }}" style="position: absolute; opacity: 0; pointer-events: none;">Anmelden!</label>
+        <label class="seg-opt"><input type="radio" name="authmode" checked="{{ auth.isLogin }}" onChange="{{ auth.toLogin }}" style="position: absolute; opacity: 0; pointer-events: none;">Anmelden</label>
         <label class="seg-opt"><input type="radio" name="authmode" checked="{{ auth.isRegister }}" onChange="{{ auth.toRegister }}" style="position: absolute; opacity: 0; pointer-events: none;">Registrieren</label>
       </div>
       <h2 style="margin: 0 0 var(--space-3); font-size: 30px; line-height: 1.05;">{{ auth.title }}</h2>
@@ -1569,7 +1569,6 @@ class Component extends DCLogic {
     playing: false,
     dragOver: false,
     users: [],
-    access: [],
     session: null,
     authMode: "login",
     authForm: { username: "", email: "", pw: "", pw2: "" },
@@ -1643,7 +1642,7 @@ class Component extends DCLogic {
       const a = window.localStorage.getItem("chronik.auth.v1");
       if (a) {
         const s = JSON.parse(a);
-        this.setState({ users: s.users || [], access: s.access || [] });
+        this.setState({ users: s.users || [] });
       }
       const se = window.localStorage.getItem("chronik.session.v1");
       if (se) {
@@ -1973,8 +1972,9 @@ class Component extends DCLogic {
         meta: this.state.meta, events: this.state.events, custom: this.state.custom, groups: this.state.groups, friends: this.state.friends,
         themeId: this.state.themeId, override: this.state.override, mode: this.state.mode, zoom: this.state.zoom
       }));
-      window.localStorage.setItem("chronik.auth.v1", JSON.stringify({ users: this.state.users, access: this.state.access }));
+      window.localStorage.setItem("chronik.auth.v1", JSON.stringify({ users: this.state.users }));
       if (this.state.session) window.localStorage.setItem("chronik.session.v1", JSON.stringify(this.state.session));
+      else window.localStorage.removeItem("chronik.session.v1");
     } catch (e) { /* quota */ }
   }
 
@@ -2003,6 +2003,14 @@ class Component extends DCLogic {
 
   submitAuth = async () => {
     if (this.state.authBusy) return;
+    try {
+      await this.doSubmitAuth();
+    } catch (e) {
+      this.setState({ authBusy: false, authError: String((e && e.message) || e) || "X" });
+    }
+  };
+
+  doSubmitAuth = async () => {
     const f = this.state.authForm;
     if (this.state.cloud) return this.submitCloudAuth();
     const reg = this.state.authMode === "register";
@@ -2067,7 +2075,88 @@ class Component extends DCLogic {
     }
   };
 
-  /* ---------- permissions ---------- */
+  /* ---------- Anmelden mit Datenbank ---------- */
+
+  submitCloudAuth = async () => {
+    const CC = window.ChronikCloud;
+    const f = this.state.authForm;
+    const mode = this.state.authMode;
+    const bot = this.botTrouble(mode);
+    if (bot) return this.setState({
+      authError: this.botMessage(bot),
+      quiz: bot === "rechnen" ? this.newQuiz() : this.state.quiz,
+      quizAnswer: bot === "rechnen" ? "" : this.state.quizAnswer
+    });
+    const id = String(f.email || "").trim();
+    this.setState({ authBusy: true, authError: "", authNotice: "" });
+    try {
+      if (mode === "register") {
+        const name = String(f.username || "").trim();
+        if (name.length < 3) throw new Error("Der Benutzername braucht mindestens 3 Zeichen.");
+        if (!emailOk(id)) throw new Error("Diese E-Mail-Adresse sieht nicht gültig aus.");
+        const pwBad = pwProblem(f.pw);
+        if (pwBad) throw new Error(pwBad);
+        if (f.pw !== f.pw2) throw new Error("Die beiden Passwörter stimmen nicht überein.");
+        const r = await CC.signUp(id, f.pw, name, this.state.tsToken);
+        this.resetTurnstile();
+        this.setState({
+          authBusy: false,
+          authForm: { username: "", email: id, pw: "", pw2: "" },
+          authMode: r && r.needsConfirm ? "login" : this.state.authMode,
+          authNotice: r && r.needsConfirm
+            ? "Fast fertig: In deinem Postfach liegt eine Mail. Klick den Link darin an, dann kannst du dich anmelden."
+            : ""
+        });
+        return;
+      }
+
+      if (mode === "reset") {
+        if (!emailOk(id)) throw new Error("Diese E-Mail-Adresse sieht nicht gültig aus.");
+        await CC.sendReset(id);
+        this.resetTurnstile();
+        this.setState({
+          authBusy: false, authMode: "login",
+          authForm: { username: "", email: id, pw: "", pw2: "" },
+          authNotice: "Wir haben dir eine Mail geschickt. Klick den Link darin an — danach vergibst du ein neues Passwort."
+        });
+        return;
+      }
+
+      if (mode === "newpw") {
+        const pwBad = pwProblem(f.pw);
+        if (pwBad) throw new Error(pwBad);
+        if (f.pw !== f.pw2) throw new Error("Die beiden Passwörter stimmen nicht überein.");
+        await CC.updatePassword(f.pw);
+        this.setState({
+          authBusy: false, authMode: "login",
+          authForm: { username: "", email: "", pw: "", pw2: "" },
+          authNotice: "Passwort gespeichert — du kannst dich jetzt damit anmelden."
+        });
+        return;
+      }
+
+      const sess = await CC.signIn(id, f.pw, this.state.tsToken);
+      this.resetTurnstile();
+      if (sess) await this.cloudSignedIn(sess);
+      else this.setState({ authBusy: false });
+    } catch (e) {
+      this.resetTurnstile();
+      this.setState({ authBusy: false, authError: String((e && e.message) || e) });
+    }
+  };
+
+  logout = async () => {
+    const CC = window.ChronikCloud;
+    if (this.state.cloud && CC) {
+      try { await CC.signOut(); } catch (e) { /* auch offline abmelden */ }
+    }
+    this.setState({
+      session: null, drawer: false, admin: false, editing: null, open: null,
+      authForm: { username: "", email: "", pw: "", pw2: "" },
+      authMode: "login", authError: "", authNotice: "", pwShow: false,
+      fq: "", fFound: [], fMsg: ""
+    });
+  };
 
   /* ---------- Wer darf was? ---------- */
 
@@ -2614,15 +2703,8 @@ class Component extends DCLogic {
   resetTheme = () => this.setState({ override: {} });
 
   exportJSON = () => {
-    const me = this.me();
-    const owner = !!me && me.role === "owner";
     const events = this.state.events.filter((e) => this.levelFor(e) > 0);
-    const payload = { app: "chronik", version: 3, meta: this.state.meta, events: events, custom: this.state.custom, themeId: this.theme().id };
-    if (owner) {
-      payload.people = this.state.users.map((u) => ({ id: u.id, username: u.username, email: u.email, role: u.role }));
-      payload.access = this.state.access;
-      payload.full = true;
-    }
+    const payload = { app: "chronik", version: 4, meta: this.state.meta, events: events, custom: this.state.custom, groups: this.state.groups, themeId: this.theme().id };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -2635,23 +2717,11 @@ class Component extends DCLogic {
     const f = ev.target.files && ev.target.files[0];
     if (!f) return;
     const me = this.me();
-    const owner = !!me && me.role === "owner";
     const r = new FileReader();
     r.onload = () => {
       try {
         const s = JSON.parse(String(r.result));
         const incoming = Array.isArray(s.events) ? s.events : [];
-        if (owner) {
-          this.setState({
-            meta: s.meta || this.state.meta,
-            events: incoming.length ? incoming : this.state.events,
-            custom: s.custom || this.state.custom,
-            themeId: s.themeId || this.state.themeId,
-            access: Array.isArray(s.access) ? s.access : this.state.access,
-            override: {}, openId: null
-          });
-          return;
-        }
         /* Mitglieder dürfen nur ergänzen: eigene Ereignisse aktualisieren, neue als eigene übernehmen — fremde bleiben unberührt. */
         const mine = {};
         this.state.events.forEach((e) => { if (e.by && me && e.by === me.id) mine[e.id] = true; });
@@ -3408,7 +3478,7 @@ class Component extends DCLogic {
         })),
         strength: strengthWords[score],
         error: errLabel(st.authError), notice: st.authNotice, busy: st.authBusy,
-        cta: st.authBusy ? "Prüfe …" : st.authMode === "newpw" ? "Passwort speichern" : st.authMode === "reset" ? (st.cloud ? "Mail mit Link schicken" : "Passwort neu setzen") : st.authMode === "register" ? "Konto anlegen" : "!Anmelden",
+        cta: st.authBusy ? "Prüfe …" : st.authMode === "newpw" ? "Passwort speichern" : st.authMode === "reset" ? (st.cloud ? "Mail mit Link schicken" : "Passwort neu setzen") : st.authMode === "register" ? "Konto anlegen" : "Anmelden",
         footnote: st.cloud
           ? (st.authMode === "reset" ? "Du bekommst eine E-Mail mit einem Link. Klick ihn an — die Chronik fragt dann nach dem neuen Passwort."
             : st.authMode === "register" ? "Nach dem Anlegen kommt eine Bestätigungsmail. Danach darfst du eigene Ereignisse anlegen und selbst bestimmen, wer sie sieht."
