@@ -275,6 +275,41 @@
 
   /* ---------------- Verlauf ---------------- */
 
+  /* ---------- Kontakte ---------- */
+
+  async function friends() {
+    var c = await client();
+    var r = await c.from("contacts").select("id, asker, askee, status");
+    if (r.error) throw new Error(msg(r.error));
+    return (r.data || []).map(function (x) {
+      return { id: x.id, from: x.asker, to: x.askee, status: x.status || "pending" };
+    });
+  }
+
+  async function askFriend(otherId) {
+    var c = await client();
+    var r = await c.from("contacts").insert({ askee: otherId }).select("id");
+    if (r.error) throw new Error(msg(r.error));
+    bump({ p_writes: 1 });
+    return (r.data && r.data[0] && r.data[0].id) || null;
+  }
+
+  async function answerFriend(id, accept) {
+    var c = await client();
+    var r = accept
+      ? await c.from("contacts").update({ status: "accepted" }).eq("id", id)
+      : await c.from("contacts").delete().eq("id", id);
+    if (r.error) throw new Error(msg(r.error));
+    bump({ p_writes: 1 });
+  }
+
+  async function unfriend(id) {
+    var c = await client();
+    var r = await c.from("contacts").delete().eq("id", id);
+    if (r.error) throw new Error(msg(r.error));
+    bump({ p_writes: 1 });
+  }
+
   async function groups() {
     var c = await client();
     var r = await c.from("groups").select("id, name, members").order("name");
@@ -338,7 +373,7 @@
       place: row.place || "", kicker: row.kicker || "", note: d.note || "",
       infos: d.infos || [], people: d.people || [], images: imgs,
       deco: d.deco || { fx: [], pal: "thema", stickers: [] },
-      vis: row.vis || "public", who: row.who || [], gwho: row.gwho || [], share: row.share || "view",
+      vis: (row.vis === "selected" ? "people" : row.vis) || "private", who: row.who || [], gwho: row.gwho || [], perms: row.perms || {}, share: row.share || "view",
       changedBy: row.changed_by || ""
     };
   }
@@ -347,7 +382,7 @@
     return {
       name: e.name || "", date: e.date || null, end_date: e.end || null,
       place: e.place || "", kicker: e.kicker || "",
-      vis: e.vis || "public", who: e.who || [], gwho: e.gwho || [], share: e.share || "view",
+      vis: e.vis || "private", who: e.who || [], gwho: e.gwho || [], perms: e.perms || {}, share: e.share || "view",
       data: {
         note: e.note || "", infos: e.infos || [], people: e.people || [], deco: e.deco || null,
         images: (e.images || []).map(function (im) {
@@ -428,6 +463,12 @@
     var r = await push(row);
     /* Ältere Datenbank ohne Gruppen-Spalte: Gruppen zu Personen
        auflösen und ohne gwho erneut senden. */
+    if (r.error && /perms/i.test(String(r.error.message || ""))) {
+      var noPerms = Object.assign({}, row);
+      delete noPerms.perms;
+      r = await push(noPerms);
+      if (!r.error) row = noPerms;
+    }
     if (r.error && /gwho/i.test(String(r.error.message || ""))) {
       legacySchema = true;
       var flat = Object.assign({}, row);
@@ -504,6 +545,7 @@
       .on("postgres_changes", { event: "*", schema: "public", table: "events" }, cb)
       .on("postgres_changes", { event: "*", schema: "public", table: "comments" }, cb)
       .on("postgres_changes", { event: "*", schema: "public", table: "groups" }, cb)
+      .on("postgres_changes", { event: "*", schema: "public", table: "contacts" }, cb)
       .subscribe();
   }
 
@@ -519,6 +561,7 @@
     emailTaken: emailTaken, nameTaken: nameTaken,
     profiles: profiles, setBlocked: setBlocked, history: history, undo: undo,
     groups: groups, saveGroup: saveGroup, removeGroup: removeGroup,
+    friends: friends, askFriend: askFriend, answerFriend: answerFriend, unfriend: unfriend,
     loadEvents: loadEvents, saveEvent: saveEvent, removeEvent: removeEvent,
     addComment: addComment, uploadImage: uploadImage, onChange: onChange,
     snapshot: snapshot, budget: budget, guard: guard,
