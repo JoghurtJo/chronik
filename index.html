@@ -67,7 +67,7 @@
         <div style="margin-top: var(--space-6); padding: 12px 15px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700); font-size: 15px; max-width: 40ch;">{{ auth.configFault }}</div>
       </sc-if>
       <sc-if value="{{ auth.soloWarn }}" hint-placeholder-val="{{ false }}">
-        <div style="margin-top: var(--space-6); padding: 12px 15px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700); font-size: 15px; max-width: 40ch;">Fehler V-01</div>
+        <div style="margin-top: var(--space-6); padding: 12px 15px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700); font-size: 15px; max-width: 40ch;">{{ auth.soloCode }}</div>
       </sc-if>
 
       <p style="{{ lay.loginClaim }}">Aus vielen Abenden wird eine Geschichte.</p>
@@ -436,7 +436,7 @@
                               <div style="display: grid; gap: 6px;">
                                 <figure style="margin: 0; background: var(--t-img-bg, transparent); padding: var(--t-img-pad, 0); border-radius: var(--t-img-radius, 0); rotate: var(--t-img-rot, 0deg); box-shadow: var(--t-img-shadow, none);">
                                   <sc-if value="{{ im.src }}" hint-placeholder-val="{{ false }}">
-                                    <img src="{{ im.src }}" alt="{{ im.caption }}" style="display: block; width: 100%; aspect-ratio: var(--t-img-ratio, 4 / 3); object-fit: cover; border-radius: var(--t-img-radius, 0);">
+                                    <img src="{{ im.src }}" alt="{{ im.caption }}" onClick="{{ im.zoom }}" title="größer ansehen" style="display: block; width: 100%; aspect-ratio: var(--t-img-ratio, 4 / 3); object-fit: cover; border-radius: var(--t-img-radius, 0); cursor: zoom-in;">
                                   </sc-if>
                                   <sc-if value="{{ im.empty }}" hint-placeholder-val="{{ true }}">
                                     <div style="width: 100%; aspect-ratio: var(--t-img-ratio, 4 / 3); border-radius: var(--t-img-radius, 0); display: grid; place-items: center; text-align: center; padding: 8px; background-color: color-mix(in srgb, var(--t-ink, #201e1d) 6%, transparent); background-image: repeating-linear-gradient(45deg, color-mix(in srgb, var(--t-ink, #201e1d) 9%, transparent) 0 6px, transparent 6px 12px);">
@@ -446,9 +446,17 @@
                                 </figure>
                                 <div style="display: grid; gap: 4px;">
                                   <sc-for list="{{ im.comments }}" as="cm" hint-placeholder-count="1">
-                                    <div style="font-size: 11.5px; line-height: 1.4;">
-                                      <span style="letter-spacing: 0.09em; text-transform: uppercase; font-size: 9.5px; color: var(--t-accent, #0088b0);">{{ cm.who }}</span>
-                                      <span> {{ cm.text }}</span>
+                                    <div style="{{ cm.row }}">
+                                      <sc-if value="{{ cm.alive }}" hint-placeholder-val="{{ true }}">
+                                        <span style="letter-spacing: 0.09em; text-transform: uppercase; font-size: 9.5px; color: var(--t-accent, #0088b0);">{{ cm.who }}</span>
+                                        <span> {{ cm.text }}</span>
+                                      </sc-if>
+                                      <sc-if value="{{ cm.gone }}" hint-placeholder-val="{{ false }}">
+                                        <span style="font-style: italic;">{{ cm.goneText }}</span>
+                                      </sc-if>
+                                      <sc-if value="{{ cm.canDelete }}" hint-placeholder-val="{{ false }}">
+                                        <button onClick="{{ cm.remove }}" title="Kommentar löschen" style="font: inherit; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0 0 0 6px; cursor: pointer; color: color-mix(in srgb, var(--t-ink, #201e1d) 52%, var(--t-card, #eae9e9)); text-decoration: underline; white-space: nowrap;">löschen</button>
+                                      </sc-if>
                                     </div>
                                   </sc-for>
                                   <sc-if value="{{ im.canComment }}" hint-placeholder-val="{{ true }}">
@@ -847,7 +855,7 @@
           <span style="font-size: 11px; letter-spacing: 0.06em; color: var(--color-neutral-600);">{{ form.dropHint }}</span>
         </label>
         <sc-if value="{{ form.noStore }}" hint-placeholder-val="{{ false }}">
-          <div style="margin-top: 7px; font-size: 12.5px; padding: 8px 11px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700);">Fehler D-07</div>
+          <div style="margin-top: 7px; font-size: 12.5px; padding: 8px 11px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700);">{{ form.noStoreCode }}</div>
         </sc-if>
         <sc-if value="{{ form.imgBusy }}" hint-placeholder-val="{{ false }}">
           <div style="margin-top: 7px; font-size: 12.5px; padding: 7px 10px; border-radius: var(--radius-md); background: var(--color-accent-100); color: var(--color-accent-700);">{{ form.imgBusy }}</div>
@@ -855,7 +863,9 @@
         <sc-if value="{{ form.imgErr }}" hint-placeholder-val="{{ false }}">
           <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 7px; font-size: 12.5px; padding: 7px 10px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700);">
             <span>{{ form.imgErr }}</span>
+            <sc-if value="{{ form.canCheck }}" hint-placeholder-val="{{ true }}">
             <button onClick="{{ form.checkStore }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-accent-2-700); text-decoration: underline; white-space: nowrap;">Speicher prüfen</button>
+            </sc-if>
           </div>
         </sc-if>
         <sc-if value="{{ form.storeCheck }}" hint-placeholder-val="{{ false }}">
@@ -1016,6 +1026,16 @@
           <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ closeEditor }}">Abbrechen</button>
           <button class="btn btn-primary" style="white-space: nowrap;" onClick="{{ saveEvent }}">Ereignis speichern</button>
         </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ zoom.open }}" hint-placeholder-val="{{ false }}">
+    <div data-noprint="" onClick="{{ zoom.close }}" style="position: fixed; inset: 0; z-index: 130; display: grid; grid-template-rows: 1fr auto; gap: var(--space-3); padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 88%, transparent); cursor: zoom-out;">
+      <img src="{{ zoom.src }}" alt="{{ zoom.caption }}" style="min-height: 0; width: 100%; height: 100%; object-fit: contain;">
+      <div style="display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-4); color: var(--color-bg);">
+        <span style="font-size: 14px; line-height: 1.4;">{{ zoom.caption }}</span>
+        <span style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.7; white-space: nowrap;">{{ zoom.event }} · Klick schließt</span>
       </div>
     </div>
   </sc-if>
@@ -1256,7 +1276,12 @@ const TRANSITIONS = [["fade", "Überblenden"], ["slide", "Schieben"], ["zoom", "
 const LEVELS = [["view", "Nur ansehen"], ["comment", "Bilder kommentieren"], ["edit", "Inhalte bearbeiten"], ["full", "Alles bearbeiten"], ["blocked", "Gesperrt"]];
 const RANK = { none: 0, view: 1, comment: 2, edit: 3, full: 4 };
 
-/* Bedeutung der Codes: siehe Fehlercodes.dc.html */
+/* true = Fehlercodes werden angezeigt, false = nichts.
+   Bedeutung der Codes: siehe Fehlercodes.dc.html */
+const DEBUG = (window.CHRONIK_CONFIG && typeof window.CHRONIK_CONFIG.debug === "boolean")
+  ? window.CHRONIK_CONFIG.debug
+  : true;
+
 const ERRCODES = [
   ["A-02", /duplicate key|profiles_username/i],
   ["A-04", /already registered|already been registered/i],
@@ -1281,7 +1306,11 @@ const errCode = function (m) {
   for (let i = 0; i < ERRCODES.length; i++) if (ERRCODES[i][1].test(t)) return ERRCODES[i][0];
   return "X-99";
 };
-const errLabel = function (m) { const c = errCode(m); return c ? "Fehler " + c : ""; };
+const errLabel = function (m) {
+  if (!DEBUG) return "";
+  const c = errCode(m);
+  return c ? "Fehler " + c : "";
+};
 
 const VIS_OPTS = [["private", "Privat"], ["people", "Ausgew\u00e4hlte"], ["friends", "Alle Kontakte"], ["public", "\u00d6ffentlich"]];
 
@@ -1582,6 +1611,7 @@ class Component extends DCLogic {
     vw: (typeof window !== "undefined" ? window.innerWidth : 1280),
     imgErr: "",
     storeCheck: "",
+    zoomImg: null,
     users: [],
     session: null,
     authMode: "login",
@@ -2300,11 +2330,11 @@ class Component extends DCLogic {
   askFriend = (otherId) => {
     const me = this.me();
     if (!me || !otherId) return;
-    if (otherId === me.id) return this.setState({ fMsg: "Fehler K-04" });
+    if (otherId === me.id) return this.setState({ fMsg: errLabel("K-04") });
     const fs = this.state.friends || [];
     const pair = (f) => (f.from === me.id && f.to === otherId) || (f.from === otherId && f.to === me.id);
-    if (fs.some((f) => f.status === "accepted" && pair(f))) return this.setState({ fMsg: "Fehler K-03" });
-    if (fs.some((f) => f.status === "pending" && pair(f))) return this.setState({ fMsg: "Fehler K-02" });
+    if (fs.some((f) => f.status === "accepted" && pair(f))) return this.setState({ fMsg: errLabel("K-03") });
+    if (fs.some((f) => f.status === "pending" && pair(f))) return this.setState({ fMsg: errLabel("K-02") });
     if (this.state.cloud && window.ChronikCloud.askFriend) {
       this.setState({ fMsg: "Anfrage verschickt." });
       window.ChronikCloud.askFriend(otherId).then(() => this.cloudSync()).catch((e) => this.handleCloudError(e));
@@ -2346,12 +2376,12 @@ class Component extends DCLogic {
 
   searchPeople = () => {
     const q = String(this.state.fq || "").trim().toLowerCase();
-    if (q.length < 2) return this.setState({ fFound: [], fMsg: "Fehler K-05" });
+    if (q.length < 2) return this.setState({ fFound: [], fMsg: errLabel("K-05") });
     const me = this.me();
     const hits = this.state.users.filter((u) =>
       u.id !== (me || {}).id &&
       (String(u.username || "").toLowerCase().indexOf(q) >= 0 || String(u.email || "").toLowerCase() === q));
-    this.setState({ fFound: hits.map((u) => u.id), fMsg: hits.length ? "" : "Fehler K-01" });
+    this.setState({ fFound: hits.map((u) => u.id), fMsg: hits.length ? "" : errLabel("K-01") });
   };
 
   /* ---------- comments ---------- */
@@ -2383,6 +2413,32 @@ class Component extends DCLogic {
     const cd = Object.assign({}, this.state.cdraft);
     cd[key] = "";
     this.setState({ events: events, cdraft: cd });
+  }
+
+  removeComment(eventId, idx, k) {
+    const u = this.me();
+    if (!u) return;
+    const ev = this.state.events.filter((x) => x.id === eventId)[0];
+    const cm = ev && ((ev.images || [])[idx] || {}).comments;
+    const target = cm && cm[k];
+    if (!target || target.userId !== u.id) return;
+
+    if (this.state.cloud && window.ChronikCloud.removeComment) {
+      window.ChronikCloud.removeComment(target.id)
+        .then(() => this.cloudSync())
+        .catch((e) => this.handleCloudError(e));
+      return;
+    }
+    const events = this.state.events.map((e) => {
+      if (e.id !== eventId) return e;
+      const imgs = (e.images || []).map((im, j) => {
+        if (j !== idx) return im;
+        const cs = (im.comments || []).map((c, i) => (i === k ? Object.assign({}, c, { deleted: true, text: "" }) : c));
+        return Object.assign({}, im, { comments: cs });
+      });
+      return Object.assign({}, e, { images: imgs });
+    });
+    this.setState({ events: events });
   }
 
   /* ---------- filters ---------- */
@@ -2589,6 +2645,10 @@ class Component extends DCLogic {
 
   onKey = (e) => {
     if (!this.state.session) return;
+    if (this.state.zoomImg) {
+      if (e.key === "Escape") this.setState({ zoomImg: null });
+      return;
+    }
     if (this.state.show.open) {
       if (e.key === "Escape") this.closeShow();
       if (e.key === "ArrowRight") this.showStep(1);
@@ -2839,7 +2899,7 @@ class Component extends DCLogic {
     const list = all.filter((f) => this.looksLikeImage(f)).slice(0, 40);
     this.setState({ dragOver: false, imgErr: "" });
     if (!list.length) {
-      this.setState({ imgErr: "Fehler D-08" });
+      this.setState({ imgErr: errLabel("D-08") });
       return;
     }
     const cloud = this.state.cloud;
@@ -2885,7 +2945,7 @@ class Component extends DCLogic {
     d.images = (d.images || []).concat(rows);
     this.setState({
       draft: d, imgBusy: "", cloudBusy: false,
-      imgErr: failed ? (failed + "/" + list.length + " · " + errLabel(this.lastImgError)) : ""
+      imgErr: failed ? (DEBUG ? failed + "/" + list.length + " · " + errLabel(this.lastImgError) : failed + "/" + list.length) : ""
     });
   };
 
@@ -3174,7 +3234,7 @@ class Component extends DCLogic {
       return {
         key: e.id,
         pos: { position: "absolute", left: (it.x + padL) + "px", top: top + "px", width: (isOpen ? Math.round(cardW * 2.2) : cardW) + "px", zIndex: isOpen ? 60 : 10 + it.lane, transition: "width 380ms cubic-bezier(0.16, 1, 0.3, 1)" },
-        body: { maxHeight: isOpen ? "2400px" : (laneH - 12) + "px", overflow: "hidden", borderRadius: "var(--t-radius, 2px)", transition: "max-height 420ms cubic-bezier(0.16, 1, 0.3, 1)", animationName: "var(--t-anim, tl-glide)", animationDuration: "var(--t-anim-dur, 620ms)", animationTimingFunction: "var(--t-anim-ease, ease-out)", animationFillMode: "both", animationDelay: (60 + it.i * 55) + "ms" },
+        body: { maxHeight: isOpen ? Math.max(360, Math.round(laneH * 3.1)) + "px" : (laneH - 12) + "px", overflow: isOpen ? "auto" : "hidden", overscrollBehavior: "contain", borderRadius: "var(--t-radius, 2px)", transition: "max-height 420ms cubic-bezier(0.16, 1, 0.3, 1)", animationName: "var(--t-anim, tl-glide)", animationDuration: "var(--t-anim-dur, 620ms)", animationTimingFunction: "var(--t-anim-ease, ease-out)", animationFillMode: "both", animationDelay: (60 + it.i * 55) + "ms" },
         noteClip: { maxHeight: isOpen ? "none" : "51px", overflow: "hidden" },
         name: e.name, dateLabel: fmtDate(e.date), kicker: e.kicker || "", place: e.place || "", note: e.note || "",
         sign: isOpen ? "－" : "＋",
@@ -3190,12 +3250,22 @@ class Component extends DCLogic {
         people: (e.people || []).map((r, j) => ({ key: "p" + j, name: r.name, role: r.role || "", photo: r.photo || "", noPhoto: !r.photo, initials: initials(r.name), linked: !!(r.uid && st.users.some((u) => u.id === r.uid)) })),
         images: (e.images || []).map((r, j) => ({
           key: "m" + j, src: r.src || "", empty: !r.src, caption: r.caption || "bild",
-          comments: (r.comments || []).map((cm, k) => ({ key: "c" + k, who: cm.who, text: cm.text })),
+          comments: (r.comments || []).map((cm, k) => ({
+            key: "c" + k, who: cm.who, text: cm.text,
+            alive: !cm.deleted, gone: !!cm.deleted,
+            goneText: cm.who + " hat den Kommentar gelöscht",
+            row: cm.deleted
+              ? { fontSize: "11px", lineHeight: 1.4, color: "color-mix(in srgb, var(--t-ink, #201e1d) 45%, var(--t-card, #eae9e9))" }
+              : { fontSize: "11.5px", lineHeight: 1.4 },
+            canDelete: !cm.deleted && !!me && (cm.userId === me.id),
+            remove: () => this.removeComment(e.id, j, k)
+          })),
           canComment: lvl >= 2,
           draft: (st.cdraft || {})[e.id + ":" + j] || "",
           onDraft: (ev) => { const cd = Object.assign({}, st.cdraft); cd[e.id + ":" + j] = ev.target.value; this.setState({ cdraft: cd }); },
           onKey: (ev) => { if (ev.key === "Enter") this.addComment(e.id, j); },
-          send: () => this.addComment(e.id, j)
+          send: () => this.addComment(e.id, j),
+          zoom: (ev) => { ev.stopPropagation(); this.setState({ zoomImg: { src: r.src, caption: r.caption || "", event: e.name } }); }
         })),
         deco: this.decoParts(e.deco, t, e.id + (isOpen ? "-o" : "-c"), "view"),
         toggle: () => this.open(e.id),
@@ -3371,10 +3441,12 @@ class Component extends DCLogic {
         this.addFiles(dropped);
       },
       hasCamera: isTouch(),
-      noStore: !!(st.cloud && window.ChronikCloud && !window.ChronikCloud.hasR2),
+      noStore: !!(st.cloud && window.ChronikCloud && !window.ChronikCloud.hasR2) && DEBUG,
+      noStoreCode: errLabel("D-07"),
       imgBusy: st.imgBusy || "",
       imgErr: st.imgErr || "",
-      storeCheck: st.storeCheck || "",
+      storeCheck: DEBUG ? (st.storeCheck || "") : "",
+      canCheck: DEBUG,
       checkStore: this.checkStore,
       dropLabel: st.dragOver ? "Loslassen — Bilder werden übernommen" : isTouch() ? "Hier tippen und Fotos auswählen" : "Bilder hierher ziehen oder hier klicken",
       dropHint: "bis zu 40 auf einmal · werden automatisch verkleinert",
@@ -3713,7 +3785,8 @@ class Component extends DCLogic {
         isLogin: st.authMode === "login", isRegister: st.authMode === "register", isReset: st.authMode === "reset",
         needsRepeat: st.authMode === "register" || st.authMode === "reset" || st.authMode === "newpw",
         needsEmail: st.authMode !== "newpw",
-        soloWarn: !(window.ChronikCloud || {}).enabled && !(window.ChronikCloud || {}).configFault && !/^(localhost|127\.0\.0\.1|)$/.test(location.hostname) && location.protocol !== "file:",
+        soloWarn: DEBUG && !(window.ChronikCloud || {}).enabled && !(window.ChronikCloud || {}).configFault && !/^(localhost|127\.0\.0\.1|)$/.test(location.hostname) && location.protocol !== "file:",
+        soloCode: errLabel("V-01"),
         configFault: (window.ChronikCloud || {}).configFault ? errLabel((window.ChronikCloud || {}).configFault) : "",
         demo: [
           { y: "2019", up: true, w: 118, g: "★", a: 1 },
@@ -3779,7 +3852,7 @@ class Component extends DCLogic {
         honey: st.honey,
         onHoney: (ev) => this.setState({ honey: ev.target.value }),
         homeNet: !secureOk(),
-        homeText: "Fehler V-07",
+        homeText: errLabel("V-07"),
         onUsername: this.authSet("username"), onEmail: this.authSet("email"), onPw: this.authSet("pw"), onPw2: this.authSet("pw2"),
         onKey: (ev) => { if (ev.key === "Enter") this.submitAuth(); },
         bars: [0, 1, 2, 3].map((i) => ({
@@ -4016,6 +4089,13 @@ class Component extends DCLogic {
       printGeo: { position: "relative", width: (PL.width + 90) + "px", height: (60 + PL.lanes * pLaneH + 40) + "px", padding: "0" },
       printAxis: { position: "absolute", left: "44px", top: "46px", width: (PL.width) + "px" },
       openShowAll: () => this.openShow("all", ""),
+      zoom: {
+        open: !!st.zoomImg,
+        src: (st.zoomImg || {}).src || "",
+        caption: (st.zoomImg || {}).caption || "",
+        event: (st.zoomImg || {}).event || "",
+        close: () => this.setState({ zoomImg: null })
+      },
       show: {
         open: st.show.open, none: simgs.length === 0,
         scopeLabel: scopeLabel,
