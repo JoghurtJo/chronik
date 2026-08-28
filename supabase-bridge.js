@@ -1,7 +1,4 @@
-/* Chronik ↔ Supabase (Konten, Ereignisse) + Cloudflare R2 (Bilder).
-   Stellt window.ChronikCloud bereit. Kein Build, kein npm.
-   Fehler tragen ihren Code selbst; die Bedeutung steht ausschließlich
-   in Fehlercodes.dc.html. */
+/* Chronik ↔ Supabase  */
 (function () {
   var CFG = window.CHRONIK_CONFIG || {};
   var SDK = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
@@ -216,8 +213,24 @@
     return { session: r.data.session, needsConfirm: !r.data.session };
   }
 
-  async function signIn(email, pw, captchaToken) {
+  /* Zum Benutzernamen die hinterlegte Adresse suchen. */
+  async function emailForName(name) {
+    try {
+      var c = await client();
+      var r = await c.from("profiles").select("email").ilike("username", String(name || "").trim()).limit(1);
+      if (r.error) return "";
+      return (r.data && r.data[0] && r.data[0].email) || "";
+    } catch (e) { return ""; }
+  }
+
+  async function signIn(id, pw, captchaToken) {
     var c = await client();
+    var email = String(id || "").trim();
+    if (email.indexOf("@") < 0) {
+      var gefunden = await emailForName(email);
+      if (!gefunden) throw fail("A-10");
+      email = gefunden;
+    }
     var opts = captchaToken ? { captchaToken: captchaToken } : undefined;
     var r = await c.auth.signInWithPassword({ email: email, password: pw, options: opts });
     if (r.error) throw fail(code(r.error));
@@ -336,8 +349,8 @@
 
   async function profiles() {
     var c = await client();
-    var r = await c.from("profiles").select("id, username, email, role, blocked, look").order("username");
-    if (r.error && /look/i.test(String(r.error.message || ""))) {
+    var r = await c.from("profiles").select("id, username, email, role, blocked, look, notify").order("username");
+    if (r.error && /look|notify/i.test(String(r.error.message || ""))) {
       r = await c.from("profiles").select("id, username, email, role, blocked").order("username");
     }
     if (r.error) throw fail(code(r.error));
@@ -345,7 +358,7 @@
       return {
         id: p.id, username: p.username || (p.email || "").split("@")[0],
         email: p.email || "", role: p.role || "member", blocked: !!p.blocked,
-        look: p.look || {}
+        look: p.look || {}, notify: p.notify || {}
       };
     });
   }
@@ -408,6 +421,37 @@
     var r = await c.from("comments").update({ deleted: true, text: "" }).eq("id", id);
     if (r.error) throw fail(code(r.error));
     bump({ p_writes: 1 });
+  }
+
+  /* ---------- Benachrichtigungen ---------- */
+
+  async function saveNotify(prefs) {
+    var c = await client();
+    var s = await session();
+    if (!s || !s.user) return false;
+    var r = await c.from("profiles").update({ notify: prefs || {} }).eq("id", s.user.id);
+    if (r.error) throw fail(code(r.error));
+    bump({ p_writes: 1 });
+    return true;
+  }
+
+  /* Mail an eine andere Person. Der Worker verschickt sie;
+     ohne eingerichteten Mailschlüssel passiert einfach nichts. */
+  async function notify(empfaengerId, art, betreff, text) {
+    if (!R2) return { ok: false, reason: "kein-worker" };
+    try {
+      var tk = await token();
+      if (!tk) return { ok: false, reason: "keine-anmeldung" };
+      var res = await fetch(R2 + "/notify", {
+        method: "POST",
+        headers: { Authorization: "Bearer " + tk, "content-type": "application/json" },
+        body: JSON.stringify({ to: empfaengerId, kind: art, subject: betreff, text: text })
+      });
+      var out = await res.json().catch(function () { return {}; });
+      return { ok: !!res.ok && !!out.ok, reason: out.error || "", status: res.status };
+    } catch (e) {
+      return { ok: false, reason: "nicht-erreichbar" };
+    }
   }
 
   async function groups() {
@@ -716,9 +760,10 @@
     signUp: signUp, signIn: signIn, signOut: signOut, session: session,
     sendReset: sendReset, updatePassword: updatePassword, recoveryPending: recoveryPending, onAuth: onAuth,
     sessionEmail: sessionEmail, notifyChange: notifyChange, linkAge: linkAge,
-    emailTaken: emailTaken, nameTaken: nameTaken,
+    emailTaken: emailTaken, nameTaken: nameTaken, emailForName: emailForName,
     profiles: profiles, setBlocked: setBlocked, history: history, undo: undo,
     groups: groups, saveGroup: saveGroup, removeGroup: removeGroup, saveLook: saveLook,
+    saveNotify: saveNotify, notify: notify,
     friends: friends, askFriend: askFriend, answerFriend: answerFriend, unfriend: unfriend,
     loadEvents: loadEvents, saveEvent: saveEvent, removeEvent: removeEvent,
     addComment: addComment, removeComment: removeComment, uploadImage: uploadImage, imageUrl: imageUrl, storeCheck: storeCheck, onChange: onChange,
