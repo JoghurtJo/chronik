@@ -234,7 +234,16 @@
 
   async function token() {
     var s = await session();
-    return s ? s.access_token : "";
+    if (!s) return "";
+    var soon = s.expires_at && (s.expires_at * 1000 - Date.now() < 90000);
+    if (soon) {
+      try {
+        var c = await client();
+        var r = await c.auth.refreshSession();
+        if (r && r.data && r.data.session) s = r.data.session;
+      } catch (e) { /* altes Ticket weiterverwenden */ }
+    }
+    return s.access_token || "";
   }
 
   function backHere() {
