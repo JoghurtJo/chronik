@@ -1,13 +1,12 @@
 /* Chronik ↔ Supabase (Konten, Ereignisse) + Cloudflare R2 (Bilder).
    Stellt window.ChronikCloud bereit. Kein Build, kein npm.
-   Jede Aktion wird vorher gegen die Gratis-Grenzen geprüft. */
+   Fehler tragen ihren Code selbst; die Bedeutung steht ausschließlich
+   in Fehlercodes.dc.html. */
 (function () {
   var CFG = window.CHRONIK_CONFIG || {};
   var SDK = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
   var BUCKET = "bilder";
 
-  /* Adresse geradeziehen: Leerzeichen, Schrägstriche und mitkopierte
-     Pfade wie /rest/v1 sind der häufigste Einrichtungsfehler. */
   function cleanUrl(v) {
     var u = String(v || "").trim().replace(/^["']|["']$/g, "");
     if (!u) return "";
@@ -25,13 +24,12 @@
   var rawKey = String(CFG.anonKey || "").trim().replace(/^["']|["']$/g, "");
   var url = cleanUrl(rawUrl);
 
-  /* Was ist faul? Klartext für die Anmeldeseite. */
   var configFault = "";
   if (rawUrl || rawKey) {
-    if (!rawUrl) configFault = "In chronik-config.js fehlt die Adresse (url). Sie steht in Supabase unter Project Settings → API als ‚Project URL‘.";
-    else if (!URL_OK.test(url)) configFault = "Die Adresse in chronik-config.js sieht nicht wie eine Supabase-Adresse aus. Erwartet wird genau ‚https://xxxx.supabase.co‘ — ohne Schrägstrich und ohne Zusatz am Ende. Eingetragen ist: " + rawUrl;
-    else if (!rawKey) configFault = "In chronik-config.js fehlt der Schlüssel (anonKey) — in Supabase unter Project Settings → API als ‚anon public‘.";
-    else if (!KEY_OK.test(rawKey)) configFault = "Der Schlüssel in chronik-config.js ist unvollständig. Er ist sehr lang, beginnt mit ‚ey‘ und enthält zwei Punkte — bitte in Supabase noch einmal ganz kopieren.";
+    if (!rawUrl) configFault = "V-05";
+    else if (!URL_OK.test(url)) configFault = "V-02";
+    else if (!rawKey) configFault = "V-06";
+    else if (!KEY_OK.test(rawKey)) configFault = "V-03";
   }
 
   var enabled = !!(url && rawKey && !configFault);
@@ -52,14 +50,14 @@
       var s = document.createElement("script");
       s.src = SDK;
       s.onload = res;
-      s.onerror = function () { rej(new Error("Die Verbindungs-Bibliothek konnte nicht geladen werden. Internetverbindung prüfen.")); };
+      s.onerror = function () { rej(fail("V-04")); };
       document.head.appendChild(s);
     });
     return loading;
   }
 
   async function client() {
-    if (!enabled) throw new Error(configFault || "Keine Zugangsdaten in chronik-config.js.");
+    if (!enabled) throw fail(configFault || "V-01");
     if (sb) return sb;
     await loadSdk();
     sb = window.supabase.createClient(url, rawKey, {
@@ -68,23 +66,36 @@
     return sb;
   }
 
-  function msg(e) {
-    var t = String((e && e.message) || e || "");
-    if (/Invalid login credentials/i.test(t)) return "E-Mail oder Passwort stimmt nicht.";
-    if (/Email not confirmed/i.test(t)) return "Bitte zuerst den Link in der Bestätigungsmail anklicken.";
-    if (/User already registered|already been registered/i.test(t)) return "Für diese E-Mail gibt es schon ein Konto.";
-    if (/captcha/i.test(t)) return "Die Sicherheitsprüfung ist nicht durchgekommen. Bitte nochmal versuchen.";
-    if (/rate limit|too many|Email rate/i.test(t)) return "Zu viele Versuche in kurzer Zeit. Bitte in einer Stunde nochmal — so schützt der Dienst vor Massenanmeldungen.";
-    if (/row-level security|violates row-level/i.test(t)) return "Dafür fehlt die Berechtigung. Wenn du gesperrt wurdest, wende dich an die Inhaberin oder den Inhaber.";
-    if (/duplicate key|profiles_username/i.test(t)) return "Dieser Benutzername ist schon belegt.";
-    if (/Password should be at least/i.test(t)) return "Das Passwort ist zu kurz.";
-    if (/schema cache|column .* does not exist|Could not find the/i.test(t)) return "Die Datenbank ist noch nicht auf dem neuesten Stand. Bitte supabase-setup.sql einmal im SQL Editor ausführen (Anleitung, Schritt A4) — danach geht es.";
-    if (/Error sending confirmation email|error sending.*email|smtp/i.test(t)) return "Das Konto wurde nicht angelegt, weil die Bestätigungsmail nicht rausging. Der Mailversand (Brevo) muss die Absende-Adresse von Supabase erst freigeben — siehe Anleitung, Schritt A15. Danach einfach nochmal versuchen.";
-    if (/invalid path|no Route matched|not found/i.test(t)) return "Die Adresse der Datenbank stimmt nicht. In chronik-config.js muss bei url genau ‚https://xxxx.supabase.co‘ stehen — ohne Schrägstrich und ohne Zusatz wie /rest/v1 am Ende.";
-    if (/Invalid API key|JWSError|JWT/i.test(t)) return "Der Schlüssel in chronik-config.js passt nicht. Es muss der ‚anon public‘-Schlüssel sein — bitte in Supabase noch einmal ganz kopieren.";
-    if (/Failed to fetch|NetworkError|Load failed/i.test(t)) return "Die Datenbank ist nicht erreichbar. Internetverbindung prüfen — oder das Supabase-Projekt pausiert (im Dashboard auf ‚Restore‘).";
-    return t || "Unbekannter Fehler.";
+  function fail(c, cause) {
+    var e = new Error(c);
+    e.code = c;
+    if (cause) e.cause = cause;
+    return e;
   }
+
+  function code(e) {
+    if (e && e.code && /^[A-Z]-\d\d$/.test(e.code)) return e.code;
+    var t = String((e && e.message) || e || "");
+    if (/^[A-Z]-\d\d$/.test(t)) return t;
+    if (/Invalid login credentials/i.test(t)) return "A-10";
+    if (/Email not confirmed/i.test(t)) return "A-12";
+    if (/User already registered|already been registered/i.test(t)) return "A-04";
+    if (/captcha/i.test(t)) return "A-14";
+    if (/rate limit|too many|Email rate/i.test(t)) return "A-11";
+    if (/row-level security|violates row-level/i.test(t)) return "D-02";
+    if (/duplicate key|profiles_username/i.test(t)) return "A-02";
+    if (/Password should be at least/i.test(t)) return "A-05";
+    if (/schema cache|column .* does not exist|Could not find the/i.test(t)) return "D-01";
+    if (/Error sending confirmation email|error sending.*email|smtp/i.test(t)) return "A-13";
+    if (/invalid path|no Route matched/i.test(t)) return "V-02";
+    if (/Invalid API key|JWSError|JWT/i.test(t)) return "V-03";
+    if (/Failed to fetch|NetworkError|Load failed/i.test(t)) return "V-04";
+    if (/not found/i.test(t)) return "D-04";
+    return "X-99";
+  }
+
+  function msg(e) { return code(e); }
+
 
   /* ---------------- Grenzen ---------------- */
 
@@ -195,12 +206,12 @@
 
   async function signUp(email, pw, username, captchaToken) {
     var c = await client();
-    if (await emailTaken(email)) throw new Error("Für diese E-Mail gibt es schon ein Konto. Melde dich an oder setze das Passwort neu.");
-    if (await nameTaken(username)) throw new Error("Dieser Benutzername ist schon belegt — bitte einen anderen wählen.");
+    if (await emailTaken(email)) throw fail("A-04");
+    if (await nameTaken(username)) throw fail("A-02");
     var opts = { data: { username: username }, emailRedirectTo: backHere() };
     if (captchaToken) opts.captchaToken = captchaToken;
     var r = await c.auth.signUp({ email: email, password: pw, options: opts });
-    if (r.error) throw new Error(msg(r.error));
+    if (r.error) throw fail(code(r.error));
     bump({ p_emails: 1 });
     return { session: r.data.session, needsConfirm: !r.data.session };
   }
@@ -209,7 +220,7 @@
     var c = await client();
     var opts = captchaToken ? { captchaToken: captchaToken } : undefined;
     var r = await c.auth.signInWithPassword({ email: email, password: pw, options: opts });
-    if (r.error) throw new Error(msg(r.error));
+    if (r.error) throw fail(code(r.error));
     return r.data.session;
   }
 
@@ -226,8 +237,6 @@
     return s ? s.access_token : "";
   }
 
-  /* Genau diese Seite — mit Dateinamen, damit der Link aus der Mail
-     nicht auf einer 404-Seite von GitHub Pages landet. */
   function backHere() {
     var u = location.origin + location.pathname;
     if (/\/$/.test(u)) u = u + "index.html";
@@ -237,7 +246,7 @@
   async function sendReset(email) {
     var c = await client();
     var r = await c.auth.resetPasswordForEmail(email, { redirectTo: backHere() });
-    if (r.error) throw new Error(msg(r.error));
+    if (r.error) throw fail(code(r.error));
     bump({ p_emails: 1 });
     return true;
   }
@@ -245,7 +254,7 @@
   async function updatePassword(pw) {
     var c = await client();
     var r = await c.auth.updateUser({ password: pw });
-    if (r.error) throw new Error(msg(r.error));
+    if (r.error) throw fail(code(r.error));
     return true;
   }
 
@@ -259,11 +268,10 @@
   async function profiles() {
     var c = await client();
     var r = await c.from("profiles").select("id, username, email, role, blocked, look").order("username");
-    /* Ältere Datenbank ohne look-Spalte: ohne sie nochmal fragen. */
     if (r.error && /look/i.test(String(r.error.message || ""))) {
       r = await c.from("profiles").select("id, username, email, role, blocked").order("username");
     }
-    if (r.error) throw new Error(msg(r.error));
+    if (r.error) throw fail(code(r.error));
     return (r.data || []).map(function (p) {
       return {
         id: p.id, username: p.username || (p.email || "").split("@")[0],
@@ -276,7 +284,7 @@
   async function setBlocked(userId, blocked) {
     var c = await client();
     var r = await c.rpc("set_blocked", { p_user: userId, p_blocked: !!blocked });
-    if (r.error) throw new Error(msg(r.error));
+    if (r.error) throw fail(code(r.error));
   }
 
   /* ---------------- Verlauf ---------------- */
@@ -286,7 +294,7 @@
   async function friends() {
     var c = await client();
     var r = await c.from("contacts").select("id, asker, askee, status");
-    if (r.error) throw new Error(msg(r.error));
+    if (r.error) throw fail(code(r.error));
     return (r.data || []).map(function (x) {
       return { id: x.id, from: x.asker, to: x.askee, status: x.status || "pending" };
     });
@@ -295,7 +303,7 @@
   async function askFriend(otherId) {
     var c = await client();
     var r = await c.from("contacts").insert({ askee: otherId }).select("id");
-    if (r.error) throw new Error(msg(r.error));
+    if (r.error) throw fail(code(r.error));
     bump({ p_writes: 1 });
     return (r.data && r.data[0] && r.data[0].id) || null;
   }
@@ -305,14 +313,14 @@
     var r = accept
       ? await c.from("contacts").update({ status: "accepted" }).eq("id", id)
       : await c.from("contacts").delete().eq("id", id);
-    if (r.error) throw new Error(msg(r.error));
+    if (r.error) throw fail(code(r.error));
     bump({ p_writes: 1 });
   }
 
   async function unfriend(id) {
     var c = await client();
     var r = await c.from("contacts").delete().eq("id", id);
-    if (r.error) throw new Error(msg(r.error));
+    if (r.error) throw fail(code(r.error));
     bump({ p_writes: 1 });
   }
 
@@ -323,13 +331,13 @@
     var id = s && s.data && s.data.user && s.data.user.id;
     if (!id) return;
     var r = await c.from("profiles").update({ look: look || {} }).eq("id", id);
-    if (r.error && !/look/i.test(String(r.error.message || ""))) throw new Error(msg(r.error));
+    if (r.error && !/look/i.test(String(r.error.message || ""))) throw fail(code(r.error));
   }
 
   async function groups() {
     var c = await client();
     var r = await c.from("groups").select("id, name, members").order("name");
-    if (r.error) throw new Error(msg(r.error));
+    if (r.error) throw fail(code(r.error));
     return (r.data || []).map(function (g) { return { id: g.id, name: g.name || "", members: g.members || [] }; });
   }
 
@@ -339,7 +347,7 @@
     var r = g.id && String(g.id).length > 20
       ? await c.from("groups").update(row).eq("id", g.id).select("id")
       : await c.from("groups").insert(row).select("id");
-    if (r.error) throw new Error(msg(r.error));
+    if (r.error) throw fail(code(r.error));
     bump({ p_writes: 1 });
     return (r.data && r.data[0] && r.data[0].id) || g.id;
   }
@@ -347,7 +355,7 @@
   async function removeGroup(id) {
     var c = await client();
     var r = await c.from("groups").delete().eq("id", id);
-    if (r.error) throw new Error(msg(r.error));
+    if (r.error) throw fail(code(r.error));
     bump({ p_writes: 1 });
   }
 
@@ -356,7 +364,7 @@
     var r = await c.from("event_history")
       .select("id, event_id, action, actor, at, undone, snapshot")
       .order("at", { ascending: false }).limit(limit || 40);
-    if (r.error) throw new Error(msg(r.error));
+    if (r.error) throw fail(code(r.error));
     return (r.data || []).map(function (h) {
       return {
         id: h.id, eventId: h.event_id, action: h.action, actor: h.actor,
@@ -369,7 +377,7 @@
   async function undo(id) {
     var c = await client();
     var r = await c.rpc("undo_change", { p_id: id });
-    if (r.error) throw new Error(msg(r.error));
+    if (r.error) throw fail(code(r.error));
     bump({ p_writes: 1 });
   }
 
@@ -416,7 +424,7 @@
 
     var c = await client();
     var ev = await c.from("events").select("*").order("date");
-    if (ev.error) throw new Error(msg(ev.error));
+    if (ev.error) throw fail(code(ev.error));
     var rows = ev.data || [];
 
     var cm = await c.from("comments").select("event_id, image_index, text, created_at, profiles(username)").order("created_at");
@@ -481,8 +489,6 @@
     }
 
     var r = await push(row);
-    /* Ältere Datenbank ohne Gruppen-Spalte: Gruppen zu Personen
-       auflösen und ohne gwho erneut senden. */
     if (r.error && /perms/i.test(String(r.error.message || ""))) {
       var noPerms = Object.assign({}, row);
       delete noPerms.perms;
@@ -496,7 +502,7 @@
       if ((e.resolvedWho || []).length) flat.who = e.resolvedWho;
       r = await push(flat);
     }
-    if (r.error) throw new Error(msg(r.error));
+    if (r.error) throw fail(code(r.error));
     bump({ p_writes: 1 });
     return (r.data && r.data[0] && r.data[0].id) || e.id;
   }
@@ -506,7 +512,7 @@
     if (!g.ok) { var err = new Error(g.block.message); err.block = g.block; throw err; }
     var c = await client();
     var r = await c.from("events").delete().eq("id", id);
-    if (r.error) throw new Error(msg(r.error));
+    if (r.error) throw fail(code(r.error));
     bump({ p_writes: 1 });
   }
 
@@ -515,7 +521,7 @@
     if (!g.ok) { var err = new Error(g.block.message); err.block = g.block; throw err; }
     var c = await client();
     var r = await c.from("comments").insert({ event_id: eventId, image_index: imageIndex, text: text });
-    if (r.error) throw new Error(msg(r.error));
+    if (r.error) throw fail(code(r.error));
     bump({ p_writes: 1 });
   }
 
@@ -553,9 +559,9 @@
     } catch (e) { return ""; }
   }
 
-  /* Weg 1: Cloudflare R2 über den eigenen Worker. */
   async function uploadToR2(file) {
     var tk = await token();
+    if (!tk) throw fail("D-09");
     var fd = new FormData();
     fd.append("file", file, file.name || "bild.jpg");
     fd.append("name", file.name || "bild.jpg");
@@ -563,15 +569,22 @@
     try {
       res = await fetch(R2 + "/upload", { method: "POST", headers: { Authorization: "Bearer " + tk }, body: fd });
     } catch (netErr) {
-      if (window.console && console.warn) console.warn("Chronik: Der Bildspeicher-Worker ist nicht erreichbar.", R2, netErr);
-      throw new Error("Bildspeicher antwortet nicht.");
+      throw fail("D-06", netErr);
     }
     var out = await res.json().catch(function () { return {}; });
     if (!res.ok) {
-      var e2 = new Error(out.message || out.error || "Das Bild konnte nicht hochgeladen werden.");
-      if (out.error === "limit") e2.block = { scope: out.scope, message: out.message, again: "" };
-      e2.status = res.status;
-      throw e2;
+      if (out.error === "limit") {
+        var eL = fail("D-13");
+        eL.block = { scope: out.scope, message: out.message, again: "" };
+        throw eL;
+      }
+      if (res.status === 401) throw fail("D-09", out);
+      if (res.status === 403) throw fail("D-10", out);
+      if (res.status === 404) throw fail("D-11", out);
+      if (res.status === 413 || /gr\u00f6\u00dfer als|too large/i.test(String(out.message || ""))) throw fail("D-05", out);
+      if (/keine Bilddatei|not an image/i.test(String(out.message || ""))) throw fail("D-08", out);
+      if (res.status === 500 && /BUCKET|bucket/i.test(String(out.message || out.error || ""))) throw fail("D-12", out);
+      throw fail("D-06", out);
     }
     var url = "";
     try {
@@ -585,16 +598,13 @@
 
   async function uploadImage(file) {
     var g = await guard("upload", file.size);
-    if (!g.ok) { var err = new Error(g.block.message); err.block = g.block; throw err; }
+    if (!g.ok) { var err = fail("D-13"); err.block = g.block; throw err; }
 
-    if (!R2) {
-      throw new Error("Der Bildspeicher ist nicht eingerichtet: in chronik-config.js fehlt die Worker-Adresse (r2Worker). Bilder werden ausschließlich bei Cloudflare gespeichert.");
-    }
+    if (!R2) throw fail("D-07");
     try {
       return await uploadToR2(file);
     } catch (e) {
-      if (window.console && console.warn) console.warn("Chronik: R2-Upload fehlgeschlagen.", e);
-      lastR2Error = String((e && e.message) || e);
+      lastR2Error = code(e);
       throw e;
     }
   }
