@@ -109,6 +109,7 @@
         <sc-if value="{{ auth.needsEmail }}" hint-placeholder-val="{{ true }}">
           <div class="field"><label>{{ auth.idLabel }}</label><input class="input" type="text" autoComplete="email" value="{{ auth.email }}" onChange="{{ auth.onEmail }}" placeholder="name@beispiel.de"></div>
         </sc-if>
+        <sc-if value="{{ auth.needsPw }}" hint-placeholder-val="{{ true }}">
         <div class="field"><label>{{ auth.pwLabel }}</label>
           <div style="position: relative;">
             <input class="input" type="{{ auth.pwType }}" autoComplete="{{ auth.pwAuto }}" value="{{ auth.pw }}" onChange="{{ auth.onPw }}" onKeyDown="{{ auth.onKey }}" placeholder="mindestens 10 Zeichen" style="width: 100%; padding-right: 42px;">
@@ -122,6 +123,7 @@
             </button>
           </div>
         </div>
+        </sc-if>
         <sc-if value="{{ auth.needsRepeat }}" hint-placeholder-val="{{ false }}">
           <div style="display: grid; gap: var(--space-2);">
             <div class="field" style="margin: 0;"><label>Passwort wiederholen</label><input class="input" type="{{ auth.pwType }}" autoComplete="new-password" value="{{ auth.pw2 }}" onChange="{{ auth.onPw2 }}" onKeyDown="{{ auth.onKey }}"></div>
@@ -286,6 +288,9 @@
       <div style="display: grid; gap: var(--space-2); padding-bottom: var(--space-2);">
         <div style="display: flex; align-items: flex-end; gap: var(--space-3); flex-wrap: wrap;">
           <div class="field" style="width: 220px;"><label>Suche · Name, Text, Ort</label><input class="input" type="search" value="{{ f.q }}" onChange="{{ f.onQ }}" placeholder="z. B. Lager"></div>
+          <sc-if value="{{ f.aktiv }}" hint-placeholder-val="{{ false }}">
+            <button class="btn btn-secondary" style="white-space: nowrap; align-self: end;" onClick="{{ f.reset }}">Filter zurücksetzen · {{ f.anzahl }}</button>
+          </sc-if>
           <div class="field" style="width: 148px;"><label>Zeitraum von</label><input class="input" type="date" value="{{ f.from }}" onChange="{{ f.onFrom }}"></div>
           <div class="field" style="width: 148px;"><label>bis</label><input class="input" type="date" value="{{ f.to }}" onChange="{{ f.onTo }}"></div>
           <div class="field" style="width: 170px;"><label>Ort</label>
@@ -693,6 +698,18 @@
           </div>
         </sc-if>
 
+        <div style="height: 1px; background: var(--color-divider); margin: var(--space-4) 0;"></div>
+        <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: var(--space-2);">Benachrichtigungen per Mail</div>
+        <div style="display: grid; gap: 5px; margin-bottom: var(--space-2);">
+          <sc-for list="{{ notify.opts }}" as="o" hint-placeholder-count="4">
+            <button onClick="{{ o.toggle }}" style="{{ o.style }}">
+              <span style="{{ o.box }}">{{ o.mark }}</span>
+              <span style="font-size: 13px;">{{ o.label }}</span>
+            </button>
+          </sc-for>
+        </div>
+        <div style="font-size: 11.5px; line-height: 1.45; color: var(--color-neutral-700); margin-bottom: var(--space-6);">{{ notify.hint }}</div>
+
         <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: var(--space-2);">Deine Kontakte · {{ contacts.count }}</div>
         <div style="display: grid; gap: 6px;">
           <sc-for list="{{ contacts.list }}" as="c" hint-placeholder-count="0">
@@ -817,11 +834,15 @@
         </div>
         <div class="field" style="margin-top: var(--space-2);"><label>Beschreibung</label><textarea class="input" value="{{ form.note }}" onChange="{{ form.onNote }}" placeholder="Ein paar Sätze dazu."></textarea></div>
 
-        <div style="display: flex; align-items: baseline; justify-content: space-between; margin: var(--space-6) 0 var(--space-2);">
-          <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Infos</div>
-          <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ form.addInfo }}">＋ Zeile</button>
-        </div>
-        <div style="display: grid; gap: 6px;">
+        <button onClick="{{ form.sec.infos.toggle }}" style="{{ form.sec.head }}">
+          <span style="{{ form.sec.infos.sign }}">▸</span>
+          <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Infos</span>
+          <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
+          <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">{{ form.sec.infos.badge }}</span>
+        </button>
+        <sc-if value="{{ form.sec.infos.on }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; gap: 6px; padding-bottom: var(--space-3);">
+          <button class="btn btn-ghost" style="white-space: nowrap; justify-self: start;" onClick="{{ form.addInfo }}">＋ Zeile</button>
           <sc-for list="{{ form.infos }}" as="r" hint-placeholder-count="2">
             <div style="{{ lay.rowInfo }}">
               <input class="input" type="text" value="{{ r.label }}" onChange="{{ r.onLabel }}" placeholder="Bezeichnung">
@@ -830,13 +851,18 @@
             </div>
           </sc-for>
         </div>
+        </sc-if>
 
-        <div style="display: flex; align-items: baseline; justify-content: space-between; margin: var(--space-6) 0 var(--space-2);">
-          <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Personen</div>
-          <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ form.addPerson }}">＋ Person</button>
-        </div>
-        <div style="font-size: 11.5px; line-height: 1.45; color: var(--color-neutral-700); margin-bottom: var(--space-2);">Im Auswahlfeld darunter kannst du die Person einem echten Konto zuordnen — dann findet man sie über den Filter ‚Personen‘ wieder.</div>
-        <div style="display: grid; gap: 6px;">
+        <button onClick="{{ form.sec.personen.toggle }}" style="{{ form.sec.head }}">
+          <span style="{{ form.sec.personen.sign }}">▸</span>
+          <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Personen</span>
+          <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
+          <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">{{ form.sec.personen.badge }}</span>
+        </button>
+        <sc-if value="{{ form.sec.personen.on }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; gap: 6px; padding-bottom: var(--space-3);">
+          <button class="btn btn-ghost" style="white-space: nowrap; justify-self: start;" onClick="{{ form.addPerson }}">＋ Person</button>
+          <div style="font-size: 11.5px; line-height: 1.45; color: var(--color-neutral-700);">Im Auswahlfeld kannst du die Person einem echten Konto zuordnen — dann findet man sie über den Filter ‚Personen‘ wieder.</div>
           <sc-for list="{{ form.people }}" as="r" hint-placeholder-count="2">
             <div style="display: grid; gap: 4px; padding-bottom: 4px;">
               <div style="{{ lay.rowTwo }}">
@@ -856,12 +882,18 @@
           </sc-for>
         </div>
 
-        <div style="display: flex; align-items: baseline; justify-content: space-between; margin: var(--space-6) 0 var(--space-2);">
-          <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Bilder</div>
-          <sc-if value="{{ form.hasCamera }}" hint-placeholder-val="{{ false }}">
-            <label class="btn btn-ghost" style="cursor: pointer; white-space: nowrap;">Foto aufnehmen<input type="file" accept="image/*" capture="environment" onChange="{{ form.onFiles }}" style="display: none;"></label>
-          </sc-if>
-        </div>
+        </sc-if>
+
+        <button onClick="{{ form.sec.bilder.toggle }}" style="{{ form.sec.head }}">
+          <span style="{{ form.sec.bilder.sign }}">▸</span>
+          <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Bilder</span>
+          <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
+          <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">{{ form.sec.bilder.badge }}</span>
+        </button>
+        <sc-if value="{{ form.sec.bilder.on }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ form.hasCamera }}" hint-placeholder-val="{{ false }}">
+          <label class="btn btn-ghost" style="cursor: pointer; white-space: nowrap; display: inline-flex; margin-bottom: var(--space-2);">Foto aufnehmen<input type="file" accept="image/*" capture="environment" onChange="{{ form.onFiles }}" style="display: none;"></label>
+        </sc-if>
         <label onDragOver="{{ form.onDragOver }}" onDrop="{{ form.onDrop }}" style="{{ form.dropStyle }}">
           <input type="file" accept="image/*,.heic,.heif" multiple="{{ true }}" onChange="{{ form.onFiles }}" style="display: none;">
           <span style="font-size: 13.5px; line-height: 1.4;">{{ form.dropLabel }}</span>
@@ -894,19 +926,29 @@
                 <span style="width: 56px; height: 42px; border-radius: var(--radius-md); display: block; background-color: var(--color-surface); background-image: repeating-linear-gradient(45deg, color-mix(in srgb, var(--color-text) 10%, transparent) 0 5px, transparent 5px 10px);"></span>
               </sc-if>
               <input class="input" type="text" value="{{ r.caption }}" onChange="{{ r.onCaption }}" placeholder="Bildunterschrift">
-              <button class="btn btn-secondary btn-icon" onClick="{{ r.remove }}">✕</button>
+              <div style="display: flex; gap: 5px;">
+                <sc-if value="{{ r.src }}" hint-placeholder-val="{{ false }}">
+                  <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ r.edit }}">Bearbeiten</button>
+                </sc-if>
+                <button class="btn btn-secondary btn-icon" onClick="{{ r.remove }}">✕</button>
+              </div>
             </div>
           </sc-for>
         </div>
-        <div style="display: flex; gap: 8px; align-items: center; margin-top: 6px;">
+        <div style="display: flex; gap: 8px; align-items: center; margin-top: 6px; padding-bottom: var(--space-3);">
           <input class="input" type="text" value="{{ form.url }}" onChange="{{ form.onUrl }}" placeholder="https://… Bild-URL einfügen">
           <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ form.addUrl }}">Hinzufügen</button>
         </div>
+        </sc-if>
 
-        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); margin: var(--space-6) 0 var(--space-2);">
-          <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Deko</div>
-          <span style="font-size: 11px; color: var(--color-neutral-700);">Sticker anklicken, dann in der Vorschau ziehen</span>
-        </div>
+        <button onClick="{{ form.sec.deko.toggle }}" style="{{ form.sec.head }}">
+          <span style="{{ form.sec.deko.sign }}">▸</span>
+          <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Deko</span>
+          <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
+          <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">{{ form.sec.deko.badge }}</span>
+        </button>
+        <sc-if value="{{ form.sec.deko.on }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size: 11px; color: var(--color-neutral-700); padding-bottom: var(--space-2);">Sticker anklicken, dann in der Vorschau ziehen</div>
         <div style="{{ lay.decoGrid }}">
           <div style="display: grid; gap: var(--space-3);">
             <div style="display: flex; gap: 6px; flex-wrap: wrap;">
@@ -967,12 +1009,16 @@
             </sc-if>
           </div>
         </div>
+        </sc-if>
 
         <sc-if value="{{ form.vis.mine }}" hint-placeholder-val="{{ true }}">
-          <div style="display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); margin: var(--space-6) 0 var(--space-2);">
-            <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Wer darf dieses Ereignis sehen</div>
-            <span style="font-size: 11px; color: var(--color-neutral-700);">{{ form.vis.count }}</span>
-          </div>
+          <button onClick="{{ form.sec.sicht.toggle }}" style="{{ form.sec.head }}">
+            <span style="{{ form.sec.sicht.sign }}">▸</span>
+            <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Wer darf dieses Ereignis sehen</span>
+            <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
+            <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">{{ form.vis.count }}</span>
+          </button>
+          <sc-if value="{{ form.sec.sicht.on }}" hint-placeholder-val="{{ false }}">
           <div class="seg" role="group" style="margin-bottom: var(--space-2);">
             <sc-for list="{{ form.vis.modes }}" as="m" hint-placeholder-count="4">
               <label class="seg-opt"><input type="radio" name="evvis" checked="{{ m.on }}" onChange="{{ m.pick }}" style="position: absolute; opacity: 0; pointer-events: none;">{{ m.label }}</label>
@@ -1032,12 +1078,89 @@
               </select>
             </div>
           </sc-if>
-          <div style="font-size: 11.5px; line-height: 1.45; color: var(--color-neutral-700); margin-top: 6px;">{{ form.vis.hint }}</div>
+          <div style="font-size: 11.5px; line-height: 1.45; color: var(--color-neutral-700); margin-top: 6px; padding-bottom: var(--space-3);">{{ form.vis.hint }}</div>
+          </sc-if>
         </sc-if>
 
         <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: var(--space-6);">
           <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ closeEditor }}">Abbrechen</button>
           <button class="btn btn-primary" style="white-space: nowrap;" onClick="{{ saveEvent }}">Ereignis speichern</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ bild.open }}" hint-placeholder-val="{{ false }}">
+    <div data-noprint="" data-screen-label="Bild bearbeiten" style="position: fixed; inset: 0; z-index: 125; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 62%, transparent);">
+      <div style="width: min(920px, 96vw); max-height: 94vh; overflow-y: auto; background: var(--color-bg); color: var(--color-text); border-radius: var(--radius-lg); padding: var(--space-6); box-shadow: var(--shadow-lg);">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4);">
+          <div>
+            <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">Bildwerkstatt</div>
+            <h2 style="margin: 3px 0 0; font-size: 26px; line-height: 1.05;">{{ bild.titel }}</h2>
+          </div>
+          <button class="btn btn-secondary btn-icon" onClick="{{ bild.close }}">✕</button>
+        </div>
+        <div style="height: 3px; background: var(--color-text); margin: var(--space-3) 0 var(--space-4);"></div>
+
+        <div onPointerDown="{{ bild.flaecheDown }}" onPointerMove="{{ bild.flaecheMove }}" onPointerUp="{{ bild.flaecheUp }}" onPointerLeave="{{ bild.flaecheUp }}" style="position: relative; display: grid; place-items: center; background: var(--color-surface); border-radius: var(--radius-md); padding: var(--space-3); touch-action: none; overflow: hidden;">
+          <div style="position: relative; display: inline-block; line-height: 0;">
+          <canvas ref="{{ bild.canvasRef }}" style="display: block; max-width: 100%; max-height: 52vh; width: auto; height: auto; cursor: crosshair;"></canvas>
+          <div style="{{ bild.ebene }}">
+            <sc-if value="{{ bild.hatCrop }}" hint-placeholder-val="{{ false }}">
+              <div style="{{ bild.cropRahmen }}"></div>
+            </sc-if>
+            <sc-for list="{{ bild.stickers }}" as="k" hint-placeholder-count="0">
+              <div onPointerDown="{{ k.down }}" style="{{ k.style }}">{{ k.glyph }}</div>
+            </sc-for>
+          </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: var(--space-4);">
+          <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ bild.linksDrehen }}">↺ Links drehen</button>
+          <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ bild.rechtsDrehen }}">↻ Rechts drehen</button>
+          <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ bild.spiegelH }}">⇋ Waagerecht spiegeln</button>
+          <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ bild.spiegelV }}">⇵ Senkrecht spiegeln</button>
+          <sc-if value="{{ bild.hatCrop }}" hint-placeholder-val="{{ false }}">
+            <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ bild.cropWeg }}">Zuschnitt aufheben</button>
+          </sc-if>
+        </div>
+
+        <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700); margin: var(--space-4) 0 var(--space-2);">Filter</div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          <sc-for list="{{ bild.filter }}" as="f" hint-placeholder-count="9">
+            <button onClick="{{ f.pick }}" style="{{ f.style }}">{{ f.label }}</button>
+          </sc-for>
+        </div>
+
+        <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700); margin: var(--space-4) 0 var(--space-2);">Sticker</div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+          <sc-for list="{{ bild.bogen }}" as="k" hint-placeholder-count="9">
+            <button onClick="{{ k.add }}" title="{{ k.label }}" style="{{ k.chip }}">{{ k.glyph }}</button>
+          </sc-for>
+          <span style="flex: 1;"></span>
+          <sc-if value="{{ bild.hatSel }}" hint-placeholder-val="{{ false }}">
+            <label style="display: grid; gap: 2px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">Größe
+              <input type="range" min="0.4" max="3" step="0.05" value="{{ bild.selS }}" onChange="{{ bild.onS }}" style="width: 110px; accent-color: var(--color-accent);">
+            </label>
+            <label style="display: grid; gap: 2px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">Drehung
+              <input type="range" min="-60" max="60" step="1" value="{{ bild.selR }}" onChange="{{ bild.onR }}" style="width: 110px; accent-color: var(--color-accent);">
+            </label>
+            <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ bild.selWeg }}">Sticker entfernen</button>
+          </sc-if>
+        </div>
+
+        <div style="font-size: 11.5px; line-height: 1.45; color: var(--color-neutral-700); margin-top: var(--space-3);">{{ bild.hinweis }}</div>
+        <sc-if value="{{ bild.busy }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top: 7px; font-size: 12.5px; padding: 7px 10px; border-radius: var(--radius-md); background: var(--color-accent-100); color: var(--color-accent-700);">{{ bild.busy }}</div>
+        </sc-if>
+        <sc-if value="{{ bild.err }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top: 7px; font-size: 12.5px; padding: 7px 10px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700);">{{ bild.err }}</div>
+        </sc-if>
+
+        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: var(--space-6);">
+          <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ bild.close }}">Abbrechen</button>
+          <button class="btn btn-primary" style="white-space: nowrap;" onClick="{{ bild.speichern }}">Bild übernehmen</button>
         </div>
       </div>
     </div>
@@ -1288,6 +1411,23 @@ const TRANSITIONS = [["fade", "Überblenden"], ["slide", "Schieben"], ["zoom", "
 const LEVELS = [["view", "Nur ansehen"], ["comment", "Bilder kommentieren"], ["edit", "Inhalte bearbeiten"], ["full", "Alles bearbeiten"], ["blocked", "Gesperrt"]];
 const RANK = { none: 0, view: 1, comment: 2, edit: 3, full: 4 };
 const PW_LINK_SEK = 600;
+
+const BILDFILTER = [
+  ["keine", "Original", "none"],
+  ["sw", "Schwarzweiß", "grayscale(1) contrast(1.06)"],
+  ["sepia", "Sepia", "sepia(0.72) contrast(1.04) saturate(1.1)"],
+  ["kraeftig", "Kräftig", "saturate(1.45) contrast(1.1)"],
+  ["kuehl", "Kühl", "saturate(1.05) hue-rotate(-12deg) brightness(1.03)"],
+  ["warm", "Warm", "sepia(0.28) saturate(1.2) brightness(1.04)"],
+  ["hell", "Heller", "brightness(1.18) contrast(0.96)"],
+  ["dunkel", "Dunkler", "brightness(0.84) contrast(1.12)"],
+  ["zeitung", "Zeitungsdruck", "grayscale(1) contrast(1.5) brightness(1.05)"]
+];
+const filterWert = function (id) {
+  const f = BILDFILTER.filter((x) => x[0] === id)[0];
+  return f ? f[2] : "none";
+};
+const BILDSTICKER = ["stern", "funke", "bluete", "rosette", "herz", "sonne", "note", "pfeil", "schirm"];
 
 /* true = Fehlercodes werden angezeigt, false = nichts.
    Bedeutung der Codes: siehe Fehlercodes.dc.html */
@@ -1627,6 +1767,9 @@ class Component extends DCLogic {
     storeCheck: "",
     pwLinkAt: 0,
     pwConfirm: false,
+    secOpen: {},
+    notify: {},
+    imgEdit: null,
     zoomImg: null,
     users: [],
     session: null,
@@ -1730,8 +1873,14 @@ class Component extends DCLogic {
     });
   };
 
-  componentDidUpdate() {
+  componentDidUpdate(vp, vs) {
     this.applyTheme();
+    if (this.state.imgEdit && this.editCanvas) {
+      const a = vs && vs.imgEdit, b = this.state.imgEdit;
+      if (!a || a.i !== b.i || a.rot !== b.rot || a.fh !== b.fh || a.fv !== b.fv || a.filt !== b.filt) {
+        this.zeichneVorschau();
+      }
+    }
     if (this.syncLook()) return;
     this.persist();
     if (this.audio) this.audio.volume = this.state.show.volume;
@@ -2387,6 +2536,15 @@ class Component extends DCLogic {
   canCreate() { return !!this.me(); }
 
 
+  /* Kurze Mail an jemanden — greift nur in der Cloud und nur,
+     wenn die Person sie eingestellt hat. Fehler bleiben stumm. */
+  melden(empfaengerId, art, betreff, text) {
+    if (!this.state.cloud || !empfaengerId) return;
+    const CC = window.ChronikCloud;
+    if (!CC || !CC.notify) return;
+    CC.notify(empfaengerId, art, betreff, text).catch(() => {});
+  }
+
   /* ---------- Kontakte ---------- */
 
   askFriend = (otherId) => {
@@ -2399,7 +2557,13 @@ class Component extends DCLogic {
     if (fs.some((f) => f.status === "pending" && pair(f))) return this.setState({ fMsg: errLabel("K-02") });
     if (this.state.cloud && window.ChronikCloud.askFriend) {
       this.setState({ fMsg: "Anfrage verschickt." });
-      window.ChronikCloud.askFriend(otherId).then(() => this.cloudSync()).catch((e) => this.handleCloudError(e));
+      window.ChronikCloud.askFriend(otherId)
+        .then(() => {
+          this.melden(otherId, "anfrage", "Neue Kontaktanfrage in der Chronik",
+            me.username + " möchte sich mit dir verbinden. Öffne die Chronik und schau unter „Kontakte“ nach.");
+          return this.cloudSync();
+        })
+        .catch((e) => this.handleCloudError(e));
       return;
     }
     this.setState({
@@ -2410,7 +2574,17 @@ class Component extends DCLogic {
 
   answerFriend = (id, accept) => {
     if (this.state.cloud && window.ChronikCloud.answerFriend) {
-      window.ChronikCloud.answerFriend(id, accept).then(() => this.cloudSync()).catch((e) => this.handleCloudError(e));
+      const rel = (this.state.friends || []).filter((f) => f.id === id)[0];
+      const ich = this.me() || {};
+      window.ChronikCloud.answerFriend(id, accept)
+        .then(() => {
+          if (accept && rel) {
+            this.melden(rel.from === ich.id ? rel.to : rel.from, "angenommen", "Kontaktanfrage angenommen",
+              ich.username + " hat deine Anfrage angenommen. Ihr könnt euch jetzt Ereignisse freigeben.");
+          }
+          return this.cloudSync();
+        })
+        .catch((e) => this.handleCloudError(e));
       return;
     }
     const fs = this.state.friends || [];
@@ -2458,8 +2632,16 @@ class Component extends DCLogic {
       const cd0 = Object.assign({}, this.state.cdraft);
       cd0[key] = "";
       this.setState({ cdraft: cd0 });
+      const ev0 = this.state.events.filter((x) => x.id === eventId)[0] || {};
+      const besitzer = ev0.by && ev0.by !== u.id ? ev0.by : "";
       window.ChronikCloud.addComment(eventId, idx, text)
-        .then(() => this.cloudSync())
+        .then(() => {
+          if (besitzer) {
+            this.melden(besitzer, "kommentar", "Neuer Kommentar in der Chronik",
+              u.username + " hat ein Bild bei „" + (ev0.name || "deinem Ereignis") + "“ kommentiert.");
+          }
+          return this.cloudSync();
+        })
         .catch((e) => this.handleCloudError(e));
       return;
     }
@@ -2781,7 +2963,7 @@ class Component extends DCLogic {
 
   newEvent = () => {
     const today = new Date().toISOString().slice(0, 10);
-    this.setState({ draft: { id: null, name: "", date: today, end: "", place: "", kicker: "", note: "", infos: [{ label: "", value: "" }], people: [], images: [], deco: { fx: [], pal: "thema", stickers: [] }, vis: "private", who: [], gwho: [], perms: {}, share: "view", by: (this.me() || {}).id || "", url: "", partial: false }, decoSel: null, pickQ: "", drawer: false, admin: false });
+    this.setState({ draft: { id: null, name: "", date: today, end: "", place: "", kicker: "", note: "", infos: [{ label: "", value: "" }], people: [], images: [], deco: { fx: [], pal: "thema", stickers: [] }, vis: "private", who: [], gwho: [], perms: {}, share: "view", by: (this.me() || {}).id || "", url: "", partial: false }, decoSel: null, pickQ: "", drawer: false, admin: false, secOpen: {} });
   };
 
   editEvent(id) {
@@ -2790,7 +2972,7 @@ class Component extends DCLogic {
     const lvl = this.levelFor(e);
     if (lvl < 3) return;
     this.setState({
-      decoSel: null,
+      decoSel: null, secOpen: {},
       draft: {
         id: e.id, name: e.name || "", date: e.date || "", end: e.end || "", place: e.place || "",
         kicker: e.kicker || "", note: e.note || "",
@@ -2837,9 +3019,18 @@ class Component extends DCLogic {
     };
     if (this.state.cloud) {
       const payload = Object.assign({}, clean, { id: d.id || null, resolvedWho: this.resolveWho(clean.who, clean.gwho) });
+      const ich = this.me() || {};
+      const fremd = d.id && clean.by && clean.by !== ich.id ? clean.by : "";
       this.setState({ draft: null, cloudBusy: true });
       window.ChronikCloud.saveEvent(payload)
-        .then((id) => { this.setState({ cloudBusy: false, openId: id || null }); return this.cloudSync(); })
+        .then((id) => {
+          this.setState({ cloudBusy: false, openId: id || null });
+          if (fremd) {
+            this.melden(fremd, "bearbeitet", "Dein Ereignis wurde geändert",
+              ich.username + " hat „" + (clean.name || "ein Ereignis") + "“ bearbeitet. Schau in der Chronik nach.");
+          }
+          return this.cloudSync();
+        })
         .catch((e) => this.handleCloudError(e));
       return;
     }
@@ -3109,6 +3300,136 @@ class Component extends DCLogic {
       });
     });
   }
+
+  /* ---------- Bildbearbeitung ---------- */
+
+  openImgEdit = (i) => {
+    const r = ((this.state.draft || {}).images || [])[i];
+    if (!r || !r.src) return;
+    this.setState({
+      imgEdit: { i: i, rot: 0, fh: false, fv: false, filt: "keine", crop: null, stickers: [], sel: null, busy: "", err: "" }
+    });
+  };
+
+  closeImgEdit = () => this.setState({ imgEdit: null });
+
+  imgSet(patch) {
+    if (!this.state.imgEdit) return;
+    this.setState({ imgEdit: Object.assign({}, this.state.imgEdit, patch) });
+  }
+
+  /* Bild in der Vorschau zeichnen — was hier steht, wird auch gespeichert. */
+  async zeichneVorschau() {
+    const e = this.state.imgEdit;
+    const cv = this.editCanvas;
+    if (!e || !cv) return;
+    const r = ((this.state.draft || {}).images || [])[e.i];
+    if (!r || !r.src) return;
+    if (this._editSrc !== r.src) {
+      this._editImg = await new Promise((res, rej) => {
+        const im = new Image();
+        im.crossOrigin = "anonymous";
+        im.onload = () => res(im);
+        im.onerror = () => res(null);
+        im.src = r.src;
+      });
+      this._editSrc = r.src;
+    }
+    const im = this._editImg;
+    if (!im) return;
+    const quer = e.rot === 90 || e.rot === 270;
+    const bw = quer ? im.naturalHeight : im.naturalWidth;
+    const bh = quer ? im.naturalWidth : im.naturalHeight;
+    const max = 900;
+    const f = Math.min(1, max / Math.max(bw, bh));
+    cv.width = Math.round(bw * f);
+    cv.height = Math.round(bh * f);
+    const g = cv.getContext("2d");
+    g.clearRect(0, 0, cv.width, cv.height);
+    g.save();
+    g.filter = filterWert(e.filt);
+    g.translate(cv.width / 2, cv.height / 2);
+    g.rotate((e.rot * Math.PI) / 180);
+    g.scale(e.fh ? -1 : 1, e.fv ? -1 : 1);
+    const zw = (quer ? cv.height : cv.width);
+    const zh = (quer ? cv.width : cv.height);
+    g.drawImage(im, -zw / 2, -zh / 2, zw, zh);
+    g.restore();
+  }
+
+  /* Alles zusammenrechnen und als Datei zurückgeben. */
+  async backeBild() {
+    const e = this.state.imgEdit;
+    const r = ((this.state.draft || {}).images || [])[e.i];
+    const im = await new Promise((res) => {
+      const x = new Image();
+      x.crossOrigin = "anonymous";
+      x.onload = () => res(x);
+      x.onerror = () => res(null);
+      x.src = r.src;
+    });
+    if (!im) throw new Error("D-15");
+
+    const quer = e.rot === 90 || e.rot === 270;
+    const bw = quer ? im.naturalHeight : im.naturalWidth;
+    const bh = quer ? im.naturalWidth : im.naturalHeight;
+    const a = document.createElement("canvas");
+    a.width = bw; a.height = bh;
+    const ga = a.getContext("2d");
+    ga.filter = filterWert(e.filt);
+    ga.translate(bw / 2, bh / 2);
+    ga.rotate((e.rot * Math.PI) / 180);
+    ga.scale(e.fh ? -1 : 1, e.fv ? -1 : 1);
+    ga.drawImage(im, -im.naturalWidth / 2, -im.naturalHeight / 2);
+
+    const c = e.crop && e.crop.w > 0.05 && e.crop.h > 0.05 ? e.crop : { x: 0, y: 0, w: 1, h: 1 };
+    const b = document.createElement("canvas");
+    b.width = Math.max(1, Math.round(bw * c.w));
+    b.height = Math.max(1, Math.round(bh * c.h));
+    const gb = b.getContext("2d");
+    gb.drawImage(a, Math.round(bw * c.x), Math.round(bh * c.y), b.width, b.height, 0, 0, b.width, b.height);
+
+    (e.stickers || []).forEach((st2) => {
+      const px = (st2.x - c.x) / c.w, py = (st2.y - c.y) / c.h;
+      if (px < 0 || px > 1 || py < 0 || py > 1) return;
+      gb.save();
+      gb.translate(px * b.width, py * b.height);
+      gb.rotate(((st2.r || 0) * Math.PI) / 180);
+      const groesse = Math.round(Math.min(b.width, b.height) * 0.12 * (st2.s || 1));
+      gb.font = groesse + "px system-ui, \"Segoe UI Emoji\", sans-serif";
+      gb.textAlign = "center";
+      gb.textBaseline = "middle";
+      gb.fillStyle = st2.c || "#ffffff";
+      gb.shadowColor = "rgba(0, 0, 0, 0.35)";
+      gb.shadowBlur = Math.round(groesse * 0.18);
+      gb.fillText(st2.g, 0, 0);
+      gb.restore();
+    });
+
+    const blob = await new Promise((res) => b.toBlob(res, "image/jpeg", 0.88));
+    if (!blob) throw new Error("D-15");
+    return new File([blob], (r.caption || "bild") + ".jpg", { type: "image/jpeg" });
+  }
+
+  speichereBild = async () => {
+    const e = this.state.imgEdit;
+    if (!e || e.busy) return;
+    this.imgSet({ busy: "Bild wird gespeichert …", err: "" });
+    try {
+      const datei = await this.backeBild();
+      const rows = (this.state.draft.images || []).slice();
+      if (this.state.cloud) {
+        const neu = await window.ChronikCloud.uploadImage(datei);
+        rows[e.i] = Object.assign({}, rows[e.i], { src: neu.src || "", key: neu.key || "", path: neu.path || "" });
+      } else {
+        rows[e.i] = Object.assign({}, rows[e.i], { src: await this.readAsDataUrl(datei) });
+      }
+      this._editSrc = null;
+      this.setState({ draft: Object.assign({}, this.state.draft, { images: rows }), imgEdit: null });
+    } catch (err) {
+      this.imgSet({ busy: "", err: errLabel(err) });
+    }
+  };
 
   /* ---------- Deko ---------- */
 
@@ -3500,7 +3821,7 @@ class Component extends DCLogic {
           }
         };
       }),
-      images: (d0.images || []).map((r, i) => ({ key: "fm" + i, src: r.src || "", empty: !r.src, caption: r.caption || "", onCaption: this.rowSet("images", i, "caption"), remove: this.rowDel("images", i) })),
+      images: (d0.images || []).map((r, i) => ({ key: "fm" + i, src: r.src || "", empty: !r.src, caption: r.caption || "", edit: () => this.openImgEdit(i), onCaption: this.rowSet("images", i, "caption"), remove: this.rowDel("images", i) })),
       addInfo: this.rowAdd("infos", { label: "", value: "" }),
       addPerson: this.rowAdd("people", { name: "", role: "", uid: "" }),
       addUrl: () => {
@@ -3533,6 +3854,40 @@ class Component extends DCLogic {
       checkStore: this.checkStore,
       dropLabel: st.dragOver ? "Loslassen — Bilder werden übernommen" : isTouch() ? "Hier tippen und Fotos auswählen" : "Bilder hierher ziehen oder hier klicken",
       dropHint: "bis zu 40 auf einmal · werden automatisch verkleinert",
+      sec: (function (self) {
+        const off = st.secOpen || {};
+        const mk = (id, badge) => ({
+          on: !!off[id],
+          badge: badge,
+          sign: {
+            display: "inline-block", fontSize: "10px", width: "12px",
+            color: "var(--color-accent-700)",
+            transform: off[id] ? "rotate(90deg)" : "none",
+            transition: "transform 160ms ease"
+          },
+          toggle: () => {
+            const n = Object.assign({}, self.state.secOpen);
+            n[id] = !n[id];
+            self.setState({ secOpen: n });
+          }
+        });
+        const zahl = (n, ein, viele) => (n ? plural(n, ein, viele) : "leer");
+        const dk = d0.deco || {};
+        const dekoN = ((dk.fx || []).length + (dk.stickers || []).length);
+        return {
+          head: {
+            display: "flex", alignItems: "center", gap: "9px", width: "100%",
+            font: "inherit", textAlign: "left", cursor: "pointer", border: 0,
+            background: "transparent", color: "var(--color-text)",
+            padding: "9px 0", margin: "0", borderTop: "1px solid var(--color-divider)"
+          },
+          infos: mk("infos", zahl((d0.infos || []).filter((r) => r.label || r.value).length, "Zeile", "Zeilen")),
+          personen: mk("personen", zahl((d0.people || []).filter((r) => r.name).length, "Person", "Personen")),
+          bilder: mk("bilder", zahl((d0.images || []).length, "Bild", "Bilder")),
+          deko: mk("deko", dekoN ? plural(dekoN, "Element", "Elemente") : "keine"),
+          sicht: mk("sicht", "")
+        };
+      })(this),
       dropStyle: { display: "grid", placeItems: "center", gap: "4px", padding: isTouch() ? "26px 20px" : "20px", minHeight: isTouch() ? "88px" : "auto", textAlign: "center", cursor: "pointer", border: "1px dashed " + (st.dragOver ? "var(--color-accent)" : "var(--color-divider)"), borderRadius: "var(--radius-md)", background: st.dragOver ? "color-mix(in srgb, var(--color-accent) 10%, transparent)" : "var(--color-surface)", color: "var(--color-neutral-700)" },
       deco: decoUI,
       vis: dk ? (function (self) {
@@ -3871,7 +4226,8 @@ class Component extends DCLogic {
       logout: this.logout,
       auth: {
         isLogin: st.authMode === "login", isRegister: st.authMode === "register", isReset: st.authMode === "reset",
-        needsRepeat: st.authMode === "register" || st.authMode === "reset" || st.authMode === "newpw",
+        needsPw: st.authMode !== "reset",
+        needsRepeat: st.authMode === "register" || st.authMode === "newpw",
         needsEmail: st.authMode !== "newpw",
         confirmStep: st.authMode === "newpw" && !!st.pwConfirm,
         showCta: !(st.authMode === "newpw" && !!st.pwConfirm),
@@ -3928,7 +4284,7 @@ class Component extends DCLogic {
         resetLink: st.authMode === "reset" ? "Zurück zur Anmeldung" : "Passwort vergessen?",
         title: st.authMode === "newpw" ? "Neues Passwort wählen" : st.authMode === "reset" ? (st.cloud ? "Passwort zurücksetzen" : "Neues Passwort setzen") : st.authMode === "register" ? (st.users.length ? "Konto anlegen" : "Chronik einrichten") : "Willkommen zurück",
         idLabel: st.authMode === "login" ? "E-Mail oder Benutzername" : "E-Mail",
-        pwLabel: st.authMode === "reset" ? "Neues Passwort" : "Passwort",
+        pwLabel: "Passwort",
         pwAuto: st.authMode === "login" ? "current-password" : "new-password",
         username: st.authForm.username, email: st.authForm.email, pw: st.authForm.pw, pw2: st.authForm.pw2, 
         pwType: st.pwShow ? "text" : "password",
@@ -3954,7 +4310,7 @@ class Component extends DCLogic {
         })),
         strength: strengthWords[score],
         error: errLabel(st.authError), notice: st.authNotice, busy: st.authBusy,
-        cta: st.authBusy ? "Prüfe …" : st.authMode === "newpw" ? "Weiter" : st.authMode === "reset" ? (st.cloud ? "Mail mit Link schicken" : "Passwort neu setzen") : st.authMode === "register" ? "Konto anlegen" : "Anmelden",
+        cta: st.authBusy ? "Prüfe …" : st.authMode === "newpw" ? "Weiter" : st.authMode === "reset" ? "Link anfordern" : st.authMode === "register" ? "Konto anlegen" : "Anmelden",
         footnote: st.cloud
           ? (st.authMode === "reset" ? "Gibt es zu dieser Adresse ein Konto, geht eine Mail mit einem Link hinaus. Er gilt zehn Minuten; danach kannst du ein neues Passwort vergeben."
             : st.authMode === "register" ? "Nach dem Anlegen kommt eine Bestätigungsmail. Danach darfst du eigene Ereignisse anlegen und selbst bestimmen, wer sie sieht."
@@ -4015,6 +4371,9 @@ class Component extends DCLogic {
       f: {
         q: f.q, from: f.from, to: f.to, place: f.place, by: f.by || "",
         onQ: this.setFilter("q"), onFrom: this.setFilter("from"), onTo: this.setFilter("to"), onPlace: this.setFilter("place"), onBy: this.setFilter("by"),
+        aktiv: !!(f.q || f.from || f.to || f.place || f.by || (f.cats || []).length || (f.persons || []).length),
+        anzahl: [f.q, f.from, f.to, f.place, f.by].filter(Boolean).length + (f.cats || []).length + (f.persons || []).length,
+        reset: this.resetFilters,
         authors: [{ key: "a0", value: "", label: "Alle Personen" }].concat(st.users.filter((u) => all.some((e) => e.by === u.id)).map((u) => ({ key: "a" + u.id, value: u.id, label: u.username + (me && u.id === me.id ? " (du)" : "") }))),
         places: [{ key: "p0", value: "", label: "Alle Orte" }].concat(places.map((p) => ({ key: "p" + p, value: p, label: p }))),
         cats: cats.map((c) => ({ key: "c" + c, label: c, style: chip(f.cats.indexOf(c) >= 0), toggle: this.toggleChip("cats", c) })),
@@ -4173,6 +4532,38 @@ class Component extends DCLogic {
       admin: st.admin,
       toggleAdmin: () => this.setState({ admin: !st.admin, drawer: false }),
       contacts: contacts,
+      notify: (function (self) {
+        const mich = st.users.filter((u) => me && u.id === me.id)[0] || {};
+        const n = Object.assign({}, mich.notify || st.notify || {});
+        const setzen = (k) => () => {
+          const neu = Object.assign({}, n);
+          neu[k] = !neu[k];
+          self.setState({ notify: neu });
+          if (st.cloud && window.ChronikCloud.saveNotify) {
+            window.ChronikCloud.saveNotify(neu).then(() => self.cloudSync()).catch(() => {});
+          }
+        };
+        const zeile = (k, label) => {
+          const an = !!n[k];
+          return {
+            key: k, label: label, mark: an ? "✓" : "",
+            box: { width: "17px", height: "17px", borderRadius: "3px", display: "grid", placeItems: "center", fontSize: "11px", flex: "0 0 auto", background: an ? "var(--color-accent)" : "transparent", color: "var(--color-bg)", border: "1px solid " + (an ? "var(--color-accent)" : "var(--color-divider)") },
+            style: { display: "flex", alignItems: "center", gap: "9px", width: "100%", font: "inherit", textAlign: "left", cursor: "pointer", padding: "5px 7px", borderRadius: "var(--radius-md)", border: 0, background: an ? "color-mix(in srgb, var(--color-accent) 9%, transparent)" : "transparent", color: "var(--color-text)" },
+            toggle: setzen(k)
+          };
+        };
+        return {
+          opts: [
+            zeile("anfrage", "Jemand schickt mir eine Kontaktanfrage"),
+            zeile("angenommen", "Meine Anfrage wurde angenommen"),
+            zeile("bearbeitet", "Jemand ändert eines meiner Ereignisse"),
+            zeile("kommentar", "Jemand kommentiert eines meiner Bilder")
+          ],
+          hint: st.cloud
+            ? "Höchstens eine Mail je Ereignis und Person, damit der Gratis-Versand reicht (300 Mails am Tag)."
+            : "Mails gibt es erst mit angeschlossener Datenbank."
+        };
+      })(this),
       themeName: t.name, themeState: Object.keys(st.override).length ? "geändert — noch nicht gespeichert" : (t.kicker || "Vorlage"),
       presets: presets, presetCount: presets.length, groups: groups,
       canDelete: /^c/.test(String(t.id)),
@@ -4187,6 +4578,115 @@ class Component extends DCLogic {
       printGeo: { position: "relative", width: (PL.width + 90) + "px", height: (60 + PL.lanes * pLaneH + 40) + "px", padding: "0" },
       printAxis: { position: "absolute", left: "44px", top: "46px", width: (PL.width) + "px" },
       openShowAll: () => this.openShow("all", ""),
+      bild: (function (self) {
+        const e = st.imgEdit;
+        if (!e) return { open: false, stickers: [], filter: [], bogen: [] };
+        const r = ((st.draft || {}).images || [])[e.i] || {};
+        const wahl = e.sel != null ? (e.stickers || [])[e.sel] : null;
+        const chip = (an) => ({
+          font: "inherit", fontSize: "11.5px", letterSpacing: "0.04em", padding: "4px 11px", cursor: "pointer",
+          whiteSpace: "nowrap", borderRadius: "99px",
+          border: "1px solid " + (an ? "var(--color-accent)" : "var(--color-divider)"),
+          background: an ? "var(--color-accent)" : "transparent",
+          color: an ? "var(--color-bg)" : "var(--color-text)"
+        });
+        return {
+          open: true,
+          titel: r.caption || "Bild",
+          close: self.closeImgEdit,
+          canvasRef: (el) => { self.editCanvas = el; },
+          linksDrehen: () => self.imgSet({ rot: (e.rot + 270) % 360, crop: null }),
+          rechtsDrehen: () => self.imgSet({ rot: (e.rot + 90) % 360, crop: null }),
+          spiegelH: () => self.imgSet({ fh: !e.fh }),
+          spiegelV: () => self.imgSet({ fv: !e.fv }),
+          hatCrop: !!e.crop,
+          cropWeg: () => self.imgSet({ crop: null }),
+          cropRahmen: e.crop ? {
+            position: "absolute",
+            left: (e.crop.x * 100) + "%", top: (e.crop.y * 100) + "%",
+            width: (e.crop.w * 100) + "%", height: (e.crop.h * 100) + "%",
+            border: "2px solid var(--color-accent)",
+            boxShadow: "0 0 0 9999px color-mix(in srgb, var(--color-text) 55%, transparent)",
+            pointerEvents: "none"
+          } : { display: "none" },
+          ebene: { position: "absolute", inset: "0", pointerEvents: "none" },
+          filter: BILDFILTER.map((f) => ({
+            key: f[0], label: f[1], style: chip(e.filt === f[0]),
+            pick: () => self.imgSet({ filt: f[0] })
+          })),
+          bogen: BILDSTICKER.map((k) => {
+            const def = stickerDef(k);
+            return {
+              key: k, glyph: def.g, label: def.label,
+              chip: { display: "grid", placeItems: "center", width: "36px", height: "36px", padding: 0, cursor: "pointer", fontSize: "19px", background: "var(--color-surface)", border: "1px solid var(--color-divider)", borderRadius: "var(--radius-md)", color: "var(--color-text)" },
+              add: () => {
+                const liste = (e.stickers || []).concat([{ g: def.g, x: 0.5, y: 0.5, s: 1, r: 0, c: "#ffffff" }]);
+                self.imgSet({ stickers: liste, sel: liste.length - 1 });
+              }
+            };
+          }),
+          stickers: (e.stickers || []).map((k, i) => ({
+            key: "bk" + i, glyph: k.g,
+            down: (ev) => { ev.preventDefault(); ev.stopPropagation(); self.dragBild = i; self.imgSet({ sel: i }); },
+            style: {
+              position: "absolute", left: (k.x * 100) + "%", top: (k.y * 100) + "%",
+              transform: "translate(-50%, -50%) rotate(" + (k.r || 0) + "deg)",
+              fontSize: Math.round(30 * (k.s || 1)) + "px", lineHeight: 1, color: k.c || "#fff",
+              textShadow: "0 1px 3px rgba(0, 0, 0, 0.4)", cursor: "grab", pointerEvents: "auto",
+              outline: e.sel === i ? "2px solid var(--color-accent)" : "none", outlineOffset: "3px"
+            }
+          })),
+          hatSel: !!wahl,
+          selS: wahl ? wahl.s : 1,
+          selR: wahl ? wahl.r : 0,
+          onS: (ev) => {
+            const l = (e.stickers || []).slice();
+            l[e.sel] = Object.assign({}, l[e.sel], { s: Number(ev.target.value) });
+            self.imgSet({ stickers: l });
+          },
+          onR: (ev) => {
+            const l = (e.stickers || []).slice();
+            l[e.sel] = Object.assign({}, l[e.sel], { r: Number(ev.target.value) });
+            self.imgSet({ stickers: l });
+          },
+          selWeg: () => self.imgSet({ stickers: (e.stickers || []).filter((_, j) => j !== e.sel), sel: null }),
+          flaecheDown: (ev) => {
+            const cv = self.editCanvas;
+            if (!cv) return;
+            const b = cv.getBoundingClientRect();
+            const x = (ev.clientX - b.left) / b.width, y = (ev.clientY - b.top) / b.height;
+            if (x < 0 || x > 1 || y < 0 || y > 1) return;
+            self.cropStart = { x: x, y: y };
+            self.imgSet({ crop: { x: x, y: y, w: 0, h: 0 }, sel: null });
+          },
+          flaecheMove: (ev) => {
+            const cv = self.editCanvas;
+            if (!cv) return;
+            const b = cv.getBoundingClientRect();
+            const x = Math.max(0, Math.min(1, (ev.clientX - b.left) / b.width));
+            const y = Math.max(0, Math.min(1, (ev.clientY - b.top) / b.height));
+            if (self.dragBild != null) {
+              const l = (self.state.imgEdit.stickers || []).slice();
+              l[self.dragBild] = Object.assign({}, l[self.dragBild], { x: x, y: y });
+              self.imgSet({ stickers: l });
+              return;
+            }
+            if (!self.cropStart) return;
+            const s0 = self.cropStart;
+            self.imgSet({ crop: { x: Math.min(s0.x, x), y: Math.min(s0.y, y), w: Math.abs(x - s0.x), h: Math.abs(y - s0.y) } });
+          },
+          flaecheUp: () => {
+            self.dragBild = null;
+            const c = (self.state.imgEdit || {}).crop;
+            if (self.cropStart && c && (c.w < 0.04 || c.h < 0.04)) self.imgSet({ crop: null });
+            self.cropStart = null;
+          },
+          hinweis: "Mit gedrückter Maustaste über das Bild ziehen wählt einen Ausschnitt. Sticker landen in der Mitte und lassen sich verschieben.",
+          busy: e.busy || "",
+          err: e.err || "",
+          speichern: self.speichereBild
+        };
+      })(this),
       zoom: {
         open: !!st.zoomImg,
         src: (st.zoomImg || {}).src || "",
