@@ -49,5 +49,6 @@ window.CHRONIK_CONFIG = {
      true = die Chronik darf auch auf http://192.168… laufen und
      dort Konten anlegen. Nur fürs eigene Netz gedacht; im
      Internet immer false lassen.                               */
-  homeNetwork: true
+   debug: true,
+   homeNetwork: true
 };
