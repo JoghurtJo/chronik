@@ -88,9 +88,9 @@
       </div>
 
       <div style="display: flex; gap: var(--space-6); flex-wrap: wrap; margin-top: var(--space-6); font-size: 13.5px; line-height: 1.4; color: var(--color-neutral-700);">
-        <span>Alle schreiben mit</span>
-        <span>Du gibst frei, wer was sieht</span>
-        <span>Achtzehn Gesichter zur Wahl</span>
+        <span>Dein Leben</span>
+        <span>Eure Geschichten</span>
+        <span>Erleben wie damals</span>
       </div>
     </div>
 
@@ -2668,12 +2668,27 @@ class Component extends DCLogic {
   };
 
   open(id) {
-    this.setState({ openId: this.state.openId === id ? null : id });
-    const box = this.stage;
-    if (box) {
+    const wirdOffen = this.state.openId !== id;
+    this.setState({ openId: wirdOffen ? id : null }, () => {
+      const box = this.stage;
+      if (!box) return;
       const it = this.geoItems && this.geoItems.filter((x) => x.id === id)[0];
-      if (it) box.scrollTo({ left: Math.max(0, it.x - 120), behavior: "smooth" });
-    }
+      if (!it) return;
+      /* Erst nach dem Neuzeichnen scrollen — vorher ist die Bahn
+         noch schmaler und das Ziel würde abgeschnitten. */
+      window.requestAnimationFrame(() => {
+        const w = wirdOffen ? (this.geoOpenW || 320) : 268;
+        const mitte = it.x + w / 2 - box.clientWidth / 2;
+        const ziel = Math.max(0, Math.min(mitte, box.scrollWidth - box.clientWidth));
+        const sanft = !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+        try { box.scrollTo({ left: ziel, behavior: sanft ? "smooth" : "auto" }); }
+        catch (e) { box.scrollLeft = ziel; }
+        /* Manche Browser führen sanftes Scrollen nicht aus — dann hart setzen. */
+        window.setTimeout(() => {
+          if (Math.abs(box.scrollLeft - ziel) > 8) box.scrollLeft = ziel;
+        }, 420);
+      });
+    });
   }
 
   togglePlay = () => {
@@ -3216,7 +3231,13 @@ class Component extends DCLogic {
     const showRuler = this.props.showRuler !== false;
     const canCreate = this.canCreate();
 
+    const openW = Math.round(cardW * 2.2);
     this.geoItems = L.items.map((it) => ({ id: it.e.id, x: it.x + padL }));
+    this.geoOpenW = openW;
+    /* Das aufgeklappte Fenster ist breiter als die Spur. Beim letzten
+       Ereignis würde es rechts abgeschnitten — darum wächst die Bahn mit. */
+    const openIt = L.items.filter((it) => it.e.id === st.openId)[0];
+    const trackW = Math.max(L.width + padL, openIt ? openIt.x + padL + openW + 24 : 0);
 
     let openBottom = 0;
     const cards = L.items.map((it) => {
@@ -3233,7 +3254,7 @@ class Component extends DCLogic {
       }
       return {
         key: e.id,
-        pos: { position: "absolute", left: (it.x + padL) + "px", top: top + "px", width: (isOpen ? Math.round(cardW * 2.2) : cardW) + "px", zIndex: isOpen ? 60 : 10 + it.lane, transition: "width 380ms cubic-bezier(0.16, 1, 0.3, 1)" },
+        pos: { position: "absolute", left: (it.x + padL) + "px", top: top + "px", width: (isOpen ? openW : cardW) + "px", zIndex: isOpen ? 60 : 10 + it.lane, transition: "width 380ms cubic-bezier(0.16, 1, 0.3, 1)" },
         body: { maxHeight: isOpen ? Math.max(360, Math.round(laneH * 3.1)) + "px" : (laneH - 12) + "px", overflow: isOpen ? "auto" : "hidden", overscrollBehavior: "contain", borderRadius: "var(--t-radius, 2px)", transition: "max-height 420ms cubic-bezier(0.16, 1, 0.3, 1)", animationName: "var(--t-anim, tl-glide)", animationDuration: "var(--t-anim-dur, 620ms)", animationTimingFunction: "var(--t-anim-ease, ease-out)", animationFillMode: "both", animationDelay: (60 + it.i * 55) + "ms" },
         noteClip: { maxHeight: isOpen ? "none" : "51px", overflow: "hidden" },
         name: e.name, dateLabel: fmtDate(e.date), kicker: e.kicker || "", place: e.place || "", note: e.note || "",
@@ -4067,8 +4088,8 @@ class Component extends DCLogic {
       crt: t.skin === "crt",
       printRef: (el) => { this.print = el; },
       onScroll: this.onScroll,
-      stageStyle: { position: "relative", width: (L.width + padL) + "px", height: Math.max(560, totalH) + "px" },
-      axisStyle: { position: "absolute", left: "0", top: axisY + "px", width: (L.width + padL) + "px", zIndex: 5 },
+      stageStyle: { position: "relative", width: trackW + "px", height: Math.max(560, totalH) + "px" },
+      axisStyle: { position: "absolute", left: "0", top: axisY + "px", width: trackW + "px", zIndex: 5 },
       cards: cards, markers: markers, bars: bars, ticks: ticks,
       drawer: st.drawer,
       toggleDrawer: () => this.setState({ drawer: !st.drawer, admin: false }),
