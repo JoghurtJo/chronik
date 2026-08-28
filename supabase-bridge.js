@@ -1,7 +1,4 @@
-/* Chronik ↔ Supabase (Konten, Ereignisse) + Cloudflare R2 (Bilder).
-   Stellt window.ChronikCloud bereit. Kein Build, kein npm.
-   Fehler tragen ihren Code selbst; die Bedeutung steht ausschließlich
-   in Fehlercodes.dc.html. */
+/* Chronik ↔ Supabase */
 (function () {
   var CFG = window.CHRONIK_CONFIG || {};
   var SDK = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
@@ -343,6 +340,13 @@
     if (r.error && !/look/i.test(String(r.error.message || ""))) throw fail(code(r.error));
   }
 
+  async function removeComment(id) {
+    var c = await client();
+    var r = await c.from("comments").update({ deleted: true, text: "" }).eq("id", id);
+    if (r.error) throw fail(code(r.error));
+    bump({ p_writes: 1 });
+  }
+
   async function groups() {
     var c = await client();
     var r = await c.from("groups").select("id, name, members").order("name");
@@ -436,11 +440,20 @@
     if (ev.error) throw fail(code(ev.error));
     var rows = ev.data || [];
 
-    var cm = await c.from("comments").select("event_id, image_index, text, created_at, profiles(username)").order("created_at");
+    var cm = await c.from("comments").select("id, event_id, image_index, text, deleted, author, created_at, profiles(username)").order("created_at");
+    if (cm.error && /deleted|author/i.test(String(cm.error.message || ""))) {
+      cm = await c.from("comments").select("id, event_id, image_index, text, created_at, profiles(username)").order("created_at");
+    }
     var byKey = {};
     (cm.data || []).forEach(function (r) {
       var k = r.event_id + ":" + (r.image_index || 0);
-      (byKey[k] = byKey[k] || []).push({ who: (r.profiles && r.profiles.username) || "jemand", text: r.text });
+      (byKey[k] = byKey[k] || []).push({
+        id: r.id,
+        userId: r.author || "",
+        who: (r.profiles && r.profiles.username) || "jemand",
+        text: r.deleted ? "" : r.text,
+        deleted: !!r.deleted
+      });
     });
 
     /* Bild-Adressen besorgen: R2 über den Worker, sonst Supabase-Speicher */
@@ -644,7 +657,7 @@
     groups: groups, saveGroup: saveGroup, removeGroup: removeGroup, saveLook: saveLook,
     friends: friends, askFriend: askFriend, answerFriend: answerFriend, unfriend: unfriend,
     loadEvents: loadEvents, saveEvent: saveEvent, removeEvent: removeEvent,
-    addComment: addComment, uploadImage: uploadImage, imageUrl: imageUrl, storeCheck: storeCheck, onChange: onChange,
+    addComment: addComment, removeComment: removeComment, uploadImage: uploadImage, imageUrl: imageUrl, storeCheck: storeCheck, onChange: onChange,
     snapshot: snapshot, budget: budget, guard: guard,
     isLegacy: function () { return legacySchema; },
     lastR2Error: function () { return lastR2Error; }
