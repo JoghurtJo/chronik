@@ -1,4 +1,7 @@
-/* Chronik ↔ Supabase */
+/* Chronik ↔ Supabase (Konten, Ereignisse) + Cloudflare R2 (Bilder).
+   Stellt window.ChronikCloud bereit. Kein Build, kein npm.
+   Fehler tragen ihren Code selbst; die Bedeutung steht ausschließlich
+   in Fehlercodes.dc.html. */
 (function () {
   var CFG = window.CHRONIK_CONFIG || {};
   var SDK = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
@@ -265,6 +268,66 @@
   }
 
   function recoveryPending() { return /type=recovery/.test(location.hash || ""); }
+
+  function hashToken() {
+    var h = String(location.hash || "").replace(/^#/, "");
+    var m = h.match(/access_token=([^&]+)/);
+    return m ? decodeURIComponent(m[1]) : "";
+  }
+
+  /* Sekunden seit Ausstellung des Links. -1 = unbekannt. */
+  function linkAge() {
+    try {
+      var t = hashToken();
+      if (!t) return -1;
+      var teil = t.split(".")[1];
+      if (!teil) return -1;
+      var roh = teil.replace(/-/g, "+").replace(/_/g, "/");
+      while (roh.length % 4) roh += "=";
+      var p = JSON.parse(atob(roh));
+      if (!p || !p.iat) return -1;
+      return Math.floor(Date.now() / 1000) - Number(p.iat);
+    } catch (e) { return -1; }
+  }
+
+  async function sessionEmail() {
+    var s = await session();
+    return (s && s.user && s.user.email) || "";
+  }
+
+  /* Nach einer Passwortänderung: Sicherheitsmail an dieselbe Adresse.
+     Sie enthält einen frischen Link, mit dem sich die Änderung sofort
+     überschreiben lässt, falls sie nicht vom Kontoinhaber kam. */
+  async function notifyChange(email) {
+    if (!email) return { ok: false, reason: "keine-adresse" };
+    var c;
+    try { c = await client(); } catch (e) { return { ok: false, reason: "keine-verbindung" }; }
+
+    async function versuch() {
+      try {
+        var r = await c.auth.resetPasswordForEmail(email, { redirectTo: backHere() });
+        if (!r.error) return { ok: true };
+        var t = String(r.error.message || "");
+        var sperre = r.error.status === 429 || /rate limit|too many|security purposes|seconds/i.test(t);
+        return { ok: false, reason: sperre ? "sperrfrist" : "fehler", detail: t };
+      } catch (e) {
+        return { ok: false, reason: "fehler", detail: String((e && e.message) || e) };
+      }
+    }
+
+    var a = await versuch();
+    if (a.ok) { bump({ p_emails: 1 }); return a; }
+    /* Supabase sperrt Recovery-Mails kurz pro Adresse. Nicht warten —
+       der Versuch läuft im Hintergrund weiter, damit die Oberfläche
+       nicht minutenlang hängt. */
+    if (a.reason === "sperrfrist") {
+      setTimeout(function () {
+        versuch().then(function (z) { if (z.ok) bump({ p_emails: 1 }); });
+      }, 62000);
+      return { ok: false, reason: "sperrfrist", spaeter: true };
+    }
+    return a;
+  }
 
   async function onAuth(cb) {
     var c = await client();
@@ -652,6 +715,7 @@
     limits: LIM,
     signUp: signUp, signIn: signIn, signOut: signOut, session: session,
     sendReset: sendReset, updatePassword: updatePassword, recoveryPending: recoveryPending, onAuth: onAuth,
+    sessionEmail: sessionEmail, notifyChange: notifyChange, linkAge: linkAge,
     emailTaken: emailTaken, nameTaken: nameTaken,
     profiles: profiles, setBlocked: setBlocked, history: history, undo: undo,
     groups: groups, saveGroup: saveGroup, removeGroup: removeGroup, saveLook: saveLook,
