@@ -853,7 +853,13 @@
           <div style="margin-top: 7px; font-size: 12.5px; padding: 7px 10px; border-radius: var(--radius-md); background: var(--color-accent-100); color: var(--color-accent-700);">{{ form.imgBusy }}</div>
         </sc-if>
         <sc-if value="{{ form.imgErr }}" hint-placeholder-val="{{ false }}">
-          <div style="margin-top: 7px; font-size: 12.5px; padding: 7px 10px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700);">{{ form.imgErr }}</div>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 7px; font-size: 12.5px; padding: 7px 10px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700);">
+            <span>{{ form.imgErr }}</span>
+            <button onClick="{{ form.checkStore }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-accent-2-700); text-decoration: underline; white-space: nowrap;">Speicher prüfen</button>
+          </div>
+        </sc-if>
+        <sc-if value="{{ form.storeCheck }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top: 6px; font-size: 12px; padding: 7px 10px; border-radius: var(--radius-md); background: var(--color-surface); color: var(--color-text); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; overflow-wrap: anywhere;">{{ form.storeCheck }}</div>
         </sc-if>
         <div style="display: grid; gap: 6px; margin-top: 8px;">
           <sc-for list="{{ form.images }}" as="r" hint-placeholder-count="1">
@@ -1250,49 +1256,28 @@ const TRANSITIONS = [["fade", "Überblenden"], ["slide", "Schieben"], ["zoom", "
 const LEVELS = [["view", "Nur ansehen"], ["comment", "Bilder kommentieren"], ["edit", "Inhalte bearbeiten"], ["full", "Alles bearbeiten"], ["blocked", "Gesperrt"]];
 const RANK = { none: 0, view: 1, comment: 2, edit: 3, full: 4 };
 
-/* Fehlertexte werden nach außen nur als Code gezeigt.
-   Die Klartext-Liste steht in Fehlercodes.dc.html. */
+/* Bedeutung der Codes: siehe Fehlercodes.dc.html */
 const ERRCODES = [
-  ["A-01", /Benutzername braucht mindestens/i],
-  ["A-02", /Benutzername ist schon belegt|Benutzername ist belegt/i],
-  ["A-03", /E-Mail-Adresse sieht nicht g/i],
-  ["A-04", /diese E-Mail gibt es schon|already registered|User already/i],
-  ["A-05", /Passwort braucht mindestens|should be at least|zu kurz/i],
-  ["A-06", /fehlt eine Zahl/i],
-  ["A-07", /fehlt ein Sonderzeichen/i],
-  ["A-08", /gro\u00df UND klein/i],
-  ["A-09", /stimmen nicht \u00fcberein/i],
-  ["A-10", /Passwort stimmt nicht|Invalid login|invalid credentials/i],
-  ["A-11", /Fehlversuche|zu viele Versuche|Sekunden warten/i],
-  ["A-18", /Anmeldung abgelaufen/i],
-  ["A-12", /noch nicht best\u00e4tigt|not confirmed/i],
-  ["A-13", /Best\u00e4tigungsmail|sending confirmation|smtp/i],
-  ["A-14", /Best\u00e4tige bitte|captcha|Rechenaufgabe|Sicherheitsfrage/i],
-  ["A-15", /zu schnell|Bot/i],
-  ["A-16", /wiederholtes Zeichen/i],
-  ["A-17", /gesperrt/i],
-  ["D-07", /Bildspeicher ist nicht eingerichtet/i],
-  ["D-08", /Keine Bilddatei erkannt/i],
-  ["D-05", /größer als \d+ ?MB|zu groß/i],
-  ["D-06", /Bildspeicher antwortet nicht|R2-Speicher|nicht hochgeladen werden|Upload|Worker|Ungültiger Dateiname|keine Bilddatei/i],
-  ["V-01", /Keine Zugangsdaten/i],
-  ["V-02", /Adresse in chronik-config|nicht wie eine Supabase-Adresse|invalid path|no Route matched/i],
-  ["V-03", /Schl\u00fcssel in chronik-config|Invalid API key|JWT/i],
-  ["V-04", /nicht erreichbar|Failed to fetch|NetworkError|Load failed|pausiert/i],
-  ["D-01", /nicht auf dem neuesten Stand|schema cache|Could not find the/i],
-  ["D-02", /row-level security|keine Berechtigung|not allowed|permission denied/i],
-  ["D-03", /Speichern|insert|update/i],
-  ["D-04", /nicht gefunden|not found/i],
-  ["D-05", /Bild ist zu gro|zu gro\u00df/i],
-  ["K-05", /Suchbegriff zu kurz/i],
-  ["K-01", /niemand gefunden|kein Konto mit/i],
-  ["K-02", /Anfrage l\u00e4uft schon|schon angefragt/i],
-  ["K-03", /schon verbunden/i],
-  ["K-04", /dich selbst/i]
+  ["A-02", /duplicate key|profiles_username/i],
+  ["A-04", /already registered|already been registered/i],
+  ["A-05", /Password should be at least/i],
+  ["A-10", /Invalid login credentials/i],
+  ["A-11", /rate limit|too many|Email rate/i],
+  ["A-12", /Email not confirmed/i],
+  ["A-13", /sending confirmation|smtp/i],
+  ["A-14", /captcha/i],
+  ["D-01", /schema cache|does not exist|Could not find the/i],
+  ["D-02", /row-level security/i],
+  ["V-02", /invalid path|no Route matched/i],
+  ["V-03", /Invalid API key|JWSError|JWT/i],
+  ["V-04", /Failed to fetch|NetworkError|Load failed/i],
+  ["D-04", /not found/i]
 ];
 const errCode = function (m) {
-  const t = String((m && m.message) || m || "");
+  if (m && m.code && /^[A-Z]-\d\d$/.test(m.code)) return m.code;
+  const t = String((m && m.message) || m || "").trim();
   if (!t) return "";
+  if (/^[A-Z]-\d\d$/.test(t)) return t;
   for (let i = 0; i < ERRCODES.length; i++) if (ERRCODES[i][1].test(t)) return ERRCODES[i][0];
   return "X-99";
 };
@@ -1337,11 +1322,11 @@ const pwScore = function (p) {
 /* Pflichtregeln fürs Passwort — gibt "" zurück, wenn alles passt. */
 const pwProblem = function (p) {
   const s = String(p || "");
-  if (s.length < 10) return "Das Passwort braucht mindestens 10 Zeichen.";
-  if (!/[0-9]/.test(s)) return "Im Passwort fehlt eine Zahl (0–9).";
-  if (!/[^A-Za-z0-9]/.test(s)) return "Im Passwort fehlt ein Sonderzeichen, zum Beispiel ! ? · - _ @ # oder €.";
-  if (!/[a-z]/.test(s) || !/[A-Z]/.test(s)) return "Bitte groß UND klein schreiben — mindestens ein Großbuchstabe und ein Kleinbuchstabe.";
-  if (/^(.)\1+$/.test(s)) return "Das ist nur ein wiederholtes Zeichen — bitte etwas Eigenes.";
+  if (s.length < 10) return "A-05";
+  if (!/[0-9]/.test(s)) return "A-06";
+  if (!/[^A-Za-z0-9]/.test(s)) return "A-07";
+  if (!/[a-z]/.test(s) || !/[A-Z]/.test(s)) return "A-08";
+  if (/^(.)\1+$/.test(s)) return "A-16";
   return "";
 };
 
@@ -1596,6 +1581,7 @@ class Component extends DCLogic {
     imgBusy: "",
     vw: (typeof window !== "undefined" ? window.innerWidth : 1280),
     imgErr: "",
+    storeCheck: "",
     users: [],
     session: null,
     authMode: "login",
@@ -1742,11 +1728,11 @@ class Component extends DCLogic {
   cloudStart = async () => {
     const CC = window.ChronikCloud;
     try {
-      if (CC.recoveryPending()) this.setState({ authMode: "newpw", authNotice: "Bitte jetzt ein neues Passwort setzen." });
+      if (CC.recoveryPending()) this.setState({ authMode: "newpw", authNotice: "Neues Passwort setzen" });
       const s = await CC.session();
       if (s) await this.cloudSignedIn(s);
       CC.onAuth(async (evt, sess) => {
-        if (evt === "PASSWORD_RECOVERY") { this.setState({ authMode: "newpw", authNotice: "Bitte jetzt ein neues Passwort setzen." }); return; }
+        if (evt === "PASSWORD_RECOVERY") { this.setState({ authMode: "newpw", authNotice: "Neues Passwort setzen" }); return; }
         if (evt === "SIGNED_IN" && sess && !this.state.session) await this.cloudSignedIn(sess);
         if (evt === "SIGNED_OUT") this.setState({ session: null, events: [], users: [] });
       });
@@ -1809,10 +1795,10 @@ class Component extends DCLogic {
   };
 
   botMessage(kind) {
-    if (kind === "bot") return "Diese Anfrage sieht automatisiert aus und wurde nicht abgeschickt.";
-    if (kind === "schnell") return "Einen Moment noch — das Formular war zu schnell ausgefüllt. Bitte gleich nochmal auf die Schaltfläche tippen.";
-    if (kind === "turnstile") return "Bitte kurz warten, bis die Sicherheitsprüfung oben fertig ist (Häkchen), dann nochmal tippen.";
-    return "Bitte die kleine Rechenaufgabe lösen — daran erkennt die Chronik, dass du ein Mensch bist.";
+    if (kind === "bot") return "A-15";
+    if (kind === "schnell") return "A-19";
+    if (kind === "turnstile") return "A-20";
+    return "A-14";
   }
 
   loadTurnstile() {
@@ -2137,13 +2123,13 @@ class Component extends DCLogic {
     const id = String(f.email || "").trim();
     if (reg) {
       const name = String(f.username || "").trim();
-      if (name.length < 3) return this.setState({ authError: "Der Benutzername braucht mindestens 3 Zeichen." });
-      if (!emailOk(id)) return this.setState({ authError: "Diese E-Mail-Adresse sieht nicht gültig aus." });
-      if (this.state.users.some((u) => u.email.toLowerCase() === id.toLowerCase())) return this.setState({ authError: "Für diese E-Mail gibt es schon ein Konto." });
-      if (this.state.users.some((u) => normName(u.username) === normName(name))) return this.setState({ authError: "Dieser Benutzername ist schon belegt — bitte einen anderen wählen." });
+      if (name.length < 3) return this.setState({ authError: "A-01" });
+      if (!emailOk(id)) return this.setState({ authError: "A-03" });
+      if (this.state.users.some((u) => u.email.toLowerCase() === id.toLowerCase())) return this.setState({ authError: "A-04" });
+      if (this.state.users.some((u) => normName(u.username) === normName(name))) return this.setState({ authError: "A-02" });
       const pwBad = pwProblem(f.pw);
       if (pwBad) return this.setState({ authError: pwBad });
-      if (f.pw !== f.pw2) return this.setState({ authError: "Die beiden Passwörter stimmen nicht überein." });
+      if (f.pw !== f.pw2) return this.setState({ authError: "A-09" });
       this.setState({ authBusy: true, authError: "" });
       try {
         const salt = hex(window.crypto.getRandomValues(new Uint8Array(16)));
@@ -2163,11 +2149,11 @@ class Component extends DCLogic {
     const u = this.state.users.filter((x) => x.email.toLowerCase() === id.toLowerCase() || x.username.toLowerCase() === id.toLowerCase())[0];
     const now = Date.now();
     if (!u) {
-      this.setState({ authError: "E-Mail, Benutzername oder Passwort stimmt nicht." });
+      this.setState({ authError: "A-10" });
       return;
     }
     if (u.lockUntil && u.lockUntil > now) {
-      this.setState({ authError: "Zu viele Fehlversuche. Bitte " + Math.ceil((u.lockUntil - now) / 1000) + " Sekunden warten." });
+      this.setState({ authError: "A-11" });
       return;
     }
     this.setState({ authBusy: true, authError: "" });
@@ -2185,7 +2171,7 @@ class Component extends DCLogic {
         this.setState({
           users: this.state.users.map((x) => (x.id === u.id ? Object.assign({}, x, { fails: lock ? 0 : fails, lockUntil: lock }) : x)),
           authBusy: false,
-          authError: lock ? "Fünf Fehlversuche — das Konto ist eine Minute gesperrt." : "E-Mail, Benutzername oder Passwort stimmt nicht. (" + (5 - fails) + " Versuche übrig)"
+          authError: lock ? "A-11" : "A-10"
         });
       }
     } catch (e) {
@@ -2210,11 +2196,11 @@ class Component extends DCLogic {
     try {
       if (mode === "register") {
         const name = String(f.username || "").trim();
-        if (name.length < 3) throw new Error("Der Benutzername braucht mindestens 3 Zeichen.");
-        if (!emailOk(id)) throw new Error("Diese E-Mail-Adresse sieht nicht gültig aus.");
+        if (name.length < 3) throw new Error("A-01");
+        if (!emailOk(id)) throw new Error("A-03");
         const pwBad = pwProblem(f.pw);
         if (pwBad) throw new Error(pwBad);
-        if (f.pw !== f.pw2) throw new Error("Die beiden Passwörter stimmen nicht überein.");
+        if (f.pw !== f.pw2) throw new Error("A-09");
         const r = await CC.signUp(id, f.pw, name, this.state.tsToken);
         this.resetTurnstile();
         this.setState({
@@ -2229,7 +2215,7 @@ class Component extends DCLogic {
       }
 
       if (mode === "reset") {
-        if (!emailOk(id)) throw new Error("Diese E-Mail-Adresse sieht nicht gültig aus.");
+        if (!emailOk(id)) throw new Error("A-03");
         await CC.sendReset(id);
         this.resetTurnstile();
         this.setState({
@@ -2243,7 +2229,7 @@ class Component extends DCLogic {
       if (mode === "newpw") {
         const pwBad = pwProblem(f.pw);
         if (pwBad) throw new Error(pwBad);
-        if (f.pw !== f.pw2) throw new Error("Die beiden Passwörter stimmen nicht überein.");
+        if (f.pw !== f.pw2) throw new Error("A-09");
         await CC.updatePassword(f.pw);
         this.setState({
           authBusy: false, authMode: "login",
@@ -2314,11 +2300,11 @@ class Component extends DCLogic {
   askFriend = (otherId) => {
     const me = this.me();
     if (!me || !otherId) return;
-    if (otherId === me.id) return this.setState({ fMsg: errLabel("dich selbst") });
+    if (otherId === me.id) return this.setState({ fMsg: "Fehler K-04" });
     const fs = this.state.friends || [];
     const pair = (f) => (f.from === me.id && f.to === otherId) || (f.from === otherId && f.to === me.id);
-    if (fs.some((f) => f.status === "accepted" && pair(f))) return this.setState({ fMsg: errLabel("schon verbunden") });
-    if (fs.some((f) => f.status === "pending" && pair(f))) return this.setState({ fMsg: errLabel("Anfrage l\u00e4uft schon") });
+    if (fs.some((f) => f.status === "accepted" && pair(f))) return this.setState({ fMsg: "Fehler K-03" });
+    if (fs.some((f) => f.status === "pending" && pair(f))) return this.setState({ fMsg: "Fehler K-02" });
     if (this.state.cloud && window.ChronikCloud.askFriend) {
       this.setState({ fMsg: "Anfrage verschickt." });
       window.ChronikCloud.askFriend(otherId).then(() => this.cloudSync()).catch((e) => this.handleCloudError(e));
@@ -2360,12 +2346,12 @@ class Component extends DCLogic {
 
   searchPeople = () => {
     const q = String(this.state.fq || "").trim().toLowerCase();
-    if (q.length < 2) return this.setState({ fFound: [], fMsg: errLabel("Suchbegriff zu kurz") });
+    if (q.length < 2) return this.setState({ fFound: [], fMsg: "Fehler K-05" });
     const me = this.me();
     const hits = this.state.users.filter((u) =>
       u.id !== (me || {}).id &&
       (String(u.username || "").toLowerCase().indexOf(q) >= 0 || String(u.email || "").toLowerCase() === q));
-    this.setState({ fFound: hits.map((u) => u.id), fMsg: hits.length ? "" : errLabel("niemand gefunden") });
+    this.setState({ fFound: hits.map((u) => u.id), fMsg: hits.length ? "" : "Fehler K-01" });
   };
 
   /* ---------- comments ---------- */
@@ -2773,6 +2759,32 @@ class Component extends DCLogic {
 
   /* Handybilder sind riesig und heißen manchmal gar nicht \u201aimage/...\u2018.
      Darum: alles annehmen, was nach Bild aussieht, und im Browser verkleinern. */
+  /* Meldet nur Messwerte, keine Deutung. */
+  checkStore = async () => {
+    const CC = window.ChronikCloud;
+    if (!CC || !CC.enabled) return this.setState({ storeCheck: "cloud=aus" });
+    if (!CC.hasR2) return this.setState({ storeCheck: "r2Worker=leer" });
+    this.setState({ storeCheck: "…" });
+    try {
+      const r = await CC.storeCheck();
+      const d = r.detail || {};
+      this.setState({
+        storeCheck: [
+          "erreichbar=" + (r.ok ? "ja" : "nein"),
+          r.status ? "status=" + r.status : "",
+          r.reason ? "grund=" + r.reason : "",
+          typeof d.bucket !== "undefined" ? "bucket=" + d.bucket : "",
+          d.allowed ? "allowed=" + d.allowed : "",
+          d.origin ? "origin=" + d.origin : "",
+          d.allowOrigin ? "allowOrigin=" + d.allowOrigin : "",
+          typeof d.detail === "string" ? d.detail.slice(0, 90) : ""
+        ].filter(Boolean).join("\n")
+      });
+    } catch (e) {
+      this.setState({ storeCheck: "grund=" + String((e && e.message) || e).slice(0, 90) });
+    }
+  };
+
   looksLikeImage(f) {
     if (!f) return false;
     if (/^image\//i.test(f.type || "")) return true;
@@ -2783,7 +2795,7 @@ class Component extends DCLogic {
     return new Promise((res, rej) => {
       const r = new FileReader();
       r.onload = () => res(String(r.result));
-      r.onerror = () => rej(new Error("Diese Datei konnte nicht gelesen werden."));
+      r.onerror = () => rej(new Error("D-15"));
       r.readAsDataURL(file);
     });
   }
@@ -2794,7 +2806,7 @@ class Component extends DCLogic {
       const img = await new Promise((res, rej) => {
         const i = new Image();
         i.onload = () => res(i);
-        i.onerror = () => rej(new Error("Dieses Bild konnte der Browser nicht öffnen."));
+        i.onerror = () => rej(new Error("D-15"));
         i.src = url;
       });
       const long = Math.max(img.naturalWidth || img.width, img.naturalHeight || img.height);
@@ -2809,7 +2821,7 @@ class Component extends DCLogic {
       ctx.drawImage(img, 0, 0, w, h);
       const name = String(file.name || "bild").replace(/\.[a-z0-9]+$/i, "") || "bild";
       const blob = await new Promise((res) => cv.toBlob(res, "image/jpeg", quality));
-      if (!blob) throw new Error("Bild-Upload fehlgeschlagen.");
+      if (!blob) throw new Error("D-15");
       let out = blob;
       try { out = new File([blob], name + ".jpg", { type: "image/jpeg" }); }
       catch (e) { out = blob; out.name = name + ".jpg"; }
@@ -2824,7 +2836,7 @@ class Component extends DCLogic {
     const list = all.filter((f) => this.looksLikeImage(f)).slice(0, 40);
     this.setState({ dragOver: false, imgErr: "" });
     if (!list.length) {
-      this.setState({ imgErr: errLabel("Keine Bilddatei erkannt") });
+      this.setState({ imgErr: "Fehler D-08" });
       return;
     }
     const cloud = this.state.cloud;
@@ -2841,9 +2853,14 @@ class Component extends DCLogic {
         try {
           prep = await this.shrinkImage(raw, maxPx, quality);
         } catch (e) {
+          /* Nur Formate, die der Browser bekanntlich nicht öffnet, dürfen
+             unverkleinert durch. Alles andere gilt als kaputt. */
+          const typ = String(raw.type || "").toLowerCase();
+          const endung = /\.(heic|heif|avif|tiff?)$/i.test(String(raw.name || ""));
+          const unbekannt = !typ || /heic|heif|avif|tiff/.test(typ) || endung;
+          if (!unbekannt || Number(raw.size || 0) < 4096) throw e;
           /* Kann der Browser das Format nicht öffnen (oft HEIC vom iPhone),
              wird die Datei unverändert weitergegeben statt aufzugeben. */
-          if (window.console && console.warn) console.warn("Chronik: Verkleinern nicht möglich, nehme Originaldatei.", e);
           prep = null;
         }
         if (cloud) {
@@ -2858,7 +2875,6 @@ class Component extends DCLogic {
       } catch (e) {
         failed++;
         if (e && e.block) { this.setState({ imgBusy: "" }); this.noteLimit(e.block); return; }
-        if (window.console && console.warn) console.warn("Chronik: Bild " + (i + 1) + " nicht übernommen.", e);
         this.lastImgError = e;
       }
     }
@@ -2866,7 +2882,7 @@ class Component extends DCLogic {
     d.images = (d.images || []).concat(rows);
     this.setState({
       draft: d, imgBusy: "", cloudBusy: false,
-      imgErr: failed ? (failed + " von " + list.length + " · " + errLabel(this.lastImgError)) : ""
+      imgErr: failed ? (failed + "/" + list.length + " · " + errLabel(this.lastImgError)) : ""
     });
   };
 
@@ -3355,6 +3371,8 @@ class Component extends DCLogic {
       noStore: !!(st.cloud && window.ChronikCloud && !window.ChronikCloud.hasR2),
       imgBusy: st.imgBusy || "",
       imgErr: st.imgErr || "",
+      storeCheck: st.storeCheck || "",
+      checkStore: this.checkStore,
       dropLabel: st.dragOver ? "Loslassen — Bilder werden übernommen" : isTouch() ? "Hier tippen und Fotos auswählen" : "Bilder hierher ziehen oder hier klicken",
       dropHint: "bis zu 40 auf einmal · werden automatisch verkleinert",
       dropStyle: { display: "grid", placeItems: "center", gap: "4px", padding: isTouch() ? "26px 20px" : "20px", minHeight: isTouch() ? "88px" : "auto", textAlign: "center", cursor: "pointer", border: "1px dashed " + (st.dragOver ? "var(--color-accent)" : "var(--color-divider)"), borderRadius: "var(--radius-md)", background: st.dragOver ? "color-mix(in srgb, var(--color-accent) 10%, transparent)" : "var(--color-surface)", color: "var(--color-neutral-700)" },
@@ -3734,12 +3752,6 @@ class Component extends DCLogic {
         footline: st.cloud
           ? "Gemeinsame Chronik · alle sehen dieselben Ereignisse. Passwort vergessen? Es kommt eine Mail."
           : "Läuft ganz in diesem Browser — nichts wird irgendwohin geschickt.",
-        intro: st.cloud
-          ? "Ereignisse als Zeitstrahl: Datum, Dauer, Infos, Personen und Bilder. Jede Person legt eigene Ereignisse an, dekoriert sie und entscheidet selbst, wer sie sehen darf — privat, ausgewählte Personen oder alle. Alles liegt in der gemeinsamen Chronik: was du änderst, sehen die anderen sofort."
-          : "Ereignisse als Zeitstrahl: Datum, Dauer, Infos, Personen und Bilder. Jede Person legt eigene Ereignisse an, dekoriert sie und entscheidet selbst, wer sie sehen darf — privat, ausgewählte Personen oder alle.",
-        security: st.cloud
-          ? "Anmeldung, Passwörter und Bilder liegen bei Supabase; die Chronik selbst sieht dein Passwort nie. Wer welches Ereignis lesen darf, entscheidet die Datenbank — private Ereignisse werden gar nicht erst ausgeliefert. Passwort vergessen? Unten auf ‚Passwort vergessen?‘ tippen, dann kommt eine Mail mit Link."
-          : "Passwörter werden nie gespeichert. Aus dem Passwort wird mit PBKDF2 (SHA-256, 210.000 Runden, eigener Zufallssalt pro Konto) ein Schlüssel abgeleitet und nur dieser abgelegt. Nach fünf Fehlversuchen pausiert das Konto.",
         toLogin: () => this.setState({ authMode: "login", authError: "" }),
         toRegister: () => this.setState({ authMode: "register", authError: "" }),
         canReset: !!st.cloud,
@@ -3764,9 +3776,7 @@ class Component extends DCLogic {
         honey: st.honey,
         onHoney: (ev) => this.setState({ honey: ev.target.value }),
         homeNet: !secureOk(),
-        homeText: st.cloud
-          ? "Diese Seite läuft ohne HTTPS. Anmelden geht trotzdem — im eigenen Netz ist das in Ordnung. Im Internet nutze bitte die GitHub-Adresse, die immer HTTPS hat."
-          : "Diese Seite läuft ohne HTTPS (eigener Server im Heimnetz). Registrieren und Anmelden funktioniert hier trotzdem — die Chronik rechnet die Passwörter selbst. Ohne Datenbank kennt aber jedes Gerät nur seine eigenen Konten.",
+        homeText: "Fehler V-07",
         onUsername: this.authSet("username"), onEmail: this.authSet("email"), onPw: this.authSet("pw"), onPw2: this.authSet("pw2"),
         onKey: (ev) => { if (ev.key === "Enter") this.submitAuth(); },
         bars: [0, 1, 2, 3].map((i) => ({
