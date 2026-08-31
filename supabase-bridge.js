@@ -1,4 +1,4 @@
-/* Chronik ↔ Supabase  */
+/* Chronik ↔ Supabase */
 (function () {
   var CFG = window.CHRONIK_CONFIG || {};
   var SDK = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
@@ -517,7 +517,7 @@
       place: row.place || "", kicker: row.kicker || "", note: d.note || "",
       infos: d.infos || [], people: d.people || [], images: imgs,
       deco: d.deco || { fx: [], pal: "thema", stickers: [] },
-      vis: (row.vis === "selected" ? "people" : row.vis) || "private", who: row.who || [], gwho: row.gwho || [], perms: row.perms || {}, share: row.share || "view",
+      vis: (row.vis === "selected" ? "people" : row.vis) || "private", who: row.who || [], gwho: row.gwho || [], perms: row.perms || {}, polls: row.polls || [], share: row.share || "view",
       changedBy: row.changed_by || ""
     };
   }
@@ -526,7 +526,7 @@
     return {
       name: e.name || "", date: e.date || null, end_date: e.end || null,
       place: e.place || "", kicker: e.kicker || "",
-      vis: e.vis || "private", who: e.who || [], gwho: e.gwho || [], perms: e.perms || {}, share: e.share || "view",
+      vis: e.vis || "private", who: e.who || [], gwho: e.gwho || [], perms: e.perms || {}, polls: e.polls || [], share: e.share || "view",
       data: {
         note: e.note || "", infos: e.infos || [], people: e.people || [], deco: e.deco || null,
         images: (e.images || []).map(function (im) {
@@ -618,6 +618,12 @@
     }
 
     var r = await push(row);
+    if (r.error && /polls/i.test(String(r.error.message || ""))) {
+      var noPolls = Object.assign({}, row);
+      delete noPolls.polls;
+      r = await push(noPolls);
+      if (!r.error) row = noPolls;
+    }
     if (r.error && /perms/i.test(String(r.error.message || ""))) {
       var noPerms = Object.assign({}, row);
       delete noPerms.perms;
@@ -643,6 +649,16 @@
     var r = await c.from("events").delete().eq("id", id);
     if (r.error) throw fail(code(r.error));
     bump({ p_writes: 1 });
+  }
+
+  /* Abstimmen und Ranken darf jeder, der das Ereignis sehen darf —
+     darum über eine eigene Funktion, nicht über das ganze Ereignis. */
+  async function setPolls(eventId, polls) {
+    var c = await client();
+    var r = await c.rpc("set_polls", { p_event: eventId, p_polls: polls || [] });
+    if (r.error) throw fail(code(r.error));
+    bump({ p_writes: 1 });
+    return true;
   }
 
   async function addComment(eventId, imageIndex, text) {
@@ -766,7 +782,7 @@
     saveNotify: saveNotify, notify: notify,
     friends: friends, askFriend: askFriend, answerFriend: answerFriend, unfriend: unfriend,
     loadEvents: loadEvents, saveEvent: saveEvent, removeEvent: removeEvent,
-    addComment: addComment, removeComment: removeComment, uploadImage: uploadImage, imageUrl: imageUrl, storeCheck: storeCheck, onChange: onChange,
+    addComment: addComment, removeComment: removeComment, setPolls: setPolls, uploadImage: uploadImage, imageUrl: imageUrl, storeCheck: storeCheck, onChange: onChange,
     snapshot: snapshot, budget: budget, guard: guard,
     isLegacy: function () { return legacySchema; },
     lastR2Error: function () { return lastR2Error; }
