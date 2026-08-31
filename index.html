@@ -215,6 +215,7 @@
         <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ openShowAll }}">▦ Fotoshow</button>
         <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ toggleDrawer }}">Design · {{ themeName }}</button>
         <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ toggleAdmin }}">{{ contactsLabel }}</button>
+        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ konto.toggle }}">Mein Konto</button>
       </div>
     </div>
     <div style="height: 5px; background: var(--color-text); margin-top: var(--space-3);"></div>
@@ -1446,6 +1447,41 @@
 
 
 
+<sc-if value="{{ konto.open }}" hint-placeholder-val="{{ false }}">
+  <div data-noprint="" data-screen-label="Mein Konto" style="position: fixed; inset: 0; z-index: 138; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 42%, transparent);">
+    <div style="width: min(500px, 100%); max-height: 88vh; overflow-y: auto; background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: var(--space-6);">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4);">
+        <div>
+          <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">Konto</div>
+          <h2 style="margin: 3px 0 0; font-size: 28px; line-height: 1.05;">{{ konto.name }}</h2>
+        </div>
+        <button class="btn btn-secondary btn-icon" onClick="{{ konto.zu }}">✕</button>
+      </div>
+      <div style="height: 3px; background: var(--color-text); margin: var(--space-4) 0 var(--space-4);"></div>
+
+      <div style="display: grid; gap: 4px; font-size: 13.5px; line-height: 1.5; margin-bottom: var(--space-6);">
+        <div><span style="color: var(--color-neutral-700);">E-Mail:</span> {{ konto.mail }}</div>
+        <div><span style="color: var(--color-neutral-700);">Dabei seit:</span> {{ konto.seit }}</div>
+        <div><span style="color: var(--color-neutral-700);">Eigene Ereignisse:</span> {{ konto.eigene }}</div>
+        <div><span style="color: var(--color-neutral-700);">Kontakte:</span> {{ konto.kontakte }}</div>
+      </div>
+
+      <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-2-700); margin-bottom: var(--space-2);">Konto löschen</div>
+      <p style="font-size: 12.5px; line-height: 1.55; margin: 0 0 var(--space-3); color: var(--color-neutral-700);">Damit verschwinden dein Zugang, deine eigenen Ereignisse samt Bildern, deine Kommentare und alle Kontakte. Ereignisse anderer Personen bleiben, auch wenn du darin genannt bist. Das lässt sich nicht zurückholen.</p>
+      <div class="field" style="margin: 0 0 var(--space-3);"><label>Zum Bestätigen das Wort löschen eintippen</label>
+        <input class="input" type="text" value="{{ konto.wort }}" onChange="{{ konto.onWort }}" placeholder="löschen" autoComplete="off">
+      </div>
+      <sc-if value="{{ konto.fehler }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size: 12.5px; padding: 7px 10px; margin-bottom: var(--space-3); border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700);">{{ konto.fehler }}</div>
+      </sc-if>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <button class="btn btn-primary" style="white-space: nowrap; background: var(--color-accent-2); border-color: var(--color-accent-2);" disabled="{{ konto.busy }}" onClick="{{ konto.loeschen }}">{{ konto.cta }}</button>
+        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ konto.zu }}">Abbrechen</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
 <sc-if value="{{ limit.open }}" hint-placeholder-val="{{ false }}">
   <div data-noprint="" data-screen-label="Grenze erreicht" style="position: fixed; inset: 0; z-index: 140; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 38%, transparent);">
     <div style="width: min(520px, 100%); background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: var(--space-6); animation-name: tl-pop; animation-duration: 300ms; animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); animation-fill-mode: both;">
@@ -1735,6 +1771,9 @@ const pwRules = function (p) {
 
 const normName = function (s) { return String(s || "").trim().toLowerCase().replace(/\s+/g, " "); };
 
+/* Verbrauchszahlen und Änderungsverlauf sieht nur dieses Konto. */
+const WARTUNG = "jokken";
+
 const sameHex = function (a, b) {
   if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
   let diff = 0;
@@ -1982,6 +2021,10 @@ class Component extends DCLogic {
     imgEdit: null,
     pollOpen: null,
     pSuche: {},
+    konto: false,
+    loeschWort: "",
+    loeschFehler: "",
+    loeschBusy: false,
     mehrOffen: {},
     voteDraft: {},
     echoDraft: {},
@@ -2149,6 +2192,9 @@ class Component extends DCLogic {
       const s = await CC.session();
       if (s) await this.cloudSignedIn(s);
       this.setState({ booting: false });
+      /* Unbestätigte Konten nach 11 Minuten wegräumen — die Adresse wird
+         damit wieder frei. Läuft im Hintergrund, ohne den Start zu bremsen. */
+      if (CC.sweepUnconfirmed) CC.sweepUnconfirmed();
       CC.onAuth(async (evt, sess) => {
         if (evt === "PASSWORD_RECOVERY") {
           const alt1 = CC.linkAge ? CC.linkAge() : -1;
@@ -2778,6 +2824,62 @@ class Component extends DCLogic {
     CC.notify(empfaengerId, art, betreff, text).catch(() => {});
   }
 
+  /* ---------- Eigenes Konto ---------- */
+
+  /* R2-Schlüssel aus einer Ereignisliste einsammeln. */
+  bildSchluessel(events) {
+    const out = [];
+    (events || []).forEach((e) => {
+      (e.images || []).forEach((im) => { if (im && im.key) out.push(im.key); });
+    });
+    return out;
+  }
+
+  /* Bilder im Speicher wegräumen — nie den Ablauf blockieren. */
+  async bilderWeg(keys) {
+    const liste = (keys || []).filter(Boolean);
+    if (!liste.length) return;
+    const CC = window.ChronikCloud;
+    if (!this.state.cloud || !CC || !CC.deleteImages) return;
+    try { await CC.deleteImages(liste); } catch (e) { /* verwaist lieber als Absturz */ }
+  }
+
+  kontoLoeschen = async () => {
+    const u = this.me();
+    if (!u) return;
+    if (String(this.state.loeschWort || "").trim().toLowerCase() !== "löschen") {
+      this.setState({ loeschFehler: "Fehler A-22" });
+      return;
+    }
+    this.setState({ loeschBusy: true, loeschFehler: "" });
+    if (this.state.cloud && window.ChronikCloud.deleteMe) {
+      try {
+        /* Erst die Bilder im Speicher, dann das Konto — danach käme man
+           nicht mehr an die Schlüssel heran. */
+        await this.bilderWeg(this.bildSchluessel(this.state.events.filter((e) => (e.by || "") === u.id)));
+        await window.ChronikCloud.deleteMe();
+      } catch (e) {
+        this.setState({ loeschBusy: false, loeschFehler: errLabel(e) });
+        return;
+      }
+      this.setState({
+        session: null, users: [], events: [], friends: [], groups: [],
+        konto: false, loeschBusy: false, loeschWort: "", loeschFehler: "",
+        authMode: "login", authNotice: "Konto gelöscht."
+      });
+      return;
+    }
+    /* Ohne Cloud: alles Eigene aus diesem Browser entfernen. */
+    this.setState({
+      users: this.state.users.filter((x) => x.id !== u.id),
+      events: this.state.events.filter((e) => (e.by || "") !== u.id),
+      friends: (this.state.friends || []).filter((f) => f.from !== u.id && f.to !== u.id),
+      groups: (this.state.groups || []).map((g) => Object.assign({}, g, { members: (g.members || []).filter((m) => m !== u.id) })),
+      session: null, konto: false, loeschBusy: false, loeschWort: "", loeschFehler: "",
+      authMode: "login", authNotice: "Konto gelöscht."
+    });
+  };
+
   /* ---------- Kontakte ---------- */
 
   askFriend = (otherId) => {
@@ -3252,6 +3354,8 @@ class Component extends DCLogic {
       polls: (d.polls || (old && old.polls) || []).map((p) => Object.assign({}, p)),
       share: d.share || (old && old.share) || "view"
     };
+    /* Beim Abbrechen bleibt diese Liste unbenutzt — die Dateien überleben. */
+    const vorgemerkt = ((d._geloescht || []).filter((k) => !(clean.images || []).some((im) => im.key === k)));
     if (this.state.cloud) {
       const payload = Object.assign({}, clean, { id: d.id || null, resolvedWho: this.resolveWho(clean.who, clean.gwho) });
       const ich = this.me() || {};
@@ -3260,6 +3364,7 @@ class Component extends DCLogic {
       window.ChronikCloud.saveEvent(payload)
         .then((id) => {
           this.setState({ cloudBusy: false, openId: id || null });
+          if (vorgemerkt.length) this.bilderWeg(vorgemerkt);
           if (fremd) {
             this.melden(fremd, "bearbeitet", "Dein Ereignis wurde geändert",
               ich.username + " hat „" + (clean.name || "ein Ereignis") + "“ bearbeitet. Schau in der Chronik nach.");
@@ -3271,6 +3376,7 @@ class Component extends DCLogic {
     }
     const evs = d.id ? this.state.events.map((e) => (e.id === d.id ? clean : e)) : this.state.events.concat([clean]);
     this.setState({ events: evs, draft: null, openId: clean.id });
+    if (vorgemerkt.length) this.bilderWeg(vorgemerkt);
   };
 
   removeEvent(id) {
@@ -3278,7 +3384,9 @@ class Component extends DCLogic {
     if (!e || this.levelFor(e) < 4) return;
     if (this.state.cloud) {
       this.setState({ openId: null });
-      window.ChronikCloud.removeEvent(id)
+      /* Bilder zuerst — nach dem Löschen kennt niemand die Schlüssel mehr. */
+      this.bilderWeg(this.bildSchluessel([e]))
+        .then(() => window.ChronikCloud.removeEvent(id))
         .then(() => this.cloudSync())
         .catch((err) => this.handleCloudError(err));
       return;
@@ -3315,6 +3423,12 @@ class Component extends DCLogic {
   rowDel(kind, i) {
     return () => {
       const d = Object.assign({}, this.state.draft);
+      /* Nur vormerken — gelöscht wird erst nach dem Speichern.
+         Bricht man ab, bleibt die Datei erhalten. */
+      if (kind === "images") {
+        const weg = (d.images || [])[i];
+        if (weg && weg.key) d._geloescht = (d._geloescht || []).concat([weg.key]);
+      }
       d[kind] = d[kind].filter((_, j) => j !== i);
       this.setState({ draft: d });
     };
@@ -4886,7 +5000,24 @@ class Component extends DCLogic {
         return n ? "Kontakte · " + n + " neu" : "Kontakte";
       })(),
       guardedNew: this.guardedNew,
-      cloudAdmin: !!st.cloud,
+      cloudAdmin: !!st.cloud && !!me && normName(me.username) === WARTUNG,
+      konto: {
+        open: !!st.konto && !!me,
+        name: me ? me.username : "",
+        mail: me ? (me.email || "") : "",
+        seit: me && me.createdAt ? fmtDate(new Date(me.createdAt).toISOString().slice(0, 10)) : "",
+        toggle: () => this.setState({ konto: !st.konto, drawer: false, admin: false, loeschWort: "", loeschFehler: "" }),
+        zu: () => this.setState({ konto: false, loeschWort: "", loeschFehler: "" }),
+        eigene: me ? st.events.filter((e) => (e.by || "") === me.id).length : 0,
+        kontakte: me ? this.friendIds().length : 0,
+        wort: st.loeschWort || "",
+        onWort: (ev) => this.setState({ loeschWort: ev.target.value, loeschFehler: "" }),
+        fehler: st.loeschFehler || "",
+        busy: !!st.loeschBusy,
+        cta: st.loeschBusy ? "Wird gelöscht …" : "Konto endgültig löschen",
+        loeschen: this.kontoLoeschen,
+        bereit: String(st.loeschWort || "").trim().toLowerCase() === "löschen"
+      },
       refreshBudget: this.refreshBudget,
       loadHistory: this.loadHistory,
       budget: (function (b) {
@@ -5019,7 +5150,7 @@ class Component extends DCLogic {
               return "Vergib dein neues Passwort — gespeichert wird es erst, wenn du im nächsten Schritt bestätigst."
                 + (rest > 0 ? " Der Link gilt noch etwa " + rest + (rest === 1 ? " Minute." : " Minuten.") : "");
             })()
-            : "Willkommen zurück — deine Chronik wartet.")
+            : "Willkommen zurück — deine Chronik wartet. Nach dem Anklicken von 'Anmelden' kann es etwas dauern, bis du weitergeleitet wirst")
           : st.authMode === "reset"
           ? "Ohne Datenbank kann diese Chronik keine E-Mail verschicken — hier lässt sich das Passwort nicht zurücksetzen."
           : st.users.length === 0 ? "Dein erstes Konto in dieser Chronik. Alles, was du anlegst, ist zuerst privat."
