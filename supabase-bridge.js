@@ -1,4 +1,4 @@
-/* Chronik ↔ Supabase */
+/* Chronik ↔ Supabase  */
 (function () {
   var CFG = window.CHRONIK_CONFIG || {};
   var SDK = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
@@ -681,6 +681,40 @@
     bump({ p_writes: 1 });
   }
 
+  /* Bilder im R2-Speicher wegräumen. Ohne das bleiben verwaiste Dateien
+     liegen und der belegte Platz sinkt nie wieder. */
+  async function deleteImages(keys) {
+    var liste = (keys || []).filter(function (k) { return !!k; });
+    if (!liste.length || !R2) return { ok: false, deleted: 0 };
+    try {
+      var tk = await token();
+      if (!tk) return { ok: false, deleted: 0 };
+      var res = await fetch(R2 + "/delete", {
+        method: "POST",
+        headers: { Authorization: "Bearer " + tk, "Content-Type": "application/json" },
+        body: JSON.stringify({ keys: liste })
+      });
+      var out = await res.json().catch(function () { return {}; });
+      return { ok: !!res.ok && !!out.ok, deleted: out.deleted || 0 };
+    } catch (e) { return { ok: false, deleted: 0 }; }
+  }
+
+  async function deleteMe() {
+    var c = await client();
+    var r = await c.rpc("delete_me");
+    if (r.error) throw fail(code(r.error));
+    try { await c.auth.signOut(); } catch (e) { /* egal */ }
+    return true;
+  }
+
+  /* Unbestätigte Konten räumt eine Datenbankfunktion weg; hier nur anstoßen. */
+  async function sweepUnconfirmed() {
+    try {
+      var c = await client();
+      await c.rpc("sweep_unconfirmed");
+    } catch (e) { /* still */ }
+  }
+
   async function reactComment(commentId, emoji) {
     var c = await client();
     var r = await c.rpc("set_reax", { p_comment: commentId, p_emoji: emoji || "" });
@@ -800,7 +834,8 @@
     saveNotify: saveNotify, notify: notify,
     friends: friends, askFriend: askFriend, answerFriend: answerFriend, unfriend: unfriend,
     loadEvents: loadEvents, saveEvent: saveEvent, removeEvent: removeEvent,
-    addComment: addComment, removeComment: removeComment, reactComment: reactComment, setPolls: setPolls, uploadImage: uploadImage, imageUrl: imageUrl, storeCheck: storeCheck, onChange: onChange,
+    addComment: addComment, removeComment: removeComment, reactComment: reactComment,
+    deleteMe: deleteMe, sweepUnconfirmed: sweepUnconfirmed, deleteImages: deleteImages, setPolls: setPolls, uploadImage: uploadImage, imageUrl: imageUrl, storeCheck: storeCheck, onChange: onChange,
     snapshot: snapshot, budget: budget, guard: guard,
     isLegacy: function () { return legacySchema; },
     lastR2Error: function () { return lastR2Error; }
