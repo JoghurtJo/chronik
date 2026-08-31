@@ -104,7 +104,7 @@
         <span>Dein Leben</span>
         <span>Eure Geschichten</span>
         <span>Erleben wie damals</span>
-        <span>Mehr Organgen</span>
+        <span>Mehr Organgen!</span>
       </div>
     </div>
 
@@ -2070,7 +2070,7 @@ class Component extends DCLogic {
   };
 
   componentDidMount() {
-    this.setState({ formAt: Date.now(), quiz: this.newQuiz(), botOk: this.botFertig() });
+    this.setState({ formAt: Date.now(), quiz: this.newQuiz(), botOk: false });
     const CC = window.ChronikCloud;
     if (CC && CC.enabled) {
       this.setState({ cloud: true });
@@ -2244,22 +2244,21 @@ class Component extends DCLogic {
     return { a: a, b: b, sum: a + b };
   }
 
-  botFertig() {
-    try { return window.sessionStorage.getItem("chronik.bot.ok") === "1"; } catch (e) { return false; }
-  }
+  botFertig() { return !!this.botOkMem; }
 
   botMerken() {
-    try { window.sessionStorage.setItem("chronik.bot.ok", "1"); } catch (e) { /* egal */ }
+    this.botOkMem = true;
     if (!this.state.botOk) this.setState({ botOk: true });
   }
 
   botTrouble(mode) {
-    if (this.botFertig()) return "";
     const CC = window.ChronikCloud;
     const hasTS = !!(this.state.cloud && CC && CC.enabled && CC.turnstileKey);
     if (mode === "newpw") return "";
+    /* Cloudflare-Häkchen: jedes Mal nötig, weil Supabase den Nachweis
+       bei jeder Anfrage neu prüft. */
     if (hasTS) return this.state.tsToken ? "" : "turnstile";
-    if (mode !== "register" && mode !== "reset") return "";
+    if (this.botFertig()) return "";
     if (String(this.state.honey || "").trim()) return "bot";
     if (Date.now() - (this.state.formAt || 0) < 900) return "schnell";
     const q = this.state.quiz || { sum: -1 };
@@ -2778,8 +2777,10 @@ class Component extends DCLogic {
       session: null, drawer: false, admin: false, editing: null, open: null,
       authForm: { username: "", email: "", pw: "", pw2: "" },
       authMode: "login", authError: "", authNotice: "", pwShow: false,
+      botOk: false, quiz: this.newQuiz(), quizAnswer: "", honey: "", formAt: Date.now(),
       fq: "", fFound: [], fMsg: ""
     });
+    this.botOkMem = false;
   };
 
   /* ---------- Wer darf was? ---------- */
@@ -5121,9 +5122,12 @@ class Component extends DCLogic {
         pwHidden: !st.pwShow, pwVisible: !!st.pwShow,
         pwToggle: st.pwShow ? "Passwort verbergen" : "Passwort anzeigen",
         togglePw: () => this.setState({ pwShow: !st.pwShow }),
-        showBot: !st.botOk && st.authMode !== "newpw" && (!!(st.cloud && window.ChronikCloud && window.ChronikCloud.turnstileKey) || st.authMode === "register" || st.authMode === "reset"),
-        hasTurnstile: !st.botOk && !!(st.cloud && window.ChronikCloud && window.ChronikCloud.turnstileKey),
-        hasQuiz: !st.botOk && !(st.cloud && window.ChronikCloud && window.ChronikCloud.turnstileKey) && (st.authMode === "register" || st.authMode === "reset"),
+        showBot: st.authMode !== "newpw" && (
+          !!(st.cloud && window.ChronikCloud && window.ChronikCloud.turnstileKey)
+          || !st.botOk
+        ),
+        hasTurnstile: !!(st.cloud && window.ChronikCloud && window.ChronikCloud.turnstileKey),
+        hasQuiz: !st.botOk && !(st.cloud && window.ChronikCloud && window.ChronikCloud.turnstileKey),
         tsRef: this.tsRef,
         quizLabel: st.quiz ? "Sicherheitsfrage: Wie viel ist " + st.quiz.a + " + " + st.quiz.b + "?" : "Sicherheitsfrage",
         quizAnswer: st.quizAnswer,
@@ -5150,7 +5154,7 @@ class Component extends DCLogic {
               return "Vergib dein neues Passwort — gespeichert wird es erst, wenn du im nächsten Schritt bestätigst."
                 + (rest > 0 ? " Der Link gilt noch etwa " + rest + (rest === 1 ? " Minute." : " Minuten.") : "");
             })()
-            : "Willkommen zurück — deine Chronik wartet. Nach dem Anklicken von 'Anmelden' kann es etwas dauern, bis du weitergeleitet wirst")
+            : "Willkommen zurück — deine Chronik wartet. Nach dem Anklicken von 'Anmelden' kann es etwas dauern, bis du weitergeleitet wirst.")
           : st.authMode === "reset"
           ? "Ohne Datenbank kann diese Chronik keine E-Mail verschicken — hier lässt sich das Passwort nicht zurücksetzen."
           : st.users.length === 0 ? "Dein erstes Konto in dieser Chronik. Alles, was du anlegst, ist zuerst privat."
