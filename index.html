@@ -52,6 +52,18 @@
 </style>
 </helmet>
 
+<sc-if value="{{ booting }}" hint-placeholder-val="{{ false }}">
+  <div style="min-height: 100vh; display: grid; place-items: center; background: var(--color-bg);">
+    <div style="display: grid; gap: 10px; justify-items: center; text-align: center;">
+      <div style="font-family: var(--font-heading); font-size: 44px; line-height: 1; letter-spacing: -0.03em; color: var(--color-text);">Chronik</div>
+      <div style="width: 78px; height: 3px; background: var(--color-divider); overflow: hidden;">
+        <div style="width: 40%; height: 100%; background: var(--color-accent); animation: tl-fade 900ms ease-in-out infinite alternate;"></div>
+      </div>
+      <div style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-600);">wird geöffnet</div>
+    </div>
+  </div>
+</sc-if>
+
 <sc-if value="{{ locked }}" hint-placeholder-val="{{ true }}">
   <div data-noprint="" data-screen-label="Anmeldung" style="{{ lay.loginWrap }}">
     <div style="{{ lay.loginPitch }}">
@@ -92,7 +104,7 @@
         <span>Dein Leben</span>
         <span>Eure Geschichten</span>
         <span>Erleben wie damals</span>
-        <span>Von überall</span>
+        <span>Von überall: Organgen</span>
       </div>
     </div>
 
@@ -482,6 +494,12 @@
                                     </button>
                                   </sc-for>
                                 </div>
+                                <sc-if value="{{ p.offen }}" hint-placeholder-val="{{ false }}">
+                                  <div style="display: flex; gap: 7px; align-items: center; flex-wrap: wrap; margin-top: 2px;">
+                                    <button onClick="{{ p.abgeben }}" style="cursor: pointer; font: inherit; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 13px; border: 1px solid var(--t-accent, #0088b0); border-radius: var(--t-radius, 2px); background: var(--t-accent, #0088b0); color: var(--t-card, #fff);">{{ p.abgebenLabel }}</button>
+                                    <button onClick="{{ p.verwerfen }}" style="cursor: pointer; font: inherit; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 11px; border: 1px solid var(--t-border, rgba(32,30,29,0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);">Abbrechen</button>
+                                  </div>
+                                </sc-if>
                               </sc-if>
 
                               <sc-if value="{{ p.istRang }}" hint-placeholder-val="{{ false }}">
@@ -490,43 +508,27 @@
                                     <div style="display: flex; align-items: center; gap: 8px; padding: 5px 9px; border: 1px solid var(--t-border, rgba(32,30,29,0.16)); border-radius: var(--t-radius, 2px);">
                                       <span style="font-family: var(--t-font-head, var(--font-heading)); font-size: 14px; width: 22px; opacity: 0.6;">{{ r.platz }}</span>
                                       <span style="flex: 1; font-size: 14px;">{{ r.label }}</span>
-                                      <sc-if value="{{ r.hoch }}" hint-placeholder-val="{{ true }}">
-                                        <button onClick="{{ r.auf }}" title="nach oben" style="cursor: pointer; font: inherit; font-size: 13px; padding: 2px 7px; border: 1px solid var(--t-border, rgba(32,30,29,0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);">▲</button>
-                                      </sc-if>
-                                      <sc-if value="{{ r.runter }}" hint-placeholder-val="{{ true }}">
-                                        <button onClick="{{ r.ab }}" title="nach unten" style="cursor: pointer; font: inherit; font-size: 13px; padding: 2px 7px; border: 1px solid var(--t-border, rgba(32,30,29,0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);">▼</button>
-                                      </sc-if>
                                     </div>
                                   </sc-for>
                                 </div>
-                                <sc-if value="{{ p.hatAndere }}" hint-placeholder-val="{{ false }}">
-                                  <div style="display: grid; gap: 9px; margin-top: 4px;">
-                                    <sc-for list="{{ p.andere }}" as="a" hint-placeholder-count="1">
-                                      <div style="display: grid; gap: 5px; padding: 9px 11px; border-radius: var(--t-radius, 2px); background: color-mix(in srgb, var(--t-ink, #201e1d) 5%, transparent);">
-                                        <div style="font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.6;">{{ a.wer }}</div>
-                                        <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size: 13px;">
-                                          <sc-for list="{{ a.folge }}" as="f" hint-placeholder-count="3">
-                                            <span>{{ f.txt }}</span>
-                                          </sc-for>
-                                        </div>
-                                        <div style="display: flex; gap: 5px; flex-wrap: wrap; align-items: center;">
-                                          <sc-for list="{{ a.emojis }}" as="em" hint-placeholder-count="6">
-                                            <button onClick="{{ em.pick }}" style="{{ em.style }}">{{ em.em }}</button>
-                                          </sc-for>
-                                        </div>
-                                        <div style="display: flex; gap: 6px;">
-                                          <input type="text" value="{{ a.entwurf }}" onChange="{{ a.onText }}" placeholder="Kurz dazu sagen …" style="flex: 1; font: inherit; font-size: 13px; padding: 5px 8px; border: 1px solid var(--t-border, rgba(32,30,29,0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);">
-                                          <button onClick="{{ a.senden }}" style="cursor: pointer; font: inherit; font-size: 12px; padding: 5px 10px; border: 1px solid var(--t-border, rgba(32,30,29,0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);">Senden</button>
-                                        </div>
-                                        <div style="display: grid; gap: 2px;">
-                                          <sc-for list="{{ a.reaktionen }}" as="r" hint-placeholder-count="0">
-                                            <div style="font-size: 12.5px; opacity: 0.7;">{{ r.txt }}</div>
-                                          </sc-for>
-                                        </div>
-                                      </div>
+                                <div style="display: grid; gap: 6px; margin-top: 4px;">
+                                  <div style="display: flex; gap: 5px; flex-wrap: wrap; align-items: center;">
+                                    <sc-for list="{{ p.echoEmojis }}" as="em" hint-placeholder-count="6">
+                                      <button onClick="{{ em.pick }}" style="{{ em.style }}">{{ em.em }}</button>
                                     </sc-for>
                                   </div>
-                                </sc-if>
+                                  <div style="display: flex; gap: 6px;">
+                                    <input type="text" value="{{ p.echoEntwurf }}" onChange="{{ p.onEchoText }}" placeholder="Was sagst du dazu?" style="flex: 1; font: inherit; font-size: 13px; padding: 5px 8px; border: 1px solid var(--t-border, rgba(32,30,29,0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);">
+                                    <button onClick="{{ p.echoSenden }}" style="cursor: pointer; font: inherit; font-size: 12px; padding: 5px 10px; border: 1px solid var(--t-border, rgba(32,30,29,0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);">Senden</button>
+                                  </div>
+                                  <sc-if value="{{ p.hatReaktionen }}" hint-placeholder-val="{{ false }}">
+                                    <div style="display: grid; gap: 3px;">
+                                      <sc-for list="{{ p.reaktionen }}" as="r" hint-placeholder-count="0">
+                                        <div style="font-size: 12.5px; opacity: 0.7;">{{ r.txt }}</div>
+                                      </sc-for>
+                                    </div>
+                                  </sc-if>
+                                </div>
                               </sc-if>
 
                               <div style="font-size: 11.5px; line-height: 1.4; opacity: 0.55;">{{ p.hinweis }}</div>
@@ -1499,7 +1501,9 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;startTheme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;zeitung&quot;,&quot;notizbuch&quot;,&quot;mitternacht&quot;,&quot;riso&quot;,&quot;botanik&quot;,&quot;bauhaus&quot;,&quot;terminal&quot;,&quot;pastell&quot;,&quot;museum&quot;,&quot;neon&quot;,&quot;sepia&quot;,&quot;schiefer&quot;],&quot;default&quot;:&quot;zeitung&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Start&quot;},&quot;lanes&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:3,&quot;min&quot;:1,&quot;max&quot;:4,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Zeitstrahl&quot;},&quot;showRuler&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Zeitstrahl&quot;}}">
 const DAY = 86400000;
-const PBKDF2_ITER = 210000;
+/* 120 000 Runden: von OWASP empfohlener Bereich, aber merklich flotter
+   als 210 000. Ältere Konten behalten ihren gespeicherten Wert. */
+const PBKDF2_ITER = 120000;
 const SESSION_MS = 12 * 3600 * 1000;
 const FONTS = ["Source Serif 4", "Libre Baskerville", "Cormorant Garamond", "Playfair Display", "Space Grotesk", "DM Sans", "JetBrains Mono", "Bebas Neue", "Georgia", "Helvetica Neue"];
 
@@ -1952,8 +1956,10 @@ class Component extends DCLogic {
     notify: {},
     imgEdit: null,
     pollOpen: null,
+    voteDraft: {},
     echoDraft: {},
     zoomImg: null,
+    booting: true,
     users: [],
     session: null,
     authMode: "login",
@@ -1975,6 +1981,7 @@ class Component extends DCLogic {
     cloudBusy: false,
     pwShow: false,
     tsToken: "",
+    botOk: false,
     quiz: null,
     quizAnswer: "",
     honey: "",
@@ -1993,7 +2000,7 @@ class Component extends DCLogic {
   };
 
   componentDidMount() {
-    this.setState({ formAt: Date.now(), quiz: this.newQuiz() });
+    this.setState({ formAt: Date.now(), quiz: this.newQuiz(), botOk: this.botFertig() });
     const CC = window.ChronikCloud;
     if (CC && CC.enabled) {
       this.setState({ cloud: true });
@@ -2039,6 +2046,7 @@ class Component extends DCLogic {
         else window.localStorage.removeItem("chronik.session.v1");
       }
     } catch (e) { /* first run */ }
+    this.setState({ booting: false });
     this.applyTheme();
     window.addEventListener("keydown", this.onKey);
     window.addEventListener("resize", this.onResize);
@@ -2113,6 +2121,7 @@ class Component extends DCLogic {
       }
       const s = await CC.session();
       if (s) await this.cloudSignedIn(s);
+      this.setState({ booting: false });
       CC.onAuth(async (evt, sess) => {
         if (evt === "PASSWORD_RECOVERY") {
           const alt1 = CC.linkAge ? CC.linkAge() : -1;
@@ -2124,7 +2133,7 @@ class Component extends DCLogic {
         if (evt === "SIGNED_OUT") this.setState({ session: null, events: [], users: [] });
       });
     } catch (e) {
-      this.setState({ cloudErr: String(e.message || e) });
+      this.setState({ booting: false, cloudErr: String(e.message || e) });
     }
   };
 
@@ -2162,14 +2171,24 @@ class Component extends DCLogic {
     return { a: a, b: b, sum: a + b };
   }
 
+  botFertig() {
+    try { return window.sessionStorage.getItem("chronik.bot.ok") === "1"; } catch (e) { return false; }
+  }
+
+  botMerken() {
+    try { window.sessionStorage.setItem("chronik.bot.ok", "1"); } catch (e) { /* egal */ }
+    if (!this.state.botOk) this.setState({ botOk: true });
+  }
+
   botTrouble(mode) {
+    if (this.botFertig()) return "";
     const CC = window.ChronikCloud;
     const hasTS = !!(this.state.cloud && CC && CC.enabled && CC.turnstileKey);
     if (mode === "newpw") return "";
     if (hasTS) return this.state.tsToken ? "" : "turnstile";
     if (mode !== "register" && mode !== "reset") return "";
     if (String(this.state.honey || "").trim()) return "bot";
-    if (Date.now() - (this.state.formAt || 0) < 2500) return "schnell";
+    if (Date.now() - (this.state.formAt || 0) < 900) return "schnell";
     const q = this.state.quiz || { sum: -1 };
     if (Number(this.state.quizAnswer) !== q.sum) return "rechnen";
     return "";
@@ -2464,8 +2483,10 @@ class Component extends DCLogic {
         events: this.state.events, groups: this.state.groups, friends: this.state.friends
       }));
       window.localStorage.setItem("chronik.auth.v1", JSON.stringify({ users: this.state.users }));
+      /* Während des Starts nichts löschen — sonst wäre die Sitzung weg,
+         bevor sie überhaupt gelesen wurde. */
       if (this.state.session) window.localStorage.setItem("chronik.session.v1", JSON.stringify(this.state.session));
-      else window.localStorage.removeItem("chronik.session.v1");
+      else if (!this.state.booting) window.localStorage.removeItem("chronik.session.v1");
     } catch (e) { /* quota */ }
   }
 
@@ -2509,6 +2530,7 @@ class Component extends DCLogic {
     const reg = this.state.authMode === "register";
     const bot = this.botTrouble(this.state.authMode);
     if (bot) return this.setState({ authError: this.botMessage(bot), quiz: bot === "rechnen" ? this.newQuiz() : this.state.quiz, quizAnswer: bot === "rechnen" ? "" : this.state.quizAnswer });
+    this.botMerken();
     const id = String(f.email || "").trim();
     if (reg) {
       const name = String(f.username || "").trim();
@@ -2580,6 +2602,7 @@ class Component extends DCLogic {
       quiz: bot === "rechnen" ? this.newQuiz() : this.state.quiz,
       quizAnswer: bot === "rechnen" ? "" : this.state.quizAnswer
     });
+    this.botMerken();
     const id = String(f.email || "").trim();
     this.setState({ authBusy: true, authError: "", authNotice: "" });
     try {
@@ -3528,42 +3551,50 @@ class Component extends DCLogic {
     this.pollsSchreiben(eventId, liste);
   }
 
-  /* Stimme abgeben oder zurücknehmen. */
-  stimmen = (eventId, pollId, optId) => {
+  /* Erst auswählen (Entwurf), dann bestätigen. So verrutscht keine Stimme. */
+  wahlEntwurf(pollId) {
+    const d = this.state.voteDraft || {};
+    return d[pollId] || null;
+  }
+
+  auswaehlen = (eventId, pollId, optId) => {
     const u = this.me();
     if (!u) return;
     const p = this.pollsVon(eventId).filter((x) => x.id === pollId)[0];
     if (!p) return;
-    const alt = (p.stimmen || {})[u.id] || [];
+    const bisher = this.wahlEntwurf(pollId) || ((p.stimmen || {})[u.id] || []).slice();
     let neu;
     if (p.mehr) {
-      neu = alt.indexOf(optId) >= 0 ? alt.filter((x) => x !== optId) : alt.concat([optId]);
+      neu = bisher.indexOf(optId) >= 0 ? bisher.filter((x) => x !== optId) : bisher.concat([optId]);
       const grenze = Math.max(1, Number(p.max || 2));
       if (neu.length > grenze) neu = neu.slice(neu.length - grenze);
     } else {
-      neu = alt.indexOf(optId) >= 0 ? [] : [optId];
+      neu = bisher.indexOf(optId) >= 0 ? [] : [optId];
     }
-    const st = Object.assign({}, p.stimmen || {});
-    if (neu.length) st[u.id] = neu; else delete st[u.id];
-    this.pollAendern(eventId, pollId, { stimmen: st });
+    const d = Object.assign({}, this.state.voteDraft || {});
+    d[pollId] = neu;
+    this.setState({ voteDraft: d });
   };
 
-  /* Eigene Rangliste: Eintrag um eine Stelle bewegen. */
-  rangSchieben = (eventId, pollId, optId, richtung) => {
+  stimmeAbgeben = (eventId, pollId) => {
     const u = this.me();
     if (!u) return;
     const p = this.pollsVon(eventId).filter((x) => x.id === pollId)[0];
     if (!p) return;
-    const alle = (p.opts || []).map((o) => o.i);
-    const vorhanden = ((p.rangliste || {})[u.id] || []).filter((i) => alle.indexOf(i) >= 0);
-    const liste = vorhanden.concat(alle.filter((i) => vorhanden.indexOf(i) < 0));
-    const at = liste.indexOf(optId);
-    const ziel = at + richtung;
-    if (at < 0 || ziel < 0 || ziel >= liste.length) return;
-    liste.splice(ziel, 0, liste.splice(at, 1)[0]);
-    const r = Object.assign({}, p.rangliste || {});
-    r[u.id] = liste;
-    this.pollAendern(eventId, pollId, { rangliste: r });
+    const neu = this.wahlEntwurf(pollId);
+    if (neu === null) return;
+    const stimmen = Object.assign({}, p.stimmen || {});
+    if (neu.length) stimmen[u.id] = neu; else delete stimmen[u.id];
+    const d = Object.assign({}, this.state.voteDraft || {});
+    delete d[pollId];
+    this.setState({ voteDraft: d });
+    this.pollAendern(eventId, pollId, { stimmen: stimmen });
+  };
+
+  wahlVerwerfen = (pollId) => {
+    const d = Object.assign({}, this.state.voteDraft || {});
+    delete d[pollId];
+    this.setState({ voteDraft: d });
   };
 
   /* Auf die Rangliste einer anderen Person reagieren. */
@@ -4013,7 +4044,10 @@ class Component extends DCLogic {
           const nameVon = (id) => (st.users.filter((x) => x.id === id)[0] || {}).username || "jemand";
           return liste.map((p) => {
             const darf = self.darfWaehlen(e, p);
-            const meine = (p.stimmen || {})[uid2] || [];
+            const abgegeben = (p.stimmen || {})[uid2] || [];
+            const entwurf = (st.voteDraft || {})[p.id] || null;
+            const meine = entwurf === null ? abgegeben : entwurf;
+            const offen = entwurf !== null;
             const rang = p.art === "rank";
             const gesamt = rang ? Object.keys(p.rangliste || {}).length : Object.keys(p.stimmen || {}).length;
             const zaehler = {};
@@ -4031,9 +4065,15 @@ class Component extends DCLogic {
               art: p.art === "rank" ? "Rangliste" : "Abstimmung",
               hinweis: !darf
                 ? "Du bist bei dieser Runde nicht dabei."
-                : p.art === "rank"
-                  ? "Mit den Pfeilen deine Reihenfolge festlegen — andere sehen sie und können darauf reagieren."
-                  : p.mehr ? "Bis zu " + Math.max(1, Number(p.max || 2)) + " Stimmen" : "Eine Stimme",
+                : rang
+                  ? "Diese Reihenfolge steht fest. Du kannst sie mit einem Zeichen oder einem kurzen Satz kommentieren."
+                  : offen
+                    ? "Auswahl noch nicht gezählt — mit \u201aStimme abgeben\u2018 bestätigen."
+                    : (abgegeben.length ? "Deine Stimme ist gezählt. Antippen, um sie zu ändern." : (p.mehr ? "Bis zu " + Math.max(1, Number(p.max || 2)) + " Stimmen" : "Eine Stimme")),
+              offen: offen,
+              abgeben: () => self.stimmeAbgeben(e.id, p.id),
+              verwerfen: () => self.wahlVerwerfen(p.id),
+              abgebenLabel: meine.length ? "Stimme abgeben" : "Stimme zurückziehen",
               zahl: gesamt
                 ? plural(gesamt, rang ? "Rangliste" : "Stimme", rang ? "Ranglisten" : "Stimmen")
                 : (rang ? "noch keine Rangliste" : "noch keine Stimme"),
@@ -4057,48 +4097,41 @@ class Component extends DCLogic {
                     border: "1px solid " + (an ? "var(--t-accent, #0088b0)" : "var(--t-border, rgba(32,30,29,0.16))"),
                     borderRadius: "var(--t-radius, 2px)", background: "transparent", color: "var(--t-ink, #201e1d)"
                   },
-                  mark: an ? "\u2713" : "",
-                  pick: darf ? () => self.stimmen(e.id, p.id, o.i) : () => {}
+                  mark: an ? (offen ? "\u25cf" : "\u2713") : "",
+                  pick: darf ? () => self.auswaehlen(e.id, p.id, o.i) : () => {}
                 };
               }),
-              /* Rangliste: meine Reihenfolge */
-              meineFolge: p.art === "rank" ? meineFolge.map((i, k) => ({
-                key: i, platz: (k + 1) + ".", label: labelVon(i),
-                hoch: darf && k > 0, runter: darf && k < meineFolge.length - 1,
-                auf: () => self.rangSchieben(e.id, p.id, i, -1),
-                ab: () => self.rangSchieben(e.id, p.id, i, 1)
+              /* Rangliste: steht so, wie sie angelegt wurde. */
+              meineFolge: rang ? (p.opts || []).filter((o) => o.label).map((o, k) => ({
+                key: o.i, platz: (k + 1) + ".", label: o.label
               })) : [],
-              /* Ranglisten der anderen samt Reaktionen */
-              andere: p.art === "rank" ? Object.keys(p.rangliste || {}).filter((k) => k !== uid2).map((k) => {
-                const folge = (p.rangliste[k] || []).filter((i) => alleIds.indexOf(i) >= 0);
-                const echo = (p.echo || {})[k] || {};
-                const meinEcho = echo[uid2] || {};
+              /* Reaktionen gelten der Rangliste als Ganzem. */
+              echoEmojis: rang ? ECHO_EMOJI.map((em) => {
+                const meins = ((p.echo || {}).liste || {})[uid2] || {};
                 return {
-                  key: k, wer: nameVon(k),
-                  folge: folge.slice(0, 6).map((i, j) => ({ key: i, txt: (j + 1) + ". " + labelVon(i) })),
-                  emojis: ECHO_EMOJI.map((em) => ({
-                    key: em, em: em,
-                    style: {
-                      font: "inherit", fontSize: "14px", lineHeight: 1, padding: "3px 7px", cursor: "pointer",
-                      borderRadius: "99px", background: meinEcho.e === em ? "color-mix(in srgb, var(--t-accent, #0088b0) 20%, transparent)" : "transparent",
-                      border: "1px solid " + (meinEcho.e === em ? "var(--t-accent, #0088b0)" : "var(--t-border, rgba(32,30,29,0.16))"),
-                      color: "var(--t-ink, #201e1d)"
-                    },
-                    pick: () => self.echoSetzen(e.id, p.id, k, em)
-                  })),
-                  reaktionen: Object.keys(echo).map((r) => ({
-                    key: r, txt: (echo[r].e ? echo[r].e + " " : "") + nameVon(r) + (echo[r].t ? ": " + echo[r].t : "")
-                  })),
-                  entwurf: st.echoDraft[p.id + k] || "",
-                  onText: (ev) => {
-                    const d = Object.assign({}, self.state.echoDraft);
-                    d[p.id + k] = ev.target.value;
-                    self.setState({ echoDraft: d });
+                  key: em, em: em,
+                  style: {
+                    font: "inherit", fontSize: "15px", lineHeight: 1, padding: "4px 9px", cursor: "pointer",
+                    borderRadius: "99px",
+                    background: meins.e === em ? "color-mix(in srgb, var(--t-accent, #0088b0) 20%, transparent)" : "transparent",
+                    border: "1px solid " + (meins.e === em ? "var(--t-accent, #0088b0)" : "var(--t-border, rgba(32,30,29,0.16))"),
+                    color: "var(--t-ink, #201e1d)"
                   },
-                  senden: () => self.echoText(e.id, p.id, k)
+                  pick: () => self.echoSetzen(e.id, p.id, "liste", em)
                 };
               }) : [],
-              hatAndere: p.art === "rank" && Object.keys(p.rangliste || {}).filter((k) => k !== uid2).length > 0
+              echoEntwurf: st.echoDraft[p.id + "liste"] || "",
+              onEchoText: (ev) => {
+                const d = Object.assign({}, self.state.echoDraft);
+                d[p.id + "liste"] = ev.target.value;
+                self.setState({ echoDraft: d });
+              },
+              echoSenden: () => self.echoText(e.id, p.id, "liste"),
+              reaktionen: rang ? Object.keys((p.echo || {}).liste || {}).map((r) => {
+                const x = (p.echo || {}).liste[r] || {};
+                return { key: r, txt: (x.e ? x.e + "  " : "") + nameVon(r) + (x.t ? ": " + x.t : "") };
+              }) : [],
+              hatReaktionen: rang && Object.keys((p.echo || {}).liste || {}).length > 0
             };
           });
         })(this),
@@ -4355,12 +4388,12 @@ class Component extends DCLogic {
               art: rang ? "Rangliste" : "Abstimmung",
               istWahl: !rang,
               frage: p.frage || "",
-              platzhalter: rang ? "z. B. Welcher Act war der beste?" : "z. B. Wohin fahren wir nächstes Jahr?",
+              platzhalter: rang ? "z. B. Die Acts von gestern" : "z. B. Wohin fahren wir nächstes Jahr?",
               onFrage: (ev) => self.pollSet(p.id, { frage: ev.target.value }),
-              optLabel: rang ? "Was wird gerankt" : "Antworten",
+              optLabel: rang ? "Reihenfolge — Platz 1 zuerst" : "Antworten",
               opts: (p.opts || []).map((o, i) => ({
                 key: o.i, label: o.label || "",
-                platzhalter: rang ? "Eintrag " + (i + 1) : "Antwort " + (i + 1),
+                platzhalter: rang ? "Platz " + (i + 1) : "Antwort " + (i + 1),
                 onLabel: (ev) => self.optSet(p.id, i, ev.target.value),
                 weg: () => self.pollSet(p.id, { opts: (p.opts || []).filter((_, j) => j !== i) })
               })),
@@ -4686,7 +4719,8 @@ class Component extends DCLogic {
     const score = pwScore(st.authForm.pw);
 
     return {
-      locked: !me, unlocked: !!me,
+      locked: !me && !st.booting, unlocked: !!me,
+      booting: !!st.booting && !me,
       lay: lay,
       today: new Intl.DateTimeFormat("de-DE", { day: "2-digit", month: "long", year: "numeric" }).format(new Date()),
       me: { label: me ? me.username : "" },
@@ -4800,9 +4834,9 @@ class Component extends DCLogic {
         pwHidden: !st.pwShow, pwVisible: !!st.pwShow,
         pwToggle: st.pwShow ? "Passwort verbergen" : "Passwort anzeigen",
         togglePw: () => this.setState({ pwShow: !st.pwShow }),
-        showBot: st.authMode !== "newpw" && (!!(st.cloud && window.ChronikCloud && window.ChronikCloud.turnstileKey) || st.authMode === "register" || st.authMode === "reset"),
-        hasTurnstile: !!(st.cloud && window.ChronikCloud && window.ChronikCloud.turnstileKey),
-        hasQuiz: !(st.cloud && window.ChronikCloud && window.ChronikCloud.turnstileKey) && (st.authMode === "register" || st.authMode === "reset"),
+        showBot: !st.botOk && st.authMode !== "newpw" && (!!(st.cloud && window.ChronikCloud && window.ChronikCloud.turnstileKey) || st.authMode === "register" || st.authMode === "reset"),
+        hasTurnstile: !st.botOk && !!(st.cloud && window.ChronikCloud && window.ChronikCloud.turnstileKey),
+        hasQuiz: !st.botOk && !(st.cloud && window.ChronikCloud && window.ChronikCloud.turnstileKey) && (st.authMode === "register" || st.authMode === "reset"),
         tsRef: this.tsRef,
         quizLabel: st.quiz ? "Sicherheitsfrage: Wie viel ist " + st.quiz.a + " + " + st.quiz.b + "?" : "Sicherheitsfrage",
         quizAnswer: st.quizAnswer,
