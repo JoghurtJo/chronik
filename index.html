@@ -71,7 +71,6 @@
         <div style="margin-top: var(--space-6); padding: 12px 15px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700); font-size: 15px; max-width: 40ch;">{{ auth.soloCode }}</div>
       </sc-if>
 
-
       <p style="{{ lay.loginClaim }}">Aus vielen Erlebnissen wird eine Geschichte. Du Keck!</p>
 
       <div style="{{ lay.loginArt }}">
@@ -93,7 +92,7 @@
         <span>Dein Leben</span>
         <span>Eure Geschichten</span>
         <span>Erleben wie damals</span>
-        <span>Nur in nüchtern :P</span>
+        <span>Von überall</span>
       </div>
     </div>
 
@@ -459,6 +458,80 @@
                               </div>
                             </sc-for>
                           </div>
+                        </div>
+                      </sc-if>
+
+                      <sc-if value="{{ c.hatPolls }}" hint-placeholder-val="{{ false }}">
+                        <div style="display: grid; gap: var(--space-4);">
+                          <sc-for list="{{ c.polls }}" as="p" hint-placeholder-count="1">
+                            <div style="display: grid; gap: 7px;">
+                              <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px;">
+                                <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.55;">{{ p.art }}</div>
+                                <div style="font-size: 11px; letter-spacing: 0.06em; opacity: 0.5;">{{ p.zahl }}</div>
+                              </div>
+                              <div style="font-family: var(--t-font-head, var(--font-heading)); font-size: 17px; line-height: 1.2;">{{ p.frage }}</div>
+
+                              <sc-if value="{{ p.istWahl }}" hint-placeholder-val="{{ false }}">
+                                <div style="display: grid; gap: 5px;">
+                                  <sc-for list="{{ p.opts }}" as="o" hint-placeholder-count="2">
+                                    <button onClick="{{ o.pick }}" style="{{ o.style }}">
+                                      <span style="{{ o.balken }}"></span>
+                                      <span style="position: relative; width: 14px; font-size: 12px;">{{ o.mark }}</span>
+                                      <span style="position: relative; flex: 1; font-size: 14px;">{{ o.label }}</span>
+                                      <span style="position: relative; font-size: 12px; opacity: 0.65;">{{ o.n }}</span>
+                                    </button>
+                                  </sc-for>
+                                </div>
+                              </sc-if>
+
+                              <sc-if value="{{ p.istRang }}" hint-placeholder-val="{{ false }}">
+                                <div style="display: grid; gap: 4px;">
+                                  <sc-for list="{{ p.meineFolge }}" as="r" hint-placeholder-count="3">
+                                    <div style="display: flex; align-items: center; gap: 8px; padding: 5px 9px; border: 1px solid var(--t-border, rgba(32,30,29,0.16)); border-radius: var(--t-radius, 2px);">
+                                      <span style="font-family: var(--t-font-head, var(--font-heading)); font-size: 14px; width: 22px; opacity: 0.6;">{{ r.platz }}</span>
+                                      <span style="flex: 1; font-size: 14px;">{{ r.label }}</span>
+                                      <sc-if value="{{ r.hoch }}" hint-placeholder-val="{{ true }}">
+                                        <button onClick="{{ r.auf }}" title="nach oben" style="cursor: pointer; font: inherit; font-size: 13px; padding: 2px 7px; border: 1px solid var(--t-border, rgba(32,30,29,0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);">▲</button>
+                                      </sc-if>
+                                      <sc-if value="{{ r.runter }}" hint-placeholder-val="{{ true }}">
+                                        <button onClick="{{ r.ab }}" title="nach unten" style="cursor: pointer; font: inherit; font-size: 13px; padding: 2px 7px; border: 1px solid var(--t-border, rgba(32,30,29,0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);">▼</button>
+                                      </sc-if>
+                                    </div>
+                                  </sc-for>
+                                </div>
+                                <sc-if value="{{ p.hatAndere }}" hint-placeholder-val="{{ false }}">
+                                  <div style="display: grid; gap: 9px; margin-top: 4px;">
+                                    <sc-for list="{{ p.andere }}" as="a" hint-placeholder-count="1">
+                                      <div style="display: grid; gap: 5px; padding: 9px 11px; border-radius: var(--t-radius, 2px); background: color-mix(in srgb, var(--t-ink, #201e1d) 5%, transparent);">
+                                        <div style="font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.6;">{{ a.wer }}</div>
+                                        <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size: 13px;">
+                                          <sc-for list="{{ a.folge }}" as="f" hint-placeholder-count="3">
+                                            <span>{{ f.txt }}</span>
+                                          </sc-for>
+                                        </div>
+                                        <div style="display: flex; gap: 5px; flex-wrap: wrap; align-items: center;">
+                                          <sc-for list="{{ a.emojis }}" as="em" hint-placeholder-count="6">
+                                            <button onClick="{{ em.pick }}" style="{{ em.style }}">{{ em.em }}</button>
+                                          </sc-for>
+                                        </div>
+                                        <div style="display: flex; gap: 6px;">
+                                          <input type="text" value="{{ a.entwurf }}" onChange="{{ a.onText }}" placeholder="Kurz dazu sagen …" style="flex: 1; font: inherit; font-size: 13px; padding: 5px 8px; border: 1px solid var(--t-border, rgba(32,30,29,0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);">
+                                          <button onClick="{{ a.senden }}" style="cursor: pointer; font: inherit; font-size: 12px; padding: 5px 10px; border: 1px solid var(--t-border, rgba(32,30,29,0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);">Senden</button>
+                                        </div>
+                                        <div style="display: grid; gap: 2px;">
+                                          <sc-for list="{{ a.reaktionen }}" as="r" hint-placeholder-count="0">
+                                            <div style="font-size: 12.5px; opacity: 0.7;">{{ r.txt }}</div>
+                                          </sc-for>
+                                        </div>
+                                      </div>
+                                    </sc-for>
+                                  </div>
+                                </sc-if>
+                              </sc-if>
+
+                              <div style="font-size: 11.5px; line-height: 1.4; opacity: 0.55;">{{ p.hinweis }}</div>
+                            </div>
+                          </sc-for>
                         </div>
                       </sc-if>
 
@@ -1030,6 +1103,75 @@
         </div>
         </sc-if>
 
+        <button onClick="{{ form.sec.polls.toggle }}" style="{{ form.sec.head }}">
+          <span style="{{ form.sec.polls.sign }}">▸</span>
+          <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Abstimmungen &amp; Ranglisten</span>
+          <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
+          <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">{{ form.sec.polls.badge }}</span>
+        </button>
+        <sc-if value="{{ form.sec.polls.on }}" hint-placeholder-val="{{ false }}">
+          <div style="display: grid; gap: var(--space-3); padding-bottom: var(--space-3);">
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ form.polls.neueWahl }}">＋ Abstimmung</button>
+              <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ form.polls.neueRang }}">＋ Rangliste</button>
+            </div>
+            <sc-for list="{{ form.polls.liste }}" as="p" hint-placeholder-count="0">
+              <div style="display: grid; gap: 7px; padding: 11px 12px; border-radius: var(--radius-md); background: var(--color-surface);">
+                <div style="display: flex; align-items: baseline; gap: 8px;">
+                  <span style="font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-accent-700);">{{ p.art }}</span>
+                  <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
+                  <button onClick="{{ p.weg }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-accent-2-700); text-decoration: underline; white-space: nowrap;">Entfernen</button>
+                </div>
+                <div class="field" style="margin: 0;"><label>Frage</label><input class="input" type="text" value="{{ p.frage }}" onChange="{{ p.onFrage }}" placeholder="{{ p.platzhalter }}"></div>
+                <div style="display: grid; gap: 5px;">
+                  <div style="font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-700);">{{ p.optLabel }}</div>
+                  <sc-for list="{{ p.opts }}" as="o" hint-placeholder-count="2">
+                    <div style="display: flex; gap: 6px;">
+                      <input class="input" type="text" value="{{ o.label }}" onChange="{{ o.onLabel }}" placeholder="{{ o.platzhalter }}" style="flex: 1;">
+                      <button class="btn btn-secondary btn-icon" onClick="{{ o.weg }}">✕</button>
+                    </div>
+                  </sc-for>
+                  <button class="btn btn-ghost" style="white-space: nowrap; justify-self: start;" onClick="{{ p.optNeu }}">＋ Eintrag</button>
+                </div>
+                <div class="field" style="margin: 0;"><label>Wer darf mitmachen</label>
+                  <select class="input" value="{{ p.wer }}" onChange="{{ p.onWer }}">
+                    <sc-for list="{{ p.werOpts }}" as="w" hint-placeholder-count="3">
+                      <option value="{{ w.value }}">{{ w.label }}</option>
+                    </sc-for>
+                  </select>
+                </div>
+                <sc-if value="{{ p.zeigeGruppen }}" hint-placeholder-val="{{ false }}">
+                  <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    <sc-for list="{{ p.gruppen }}" as="g" hint-placeholder-count="2">
+                      <button onClick="{{ g.toggle }}" style="{{ g.style }}">{{ g.label }}</button>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ p.zeigePersonen }}" hint-placeholder-val="{{ false }}">
+                  <div style="max-height: 170px; overflow-y: auto; display: grid; gap: 2px;">
+                    <sc-for list="{{ p.personen }}" as="k" hint-placeholder-count="3">
+                      <button onClick="{{ k.toggle }}" style="{{ k.style }}">
+                        <span style="{{ k.box }}">{{ k.mark }}</span>
+                        <span style="font-size: 13px;">{{ k.name }}</span>
+                      </button>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ p.istWahl }}" hint-placeholder-val="{{ false }}">
+                  <div style="display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap;">
+                    <button onClick="{{ p.onMehr }}" style="{{ p.mehrStyle }}">{{ p.mehrLabel }}</button>
+                    <sc-if value="{{ p.mehr }}" hint-placeholder-val="{{ false }}">
+                      <label style="display: flex; align-items: center; gap: 7px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700);">Höchstens
+                        <input type="number" min="2" max="12" value="{{ p.max }}" onChange="{{ p.onMax }}" class="input" style="width: 74px;">
+                      </label>
+                    </sc-if>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
         <sc-if value="{{ form.vis.mine }}" hint-placeholder-val="{{ true }}">
           <button onClick="{{ form.sec.sicht.toggle }}" style="{{ form.sec.head }}">
             <span style="{{ form.sec.sicht.sign }}">▸</span>
@@ -1452,6 +1594,20 @@ const filterWert = function (id) {
   const f = BILDFILTER.filter((x) => x[0] === id)[0];
   return f ? f[2] : "none";
 };
+const ECHO_EMOJI = ["\u2665", "\u2605", "\u2713", "\u2718", "\u2726", "\u2691"];
+
+/* Wer darf mitmachen: alle, die das Ereignis sehen, oder engere Kreise. */
+const POLL_WER = [["alle", "Alle, die das Ereignis sehen"], ["personen", "Nur ausgewählte Personen"], ["gruppen", "Nur bestimmte Gruppen"]];
+
+const leerePoll = function (art) {
+  return {
+    id: "p" + uid(), art: art, frage: "",
+    opts: [{ i: "o" + uid(), label: "" }, { i: "o" + uid(), label: "" }],
+    wer: "alle", who: [], gwho: [], mehr: false, max: 2,
+    stimmen: {}, rangliste: {}, echo: {}
+  };
+};
+
 const BILDSTICKER = ["stern", "funke", "bluete", "rosette", "herz", "sonne", "note", "pfeil", "schirm"];
 
 /* true = Fehlercodes werden angezeigt, false = nichts.
@@ -1795,6 +1951,8 @@ class Component extends DCLogic {
     secOpen: {},
     notify: {},
     imgEdit: null,
+    pollOpen: null,
+    echoDraft: {},
     zoomImg: null,
     users: [],
     session: null,
@@ -2988,7 +3146,7 @@ class Component extends DCLogic {
 
   newEvent = () => {
     const today = new Date().toISOString().slice(0, 10);
-    this.setState({ draft: { id: null, name: "", date: today, end: "", place: "", kicker: "", note: "", infos: [{ label: "", value: "" }], people: [], images: [], deco: { fx: [], pal: "thema", stickers: [] }, vis: "private", who: [], gwho: [], perms: {}, share: "view", by: (this.me() || {}).id || "", url: "", partial: false }, decoSel: null, pickQ: "", drawer: false, admin: false, secOpen: {} });
+    this.setState({ draft: { id: null, name: "", date: today, end: "", place: "", kicker: "", note: "", infos: [{ label: "", value: "" }], people: [], images: [], deco: { fx: [], pal: "thema", stickers: [] }, vis: "private", who: [], gwho: [], perms: {}, polls: [], share: "view", by: (this.me() || {}).id || "", url: "", partial: false }, decoSel: null, pickQ: "", drawer: false, admin: false, secOpen: {} });
   };
 
   editEvent(id) {
@@ -3009,7 +3167,7 @@ class Component extends DCLogic {
           pal: (e.deco || {}).pal || "thema",
           stickers: ((e.deco || {}).stickers || []).map((r) => Object.assign({}, r))
         },
-        by: e.by || "", vis: (e.vis === "selected" ? "people" : e.vis) || "private", who: (e.who || []).slice(), gwho: (e.gwho || []).slice(), perms: Object.assign({}, e.perms || {}), share: e.share || "view",
+        by: e.by || "", vis: (e.vis === "selected" ? "people" : e.vis) || "private", who: (e.who || []).slice(), gwho: (e.gwho || []).slice(), perms: Object.assign({}, e.perms || {}), polls: (e.polls || []).map((p) => Object.assign({}, p)), share: e.share || "view",
         url: "", partial: lvl < 4
       }
     });
@@ -3040,6 +3198,7 @@ class Component extends DCLogic {
       who: (d.who || (old && old.who) || []).slice(),
       gwho: (d.gwho || (old && old.gwho) || []).slice(),
       perms: Object.assign({}, (old && old.perms) || {}, d.perms || {}),
+      polls: (d.polls || (old && old.polls) || []).map((p) => Object.assign({}, p)),
       share: d.share || (old && old.share) || "view"
     };
     if (this.state.cloud) {
@@ -3324,6 +3483,157 @@ class Component extends DCLogic {
         window.setTimeout(() => window.print(), 180);
       });
     });
+  }
+
+  /* ---------- Abstimmungen und Ranglisten ---------- */
+
+  /* Darf diese Person bei dieser Umfrage mitmachen? */
+  darfWaehlen(e, p) {
+    const u = this.me();
+    if (!u || !e || !p) return false;
+    if (this.levelFor(e) < 1) return false;
+    if ((e.by || "") === u.id) return true;
+    if (p.wer === "personen") return (p.who || []).indexOf(u.id) >= 0;
+    if (p.wer === "gruppen") {
+      return (p.gwho || []).some((gid) => {
+        const g = (this.state.groups || []).filter((x) => x.id === gid)[0];
+        return g && (g.members || []).indexOf(u.id) >= 0;
+      });
+    }
+    return true;
+  }
+
+  /* Umfragen eines Ereignisses ändern — im Editor über den Entwurf,
+     auf der Karte direkt am Ereignis. */
+  pollsSchreiben(eventId, polls) {
+    if (this.state.draft && this.state.draft.id === eventId) {
+      this.setState({ draft: Object.assign({}, this.state.draft, { polls: polls }) });
+      return;
+    }
+    const events = this.state.events.map((x) => (x.id === eventId ? Object.assign({}, x, { polls: polls }) : x));
+    this.setState({ events: events });
+    if (this.state.cloud && window.ChronikCloud.setPolls) {
+      window.ChronikCloud.setPolls(eventId, polls).catch((e) => this.handleCloudError(e));
+    }
+  }
+
+  pollsVon(eventId) {
+    if (this.state.draft && this.state.draft.id === eventId) return (this.state.draft.polls || []).slice();
+    const e = this.state.events.filter((x) => x.id === eventId)[0];
+    return ((e || {}).polls || []).slice();
+  }
+
+  pollAendern(eventId, pollId, patch) {
+    const liste = this.pollsVon(eventId).map((p) => (p.id === pollId ? Object.assign({}, p, patch) : p));
+    this.pollsSchreiben(eventId, liste);
+  }
+
+  /* Stimme abgeben oder zurücknehmen. */
+  stimmen = (eventId, pollId, optId) => {
+    const u = this.me();
+    if (!u) return;
+    const p = this.pollsVon(eventId).filter((x) => x.id === pollId)[0];
+    if (!p) return;
+    const alt = (p.stimmen || {})[u.id] || [];
+    let neu;
+    if (p.mehr) {
+      neu = alt.indexOf(optId) >= 0 ? alt.filter((x) => x !== optId) : alt.concat([optId]);
+      const grenze = Math.max(1, Number(p.max || 2));
+      if (neu.length > grenze) neu = neu.slice(neu.length - grenze);
+    } else {
+      neu = alt.indexOf(optId) >= 0 ? [] : [optId];
+    }
+    const st = Object.assign({}, p.stimmen || {});
+    if (neu.length) st[u.id] = neu; else delete st[u.id];
+    this.pollAendern(eventId, pollId, { stimmen: st });
+  };
+
+  /* Eigene Rangliste: Eintrag um eine Stelle bewegen. */
+  rangSchieben = (eventId, pollId, optId, richtung) => {
+    const u = this.me();
+    if (!u) return;
+    const p = this.pollsVon(eventId).filter((x) => x.id === pollId)[0];
+    if (!p) return;
+    const alle = (p.opts || []).map((o) => o.i);
+    const vorhanden = ((p.rangliste || {})[u.id] || []).filter((i) => alle.indexOf(i) >= 0);
+    const liste = vorhanden.concat(alle.filter((i) => vorhanden.indexOf(i) < 0));
+    const at = liste.indexOf(optId);
+    const ziel = at + richtung;
+    if (at < 0 || ziel < 0 || ziel >= liste.length) return;
+    liste.splice(ziel, 0, liste.splice(at, 1)[0]);
+    const r = Object.assign({}, p.rangliste || {});
+    r[u.id] = liste;
+    this.pollAendern(eventId, pollId, { rangliste: r });
+  };
+
+  /* Auf die Rangliste einer anderen Person reagieren. */
+  echoSetzen = (eventId, pollId, zielId, emoji) => {
+    const u = this.me();
+    if (!u) return;
+    const p = this.pollsVon(eventId).filter((x) => x.id === pollId)[0];
+    if (!p) return;
+    const echo = Object.assign({}, p.echo || {});
+    const fuerZiel = Object.assign({}, echo[zielId] || {});
+    const bisher = fuerZiel[u.id] || {};
+    if (bisher.e === emoji) delete fuerZiel[u.id];
+    else fuerZiel[u.id] = Object.assign({}, bisher, { e: emoji });
+    echo[zielId] = fuerZiel;
+    this.pollAendern(eventId, pollId, { echo: echo });
+  };
+
+  echoText = (eventId, pollId, zielId) => {
+    const u = this.me();
+    if (!u) return;
+    const text = String(this.state.echoDraft[pollId + zielId] || "").trim().slice(0, 200);
+    const p = this.pollsVon(eventId).filter((x) => x.id === pollId)[0];
+    if (!p) return;
+    const echo = Object.assign({}, p.echo || {});
+    const fuerZiel = Object.assign({}, echo[zielId] || {});
+    const bisher = fuerZiel[u.id] || {};
+    if (text) fuerZiel[u.id] = Object.assign({}, bisher, { t: text });
+    else if (bisher.e) fuerZiel[u.id] = { e: bisher.e };
+    else delete fuerZiel[u.id];
+    echo[zielId] = fuerZiel;
+    const d = Object.assign({}, this.state.echoDraft);
+    delete d[pollId + zielId];
+    this.setState({ echoDraft: d });
+    this.pollAendern(eventId, pollId, { echo: echo });
+  };
+
+  /* ---------- Umfragen im Editor ---------- */
+
+  pollNeu = (art) => {
+    const d = this.state.draft;
+    if (!d) return;
+    const p = leerePoll(art);
+    this.setState({
+      draft: Object.assign({}, d, { polls: (d.polls || []).concat([p]) }),
+      pollOpen: p.id
+    });
+  };
+
+  pollWeg = (pollId) => {
+    const d = this.state.draft;
+    if (!d) return;
+    this.setState({ draft: Object.assign({}, d, { polls: (d.polls || []).filter((p) => p.id !== pollId) }) });
+  };
+
+  pollSet(pollId, patch) {
+    const d = this.state.draft;
+    if (!d) return;
+    this.setState({
+      draft: Object.assign({}, d, {
+        polls: (d.polls || []).map((p) => (p.id === pollId ? Object.assign({}, p, patch) : p))
+      })
+    });
+  }
+
+  optSet(pollId, i, label) {
+    const p = ((this.state.draft || {}).polls || []).filter((x) => x.id === pollId)[0];
+    if (!p) return;
+    const opts = (p.opts || []).slice();
+    opts[i] = Object.assign({}, opts[i], { label: label });
+    this.pollSet(pollId, { opts: opts });
   }
 
   /* ---------- Bildbearbeitung ---------- */
@@ -3668,7 +3978,8 @@ class Component extends DCLogic {
         name: e.name, dateLabel: fmtDate(e.date), kicker: e.kicker || "", place: e.place || "", note: e.note || "",
         sign: isOpen ? "－" : "＋",
         isOpen: isOpen, closed: !isOpen,
-        summary: [plural((e.infos || []).length, "Info", "Infos"), plural((e.people || []).length, "Person", "Personen"), plural(nImg, "Bild", "Bilder")].join(" · ") + (e.by && me && e.by !== me.id ? " · von " + ((st.users.filter((u) => u.id === e.by)[0] || {}).username || "unbekannt") : ""),
+        summary: [plural((e.infos || []).length, "Info", "Infos"), plural((e.people || []).length, "Person", "Personen"), plural(nImg, "Bild", "Bilder")]
+          .concat((e.polls || []).length ? [plural((e.polls || []).length, "Runde", "Runden")] : []).join(" · ") + (e.by && me && e.by !== me.id ? " · von " + ((st.users.filter((u) => u.id === e.by)[0] || {}).username || "unbekannt") : ""),
         visTag: e.by && (e.vis === "private" ? "Privat" : e.vis === "selected" ? "Ausgewählte" : ""),
         visStyle: { fontSize: "9.5px", letterSpacing: "0.14em", textTransform: "uppercase", padding: "2px 7px", borderRadius: "99px", border: "1px solid color-mix(in srgb, var(--t-ink, #201e1d) 30%, transparent)", color: "color-mix(in srgb, var(--t-ink, #201e1d) 62%, var(--t-card, #eae9e9))" },
         hasInfos: (e.infos || []).length > 0, hasPeople: (e.people || []).length > 0, hasImages: nImg > 0,
@@ -3696,6 +4007,102 @@ class Component extends DCLogic {
           send: () => this.addComment(e.id, j),
           zoom: (ev) => { ev.stopPropagation(); this.setState({ zoomImg: { src: r.src, caption: r.caption || "", event: e.name } }); }
         })),
+        polls: (function (self) {
+          const liste = (e.polls || []).filter((p) => p && p.frage !== undefined);
+          const uid2 = (me || {}).id || "";
+          const nameVon = (id) => (st.users.filter((x) => x.id === id)[0] || {}).username || "jemand";
+          return liste.map((p) => {
+            const darf = self.darfWaehlen(e, p);
+            const meine = (p.stimmen || {})[uid2] || [];
+            const rang = p.art === "rank";
+            const gesamt = rang ? Object.keys(p.rangliste || {}).length : Object.keys(p.stimmen || {}).length;
+            const zaehler = {};
+            Object.keys(p.stimmen || {}).forEach((k) => (p.stimmen[k] || []).forEach((o) => { zaehler[o] = (zaehler[o] || 0) + 1; }));
+            const hoechst = Math.max(1, ...Object.keys(zaehler).map((k) => zaehler[k]));
+            const alleIds = (p.opts || []).map((o) => o.i);
+            const meinRang = ((p.rangliste || {})[uid2] || []).filter((i) => alleIds.indexOf(i) >= 0);
+            const meineFolge = meinRang.concat(alleIds.filter((i) => meinRang.indexOf(i) < 0));
+            const labelVon = (i) => ((p.opts || []).filter((o) => o.i === i)[0] || {}).label || "—";
+            return {
+              key: p.id,
+              istWahl: p.art === "vote",
+              istRang: p.art === "rank",
+              frage: p.frage || (p.art === "rank" ? "Rangliste" : "Abstimmung"),
+              art: p.art === "rank" ? "Rangliste" : "Abstimmung",
+              hinweis: !darf
+                ? "Du bist bei dieser Runde nicht dabei."
+                : p.art === "rank"
+                  ? "Mit den Pfeilen deine Reihenfolge festlegen — andere sehen sie und können darauf reagieren."
+                  : p.mehr ? "Bis zu " + Math.max(1, Number(p.max || 2)) + " Stimmen" : "Eine Stimme",
+              zahl: gesamt
+                ? plural(gesamt, rang ? "Rangliste" : "Stimme", rang ? "Ranglisten" : "Stimmen")
+                : (rang ? "noch keine Rangliste" : "noch keine Stimme"),
+              darf: darf,
+              /* Abstimmung */
+              opts: (p.opts || []).filter((o) => o.label).map((o) => {
+                const an = meine.indexOf(o.i) >= 0;
+                const n = zaehler[o.i] || 0;
+                return {
+                  key: o.i, label: o.label, n: n ? String(n) : "",
+                  balken: {
+                    position: "absolute", left: 0, top: 0, bottom: 0,
+                    width: Math.round((n / hoechst) * 100) + "%",
+                    background: an ? "color-mix(in srgb, var(--t-accent, #0088b0) 26%, transparent)" : "color-mix(in srgb, var(--t-ink, #201e1d) 9%, transparent)",
+                    transition: "width 260ms ease"
+                  },
+                  style: {
+                    position: "relative", overflow: "hidden", display: "flex", alignItems: "center", gap: "8px",
+                    width: "100%", font: "inherit", textAlign: "left", padding: "7px 10px",
+                    cursor: darf ? "pointer" : "default",
+                    border: "1px solid " + (an ? "var(--t-accent, #0088b0)" : "var(--t-border, rgba(32,30,29,0.16))"),
+                    borderRadius: "var(--t-radius, 2px)", background: "transparent", color: "var(--t-ink, #201e1d)"
+                  },
+                  mark: an ? "\u2713" : "",
+                  pick: darf ? () => self.stimmen(e.id, p.id, o.i) : () => {}
+                };
+              }),
+              /* Rangliste: meine Reihenfolge */
+              meineFolge: p.art === "rank" ? meineFolge.map((i, k) => ({
+                key: i, platz: (k + 1) + ".", label: labelVon(i),
+                hoch: darf && k > 0, runter: darf && k < meineFolge.length - 1,
+                auf: () => self.rangSchieben(e.id, p.id, i, -1),
+                ab: () => self.rangSchieben(e.id, p.id, i, 1)
+              })) : [],
+              /* Ranglisten der anderen samt Reaktionen */
+              andere: p.art === "rank" ? Object.keys(p.rangliste || {}).filter((k) => k !== uid2).map((k) => {
+                const folge = (p.rangliste[k] || []).filter((i) => alleIds.indexOf(i) >= 0);
+                const echo = (p.echo || {})[k] || {};
+                const meinEcho = echo[uid2] || {};
+                return {
+                  key: k, wer: nameVon(k),
+                  folge: folge.slice(0, 6).map((i, j) => ({ key: i, txt: (j + 1) + ". " + labelVon(i) })),
+                  emojis: ECHO_EMOJI.map((em) => ({
+                    key: em, em: em,
+                    style: {
+                      font: "inherit", fontSize: "14px", lineHeight: 1, padding: "3px 7px", cursor: "pointer",
+                      borderRadius: "99px", background: meinEcho.e === em ? "color-mix(in srgb, var(--t-accent, #0088b0) 20%, transparent)" : "transparent",
+                      border: "1px solid " + (meinEcho.e === em ? "var(--t-accent, #0088b0)" : "var(--t-border, rgba(32,30,29,0.16))"),
+                      color: "var(--t-ink, #201e1d)"
+                    },
+                    pick: () => self.echoSetzen(e.id, p.id, k, em)
+                  })),
+                  reaktionen: Object.keys(echo).map((r) => ({
+                    key: r, txt: (echo[r].e ? echo[r].e + " " : "") + nameVon(r) + (echo[r].t ? ": " + echo[r].t : "")
+                  })),
+                  entwurf: st.echoDraft[p.id + k] || "",
+                  onText: (ev) => {
+                    const d = Object.assign({}, self.state.echoDraft);
+                    d[p.id + k] = ev.target.value;
+                    self.setState({ echoDraft: d });
+                  },
+                  senden: () => self.echoText(e.id, p.id, k)
+                };
+              }) : [],
+              hatAndere: p.art === "rank" && Object.keys(p.rangliste || {}).filter((k) => k !== uid2).length > 0
+            };
+          });
+        })(this),
+        hatPolls: ((e.polls || []).length > 0),
         plain: !t.flap,
         flap: !!t.flap,
         chars: t.flap ? String(e.name || "").slice(0, 46).split("").map((c, ci) => ({
@@ -3923,9 +4330,71 @@ class Component extends DCLogic {
           },
           infos: mk("infos", zahl((d0.infos || []).filter((r) => r.label || r.value).length, "Zeile", "Zeilen")),
           personen: mk("personen", zahl((d0.people || []).filter((r) => r.name).length, "Person", "Personen")),
+          polls: mk("polls", (d0.polls || []).length ? plural((d0.polls || []).length, "Runde", "Runden") : "keine"),
           bilder: mk("bilder", zahl((d0.images || []).length, "Bild", "Bilder")),
           deko: mk("deko", dekoN ? plural(dekoN, "Element", "Elemente") : "keine"),
           sicht: mk("sicht", "")
+        };
+      })(this),
+      polls: (function (self) {
+        const chip = (an) => ({
+          font: "inherit", fontSize: "11.5px", letterSpacing: "0.04em", padding: "4px 11px", cursor: "pointer",
+          whiteSpace: "nowrap", borderRadius: "99px",
+          border: "1px solid " + (an ? "var(--color-accent)" : "var(--color-divider)"),
+          background: an ? "var(--color-accent)" : "transparent",
+          color: an ? "var(--color-bg)" : "var(--color-text)"
+        });
+        const fids = self.friendIds();
+        return {
+          neueWahl: () => self.pollNeu("vote"),
+          neueRang: () => self.pollNeu("rank"),
+          liste: (d0.polls || []).map((p) => {
+            const rang = p.art === "rank";
+            return {
+              key: p.id,
+              art: rang ? "Rangliste" : "Abstimmung",
+              istWahl: !rang,
+              frage: p.frage || "",
+              platzhalter: rang ? "z. B. Welcher Act war der beste?" : "z. B. Wohin fahren wir nächstes Jahr?",
+              onFrage: (ev) => self.pollSet(p.id, { frage: ev.target.value }),
+              optLabel: rang ? "Was wird gerankt" : "Antworten",
+              opts: (p.opts || []).map((o, i) => ({
+                key: o.i, label: o.label || "",
+                platzhalter: rang ? "Eintrag " + (i + 1) : "Antwort " + (i + 1),
+                onLabel: (ev) => self.optSet(p.id, i, ev.target.value),
+                weg: () => self.pollSet(p.id, { opts: (p.opts || []).filter((_, j) => j !== i) })
+              })),
+              optNeu: () => self.pollSet(p.id, { opts: (p.opts || []).concat([{ i: "o" + uid(), label: "" }]) }),
+              wer: p.wer || "alle",
+              werOpts: POLL_WER.map((w) => ({ key: w[0], value: w[0], label: w[1] })),
+              onWer: (ev) => self.pollSet(p.id, { wer: ev.target.value }),
+              zeigeGruppen: (p.wer || "alle") === "gruppen",
+              zeigePersonen: (p.wer || "alle") === "personen",
+              gruppen: (st.groups || []).map((g) => {
+                const an = (p.gwho || []).indexOf(g.id) >= 0;
+                return {
+                  key: g.id, label: g.name + " · " + (g.members || []).length, style: chip(an),
+                  toggle: () => self.pollSet(p.id, { gwho: an ? (p.gwho || []).filter((x) => x !== g.id) : (p.gwho || []).concat([g.id]) })
+                };
+              }),
+              personen: st.users.filter((u) => me && (u.id === me.id || fids.indexOf(u.id) >= 0)).map((u) => {
+                const an = (p.who || []).indexOf(u.id) >= 0;
+                return {
+                  key: u.id, name: u.username + (me && u.id === me.id ? " (du)" : ""), mark: an ? "✓" : "",
+                  box: { width: "17px", height: "17px", borderRadius: "3px", display: "grid", placeItems: "center", fontSize: "11px", flex: "0 0 auto", background: an ? "var(--color-accent)" : "transparent", color: "var(--color-bg)", border: "1px solid " + (an ? "var(--color-accent)" : "var(--color-divider)") },
+                  style: { display: "flex", alignItems: "center", gap: "8px", width: "100%", font: "inherit", textAlign: "left", cursor: "pointer", padding: "4px 6px", borderRadius: "var(--radius-md)", border: 0, background: an ? "color-mix(in srgb, var(--color-accent) 9%, transparent)" : "transparent", color: "var(--color-text)" },
+                  toggle: () => self.pollSet(p.id, { who: an ? (p.who || []).filter((x) => x !== u.id) : (p.who || []).concat([u.id]) })
+                };
+              }),
+              mehr: !!p.mehr,
+              mehrLabel: p.mehr ? "Mehrere Stimmen" : "Eine Stimme",
+              mehrStyle: chip(!!p.mehr),
+              onMehr: () => self.pollSet(p.id, { mehr: !p.mehr }),
+              max: Math.max(2, Number(p.max || 2)),
+              onMax: (ev) => self.pollSet(p.id, { max: Math.max(2, Math.min(12, Number(ev.target.value) || 2)) }),
+              weg: () => self.pollWeg(p.id)
+            };
+          })
         };
       })(this),
       dropStyle: { display: "grid", placeItems: "center", gap: "4px", padding: isTouch() ? "26px 20px" : "20px", minHeight: isTouch() ? "88px" : "auto", textAlign: "center", cursor: "pointer", border: "1px dashed " + (st.dragOver ? "var(--color-accent)" : "var(--color-divider)"), borderRadius: "var(--radius-md)", background: st.dragOver ? "color-mix(in srgb, var(--color-accent) 10%, transparent)" : "var(--color-surface)", color: "var(--color-neutral-700)" },
