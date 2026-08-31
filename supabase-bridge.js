@@ -547,7 +547,10 @@
     if (ev.error) throw fail(code(ev.error));
     var rows = ev.data || [];
 
-    var cm = await c.from("comments").select("id, event_id, image_index, text, deleted, author, created_at, profiles(username)").order("created_at");
+    var cm = await c.from("comments").select("id, event_id, image_index, text, deleted, author, parent, reax, created_at, profiles(username)").order("created_at");
+    if (cm.error && /parent|reax/i.test(String(cm.error.message || ""))) {
+      cm = await c.from("comments").select("id, event_id, image_index, text, deleted, author, created_at, profiles(username)").order("created_at");
+    }
     if (cm.error && /deleted|author/i.test(String(cm.error.message || ""))) {
       cm = await c.from("comments").select("id, event_id, image_index, text, created_at, profiles(username)").order("created_at");
     }
@@ -559,7 +562,9 @@
         userId: r.author || "",
         who: (r.profiles && r.profiles.username) || "jemand",
         text: r.deleted ? "" : r.text,
-        deleted: !!r.deleted
+        deleted: !!r.deleted,
+        parent: r.parent || "",
+        reax: r.reax || {}
       });
     });
 
@@ -661,11 +666,24 @@
     return true;
   }
 
-  async function addComment(eventId, imageIndex, text) {
+  async function addComment(eventId, imageIndex, text, parent) {
     var g = await guard("write");
-    if (!g.ok) { var err = new Error(g.block.message); err.block = g.block; throw err; }
+    if (!g.ok) { var err = fail("D-13"); err.block = g.block; throw err; }
     var c = await client();
-    var r = await c.from("comments").insert({ event_id: eventId, image_index: imageIndex, text: text });
+    var zeile = { event_id: eventId, image_index: imageIndex, text: text };
+    if (parent) zeile.parent = parent;
+    var r = await c.from("comments").insert(zeile);
+    if (r.error && parent && /parent/i.test(String(r.error.message || ""))) {
+      delete zeile.parent;
+      r = await c.from("comments").insert(zeile);
+    }
+    if (r.error) throw fail(code(r.error));
+    bump({ p_writes: 1 });
+  }
+
+  async function reactComment(commentId, emoji) {
+    var c = await client();
+    var r = await c.rpc("set_reax", { p_comment: commentId, p_emoji: emoji || "" });
     if (r.error) throw fail(code(r.error));
     bump({ p_writes: 1 });
   }
@@ -782,7 +800,7 @@
     saveNotify: saveNotify, notify: notify,
     friends: friends, askFriend: askFriend, answerFriend: answerFriend, unfriend: unfriend,
     loadEvents: loadEvents, saveEvent: saveEvent, removeEvent: removeEvent,
-    addComment: addComment, removeComment: removeComment, setPolls: setPolls, uploadImage: uploadImage, imageUrl: imageUrl, storeCheck: storeCheck, onChange: onChange,
+    addComment: addComment, removeComment: removeComment, reactComment: reactComment, setPolls: setPolls, uploadImage: uploadImage, imageUrl: imageUrl, storeCheck: storeCheck, onChange: onChange,
     snapshot: snapshot, budget: budget, guard: guard,
     isLegacy: function () { return legacySchema; },
     lastR2Error: function () { return lastR2Error; }
