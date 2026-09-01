@@ -5437,7 +5437,7 @@ class Component extends DCLogic {
         toggleReset: () => this.setState({ authMode: st.authMode === "reset" ? "login" : "reset", authError: "", authNotice: "" }),
         resetLink: st.authMode === "reset" ? "Zurück zur Anmeldung" : "Passwort vergessen?",
         title: st.authMode === "newpw" ? "Neues Passwort wählen" : st.authMode === "reset" ? (st.cloud ? "Passwort zurücksetzen" : "Neues Passwort setzen") : st.authMode === "register" ? (st.users.length ? "Konto anlegen" : "Chronik einrichten") : "Willkommen zurück",
-        idLabel: st.authMode === "login" ? "E-Mail oder Benutzername" : "E-Mail",
+        idLabel: st.authMode === "login" ? "E-Mail" : "E-Mail",
         pwLabel: "Passwort",
         pwAuto: st.authMode === "login" ? "current-password" : "new-password",
         username: st.authForm.username, email: st.authForm.email, pw: st.authForm.pw, pw2: st.authForm.pw2, 
