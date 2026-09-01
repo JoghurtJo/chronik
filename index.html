@@ -34,6 +34,8 @@
   @keyframes deco-drop { from { opacity: 0; transform: translateX(-50%) translateY(-16px); } to { opacity: 0.94; } }
   @keyframes deco-twinkle { 0%, 100% { opacity: 0.22; } 50% { opacity: 1; } }
   @keyframes deco-sway { 0%, 100% { rotate: -2.5deg; } 50% { rotate: 2.5deg; } }
+  @keyframes tl-spin { to { transform: rotate(360deg); } }
+  @keyframes tl-strip { from { background-position: 0 0; } to { background-position: 34px 0; } }
   @keyframes tl-flap { 0% { transform: rotateX(-90deg); opacity: 0; } 58% { transform: rotateX(9deg); opacity: 1; } 78% { transform: rotateX(-4deg); } 100% { transform: rotateX(0deg); opacity: 1; } }
   @keyframes deco-pop { from { opacity: 0; scale: 0.4; } to { opacity: 1; scale: 1; } }
   @keyframes sh-fade { from { opacity: 0; } to { opacity: 1; } }
@@ -104,7 +106,7 @@
         <span>Dein Leben</span>
         <span>Eure Geschichten</span>
         <span>Erleben wie damals</span>
-        <span>Mehr Organgen!</span>
+        <span>Mit mehr Organgen</span>
       </div>
     </div>
 
@@ -180,13 +182,31 @@
             <div style="font-size: 14.5px; line-height: 1.4; color: var(--color-text);">Passwort wirklich ändern?</div>
             <div style="font-size: 12.5px; line-height: 1.5; color: var(--color-accent-2-700);">{{ auth.confirmHint }}</div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <button class="btn btn-primary" style="white-space: nowrap;" disabled="{{ auth.busy }}" onClick="{{ auth.submit }}">{{ auth.confirmCta }}</button>
+              <button class="btn btn-primary" style="white-space: nowrap; display: inline-flex; align-items: center; gap: 9px;" disabled="{{ auth.busy }}" onClick="{{ auth.submit }}">
+                <sc-if value="{{ auth.busy }}" hint-placeholder-val="{{ false }}">
+                  <span style="width: 14px; height: 14px; flex: 0 0 auto; border-radius: 50%; border: 2px solid color-mix(in srgb, var(--color-bg) 40%, transparent); border-top-color: var(--color-bg); animation: tl-spin 620ms linear infinite;"></span>
+                </sc-if>
+                <span>{{ auth.confirmCta }}</span>
+              </button>
               <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ auth.cancelConfirm }}">Abbrechen</button>
             </div>
           </div>
         </sc-if>
         <sc-if value="{{ auth.showCta }}" hint-placeholder-val="{{ true }}">
-          <button class="btn btn-primary btn-block" style="white-space: nowrap;" disabled="{{ auth.busy }}" onClick="{{ auth.submit }}">{{ auth.cta }}</button>
+          <button class="btn btn-primary btn-block" style="white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: 9px;" disabled="{{ auth.busy }}" onClick="{{ auth.submit }}">
+            <sc-if value="{{ auth.busy }}" hint-placeholder-val="{{ false }}">
+              <span style="width: 15px; height: 15px; flex: 0 0 auto; border-radius: 50%; border: 2px solid color-mix(in srgb, var(--color-bg) 40%, transparent); border-top-color: var(--color-bg); animation: tl-spin 620ms linear infinite;"></span>
+            </sc-if>
+            <span>{{ auth.cta }}</span>
+          </button>
+        </sc-if>
+        <sc-if value="{{ auth.busy }}" hint-placeholder-val="{{ false }}">
+          <div style="display: grid; gap: 5px;">
+            <div style="height: 4px; border-radius: 99px; overflow: hidden; background: var(--color-neutral-200);">
+              <div style="height: 100%; width: 100%; background-image: linear-gradient(90deg, var(--color-accent) 0 42%, var(--color-accent-300) 42% 100%); background-size: 34px 100%; animation: tl-strip 720ms linear infinite;"></div>
+            </div>
+            <div style="font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">{{ auth.busyText }}</div>
+          </div>
         </sc-if>
         <div style="display: flex; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap;">
           <div style="font-size: 12px; color: var(--color-neutral-700); line-height: 1.5; flex: 1; min-width: 22ch;">{{ auth.footnote }}</div>
@@ -216,6 +236,11 @@
         <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ toggleDrawer }}">Design · {{ themeName }}</button>
         <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ toggleAdmin }}">{{ contactsLabel }}</button>
         <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ konto.toggle }}">Mein Konto</button>
+        <div class="seg" role="group" style="margin: 0;">
+          <sc-for list="{{ strahl.arten }}" as="a" hint-placeholder-count="2">
+            <label class="seg-opt"><input type="radio" name="strahlwahl" checked="{{ a.on }}" onChange="{{ a.pick }}" style="position: absolute; opacity: 0; pointer-events: none;">{{ a.label }}</label>
+          </sc-for>
+        </div>
       </div>
     </div>
     <div style="height: 5px; background: var(--color-text); margin-top: var(--space-3);"></div>
@@ -353,7 +378,7 @@
 
   <div style="{{ lay.stagePad }}" data-screen-label="Zeitstrahl">
     <div style="{{ shellStyle }}">
-    <div data-stage="" ref="{{ stageRef }}" onScroll="{{ onScroll }}" onPointerDown="{{ stick.place }}" onPointerMove="{{ stick.move }}" onPointerUp="{{ stick.up }}" onPointerLeave="{{ stick.up }}" style="position: relative; overflow-x: auto; overflow-y: hidden; background-color: var(--t-bg, #f3f2f2); border-radius: var(--radius-lg); box-shadow: inset 0 0 0 1px var(--color-divider); cursor: {{ stick.cursor }};">
+    <div data-stage="" ref="{{ stageRef }}" onScroll="{{ onScroll }}" onPointerDown="{{ stick.place }}" onPointerMove="{{ stick.move }}" onPointerUp="{{ stick.up }}" onPointerLeave="{{ stick.up }}" style="position: relative; overflow-x: auto; overflow-y: auto; max-height: 86vh; overscroll-behavior-x: contain; background-color: var(--t-bg, #f3f2f2); border-radius: var(--radius-lg); box-shadow: inset 0 0 0 1px var(--color-divider); cursor: {{ stick.cursor }};">
       <div style="{{ skinFx }}"></div>
       <sc-for list="{{ free }}" as="fs" hint-placeholder-count="0">
         <div onPointerDown="{{ fs.onDown }}" style="{{ fs.style }}">{{ fs.glyph }}</div>
@@ -897,9 +922,12 @@
             </sc-for>
             <button class="btn btn-ghost" style="white-space: nowrap; justify-self: start;" onClick="{{ refreshBudget }}">Zahlen aktualisieren</button>
           </div>
+        </sc-if>
 
+        <sc-if value="{{ cloudAn }}" hint-placeholder-val="{{ false }}">
+          <div style="height: 1px; background: var(--color-divider); margin: var(--space-6) 0 var(--space-4);"></div>
           <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: var(--space-2);">Letzte Änderungen zurücknehmen</div>
-          <p style="font-size: 12px; line-height: 1.5; margin: 0 0 var(--space-2); color: var(--color-neutral-700);">Hier stehen Änderungen an deinen Ereignissen — auch die von anderen. Ein Klick stellt den Stand davor wieder her.</p>
+          <p style="font-size: 12px; line-height: 1.5; margin: 0 0 var(--space-2); color: var(--color-neutral-700);">Hier stehen alle Änderungen an Ereignissen, die du angelegt hast — auch die von anderen. Ein Klick stellt den Stand davor wieder her.</p>
           <div style="display: grid; gap: 5px;">
             <sc-for list="{{ hist }}" as="h" hint-placeholder-count="3">
               <div style="display: flex; align-items: baseline; gap: 8px; font-size: 12.5px;">
@@ -1023,7 +1051,15 @@
           <div style="margin-top: 7px; font-size: 12.5px; padding: 8px 11px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700);">{{ form.noStoreCode }}</div>
         </sc-if>
         <sc-if value="{{ form.imgBusy }}" hint-placeholder-val="{{ false }}">
-          <div style="margin-top: 7px; font-size: 12.5px; padding: 7px 10px; border-radius: var(--radius-md); background: var(--color-accent-100); color: var(--color-accent-700);">{{ form.imgBusy }}</div>
+          <div style="display: grid; gap: 6px; margin-top: 7px; padding: 9px 11px; border-radius: var(--radius-md); background: var(--color-accent-100); color: var(--color-accent-700);">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="width: 14px; height: 14px; flex: 0 0 auto; border-radius: 50%; border: 2px solid color-mix(in srgb, var(--color-accent) 30%, transparent); border-top-color: var(--color-accent); animation: tl-spin 620ms linear infinite;"></span>
+              <span style="font-size: 12.5px;">{{ form.imgBusy }}</span>
+            </div>
+            <div style="height: 4px; border-radius: 99px; overflow: hidden; background: var(--color-accent-200);">
+              <div style="{{ form.imgBar }}"></div>
+            </div>
+          </div>
         </sc-if>
         <sc-if value="{{ form.imgErr }}" hint-placeholder-val="{{ false }}">
           <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 7px; font-size: 12.5px; padding: 7px 10px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700);">
@@ -1447,6 +1483,18 @@
 
 
 
+<sc-if value="{{ arbeitet }}" hint-placeholder-val="{{ false }}">
+  <div data-noprint="" style="position: fixed; left: 0; right: 0; top: 0; z-index: 200; pointer-events: none;">
+    <div style="height: 3px; background-image: linear-gradient(90deg, var(--color-accent) 0 42%, transparent 42% 100%); background-size: 34px 100%; animation: tl-strip 700ms linear infinite;"></div>
+    <div style="display: flex; justify-content: center;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 6px 14px; border-radius: 99px; background: var(--color-text); color: var(--color-bg); font-size: 12px; letter-spacing: 0.06em; box-shadow: var(--shadow-md);">
+        <span style="width: 12px; height: 12px; flex: 0 0 auto; border-radius: 50%; border: 2px solid color-mix(in srgb, var(--color-bg) 35%, transparent); border-top-color: var(--color-bg); animation: tl-spin 620ms linear infinite;"></span>
+        <span>{{ arbeitetText }}</span>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
 <sc-if value="{{ konto.open }}" hint-placeholder-val="{{ false }}">
   <div data-noprint="" data-screen-label="Mein Konto" style="position: fixed; inset: 0; z-index: 138; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 42%, transparent);">
     <div style="width: min(500px, 100%); max-height: 88vh; overflow-y: auto; background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: var(--space-6);">
@@ -1466,6 +1514,18 @@
         <div><span style="color: var(--color-neutral-700);">Kontakte:</span> {{ konto.kontakte }}</div>
       </div>
 
+      <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: var(--space-2);">Was auf meinem Zeitstrahl erscheint</div>
+      <div style="display: grid; gap: var(--space-3); margin-bottom: var(--space-6);">
+        <sc-for list="{{ feed }}" as="f" hint-placeholder-count="3">
+          <div style="display: grid; gap: 3px;">
+            <button onClick="{{ f.toggle }}" style="{{ f.style }}">{{ f.label }}</button>
+            <div style="font-size: 11.5px; line-height: 1.45; color: var(--color-neutral-700);">{{ f.hint }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="height: 1px; background: var(--color-divider); margin: 0 0 var(--space-4);"></div>
+
       <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-2-700); margin-bottom: var(--space-2);">Konto löschen</div>
       <p style="font-size: 12.5px; line-height: 1.55; margin: 0 0 var(--space-3); color: var(--color-neutral-700);">Damit verschwinden dein Zugang, deine eigenen Ereignisse samt Bildern, deine Kommentare und alle Kontakte. Ereignisse anderer Personen bleiben, auch wenn du darin genannt bist. Das lässt sich nicht zurückholen.</p>
       <div class="field" style="margin: 0 0 var(--space-3);"><label>Zum Bestätigen das Wort löschen eintippen</label>
@@ -1475,7 +1535,12 @@
         <div style="font-size: 12.5px; padding: 7px 10px; margin-bottom: var(--space-3); border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700);">{{ konto.fehler }}</div>
       </sc-if>
       <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <button class="btn btn-primary" style="white-space: nowrap; background: var(--color-accent-2); border-color: var(--color-accent-2);" disabled="{{ konto.busy }}" onClick="{{ konto.loeschen }}">{{ konto.cta }}</button>
+        <button class="btn btn-primary" style="white-space: nowrap; display: inline-flex; align-items: center; gap: 9px; background: var(--color-accent-2); border-color: var(--color-accent-2);" disabled="{{ konto.busy }}" onClick="{{ konto.loeschen }}">
+          <sc-if value="{{ konto.busy }}" hint-placeholder-val="{{ false }}">
+            <span style="width: 14px; height: 14px; flex: 0 0 auto; border-radius: 50%; border: 2px solid color-mix(in srgb, var(--color-bg) 40%, transparent); border-top-color: var(--color-bg); animation: tl-spin 620ms linear infinite;"></span>
+          </sc-if>
+          <span>{{ konto.cta }}</span>
+        </button>
         <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ konto.zu }}">Abbrechen</button>
       </div>
     </div>
@@ -2011,6 +2076,7 @@ class Component extends DCLogic {
     playing: false,
     dragOver: false,
     imgBusy: "",
+    imgPct: 0,
     vw: (typeof window !== "undefined" ? window.innerWidth : 1280),
     imgErr: "",
     storeCheck: "",
@@ -2021,6 +2087,8 @@ class Component extends DCLogic {
     imgEdit: null,
     pollOpen: null,
     pSuche: {},
+    strahl: "mein",
+    feed: { oeffentlich: false, freunde: true, vorschau: false },
     konto: false,
     loeschWort: "",
     loeschFehler: "",
@@ -2081,7 +2149,7 @@ class Component extends DCLogic {
         const raw = window.localStorage.getItem("chronik.v1");
         if (raw) {
           const s = JSON.parse(raw);
-          this.setState({ groups: Array.isArray(s.groups) ? s.groups : [], friends: Array.isArray(s.friends) ? s.friends : [] });
+          this.setState({ groups: Array.isArray(s.groups) ? s.groups : [], friends: Array.isArray(s.friends) ? s.friends : [], feed: s.feed || this.state.feed });
           this.legacyLook = {
             themeId: s.themeId || null, override: s.override || {}, custom: s.custom || [],
             meta: s.meta || null, mode: s.mode || "proportional", zoom: s.zoom || 1
@@ -2097,7 +2165,8 @@ class Component extends DCLogic {
         this.setState({
           events: Array.isArray(s.events) ? s.events : this.state.events,
           groups: Array.isArray(s.groups) ? s.groups : [],
-          friends: Array.isArray(s.friends) ? s.friends : []
+          friends: Array.isArray(s.friends) ? s.friends : [],
+          feed: s.feed || this.state.feed
         });
         this.legacyLook = {
           themeId: s.themeId || null, override: s.override || {}, custom: s.custom || [],
@@ -2223,6 +2292,7 @@ class Component extends DCLogic {
   cloudSync = async () => {
     const CC = window.ChronikCloud;
     if (!CC || !CC.enabled) return;
+    if (!this.state.cloudBusy) { this.setState({ cloudBusy: true }); await this.zeichnen(); }
     try {
       const users = await CC.profiles();
       const events = await CC.loadEvents();
@@ -2230,9 +2300,10 @@ class Component extends DCLogic {
       try { gs = await CC.groups(); } catch (e) { /* Gruppen sind optional */ }
       let fr = this.state.friends;
       try { if (CC.friends) fr = await CC.friends(); } catch (e) { /* Kontakte sind optional */ }
-      this.setState({ users: users, events: events, groups: gs, friends: fr, cloudErr: "" });
+      this.setState({ users: users, events: events, groups: gs, friends: fr, cloudBusy: false, cloudErr: "" });
     } catch (e) {
-      this.setState({ cloudErr: String(e.message || e) });
+      /* Ohne dieses cloudBusy: false bliebe der Balken für immer stehen. */
+      this.setState({ cloudBusy: false, cloudErr: String(e.message || e) });
     }
   };
 
@@ -2545,14 +2616,14 @@ class Component extends DCLogic {
     if (this.state.cloud) {
       try {
         window.localStorage.setItem("chronik.v1", JSON.stringify({
-          groups: this.state.groups, friends: this.state.friends
+          groups: this.state.groups, friends: this.state.friends, feed: this.state.feed
         }));
       } catch (e) { /* quota */ }
       return;
     }
     try {
       window.localStorage.setItem("chronik.v1", JSON.stringify({
-        events: this.state.events, groups: this.state.groups, friends: this.state.friends
+        events: this.state.events, groups: this.state.groups, friends: this.state.friends, feed: this.state.feed
       }));
       window.localStorage.setItem("chronik.auth.v1", JSON.stringify({ users: this.state.users }));
       /* Während des Starts nichts löschen — sonst wäre die Sitzung weg,
@@ -2587,8 +2658,17 @@ class Component extends DCLogic {
     };
   }
 
+  /* Zwei Bildschirmaufbauten abwarten: erst dann ist der Kreisel zu sehen. */
+  zeichnen() {
+    return new Promise((res) => {
+      if (typeof requestAnimationFrame !== "function") return setTimeout(res, 32);
+      requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(res, 16)));
+    });
+  }
+
   submitAuth = async () => {
     if (this.state.authBusy) return;
+    this.busyAb = Date.now();
     try {
       await this.doSubmitAuth();
     } catch (e) {
@@ -2614,6 +2694,7 @@ class Component extends DCLogic {
       if (pwBad) return this.setState({ authError: pwBad });
       if (f.pw !== f.pw2) return this.setState({ authError: "A-09" });
       this.setState({ authBusy: true, authError: "" });
+      await this.zeichnen();
       try {
         const salt = hex(window.crypto.getRandomValues(new Uint8Array(16)));
         const h = await this.derive(f.pw, salt, PBKDF2_ITER);
@@ -2640,6 +2721,7 @@ class Component extends DCLogic {
       return;
     }
     this.setState({ authBusy: true, authError: "" });
+    await this.zeichnen();
     try {
       const h = await this.derive(f.pw, u.salt, u.iter || PBKDF2_ITER);
       if (sameHex(h, u.hash)) {
@@ -2677,6 +2759,7 @@ class Component extends DCLogic {
     this.botMerken();
     const id = String(f.email || "").trim();
     this.setState({ authBusy: true, authError: "", authNotice: "" });
+    await this.zeichnen();
     try {
       if (mode === "register") {
         const name = String(f.username || "").trim();
@@ -3024,11 +3107,32 @@ class Component extends DCLogic {
 
   /* ---------- filters ---------- */
 
+  /* Was gehört auf den gerade gewählten Zeitstrahl? */
+  imStrahl(e) {
+    const u = this.me();
+    if (!u) return false;
+    if (this.state.strahl === "oeffentlich") return (e.vis || "private") === "public";
+    /* Eigener Strahl: immer das Eigene, dazu je Einstellung. */
+    if ((e.by || "") === u.id) return true;
+    const feed = this.feedPrefs();
+    const vis = e.vis || "private";
+    if (vis === "public") return !!feed.oeffentlich;
+    if (vis === "friends") return !!feed.freunde;
+    /* Ausdrücklich für mich freigegeben: immer dabei. */
+    return true;
+  }
+
+  feedPrefs() {
+    const f = this.state.feed || {};
+    return { oeffentlich: !!f.oeffentlich, freunde: f.freunde !== false, vorschau: !!f.vorschau };
+  }
+
   filtered() {
     const f = this.state.filters;
     const q = String(f.q || "").trim().toLowerCase();
     return this.state.events.filter((e) => {
       if (this.levelFor(e) < 1) return false;
+      if (!this.imStrahl(e)) return false;
       if (f.by && (e.by || "") !== f.by) return false;
       if (q) {
         const hay = [e.name, e.note, e.place, e.kicker].concat((e.people || []).map((p) => p.name)).join(" ").toLowerCase();
@@ -3362,6 +3466,7 @@ class Component extends DCLogic {
       const ich = this.me() || {};
       const fremd = d.id && clean.by && clean.by !== ich.id ? clean.by : "";
       this.setState({ draft: null, cloudBusy: true });
+      this.zeichnen();
       window.ChronikCloud.saveEvent(payload)
         .then((id) => {
           this.setState({ cloudBusy: false, openId: id || null });
@@ -3526,7 +3631,10 @@ class Component extends DCLogic {
     const rows = [];
     let failed = 0;
     for (let i = 0; i < list.length; i++) {
-      this.setState({ imgBusy: "Bild " + (i + 1) + " von " + list.length + " …" });
+      this.setState({
+        imgBusy: "Bild " + (i + 1) + " von " + list.length + " wird übertragen",
+        imgPct: Math.round((i / list.length) * 100)
+      });
       try {
         const raw = list[i];
         const name = String(raw.name || "bild").replace(/\.[a-z0-9]+$/i, "") || "bild";
@@ -3562,7 +3670,7 @@ class Component extends DCLogic {
     const d = Object.assign({}, this.state.draft);
     d.images = (d.images || []).concat(rows);
     this.setState({
-      draft: d, imgBusy: "", cloudBusy: false,
+      draft: d, imgBusy: "", imgPct: 0, cloudBusy: false,
       imgErr: failed ? (DEBUG ? failed + "/" + list.length + " · " + errLabel(this.lastImgError) : failed + "/" + list.length) : ""
     });
   };
@@ -4150,7 +4258,7 @@ class Component extends DCLogic {
     const t = this.theme();
     const me = this.me();
     const d = t.density;
-    const all = st.events.filter((e) => this.levelFor(e) > 0).sort((a, b) => dp(a.date) - dp(b.date));
+    const all = st.events.filter((e) => this.levelFor(e) > 0 && this.imStrahl(e)).sort((a, b) => dp(a.date) - dp(b.date));
     const evs = this.filtered().slice().sort((a, b) => dp(a.date) - dp(b.date));
     const cardW = Math.round(268 * d);
     const gap = Math.round(26 * d);
@@ -4181,14 +4289,16 @@ class Component extends DCLogic {
       const lvl = this.levelFor(e);
       if (isOpen) {
         const w2 = Math.round(cardW * 2.2);
-        const est = 260 + Math.ceil(String(e.note || "").length / 64) * 23 + (e.infos || []).length * 24
-          + ((e.people || []).length ? 84 : 0) + Math.ceil(nImg / 2) * ((w2 - 40) / 2 * 0.8 + 96) + 90;
+        const nKom = (e.images || []).reduce((n, im) => n + ((im.comments || []).length), 0);
+        const est = 300 + Math.ceil(String(e.note || "").length / 64) * 23 + (e.infos || []).length * 24
+          + ((e.people || []).length ? 84 : 0) + Math.ceil(nImg / 2) * ((w2 - 40) / 2 * 0.8 + 96)
+          + nKom * 26 + (e.polls || []).length * 190 + 140;
         openBottom = top + est;
       }
       return {
         key: e.id,
         pos: { position: "absolute", left: (it.x + padL) + "px", top: top + "px", width: (isOpen ? openW : cardW) + "px", zIndex: isOpen ? 60 : 10 + it.lane, transition: "width 380ms cubic-bezier(0.16, 1, 0.3, 1)" },
-        body: { maxHeight: isOpen ? Math.max(360, Math.round(laneH * 3.1)) + "px" : (laneH - 12) + "px", overflow: isOpen ? "auto" : "hidden", overscrollBehavior: "contain", borderRadius: "var(--t-radius, 2px)", transition: "max-height 420ms cubic-bezier(0.16, 1, 0.3, 1)", animationName: "var(--t-anim, tl-glide)", animationDuration: "var(--t-anim-dur, 620ms)", animationTimingFunction: "var(--t-anim-ease, ease-out)", animationFillMode: "both", animationDelay: (60 + it.i * 55) + "ms" },
+        body: { maxHeight: isOpen ? "min(78vh, " + Math.max(520, Math.round(laneH * 4.2)) + "px)" : (laneH - 12) + "px", overflow: isOpen ? "auto" : "hidden", overscrollBehavior: "contain", borderRadius: "var(--t-radius, 2px)", transition: "max-height 420ms cubic-bezier(0.16, 1, 0.3, 1)", animationName: "var(--t-anim, tl-glide)", animationDuration: "var(--t-anim-dur, 620ms)", animationTimingFunction: "var(--t-anim-ease, ease-out)", animationFillMode: "both", animationDelay: (60 + it.i * 55) + "ms" },
         noteClip: { maxHeight: isOpen ? "none" : "51px", overflow: "hidden" },
         name: e.name, dateLabel: fmtDate(e.date), kicker: e.kicker || "", place: e.place || "", note: e.note || "",
         sign: isOpen ? "－" : "＋",
@@ -4434,7 +4544,7 @@ class Component extends DCLogic {
       label: tk.label
     })) : [];
 
-    const totalH = Math.max(laneTop + L.lanes * (laneH + gap) + 30, openBottom);
+    const totalH = Math.max(laneTop + L.lanes * (laneH + gap) + 30, openBottom + 40);
 
     const presets = this.allThemes().map((p) => {
       const active = p.id === t.id;
@@ -4599,6 +4709,11 @@ class Component extends DCLogic {
       noStore: !!(st.cloud && window.ChronikCloud && !window.ChronikCloud.hasR2) && DEBUG,
       noStoreCode: errLabel("D-07"),
       imgBusy: st.imgBusy || "",
+      imgBar: {
+        height: "100%", background: "var(--color-accent)", borderRadius: "99px",
+        width: Math.round(Math.max(4, Math.min(100, st.imgPct || 0))) + "%",
+        transition: "width 240ms ease"
+      },
       imgErr: st.imgErr || "",
       storeCheck: DEBUG ? (st.storeCheck || "") : "",
       canCheck: DEBUG,
@@ -5002,11 +5117,49 @@ class Component extends DCLogic {
       })(),
       guardedNew: this.guardedNew,
       cloudAdmin: !!st.cloud && !!me && normName(me.username) === WARTUNG,
+      cloudAn: !!st.cloud && !!me,
+      strahl: {
+        mein: st.strahl !== "oeffentlich",
+        offen: st.strahl === "oeffentlich",
+        label: st.strahl === "oeffentlich" ? "Öffentlicher Zeitstrahl" : "Deine Chronik",
+        waehle: (id) => this.setState({ strahl: id, openId: null }),
+        arten: [
+          { key: "mein", label: "Meine Chronik", on: st.strahl !== "oeffentlich", pick: () => this.setState({ strahl: "mein", openId: null }) },
+          { key: "oeff", label: "Öffentlich", on: st.strahl === "oeffentlich", pick: () => this.setState({ strahl: "oeffentlich", openId: null }) }
+        ]
+      },
+      feed: (function (self) {
+        const f = self.feedPrefs();
+        const chip = (an) => ({
+          font: "inherit", fontSize: "12px", letterSpacing: "0.04em", padding: "5px 12px", cursor: "pointer",
+          whiteSpace: "nowrap", borderRadius: "99px", textAlign: "left",
+          border: "1px solid " + (an ? "var(--color-accent)" : "var(--color-divider)"),
+          background: an ? "var(--color-accent)" : "transparent",
+          color: an ? "var(--color-bg)" : "var(--color-text)"
+        });
+        const setz = (k) => () => {
+          const neu = Object.assign({}, self.feedPrefs());
+          neu[k] = !neu[k];
+          self.setState({ feed: neu });
+        };
+        return [
+          { key: "oe", label: "Öffentliche Ereignisse", on: f.oeffentlich, style: chip(f.oeffentlich), toggle: setz("oeffentlich"),
+            hint: "Zeigt Ereignisse, die jemand für alle freigegeben hat, auch auf deinem eigenen Zeitstrahl." },
+          { key: "fr", label: "Ereignisse meiner Kontakte", on: f.freunde, style: chip(f.freunde), toggle: setz("freunde"),
+            hint: "Was Kontakte für „Alle Kontakte“ freigeben, erscheint bei dir mit." },
+          { key: "vs", label: "Mail bei künftigen Ereignissen", on: f.vorschau, style: chip(f.vorschau), toggle: setz("vorschau"),
+            hint: "Legt ein Kontakt ein Ereignis mit Datum in der Zukunft an, bekommst du eine Nachricht." }
+        ];
+      })(this),
       konto: {
         open: !!st.konto && !!me,
         name: me ? me.username : "",
         mail: me ? (me.email || "") : "",
-        seit: me && me.createdAt ? fmtDate(new Date(me.createdAt).toISOString().slice(0, 10)) : "",
+        seit: (function () {
+          const wann = me && me.createdAt ? Number(me.createdAt) : 0;
+          if (!wann) return "unbekannt";
+          return new Intl.DateTimeFormat("de-DE", { day: "2-digit", month: "long", year: "numeric" }).format(new Date(wann));
+        })(),
         toggle: () => this.setState({ konto: !st.konto, drawer: false, admin: false, loeschWort: "", loeschFehler: "" }),
         zu: () => this.setState({ konto: false, loeschWort: "", loeschFehler: "" }),
         eigene: me ? st.events.filter((e) => (e.by || "") === me.id).length : 0,
@@ -5052,6 +5205,8 @@ class Component extends DCLogic {
         again: (st.limitNote || {}).again || "",
         close: () => this.setState({ limitNote: null })
       },
+      arbeitet: !!st.cloudBusy && !st.imgBusy,
+      arbeitetText: st.booting ? "Chronik wird geladen …" : "wird gespeichert …",
       cloudErr: st.cloudErr ? errLabel(st.cloudErr) : "",
       modeLabel: st.cloud ? (st.cloudBusy ? "Cloud · speichert …" : "Gemeinsame Chronik") : "Nur dieser Browser",
       logout: this.logout,
@@ -5144,6 +5299,10 @@ class Component extends DCLogic {
         })),
         strength: strengthWords[score],
         error: errLabel(st.authError), notice: st.authNotice, busy: st.authBusy,
+        busyText: st.authMode === "register" ? "Konto wird angelegt — das dauert einen Moment"
+          : st.authMode === "reset" ? "Mail wird verschickt"
+          : st.authMode === "newpw" ? "Passwort wird gespeichert"
+          : "Passwort wird geprüft — das dauert einen Moment",
         cta: st.authBusy ? "Prüfe …" : st.authMode === "newpw" ? "Weiter" : st.authMode === "reset" ? "Link anfordern" : st.authMode === "register" ? "Konto anlegen" : "Anmelden",
         footnote: st.cloud
           ? (st.authMode === "reset" ? "Gibt es zu dieser Adresse ein Konto, geht eine Mail mit einem Link hinaus. Er gilt zehn Minuten; danach kannst du ein neues Passwort vergeben."
