@@ -106,7 +106,7 @@
         <span>Dein Leben</span>
         <span>Eure Geschichten</span>
         <span>Erleben wie damals</span>
-        <span>Mit mehr Organgen</span>
+        <span>Mit mehr Organgen!</span>
       </div>
     </div>
 
@@ -296,6 +296,13 @@
               <button onClick="{{ sk.pick }}" title="{{ sk.label }}" style="{{ sk.chip }}"><span style="{{ sk.style }}">{{ sk.glyph }}</span></button>
             </sc-for>
           </div>
+          <div class="field" style="margin: 0; width: 140px;"><label>Machart</label>
+            <select class="input" value="{{ stick.stil }}" onChange="{{ stick.onStil }}">
+              <sc-for list="{{ stick.stile }}" as="o" hint-placeholder-count="5">
+                <option value="{{ o.value }}">{{ o.label }}</option>
+              </sc-for>
+            </select>
+          </div>
           <div class="field" style="margin: 0; width: 150px;"><label>Farbwelt</label>
             <select class="input" value="{{ stick.pal }}" onChange="{{ stick.onPal }}">
               <sc-for list="{{ stick.pals }}" as="o" hint-placeholder-count="6">
@@ -379,14 +386,14 @@
   <div style="{{ lay.stagePad }}" data-screen-label="Zeitstrahl">
     <div style="{{ shellStyle }}">
     <div data-stage="" ref="{{ stageRef }}" onScroll="{{ onScroll }}" onPointerDown="{{ stick.place }}" onPointerMove="{{ stick.move }}" onPointerUp="{{ stick.up }}" onPointerLeave="{{ stick.up }}" style="position: relative; overflow-x: auto; overflow-y: auto; max-height: 86vh; overscroll-behavior-x: contain; background-color: var(--t-bg, #f3f2f2); border-radius: var(--radius-lg); box-shadow: inset 0 0 0 1px var(--color-divider); cursor: {{ stick.cursor }};">
-      <div style="{{ skinFx }}"></div>
       <sc-for list="{{ free }}" as="fs" hint-placeholder-count="0">
         <div onPointerDown="{{ fs.onDown }}" style="{{ fs.style }}">{{ fs.glyph }}</div>
       </sc-for>
-      <div style="{{ stageStyle }}">
-      <div style="position: absolute; inset: 0; background-image: var(--t-pattern, none); background-size: var(--t-pattern-size, auto); background-position: var(--t-parallax, 0) 0; font-family: var(--t-font-body, var(--font-body)); color: var(--t-ink, #201e1d);">
+      <div data-bg="" style="{{ stageStyle }}">
+      <div data-bg="" style="{{ skinFx }}"></div>
+      <div data-bg="" style="position: absolute; inset: 0; background-image: var(--t-pattern, none); background-size: var(--t-pattern-size, auto); background-position: var(--t-parallax, 0) 0; font-family: var(--t-font-body, var(--font-body)); color: var(--t-ink, #201e1d);">
         <sc-if value="{{ hasEvents }}" hint-placeholder-val="{{ true }}">
-          <div style="position: absolute; inset: 0;">
+          <div data-bg="" style="position: absolute; inset: 0;">
             <sc-for list="{{ ticks }}" as="tk" hint-placeholder-count="4">
               <div style="{{ tk.pos }}">
                 <div style="width: 1px; height: 100%; background: color-mix(in srgb, var(--t-ink, #201e1d) 18%, transparent);"></div>
@@ -679,6 +686,15 @@
       </div>
     </div>
     </div>
+    <sc-if value="{{ hatMehrJahre }}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; align-items: center; gap: 7px; flex-wrap: wrap; padding-top: var(--space-3);">
+        <span style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-700);">Zurückgehalten</span>
+        <sc-for list="{{ mehrJahre }}" as="z" hint-placeholder-count="0">
+          <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ z.zeigen }}">＋ {{ z.label }}</button>
+        </sc-for>
+        <button onClick="{{ alleZeigen }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0 4px; cursor: pointer; color: var(--color-accent-700); text-decoration: underline; white-space: nowrap;">alle zeigen</button>
+      </div>
+    </sc-if>
     <div style="display: flex; justify-content: space-between; gap: var(--space-4); padding-top: var(--space-2); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-600);">
       <span>Klick auf eine Karte oder einen Marker öffnet das Ereignis · ← → blättert</span>
       <span>{{ stats.hint }}</span>
@@ -1112,12 +1128,21 @@
                 <button onClick="{{ x.toggle }}" style="{{ x.style }}">{{ x.label }}</button>
               </sc-for>
             </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+            <div class="field" style="margin: 0;"><label>Machart</label>
+              <select class="input" value="{{ form.deco.stil }}" onChange="{{ form.deco.onStil }}">
+                <sc-for list="{{ form.deco.stile }}" as="o" hint-placeholder-count="5">
+                  <option value="{{ o.value }}">{{ o.label }}</option>
+                </sc-for>
+              </select>
+            </div>
             <div class="field" style="margin: 0;"><label>Farbwelt</label>
               <select class="input" value="{{ form.deco.pal }}" onChange="{{ form.deco.onPal }}">
                 <sc-for list="{{ form.deco.pals }}" as="o" hint-placeholder-count="6">
                   <option value="{{ o.value }}">{{ o.label }}</option>
                 </sc-for>
               </select>
+            </div>
             </div>
             <div style="{{ lay.sheetGrid }}">
               <sc-for list="{{ form.deco.sheet }}" as="s" hint-placeholder-count="18">
@@ -1666,7 +1691,14 @@ const PRESETS = [
   T({ id: "kachel", name: "Kachel", kicker: "Azulejo", bg: "#eef3f7", ink: "#12324f", card: "#ffffff", accent: "#1d4e89", accent2: "#c9761f", line: "#1d4e89", fontHead: "Playfair Display", fontBody: "Source Serif 4", headWeight: 600, radius: 3, shadow: "sm", lineWidth: 3, marker: "diamond", pattern: "grid", anim: "tilt", animDur: 620, density: 1.1, imgShape: "rect", skin: "tile" }),
   T({ id: "comic", name: "Comic", kicker: "Heft", bg: "#fff8e6", ink: "#141414", card: "#ffffff", accent: "#e8291f", accent2: "#1b57c4", line: "#141414", fontHead: "Bebas Neue", fontBody: "DM Sans", headWeight: 400, headTransform: "uppercase", headTracking: 0.02, radius: 6, shadow: "hard", lineWidth: 5, marker: "circle", pattern: "halftone", anim: "pop", animDur: 300, density: 1, imgShape: "polaroid", skin: "comic" }),
   T({ id: "marmor", name: "Marmor", kicker: "Steinsatz", bg: "#f3efe7", ink: "#2c2822", card: "#fbf9f4", accent: "#8c7434", accent2: "#6b5140", line: "#2c2822", fontHead: "Cormorant Garamond", fontBody: "Libre Baskerville", headWeight: 600, headTransform: "uppercase", headTracking: 0.09, radius: 1, shadow: "md", lineWidth: 1, marker: "diamond", pattern: "none", anim: "glide", animDur: 900, density: 1.3, imgShape: "rect", skin: "marble" }),
-  T({ id: "kreide", name: "Kreide", kicker: "Tafel", bg: "#1e2622", ink: "#e8eee6", card: "#28322d", accent: "#f2e2a8", accent2: "#9fc7b0", line: "#e8eee6", fontHead: "Cormorant Garamond", fontBody: "DM Sans", headWeight: 600, radius: 4, shadow: "none", lineWidth: 2, lineStyle: "dotted", marker: "circle", pattern: "dots", anim: "tilt", animDur: 700, density: 1.1, skin: "chalk" })
+  T({ id: "kreide", name: "Kreide", kicker: "Tafel", bg: "#1e2622", ink: "#e8eee6", card: "#28322d", accent: "#f2e2a8", accent2: "#9fc7b0", line: "#e8eee6", fontHead: "Cormorant Garamond", fontBody: "DM Sans", headWeight: 600, radius: 4, shadow: "none", lineWidth: 2, lineStyle: "dotted", marker: "circle", pattern: "dots", anim: "tilt", animDur: 700, density: 1.1, skin: "chalk" }),
+  T({ id: "sonnenuntergang", name: "Sonnenuntergang", kicker: "Abendlicht", bg: "#fff1e6", ink: "#3b1f2b", card: "#fffaf5", accent: "#ff6b35", accent2: "#c2185b", line: "#ff6b35", fontHead: "Playfair Display", fontBody: "DM Sans", headWeight: 600, radius: 16, shadow: "lg", lineWidth: 3, marker: "circle", pattern: "none", anim: "rise", animDur: 720, density: 1.15, imgShape: "round", skin: "sunset" }),
+  T({ id: "lagune", name: "Lagune", kicker: "Untiefe", bg: "#e8fbf7", ink: "#0b3a3a", card: "#ffffff", accent: "#00a99d", accent2: "#3d7dd8", line: "#00a99d", fontHead: "Space Grotesk", fontBody: "DM Sans", headWeight: 600, radius: 22, shadow: "md", lineWidth: 2, marker: "ring", pattern: "none", anim: "glide", animDur: 700, density: 1.15, imgShape: "round", skin: "lagoon" }),
+  T({ id: "beere", name: "Beere", kicker: "Sirup", bg: "#fdf0f7", ink: "#3d0a2e", card: "#ffffff", accent: "#d81b7a", accent2: "#7b2ff7", line: "#d81b7a", fontHead: "Playfair Display", fontBody: "Source Serif 4", headWeight: 600, radius: 18, shadow: "lg", lineWidth: 3, marker: "diamond", pattern: "dots", anim: "pop", animDur: 400, density: 1.1, imgShape: "round", skin: "berry" }),
+  T({ id: "zitrus", name: "Zitrus", kicker: "Frisch", bg: "#fffcea", ink: "#2e3300", card: "#ffffff", accent: "#f5a300", accent2: "#5cb800", line: "#f5a300", fontHead: "Bebas Neue", fontBody: "DM Sans", headWeight: 400, headTransform: "uppercase", headTracking: 0.03, radius: 12, shadow: "md", lineWidth: 4, marker: "circle", pattern: "none", anim: "pop", animDur: 340, density: 1.05, imgShape: "rect", skin: "citrus" }),
+  T({ id: "galaxie", name: "Galaxie", kicker: "Nebel", bg: "#0c0a1e", ink: "#e9e4ff", card: "#181433", accent: "#8b5cf6", accent2: "#22d3ee", line: "#8b5cf6", fontHead: "Space Grotesk", fontBody: "DM Sans", headWeight: 600, radius: 20, shadow: "lg", lineWidth: 2, marker: "circle", pattern: "dots", anim: "rise", animDur: 860, density: 1.25, imgShape: "round", skin: "galaxy" }),
+  T({ id: "koralle", name: "Koralle", kicker: "Riff", bg: "#fff4f1", ink: "#42201c", card: "#ffffff", accent: "#ff5a5f", accent2: "#00b4a6", line: "#ff5a5f", fontHead: "DM Sans", fontBody: "DM Sans", headWeight: 700, radius: 24, shadow: "lg", lineWidth: 3, marker: "circle", pattern: "none", anim: "tilt", animDur: 560, density: 1.1, imgShape: "round", skin: "coral" }),
+  T({ id: "regenbogen", name: "Regenbogen", kicker: "Farbrad", bg: "#fdfcff", ink: "#231c33", card: "#ffffff", accent: "#e5006e", accent2: "#009fe3", line: "#e5006e", fontHead: "Space Grotesk", fontBody: "DM Sans", headWeight: 700, radius: 14, shadow: "md", lineWidth: 5, marker: "square", pattern: "none", anim: "pop", animDur: 380, density: 1.1, imgShape: "rect", skin: "rainbow" })
 ];
 
 const PATTERNS = {
@@ -1839,6 +1871,10 @@ const normName = function (s) { return String(s || "").trim().toLowerCase().repl
 /* Verbrauchszahlen und Änderungsverlauf sieht nur dieses Konto. */
 const WARTUNG = "jokken";
 
+/* Öffentlicher Zeitstrahl: so viele Ereignisse je Jahr, bevor man
+   selbst auf „mehr“ tippen muss. */
+const OEFF_PRO_JAHR = 4;
+
 const sameHex = function (a, b) {
   if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
   let diff = 0;
@@ -1924,6 +1960,62 @@ const isTouch = function () {
 
 const stickerDef = function (k) { return STICKERS.filter((x) => x.k === k)[0] || STICKERS[0]; };
 
+const STICKER_STIL = [
+  ["flach", "Flach"],
+  ["kontur", "Kontur"],
+  ["siegel", "Aufkleber"],
+  ["neon", "Neon"],
+  ["papier", "Papier"]
+];
+
+/* Legt die Machart über den fertigen Sticker. */
+const stilAuftragen = function (st, stil, col, typ) {
+  if (!stil || stil === "flach") return st;
+  const flaechig = typ !== "plain";
+  if (stil === "kontur") {
+    if (flaechig) {
+      st.background = "transparent";
+      st.backgroundImage = "none";
+      st.border = "2px solid " + col;
+      st.color = col;
+      st.textShadow = "none";
+    } else {
+      st.color = "transparent";
+      st.textShadow = "none";
+      st.webkitTextStrokeWidth = "1.4px";
+      st.webkitTextStrokeColor = col;
+    }
+    return st;
+  }
+  if (stil === "siegel") {
+    st.padding = st.padding || "5px";
+    st.borderRadius = st.borderRadius || "99px";
+    st.background = "#fff";
+    st.backgroundImage = "none";
+    st.color = col;
+    st.border = "3px solid #fff";
+    st.boxShadow = "0 2px 6px -1px rgba(0,0,0,0.4), inset 0 0 0 2px " + col + "33";
+    st.textShadow = "none";
+    return st;
+  }
+  if (stil === "neon") {
+    st.color = flaechig ? "#fff" : col;
+    st.textShadow = "0 0 6px " + col + ", 0 0 14px " + col + "aa";
+    st.filter = "saturate(1.5)";
+    st.boxShadow = flaechig ? "0 0 10px " + col + "cc, 0 0 22px " + col + "66" : st.boxShadow;
+    return st;
+  }
+  if (stil === "papier") {
+    st.color = flaechig ? "#fff" : col;
+    st.textShadow = "0 1px 0 rgba(255,255,255,0.8)";
+    st.filter = "contrast(0.92) saturate(0.85)";
+    st.boxShadow = "1px 2px 0 rgba(0,0,0,0.16)";
+    st.borderRadius = st.borderRadius || "2px";
+    return st;
+  }
+  return st;
+};
+
 const stickerStyle = function (s, pal, mode, selected) {
   const def = stickerDef(s.k);
   const col = pal[(s.c == null ? 0 : s.c) % pal.length];
@@ -1968,6 +2060,7 @@ const stickerStyle = function (s, pal, mode, selected) {
     st.backgroundRepeat = "no-repeat, no-repeat, no-repeat";
   }
   else if (ty === "tape") { st.width = "52px"; st.height = "17px"; st.background = col; st.opacity = 0.45; st.backgroundImage = "repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.4) 0 3px, transparent 3px 7px)"; }
+  stilAuftragen(st, s.st, col, ty);
   if (selected) st.boxShadow = "0 0 0 2px var(--color-text)";
   return st;
 };
@@ -2088,6 +2181,7 @@ class Component extends DCLogic {
     pollOpen: null,
     pSuche: {},
     strahl: "mein",
+    jahrOffen: {},
     feed: { oeffentlich: false, freunde: true, vorschau: false },
     konto: false,
     loeschWort: "",
@@ -2114,6 +2208,7 @@ class Component extends DCLogic {
     filters: { q: "", from: "", to: "", place: "", by: "", cats: [], persons: [] },
     cdraft: {},
     decoSel: null,
+    decoStil: "flach",
     cloud: false,
     cloudErr: "",
     cloudBusy: false,
@@ -2133,6 +2228,7 @@ class Component extends DCLogic {
     gQ: "",
     stickMode: false,
     stickPick: "stern",
+    stickStil: "flach",
     freeSel: null,
     show: { open: false, idx: 0, playing: true, speed: 5, transition: "fade", scope: "all", ref: "", music: "", musicUrl: "", musicName: "keine", volume: 0.7 }
   };
@@ -2205,6 +2301,16 @@ class Component extends DCLogic {
 
   componentDidUpdate(vp, vs) {
     this.applyTheme();
+    /* Nach dem Anmelden einmal ans neueste Ereignis springen. */
+    if (!this.zumNeuesten && this.stage && this.me() && !this.state.booting && (this.geoItems || []).length) {
+      this.zumNeuesten = true;
+      const box = this.stage;
+      window.setTimeout(() => {
+        if (!box) return;
+        box.scrollLeft = Math.max(0, box.scrollWidth - box.clientWidth);
+      }, 60);
+    }
+    if (!this.me()) this.zumNeuesten = false;
     if (this.state.imgEdit && this.editCanvas) {
       const a = vs && vs.imgEdit, b = this.state.imgEdit;
       if (!a || a.i !== b.i || a.rot !== b.rot || a.fh !== b.fh || a.fv !== b.fv || a.filt !== b.filt) {
@@ -2517,11 +2623,15 @@ class Component extends DCLogic {
   placeFree = (ev) => {
     if (!this.state.stickMode) return;
     const host = ev.currentTarget;
-    if (ev.target !== host) return;
+    /* Freie Fläche heißt: der Scroller selbst oder eine der
+       Hintergrundebenen — nicht eine Karte, ein Marker, ein Sticker. */
+    const ziel = ev.target;
+    const freieFlaeche = ziel === host || (ziel.dataset && ziel.dataset.bg !== undefined);
+    if (!freieFlaeche) return;
     const box = host.getBoundingClientRect();
     const list = ((this.state.meta.free || []).slice());
     list.push({
-      i: "f" + uid(), k: this.state.stickPick,
+      i: "f" + uid(), k: this.state.stickPick, st: this.state.stickStil || "flach",
       x: Math.round(ev.clientX - box.left + host.scrollLeft), y: Math.round(ev.clientY - box.top),
       s: 1.3, r: Math.round(-14 + Math.random() * 28), c: list.length % 5
     });
@@ -2616,14 +2726,14 @@ class Component extends DCLogic {
     if (this.state.cloud) {
       try {
         window.localStorage.setItem("chronik.v1", JSON.stringify({
-          groups: this.state.groups, friends: this.state.friends, feed: this.state.feed
+          meta: this.state.meta, groups: this.state.groups, friends: this.state.friends, feed: this.state.feed
         }));
       } catch (e) { /* quota */ }
       return;
     }
     try {
       window.localStorage.setItem("chronik.v1", JSON.stringify({
-        events: this.state.events, groups: this.state.groups, friends: this.state.friends, feed: this.state.feed
+        meta: this.state.meta, events: this.state.events, groups: this.state.groups, friends: this.state.friends, feed: this.state.feed
       }));
       window.localStorage.setItem("chronik.auth.v1", JSON.stringify({ users: this.state.users }));
       /* Während des Starts nichts löschen — sonst wäre die Sitzung weg,
@@ -3127,7 +3237,34 @@ class Component extends DCLogic {
     return { oeffentlich: !!f.oeffentlich, freunde: f.freunde !== false, vorschau: !!f.vorschau };
   }
 
-  filtered() {
+  /* Auf dem öffentlichen Strahl je Jahr nur wenige zeigen — sonst
+     ertrinkt man in Fremdem. Aufgeklappte Jahre bleiben vollständig. */
+  proPeriode(liste) {
+    if (this.state.strahl !== "oeffentlich") return liste;
+    const offen = this.state.jahrOffen || {};
+    const zaehler = {};
+    return liste.filter((e) => {
+      const jahr = String(e.date || "").slice(0, 4) || "?";
+      if (offen[jahr]) return true;
+      zaehler[jahr] = (zaehler[jahr] || 0) + 1;
+      return zaehler[jahr] <= OEFF_PRO_JAHR;
+    });
+  }
+
+  /* Was im Moment zurückgehalten wird, je Jahr. */
+  zurueckgehalten() {
+    if (this.state.strahl !== "oeffentlich") return [];
+    const offen = this.state.jahrOffen || {};
+    const zaehler = {};
+    this.rohGefiltert().forEach((e) => {
+      const jahr = String(e.date || "").slice(0, 4) || "?";
+      zaehler[jahr] = (zaehler[jahr] || 0) + 1;
+    });
+    return Object.keys(zaehler).sort().filter((j) => !offen[j] && zaehler[j] > OEFF_PRO_JAHR)
+      .map((j) => ({ jahr: j, mehr: zaehler[j] - OEFF_PRO_JAHR }));
+  }
+
+  rohGefiltert() {
     const f = this.state.filters;
     const q = String(f.q || "").trim().toLowerCase();
     return this.state.events.filter((e) => {
@@ -3172,6 +3309,10 @@ class Component extends DCLogic {
   resetFilters = () => this.setState({ filters: { q: "", from: "", to: "", place: "", by: "", cats: [], persons: [] } });
 
   /* ---------- photo show ---------- */
+
+  filtered() {
+    return this.proPeriode(this.rohGefiltert());
+  }
 
   showImages(scope, ref) {
     let evs = this.filtered();
@@ -3413,7 +3554,8 @@ class Component extends DCLogic {
     const lvl = this.levelFor(e);
     if (lvl < 3) return;
     this.setState({
-      decoSel: null, secOpen: {},
+      decoSel: null,
+    decoStil: "flach", secOpen: {},
       draft: {
         id: e.id, name: e.name || "", date: e.date || "", end: e.end || "", place: e.place || "",
         kicker: e.kicker || "", note: e.note || "",
@@ -4218,7 +4360,7 @@ class Component extends DCLogic {
     return () => {
       const cur = ((this.state.draft.deco || {}).stickers || []).slice();
       const r = rngFrom(hash32(k + cur.length));
-      cur.push({ k: k, x: Math.round(18 + r() * 64), y: Math.round(16 + r() * 60), s: 1, r: Math.round(-18 + r() * 36), c: cur.length % 5 });
+      cur.push({ k: k, st: this.state.decoStil || "flach", x: Math.round(18 + r() * 64), y: Math.round(16 + r() * 60), s: 1, r: Math.round(-18 + r() * 36), c: cur.length % 5 });
       this.setState({ decoSel: cur.length - 1 }, () => this.decoPatch({ stickers: cur }));
     };
   }
@@ -4278,7 +4420,11 @@ class Component extends DCLogic {
     /* Das aufgeklappte Fenster ist breiter als die Spur. Beim letzten
        Ereignis würde es rechts abgeschnitten — darum wächst die Bahn mit. */
     const openIt = L.items.filter((it) => it.e.id === st.openId)[0];
-    const trackW = Math.max(L.width + padL, openIt ? openIt.x + padL + openW + 24 : 0);
+    /* Reserve rechts: die Jahreszahl am letzten Strich steht über die
+       berechnete Breite hinaus. Ohne diesen Zuschlag ist die Rollstrecke
+       breiter als die Bahn — und am Ende bliebe ein kahler Streifen. */
+    const tickRand = 60;
+    const trackW = Math.max(L.width + padL + tickRand, openIt ? openIt.x + padL + openW + 24 : 0);
 
     let openBottom = 0;
     const cards = L.items.map((it) => {
@@ -4596,10 +4742,17 @@ class Component extends DCLogic {
       pal: dk.pal,
       pals: PALETTES.map((p) => ({ key: p[0], value: p[0], label: p[1] })),
       onPal: (ev) => this.decoPatch({ pal: ev.target.value }),
+      stil: st.decoStil || "flach",
+      stile: STICKER_STIL.map((x) => ({ key: x[0], value: x[0], label: x[1] })),
+      onStil: (ev) => {
+        const neu = ev.target.value;
+        if (dsel != null) this.decoSet(dsel, { st: neu });
+        this.setState({ decoStil: neu });
+      },
       sheet: STICKERS.map((s) => ({
         key: s.k, label: s.label, glyph: s.g,
         chip: { display: "grid", placeItems: "center", height: "42px", padding: "0", cursor: "pointer", overflow: "hidden", font: "inherit", background: "var(--color-surface)", border: "1px solid var(--color-divider)", borderRadius: "var(--radius-md)" },
-        style: stickerStyle({ k: s.k, c: 0 }, dpal, "chip"),
+        style: stickerStyle({ k: s.k, st: st.decoStil, c: 0 }, dpal, "chip"),
         add: this.decoAdd(s.k)
       })),
       stageStyle: { position: "relative", overflow: "hidden", aspectRatio: "268 / 200", borderRadius: "var(--radius-md)", background: t.card, boxShadow: "inset 0 0 0 1px color-mix(in srgb, " + t.ink + " 20%, transparent)", touchAction: "none" },
@@ -5205,6 +5358,21 @@ class Component extends DCLogic {
         again: (st.limitNote || {}).again || "",
         close: () => this.setState({ limitNote: null })
       },
+      mehrJahre: this.zurueckgehalten().map((z) => ({
+        key: z.jahr,
+        label: z.jahr + " · " + plural(z.mehr, "weiteres Ereignis", "weitere Ereignisse"),
+        zeigen: () => {
+          const o = Object.assign({}, this.state.jahrOffen || {});
+          o[z.jahr] = true;
+          this.setState({ jahrOffen: o });
+        }
+      })),
+      hatMehrJahre: this.zurueckgehalten().length > 0,
+      alleZeigen: () => {
+        const o = {};
+        this.zurueckgehalten().forEach((z) => { o[z.jahr] = true; });
+        this.setState({ jahrOffen: Object.assign({}, this.state.jahrOffen || {}, o) });
+      },
       arbeitet: !!st.cloudBusy && !st.imgBusy,
       arbeitetText: st.booting ? "Chronik wird geladen …" : "wird gespeichert …",
       cloudErr: st.cloudErr ? errLabel(st.cloudErr) : "",
@@ -5406,7 +5574,7 @@ class Component extends DCLogic {
       free: (function (self) {
         const pal = palOf(st.meta.pal || "thema", t);
         return (st.meta.free || []).map((f) => {
-          const base = stickerStyle({ k: f.k, c: f.c, s: f.s, r: f.r }, pal, st.stickMode ? "edit" : "view", st.stickMode && st.freeSel === f.i);
+          const base = stickerStyle({ k: f.k, st: f.st, c: f.c, s: f.s, r: f.r }, pal, st.stickMode ? "edit" : "view", st.stickMode && st.freeSel === f.i);
           return {
             key: f.i, glyph: stickerDef(f.k).g,
             style: Object.assign({}, base, { left: f.x + "px", top: f.y + "px", zIndex: 6, transform: "translate(-50%, -50%) rotate(" + (f.r || 0) + "deg) scale(" + (f.s == null ? 1 : f.s) + ")" }),
@@ -5429,12 +5597,19 @@ class Component extends DCLogic {
             background: st.stickPick === sk.k ? "color-mix(in srgb, var(--color-accent) 14%, var(--color-surface))" : "var(--color-surface)",
             border: "1px solid " + (st.stickPick === sk.k ? "var(--color-accent)" : "var(--color-divider)")
           },
-          style: stickerStyle({ k: sk.k, c: 0 }, palOf(st.meta.pal || "thema", t), "chip"),
+          style: stickerStyle({ k: sk.k, st: st.stickStil, c: 0 }, palOf(st.meta.pal || "thema", t), "chip"),
           pick: () => this.setState({ stickPick: sk.k })
         })),
         pal: st.meta.pal || "thema",
         pals: PALETTES.map((p) => ({ key: p[0], value: p[0], label: p[1] })),
         onPal: (ev) => this.setState({ meta: Object.assign({}, st.meta, { pal: ev.target.value }) }),
+        stil: st.stickStil || "flach",
+        stile: STICKER_STIL.map((x) => ({ key: x[0], value: x[0], label: x[1] })),
+        onStil: (ev) => {
+          const neu = ev.target.value;
+          if (st.freeSel) this.freeSet(st.freeSel, { st: neu });
+          this.setState({ stickStil: neu });
+        },
         hasSel: !!st.freeSel,
         selScale: st.freeSel ? ((st.meta.free || []).filter((f) => f.i === st.freeSel)[0] || {}).s || 1 : 1,
         selRot: st.freeSel ? ((st.meta.free || []).filter((f) => f.i === st.freeSel)[0] || {}).r || 0 : 0,
@@ -5445,81 +5620,162 @@ class Component extends DCLogic {
         clearAll: () => this.setState({ meta: Object.assign({}, st.meta, { free: [] }), freeSel: null })
       },
       skinFx: (function (id) {
+        /* Die Ebene spannt die ganze Bahn (inset: 0). Darum echte, einmalige
+           Verläufe über die volle Länge — kein repeating-*, das an jeder
+           Wiederholungsgrenze auf die Anfangsfarbe zurückspringt und dort
+           eine harte Kante zeigt. Nur feine Raster dürfen kacheln. */
         const base = { position: "absolute", inset: 0, pointerEvents: "none", zIndex: 4 };
-        if (id === "crt") return Object.assign({}, base, {
-          backgroundImage: "repeating-linear-gradient(to bottom, rgba(0,0,0,0.34) 0 1px, transparent 1px 3px)",
-          boxShadow: "inset 0 0 110px 22px rgba(0,0,0,0.52), inset 0 0 26px 4px " + t.accent + "22",
-          mixBlendMode: "multiply"
-        });
-        if (id === "glow") return Object.assign({}, base, {
-          background: "radial-gradient(120% 80% at 50% 0%, " + t.accent + "1f, transparent 62%)",
-          boxShadow: "inset 0 0 90px 12px rgba(0,0,0,0.42)"
-        });
-        if (id === "board") return Object.assign({}, base, {
-          backgroundImage: "repeating-linear-gradient(to bottom, rgba(0,0,0,0.3) 0 1px, transparent 1px 4px)",
-          boxShadow: "inset 0 0 120px 26px rgba(0,0,0,0.55)"
-        });
-        if (id === "xerox") return Object.assign({}, base, {
-          backgroundImage: "radial-gradient(" + t.ink + "1a 0.7px, transparent 0.9px), linear-gradient(96deg, transparent 0 88%, " + t.ink + "16 100%)",
-          backgroundSize: "3px 3px, 100% 100%", opacity: 0.85
-        });
-        if (id === "aurora") return Object.assign({}, base, {
-          background: "radial-gradient(90% 60% at 22% -10%, " + t.accent + "26, transparent 60%), radial-gradient(70% 50% at 82% 8%, " + t.accent2 + "22, transparent 62%)",
-          boxShadow: "inset 0 0 130px 30px rgba(0,0,0,0.5)"
-        });
-        if (id === "tile") return Object.assign({}, base, {
-          backgroundImage: "linear-gradient(" + t.accent + "1c 1px, transparent 1px), linear-gradient(90deg, " + t.accent + "1c 1px, transparent 1px), radial-gradient(circle at 50% 50%, " + t.accent + "14 0 3px, transparent 4px)",
-          backgroundSize: "46px 46px, 46px 46px, 46px 46px"
-        });
-        if (id === "comic") return Object.assign({}, base, {
-          backgroundImage: "radial-gradient(" + t.accent + "1f 1.6px, transparent 1.9px)",
-          backgroundSize: "8px 8px",
-          boxShadow: "inset 0 0 0 4px " + t.ink
-        });
-        if (id === "marble") return Object.assign({}, base, {
-          backgroundImage: "linear-gradient(112deg, transparent 0 41%, " + t.ink + "0f 42%, transparent 44%), linear-gradient(58deg, transparent 0 62%, " + t.ink + "0c 63%, transparent 66%), radial-gradient(120% 90% at 30% 20%, " + t.card + "cc, transparent 70%)"
-        });
-        if (id === "punch") return Object.assign({}, base, {
-          backgroundImage: "radial-gradient(" + t.ink + "1c 2.2px, transparent 2.4px)",
-          backgroundSize: "14px 14px", backgroundPosition: "7px 7px"
-        });
-        if (id === "cloth") return Object.assign({}, base, {
-          backgroundImage: "repeating-linear-gradient(90deg, " + t.ink + "0f 0 1px, transparent 1px 3px), repeating-linear-gradient(0deg, " + t.ink + "0d 0 1px, transparent 1px 3px)"
-        });
-        if (id === "enamel") return Object.assign({}, base, {
-          background: "linear-gradient(160deg, rgba(255,255,255,0.55) 0 24%, transparent 46%)",
-          boxShadow: "inset 0 0 0 6px " + t.accent + ", inset 0 0 0 9px " + t.card
-        });
-        if (id === "chart") return Object.assign({}, base, {
-          backgroundImage: "linear-gradient(" + t.accent + "12 1px, transparent 1px), linear-gradient(90deg, " + t.accent + "12 1px, transparent 1px), radial-gradient(circle at 72% 34%, " + t.accent + "14 0 1px, transparent 1px)",
-          backgroundSize: "14px 14px, 14px 14px, 70px 70px"
-        });
-        if (id === "chalk") return Object.assign({}, base, {
-          backgroundImage: "radial-gradient(" + t.ink + "14 0.8px, transparent 1px)",
-          backgroundSize: "4px 4px",
-          boxShadow: "inset 0 0 90px 20px rgba(0,0,0,0.3)"
-        });
-        if (id === "vignette") return Object.assign({}, base, { boxShadow: "inset 0 0 120px 24px rgba(0,0,0,0.45)" });
+        const voll = (bilder, extra) => Object.assign({}, base, {
+          backgroundImage: bilder.join(", "),
+          backgroundRepeat: bilder.map(() => "no-repeat").join(", "),
+          backgroundSize: bilder.map(() => "100% 100%").join(", ")
+        }, extra || {});
+        /* Feines Raster kachelt bewusst, der Verlauf darüber nicht. */
+        const rasterUndVoll = (raster, rasterMass, bilder, extra) => Object.assign({}, base, {
+          backgroundImage: [raster].concat(bilder).join(", "),
+          backgroundRepeat: ["repeat"].concat(bilder.map(() => "no-repeat")).join(", "),
+          backgroundSize: [rasterMass].concat(bilder.map(() => "100% 100%")).join(", ")
+        }, extra || {});
+
+        if (id === "crt") return rasterUndVoll(
+          "repeating-linear-gradient(to bottom, rgba(0,0,0,0.34) 0 1px, transparent 1px 3px)", "auto",
+          ["linear-gradient(to bottom, rgba(0,0,0,0.42) 0%, transparent 16%, transparent 84%, rgba(0,0,0,0.42) 100%)",
+           "linear-gradient(to right, rgba(0,0,0,0.3) 0%, transparent 4%, transparent 96%, rgba(0,0,0,0.3) 100%)",
+           "linear-gradient(to bottom, " + t.accent + "16, transparent 40%)"],
+          { mixBlendMode: "multiply" });
+
+        if (id === "glow") return voll([
+          "linear-gradient(to bottom, " + t.accent + "26 0%, transparent 46%)",
+          "linear-gradient(105deg, " + t.accent2 + "1c 0%, transparent 38%, transparent 62%, " + t.accent + "18 100%)"
+        ]);
+
+        if (id === "vignette") return voll([
+          "linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 18%, transparent 82%, rgba(0,0,0,0.3) 100%)",
+          "linear-gradient(to right, rgba(0,0,0,0.24) 0%, transparent 5%, transparent 95%, rgba(0,0,0,0.24) 100%)"
+        ]);
+
         if (id === "grain") return Object.assign({}, base, {
-          backgroundImage: "radial-gradient(" + t.ink + "22 0.6px, transparent 0.7px)", backgroundSize: "3px 3px", opacity: 0.7
+          backgroundImage: "radial-gradient(" + t.ink + "22 0.6px, transparent 0.7px)",
+          backgroundSize: "3px 3px", opacity: 0.7
         });
-        if (id === "vintage") return Object.assign({}, base, {
-          background: "radial-gradient(130% 95% at 50% 45%, transparent 46%, " + t.ink + "26 100%)"
-        });
+
+        if (id === "vintage") return voll([
+          "linear-gradient(to bottom, " + t.ink + "1c 0%, transparent 22%, transparent 78%, " + t.ink + "1c 100%)",
+          "linear-gradient(to right, " + t.ink + "16 0%, transparent 6%, transparent 94%, " + t.ink + "16 100%)"
+        ]);
+
         if (id === "blueprint") return Object.assign({}, base, {
           backgroundImage: "linear-gradient(" + t.accent + "14 1px, transparent 1px), linear-gradient(90deg, " + t.accent + "14 1px, transparent 1px)",
           backgroundSize: "22px 22px"
         });
+
         if (id === "blocks") return Object.assign({}, base, {
-          backgroundImage: "linear-gradient(135deg, " + t.accent + "1c 0 12px, transparent 12px 24px)", backgroundSize: "24px 24px", opacity: 0.5
+          backgroundImage: "linear-gradient(135deg, " + t.accent + "1c 0 12px, transparent 12px 24px)",
+          backgroundSize: "24px 24px", opacity: 0.5
         });
+
         if (id === "ruled") return Object.assign({}, base, {
           backgroundImage: "repeating-linear-gradient(to bottom, transparent 0 25px, " + t.accent + "1a 25px 26px)"
         });
-        if (id === "matte") return Object.assign({}, base, { boxShadow: "inset 0 0 0 12px " + t.bg + ", inset 0 0 0 13px " + t.ink + "22" });
-        if (id === "paper") return Object.assign({}, base, { boxShadow: "inset 0 0 0 1px " + t.ink + "14" });
+
+        if (id === "matte") return Object.assign({}, base, {
+          backgroundImage: "repeating-linear-gradient(to bottom, " + t.ink + "0a 0 1px, transparent 1px 190px)"
+        });
+
+        if (id === "paper") return voll([
+          "linear-gradient(to bottom, " + t.ink + "0e 0%, transparent 14%, transparent 86%, " + t.ink + "0e 100%)"
+        ]);
+
+        if (id === "punch") return Object.assign({}, base, {
+          backgroundImage: "radial-gradient(" + t.ink + "1c 2.2px, transparent 2.4px)",
+          backgroundSize: "14px 14px", backgroundPosition: "7px 7px"
+        });
+
+        if (id === "cloth") return Object.assign({}, base, {
+          backgroundImage: "repeating-linear-gradient(90deg, " + t.ink + "0f 0 1px, transparent 1px 3px), repeating-linear-gradient(0deg, " + t.ink + "0d 0 1px, transparent 1px 3px)"
+        });
+
+        if (id === "enamel") return voll([
+          "linear-gradient(168deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.14) 22%, transparent 44%)"
+        ]);
+
+        if (id === "chart") return Object.assign({}, base, {
+          backgroundImage: "linear-gradient(" + t.accent + "12 1px, transparent 1px), linear-gradient(90deg, " + t.accent + "12 1px, transparent 1px)",
+          backgroundSize: "14px 14px, 14px 14px"
+        });
+
+        if (id === "chalk") return rasterUndVoll(
+          "radial-gradient(" + t.ink + "14 0.8px, transparent 1px)", "4px 4px",
+          ["linear-gradient(to bottom, rgba(0,0,0,0.22) 0%, transparent 20%, transparent 80%, rgba(0,0,0,0.22) 100%)"]);
+
+        if (id === "board") return rasterUndVoll(
+          "repeating-linear-gradient(to bottom, rgba(0,0,0,0.3) 0 1px, transparent 1px 4px)", "auto",
+          ["linear-gradient(to bottom, rgba(0,0,0,0.34) 0%, transparent 20%, transparent 80%, rgba(0,0,0,0.34) 100%)"]);
+
+        if (id === "xerox") return rasterUndVoll(
+          "radial-gradient(" + t.ink + "1a 0.7px, transparent 0.9px)", "3px 3px",
+          ["linear-gradient(96deg, transparent 0%, transparent 82%, " + t.ink + "14 100%)"],
+          { opacity: 0.85 });
+
+        if (id === "aurora") return voll([
+          "linear-gradient(to bottom, " + t.accent + "2a 0%, transparent 42%)",
+          "linear-gradient(118deg, " + t.accent2 + "20 0%, transparent 34%, transparent 66%, " + t.accent + "16 100%)",
+          "linear-gradient(to bottom, transparent 62%, rgba(0,0,0,0.26) 100%)"
+        ]);
+
+        if (id === "tile") return Object.assign({}, base, {
+          backgroundImage: "linear-gradient(" + t.accent + "1c 1px, transparent 1px), linear-gradient(90deg, " + t.accent + "1c 1px, transparent 1px), radial-gradient(circle at 50% 50%, " + t.accent + "14 0 3px, transparent 4px)",
+          backgroundSize: "46px 46px, 46px 46px, 46px 46px"
+        });
+
+        if (id === "comic") return Object.assign({}, base, {
+          backgroundImage: "radial-gradient(" + t.accent + "1f 1.6px, transparent 1.9px)",
+          backgroundSize: "8px 8px"
+        });
+
+        if (id === "marble") return voll([
+          "linear-gradient(112deg, transparent 0%, " + t.ink + "0d 26%, transparent 34%, transparent 62%, " + t.ink + "0b 74%, transparent 82%)",
+          "linear-gradient(64deg, transparent 0%, transparent 40%, " + t.ink + "09 52%, transparent 60%)",
+          "linear-gradient(146deg, " + t.card + "88 0%, transparent 48%)"
+        ]);
+
+        /* Die bunten Designs: durchlaufende Verläufe über die ganze Bahn. */
+        if (id === "sunset") return voll([
+          "linear-gradient(112deg, " + t.accent + "2e 0%, " + t.accent + "12 26%, transparent 52%)",
+          "linear-gradient(292deg, " + t.accent2 + "26 0%, " + t.accent2 + "0e 24%, transparent 50%)"
+        ]);
+
+        if (id === "lagoon") return voll([
+          "linear-gradient(112deg, " + t.accent + "22 0%, transparent 34%, transparent 60%, " + t.accent2 + "1c 100%)",
+          "linear-gradient(to bottom, " + t.accent + "14 0%, transparent 44%)"
+        ]);
+
+        if (id === "berry") return voll([
+          "linear-gradient(124deg, " + t.accent + "26 0%, transparent 40%)",
+          "linear-gradient(304deg, " + t.accent2 + "22 0%, transparent 38%)",
+          "linear-gradient(to bottom, transparent 58%, " + t.accent + "10 100%)"
+        ]);
+
+        if (id === "citrus") return voll([
+          "linear-gradient(78deg, " + t.accent + "26 0%, transparent 36%, transparent 62%, " + t.accent2 + "1e 100%)"
+        ]);
+
+        if (id === "galaxy") return rasterUndVoll(
+          "radial-gradient(rgba(255,255,255,0.5) 0.7px, transparent 0.9px)", "83px 97px",
+          ["linear-gradient(126deg, " + t.accent + "34 0%, " + t.accent + "12 28%, transparent 54%)",
+           "linear-gradient(306deg, " + t.accent2 + "24 0%, transparent 36%)"]);
+
+        if (id === "coral") return voll([
+          "linear-gradient(202deg, " + t.accent + "28 0%, transparent 42%)",
+          "linear-gradient(24deg, " + t.accent2 + "22 0%, transparent 38%)"
+        ]);
+
+        if (id === "rainbow") return voll([
+          "linear-gradient(96deg, " + t.accent + "1e 0%, " + t.accent2 + "1a 34%, " + t.accent + "16 68%, " + t.accent2 + "12 100%)"
+        ]);
+
         return { display: "none" };
-      })(t.skin),
+      })(),
       shellStyle: (function (id) {
         const inner = "inset 0 0 0 1px color-mix(in srgb, " + t.ink + " 16%, transparent)";
         if (id === "crt") return {
@@ -5527,6 +5783,13 @@ class Component extends DCLogic {
           background: "linear-gradient(#26302a, #141a16)",
           boxShadow: "0 18px 40px -20px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.08)"
         };
+        if (id === "sunset") return { padding: "13px", borderRadius: "22px", background: "linear-gradient(128deg, " + t.accent + "44, " + t.accent2 + "33)" };
+        if (id === "lagoon") return { padding: "13px", borderRadius: "26px", background: "linear-gradient(140deg, " + t.accent + "3a, " + t.accent2 + "2e)" };
+        if (id === "berry") return { padding: "13px", borderRadius: "22px", background: "linear-gradient(118deg, " + t.accent + "3a, " + t.accent2 + "34)" };
+        if (id === "citrus") return { padding: "12px", borderRadius: "16px", background: "linear-gradient(102deg, " + t.accent + "40, " + t.accent2 + "34)" };
+        if (id === "galaxy") return { padding: "14px", borderRadius: "24px", background: "linear-gradient(146deg, " + t.accent + "4a, " + t.accent2 + "2e)" };
+        if (id === "coral") return { padding: "13px", borderRadius: "28px", background: "linear-gradient(160deg, " + t.accent + "3e, " + t.accent2 + "30)" };
+        if (id === "rainbow") return { padding: "11px", borderRadius: "18px", background: "linear-gradient(96deg, " + t.accent + "44, " + t.accent2 + "3c, " + t.accent + "30)" };
         if (id === "board") return {
           padding: "15px", borderRadius: "8px",
           background: "linear-gradient(#2b3238, #171c20)",
@@ -5551,7 +5814,14 @@ class Component extends DCLogic {
       crt: t.skin === "crt",
       printRef: (el) => { this.print = el; },
       onScroll: this.onScroll,
-      stageStyle: { position: "relative", width: trackW + "px", height: Math.max(560, totalH) + "px" },
+      /* minWidth/minHeight 100%: ist die Bahn schmaler oder flacher als
+         das Fenster, füllt sie es trotzdem aus — sonst enden die
+         Hintergrundebenen mitten im Bild. */
+      stageStyle: {
+        position: "relative", boxSizing: "border-box",
+        width: trackW + "px", minWidth: "100%",
+        height: Math.max(560, totalH) + "px", minHeight: "100%"
+      },
       axisStyle: { position: "absolute", left: "0", top: axisY + "px", width: trackW + "px", zIndex: 5 },
       cards: cards, markers: markers, bars: bars, ticks: ticks,
       drawer: st.drawer,
