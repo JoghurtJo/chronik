@@ -1,4 +1,4 @@
-/* Chronik ↔ Supabase  */
+/* Chronik ↔ Supabase */
 (function () {
   var CFG = window.CHRONIK_CONFIG || {};
   var SDK = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
@@ -349,7 +349,10 @@
 
   async function profiles() {
     var c = await client();
-    var r = await c.from("profiles").select("id, username, email, role, blocked, look, notify").order("username");
+    var r = await c.from("profiles").select("id, username, email, role, blocked, look, notify, created").order("username");
+    if (r.error && /created/i.test(String(r.error.message || ""))) {
+      r = await c.from("profiles").select("id, username, email, role, blocked, look, notify").order("username");
+    }
     if (r.error && /look|notify/i.test(String(r.error.message || ""))) {
       r = await c.from("profiles").select("id, username, email, role, blocked").order("username");
     }
@@ -358,7 +361,8 @@
       return {
         id: p.id, username: p.username || (p.email || "").split("@")[0],
         email: p.email || "", role: p.role || "member", blocked: !!p.blocked,
-        look: p.look || {}, notify: p.notify || {}
+        look: p.look || {}, notify: p.notify || {},
+        createdAt: p.created ? Date.parse(p.created) : 0
       };
     });
   }
