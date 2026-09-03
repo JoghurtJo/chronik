@@ -106,7 +106,7 @@
         <span>Dein Leben</span>
         <span>Eure Geschichten</span>
         <span>Erleben wie damals</span>
-        <span>Mit mehr Organgen!</span>
+        <span>Mit mehr Organgen</span>
       </div>
     </div>
 
@@ -506,10 +506,54 @@
                         </div>
                       </sc-if>
 
+                      <sc-if value="{{ c.hatRoute }}" hint-placeholder-val="{{ false }}">
+                        <div style="display: grid; gap: 8px;">
+                          <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px;">
+                            <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.55;">Route</div>
+                            <div style="font-size: 11px; letter-spacing: 0.06em; opacity: 0.5;">{{ c.routeLabel }}</div>
+                          </div>
+                          <div style="display: grid; gap: 0;">
+                            <sc-for list="{{ c.route }}" as="rt" hint-placeholder-count="2">
+                              <div style="display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start;">
+                                <div style="display: grid; justify-items: center; gap: 0; height: 100%;">
+                                  <span style="width: 22px; height: 22px; border-radius: 99px; display: grid; place-items: center; font-family: var(--t-font-head, var(--font-heading)); font-size: 11px; background: var(--t-accent, #0088b0); color: var(--t-card, #eae9e9);">{{ rt.nr }}</span>
+                                  <sc-if value="{{ rt.letzte }}" hint-placeholder-val="{{ false }}">
+                                    <span style="display: block; height: 4px;"></span>
+                                  </sc-if>
+                                  <sc-if value="{{ rt.letzte }}" hint-placeholder-val="{{ true }}">
+                                    <span style="display: block; width: 2px; flex: 1; min-height: 16px; background: color-mix(in srgb, var(--t-accent, #0088b0) 40%, transparent);"></span>
+                                  </sc-if>
+                                </div>
+                                <div style="display: grid; gap: 1px; padding-bottom: 12px;">
+                                  <div style="font-family: var(--t-font-head, var(--font-heading)); font-size: 15.5px; line-height: 1.2;">{{ rt.name }}</div>
+                                  <div style="display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; opacity: 0.6;">
+                                    <sc-if value="{{ rt.hatOrt }}" hint-placeholder-val="{{ false }}">
+                                      <span>{{ rt.ort }}</span>
+                                    </sc-if>
+                                    <sc-if value="{{ rt.hatTag }}" hint-placeholder-val="{{ false }}">
+                                      <span>{{ rt.tag }}</span>
+                                    </sc-if>
+                                  </div>
+                                  <sc-if value="{{ rt.hatNote }}" hint-placeholder-val="{{ false }}">
+                                    <div style="font-size: 13px; line-height: 1.45; opacity: 0.8;">{{ rt.note }}</div>
+                                  </sc-if>
+                                </div>
+                              </div>
+                            </sc-for>
+                          </div>
+                        </div>
+                      </sc-if>
+
                       <sc-if value="{{ c.hatPolls }}" hint-placeholder-val="{{ false }}">
                         <div style="display: grid; gap: var(--space-4);">
                           <sc-for list="{{ c.polls }}" as="p" hint-placeholder-count="1">
                             <div style="display: grid; gap: 7px;">
+                              <sc-if value="{{ p.hatKopf }}" hint-placeholder-val="{{ false }}">
+                                <div style="display: flex; align-items: center; gap: 8px; padding-top: 2px;">
+                                  <span style="font-family: var(--t-font-head, var(--font-heading)); font-size: 14px; letter-spacing: 0.04em; color: var(--t-accent, #0088b0);">{{ p.etKopf }}</span>
+                                  <span style="flex: 1; height: 1px; background: color-mix(in srgb, var(--t-accent, #0088b0) 30%, transparent);"></span>
+                                </div>
+                              </sc-if>
                               <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px;">
                                 <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.55;">{{ p.art }}</div>
                                 <div style="font-size: 11px; letter-spacing: 0.06em; opacity: 0.5;">{{ p.zahl }}</div>
@@ -581,7 +625,13 @@
                           </div>
                           <div style="{{ lay.pairGrid }}">
                             <sc-for list="{{ c.images }}" as="im" hint-placeholder-count="2">
-                              <div style="display: grid; gap: 6px;">
+                              <div style="{{ im.wrap }}">
+                                <sc-if value="{{ im.hatKopf }}" hint-placeholder-val="{{ false }}">
+                                  <div style="display: flex; align-items: center; gap: 8px; padding-top: 2px;">
+                                    <span style="font-family: var(--t-font-head, var(--font-heading)); font-size: 14px; letter-spacing: 0.04em; color: var(--t-accent, #0088b0);">{{ im.etKopf }}</span>
+                                    <span style="flex: 1; height: 1px; background: color-mix(in srgb, var(--t-accent, #0088b0) 30%, transparent);"></span>
+                                  </div>
+                                </sc-if>
                                 <figure style="margin: 0; background: var(--t-img-bg, transparent); padding: var(--t-img-pad, 0); border-radius: var(--t-img-radius, 0); rotate: var(--t-img-rot, 0deg); box-shadow: var(--t-img-shadow, none);">
                                   <sc-if value="{{ im.src }}" hint-placeholder-val="{{ false }}">
                                     <img src="{{ im.src }}" alt="{{ im.caption }}" onClick="{{ im.zoom }}" title="größer ansehen" style="display: block; width: 100%; aspect-ratio: var(--t-img-ratio, 4 / 3); object-fit: cover; border-radius: var(--t-img-radius, 0); cursor: zoom-in;">
@@ -806,7 +856,7 @@
         <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: var(--space-2);">Jemanden finden</div>
         <div style="display: grid; gap: 7px; margin-bottom: var(--space-6);">
           <div style="display: flex; gap: 6px;">
-            <input class="input" type="search" value="{{ contacts.q }}" onChange="{{ contacts.onQ }}" onKeyDown="{{ contacts.onKey }}" placeholder="Benutzername oder E-Mail" style="flex: 1;">
+            <input class="input" type="search" value="{{ contacts.q }}" onChange="{{ contacts.onQ }}" onKeyDown="{{ contacts.onKey }}" placeholder="E-Mail" style="flex: 1;">
             <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ contacts.search }}">Suchen</button>
           </div>
           <sc-for list="{{ contacts.found }}" as="p" hint-placeholder-count="0">
@@ -1090,6 +1140,7 @@
         </sc-if>
         <div style="display: grid; gap: 6px; margin-top: 8px;">
           <sc-for list="{{ form.images }}" as="r" hint-placeholder-count="1">
+            <div style="display: grid; gap: 4px;">
             <div style="{{ lay.rowImg }}">
               <sc-if value="{{ r.src }}" hint-placeholder-val="{{ false }}">
                 <img src="{{ r.src }}" alt="" style="width: 56px; height: 42px; object-fit: cover; border-radius: var(--radius-md); display: block;">
@@ -1104,6 +1155,14 @@
                 </sc-if>
                 <button class="btn btn-secondary btn-icon" onClick="{{ r.remove }}">✕</button>
               </div>
+            </div>
+            <sc-if value="{{ form.et.hat }}" hint-placeholder-val="{{ false }}">
+              <select class="input" value="{{ r.et }}" onChange="{{ r.onEt }}" style="font-size: 12px; padding-top: 3px; padding-bottom: 3px;">
+                <sc-for list="{{ form.et.wahl }}" as="o" hint-placeholder-count="2">
+                  <option value="{{ o.value }}">{{ o.label }}</option>
+                </sc-for>
+              </select>
+            </sc-if>
             </div>
           </sc-for>
         </div>
@@ -1192,6 +1251,51 @@
         </div>
         </sc-if>
 
+        <button onClick="{{ form.sec.etappen.toggle }}" style="{{ form.sec.head }}">
+          <span style="{{ form.sec.etappen.sign }}">▸</span>
+          <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Etappen &amp; Route</span>
+          <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
+          <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">{{ form.sec.etappen.badge }}</span>
+        </button>
+        <sc-if value="{{ form.sec.etappen.on }}" hint-placeholder-val="{{ false }}">
+          <div style="display: grid; gap: var(--space-3); padding-bottom: var(--space-3);">
+            <div style="font-size: 11.5px; line-height: 1.5; color: var(--color-neutral-700);">Eine Route aus Stationen — Wanderung, Städtereise, Festivaltag. Bilder und Abstimmungen lassen sich einzelnen Etappen zuordnen.</div>
+            <sc-for list="{{ form.et.liste }}" as="x" hint-placeholder-count="0">
+              <div style="display: grid; gap: 6px; padding: 11px 12px; border-radius: var(--radius-md); background: var(--color-surface);">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span style="font-family: var(--font-heading); font-size: 16px; color: var(--color-accent-700);">{{ x.nr }}</span>
+                  <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
+                  <sc-if value="{{ x.hoch }}" hint-placeholder-val="{{ true }}">
+                    <button class="btn btn-secondary btn-icon" style="white-space: nowrap;" onClick="{{ x.auf }}">▲</button>
+                  </sc-if>
+                  <sc-if value="{{ x.runter }}" hint-placeholder-val="{{ true }}">
+                    <button class="btn btn-secondary btn-icon" style="white-space: nowrap;" onClick="{{ x.ab }}">▼</button>
+                  </sc-if>
+                  <button onClick="{{ x.weg }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0 4px; cursor: pointer; color: var(--color-accent-2-700); text-decoration: underline; white-space: nowrap;">Entfernen</button>
+                </div>
+                <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 6px;">
+                  <div class="field" style="margin: 0;"><label>Station</label><input class="input" type="text" value="{{ x.name }}" onChange="{{ x.onName }}" placeholder="z. B. Aufstieg zur Hütte"></div>
+                  <div class="field" style="margin: 0;"><label>Ort</label><input class="input" type="text" value="{{ x.ort }}" onChange="{{ x.onOrt }}" placeholder="z. B. Kreuzeck"></div>
+                </div>
+                <div class="field" style="margin: 0;"><label>Zeit oder Tag</label><input class="input" type="text" value="{{ x.tag }}" onChange="{{ x.onTag }}" placeholder="z. B. Samstag früh"></div>
+                <div class="field" style="margin: 0;"><label>Notiz</label><input class="input" type="text" value="{{ x.note }}" onChange="{{ x.onNote }}" placeholder="kurz, was dort war"></div>
+              </div>
+            </sc-for>
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+              <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ form.et.neu }}">＋ Etappe</button>
+            </div>
+            <sc-if value="{{ form.et.hat }}" hint-placeholder-val="{{ false }}">
+              <div class="field" style="margin: 0;"><label>Wie soll das angezeigt werden</label>
+                <select class="input" value="{{ form.et.layout }}" onChange="{{ form.et.onLayout }}">
+                  <sc-for list="{{ form.et.layouts }}" as="o" hint-placeholder-count="2">
+                    <option value="{{ o.value }}">{{ o.label }}</option>
+                  </sc-for>
+                </select>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
         <button onClick="{{ form.sec.polls.toggle }}" style="{{ form.sec.head }}">
           <span style="{{ form.sec.polls.sign }}">▸</span>
           <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Abstimmungen &amp; Ranglisten</span>
@@ -1222,6 +1326,15 @@
                   </sc-for>
                   <button class="btn btn-ghost" style="white-space: nowrap; justify-self: start;" onClick="{{ p.optNeu }}">＋ Eintrag</button>
                 </div>
+                <sc-if value="{{ form.et.hat }}" hint-placeholder-val="{{ false }}">
+                  <div class="field" style="margin: 0;"><label>Gehört zur Etappe</label>
+                    <select class="input" value="{{ p.et }}" onChange="{{ p.onEt }}">
+                      <sc-for list="{{ form.et.wahl }}" as="o" hint-placeholder-count="2">
+                        <option value="{{ o.value }}">{{ o.label }}</option>
+                      </sc-for>
+                    </select>
+                  </div>
+                </sc-if>
                 <div class="field" style="margin: 0;"><label>Wer darf mitmachen</label>
                   <select class="input" value="{{ p.wer }}" onChange="{{ p.onWer }}">
                     <sc-for list="{{ p.werOpts }}" as="w" hint-placeholder-count="3">
@@ -1759,6 +1872,12 @@ const filterWert = function (id) {
 const ECHO_EMOJI = ["\u2665", "\u2605", "\u2713", "\u2718", "\u2726", "\u2691"];
 
 /* Wer darf mitmachen: alle, die das Ereignis sehen, oder engere Kreise. */
+const ET_LAYOUT = [["gesamt", "Route oben, alles darunter"], ["split", "Route oben, dann je Etappe"]];
+
+const leereEtappe = function (n) {
+  return { i: "e" + uid(), name: "", ort: "", note: "", tag: "" };
+};
+
 const POLL_WER = [["alle", "Alle, die das Ereignis sehen"], ["personen", "Nur ausgewählte Personen"], ["gruppen", "Nur bestimmte Gruppen"]];
 
 const leerePoll = function (art) {
@@ -3545,7 +3664,7 @@ class Component extends DCLogic {
 
   newEvent = () => {
     const today = new Date().toISOString().slice(0, 10);
-    this.setState({ draft: { id: null, name: "", date: today, end: "", place: "", kicker: "", note: "", infos: [{ label: "", value: "" }], people: [], images: [], deco: { fx: [], pal: "thema", stickers: [] }, vis: "private", who: [], gwho: [], perms: {}, polls: [], share: "view", by: (this.me() || {}).id || "", url: "", partial: false }, decoSel: null, pickQ: "", drawer: false, admin: false, secOpen: {} });
+    this.setState({ draft: { id: null, name: "", date: today, end: "", place: "", kicker: "", note: "", infos: [{ label: "", value: "" }], people: [], images: [], deco: { fx: [], pal: "thema", stickers: [] }, vis: "private", who: [], gwho: [], perms: {}, polls: [], etappen: [], etLayout: "gesamt", share: "view", by: (this.me() || {}).id || "", url: "", partial: false }, decoSel: null, pickQ: "", drawer: false, admin: false, secOpen: {} });
   };
 
   editEvent(id) {
@@ -3568,6 +3687,8 @@ class Component extends DCLogic {
           stickers: ((e.deco || {}).stickers || []).map((r) => Object.assign({}, r))
         },
         by: e.by || "", vis: (e.vis === "selected" ? "people" : e.vis) || "private", who: (e.who || []).slice(), gwho: (e.gwho || []).slice(), perms: Object.assign({}, e.perms || {}), polls: (e.polls || []).map((p) => Object.assign({}, p)), share: e.share || "view",
+        etappen: (e.etappen || []).map((x) => Object.assign({}, x)),
+        etLayout: e.etLayout === "split" ? "split" : "gesamt",
         url: "", partial: lvl < 4
       }
     });
@@ -3599,6 +3720,8 @@ class Component extends DCLogic {
       gwho: (d.gwho || (old && old.gwho) || []).slice(),
       perms: Object.assign({}, (old && old.perms) || {}, d.perms || {}),
       polls: (d.polls || (old && old.polls) || []).map((p) => Object.assign({}, p)),
+      etappen: (d.etappen || (old && old.etappen) || []).map((x) => Object.assign({}, x)),
+      etLayout: (d.etLayout || (old && old.etLayout)) === "split" ? "split" : "gesamt",
       share: d.share || (old && old.share) || "view"
     };
     /* Beim Abbrechen bleibt diese Liste unbenutzt — die Dateien überleben. */
@@ -3899,6 +4022,80 @@ class Component extends DCLogic {
         window.setTimeout(() => window.print(), 180);
       });
     });
+  }
+
+  /* ---------- Etappen (Route) ---------- */
+
+  etNeu = () => {
+    const d = this.state.draft;
+    if (!d) return;
+    this.setState({ draft: Object.assign({}, d, { etappen: (d.etappen || []).concat([leereEtappe()]) }) });
+  };
+
+  etWeg = (id) => {
+    const d = this.state.draft;
+    if (!d) return;
+    /* Zuordnungen mitlösen, sonst hängen Bilder an einer Etappe,
+       die es nicht mehr gibt, und wären unsichtbar. */
+    this.setState({
+      draft: Object.assign({}, d, {
+        etappen: (d.etappen || []).filter((x) => x.i !== id),
+        images: (d.images || []).map((r) => (r.et === id ? Object.assign({}, r, { et: "" }) : r)),
+        polls: (d.polls || []).map((p) => (p.et === id ? Object.assign({}, p, { et: "" }) : p))
+      })
+    });
+  };
+
+  etSet(id, feld, wert) {
+    const d = this.state.draft;
+    if (!d) return;
+    this.setState({
+      draft: Object.assign({}, d, {
+        etappen: (d.etappen || []).map((x) => (x.i === id ? Object.assign({}, x, { [feld]: wert }) : x))
+      })
+    });
+  }
+
+  etSchieben(id, richtung) {
+    const d = this.state.draft;
+    if (!d) return;
+    const liste = (d.etappen || []).slice();
+    const at = liste.findIndex((x) => x.i === id);
+    const ziel = at + richtung;
+    if (at < 0 || ziel < 0 || ziel >= liste.length) return;
+    liste.splice(ziel, 0, liste.splice(at, 1)[0]);
+    this.setState({ draft: Object.assign({}, d, { etappen: liste }) });
+  }
+
+  /* Bilder in Anzeigereihenfolge, mit Gruppenkopf beim ersten je Etappe.
+     Ohne Split-Modus bleibt die Reihenfolge unverändert. */
+  nachEtappen(e) {
+    const roh = (e.images || []).map((r, j) => ({ r: r, j: j, kopf: "" }));
+    const et = e.etappen || [];
+    if (e.etLayout !== "split" || !et.length) return roh;
+    const rang = (id) => {
+      const at = et.findIndex((x) => x.i === id);
+      return at < 0 ? 9999 : at;
+    };
+    const sortiert = roh.slice().sort((a, b) => rang(a.r.et || "") - rang(b.r.et || "") || a.j - b.j);
+    let letzte = "\u0000";
+    sortiert.forEach((x) => {
+      const id = x.r.et || "";
+      if (id !== letzte) {
+        x.kopf = id ? this.etName(e, id) : "Ohne Etappe";
+        letzte = id;
+      }
+    });
+    return sortiert;
+  }
+
+  /* Name einer Etappe, mit Rückfall auf ihre Nummer. */
+  etName(e, id) {
+    const liste = (e || {}).etappen || [];
+    const at = liste.findIndex((x) => x.i === id);
+    if (at < 0) return "";
+    const x = liste[at];
+    return String(x.name || "").trim() || (at + 1) + ". Etappe";
   }
 
   /* ---------- Abstimmungen und Ranglisten ---------- */
@@ -4450,16 +4647,37 @@ class Component extends DCLogic {
         sign: isOpen ? "－" : "＋",
         isOpen: isOpen, closed: !isOpen,
         summary: [plural((e.infos || []).length, "Info", "Infos"), plural((e.people || []).length, "Person", "Personen"), plural(nImg, "Bild", "Bilder")]
-          .concat((e.polls || []).length ? [plural((e.polls || []).length, "Runde", "Runden")] : []).join(" · ") + (e.by && me && e.by !== me.id ? " · von " + ((st.users.filter((u) => u.id === e.by)[0] || {}).username || "unbekannt") : ""),
+          .concat((e.polls || []).length ? [plural((e.polls || []).length, "Runde", "Runden")] : [])
+          .concat((e.etappen || []).length ? [plural((e.etappen || []).length, "Etappe", "Etappen")] : []).join(" · ") + (e.by && me && e.by !== me.id ? " · von " + ((st.users.filter((u) => u.id === e.by)[0] || {}).username || "unbekannt") : ""),
         visTag: e.by && (e.vis === "private" ? "Privat" : e.vis === "selected" ? "Ausgewählte" : ""),
         visStyle: { fontSize: "9.5px", letterSpacing: "0.14em", textTransform: "uppercase", padding: "2px 7px", borderRadius: "99px", border: "1px solid color-mix(in srgb, var(--t-ink, #201e1d) 30%, transparent)", color: "color-mix(in srgb, var(--t-ink, #201e1d) 62%, var(--t-card, #eae9e9))" },
+        route: (function () {
+          const liste = e.etappen || [];
+          return liste.map((x, k) => ({
+            key: x.i, nr: String(k + 1),
+            name: String(x.name || "").trim() || (k + 1) + ". Etappe",
+            ort: x.ort || "", tag: x.tag || "", note: x.note || "",
+            hatOrt: !!String(x.ort || "").trim(),
+            hatTag: !!String(x.tag || "").trim(),
+            hatNote: !!String(x.note || "").trim(),
+            letzte: k === liste.length - 1
+          }));
+        })(),
+        hatRoute: (e.etappen || []).length > 0,
+        routeLabel: plural((e.etappen || []).length, "Etappe", "Etappen"),
         hasInfos: (e.infos || []).length > 0, hasPeople: (e.people || []).length > 0, hasImages: nImg > 0,
         canEdit: lvl >= 3, canFull: lvl >= 4,
         editLabel: lvl >= 4 ? "Bearbeiten" : "Inhalte pflegen",
         rights: lvl >= 4 ? "" : lvl >= 3 ? "Teilrechte" : lvl >= 2 ? "Kommentieren erlaubt" : "Nur ansehen",
         infos: (e.infos || []).map((r, j) => ({ key: "i" + j, label: r.label, value: r.value })),
         people: (e.people || []).map((r, j) => ({ key: "p" + j, name: r.name, role: r.role || "", photo: r.photo || "", noPhoto: !r.photo, initials: initials(r.name), linked: !!(r.uid && st.users.some((u) => u.id === r.uid)) })),
-        images: (e.images || []).map((r, j) => ({
+        /* Im Split-Modus nach Etappe sortiert. r und j behalten ihre
+           Bedeutung, weil Kommentare am ursprünglichen Index hängen. */
+        images: this.nachEtappen(e).map(({ r, j, kopf }) => ({
+          etKopf: kopf || "", hatKopf: !!kopf,
+          wrap: kopf
+            ? { display: "grid", gap: "6px", gridColumn: "1 / -1" }
+            : { display: "grid", gap: "6px" },
           key: "m" + j, src: r.src || "", empty: !r.src, caption: r.caption || "bild",
           comments: (function (self) {
             const alleC = (r.comments || []).map((cm, k) => Object.assign({}, cm, { _k: k }));
@@ -4531,7 +4749,24 @@ class Component extends DCLogic {
           zoom: (ev) => { ev.stopPropagation(); this.setState({ zoomImg: { src: r.src, caption: r.caption || "", event: e.name } }); }
         })),
         polls: (function (self) {
-          const liste = (e.polls || []).filter((p) => p && p.frage !== undefined);
+          let liste = (e.polls || []).filter((p) => p && p.frage !== undefined);
+          const etL = e.etappen || [];
+          const koepfe = {};
+          if (e.etLayout === "split" && etL.length) {
+            const rang = (id) => {
+              const at = etL.findIndex((x) => x.i === id);
+              return at < 0 ? 9999 : at;
+            };
+            liste = liste.slice().sort((a, b) => rang(a.et || "") - rang(b.et || ""));
+            let letzte = "\u0000";
+            liste.forEach((p) => {
+              const id = p.et || "";
+              if (id !== letzte) {
+                koepfe[p.id] = id ? self.etName(e, id) : "Ohne Etappe";
+                letzte = id;
+              }
+            });
+          }
           const uid2 = (me || {}).id || "";
           const nameVon = (id) => (st.users.filter((x) => x.id === id)[0] || {}).username || "jemand";
           return liste.map((p) => {
@@ -4551,6 +4786,8 @@ class Component extends DCLogic {
             const labelVon = (i) => ((p.opts || []).filter((o) => o.i === i)[0] || {}).label || "—";
             return {
               key: p.id,
+              etKopf: koepfe[p.id] || "",
+              hatKopf: !!koepfe[p.id],
               istWahl: p.art === "vote",
               istRang: p.art === "rank",
               frage: p.frage || (p.art === "rank" ? "Rangliste" : "Abstimmung"),
@@ -4835,7 +5072,13 @@ class Component extends DCLogic {
           }
         };
       }),
-      images: (d0.images || []).map((r, i) => ({ key: "fm" + i, src: r.src || "", empty: !r.src, caption: r.caption || "", edit: () => this.openImgEdit(i), onCaption: this.rowSet("images", i, "caption"), remove: this.rowDel("images", i) })),
+      images: (d0.images || []).map((r, i) => ({
+        et: r.et || "",
+        onEt: (ev) => {
+          const rows = (this.state.draft.images || []).slice();
+          rows[i] = Object.assign({}, rows[i], { et: ev.target.value });
+          this.setState({ draft: Object.assign({}, this.state.draft, { images: rows }) });
+        }, key: "fm" + i, src: r.src || "", empty: !r.src, caption: r.caption || "", edit: () => this.openImgEdit(i), onCaption: this.rowSet("images", i, "caption"), remove: this.rowDel("images", i) })),
       addInfo: this.rowAdd("infos", { label: "", value: "" }),
       addPerson: this.rowAdd("people", { name: "", role: "", uid: "" }),
       addUrl: () => {
@@ -4903,9 +5146,62 @@ class Component extends DCLogic {
           infos: mk("infos", zahl((d0.infos || []).filter((r) => r.label || r.value).length, "Zeile", "Zeilen")),
           personen: mk("personen", zahl((d0.people || []).filter((r) => r.name).length, "Person", "Personen")),
           polls: mk("polls", (d0.polls || []).length ? plural((d0.polls || []).length, "Runde", "Runden") : "keine"),
+          etappen: mk("etappen", (d0.etappen || []).length ? plural((d0.etappen || []).length, "Etappe", "Etappen") : "keine"),
           bilder: mk("bilder", zahl((d0.images || []).length, "Bild", "Bilder")),
           deko: mk("deko", dekoN ? plural(dekoN, "Element", "Elemente") : "keine"),
           sicht: mk("sicht", "")
+        };
+      })(this),
+      et: (function (self) {
+        const liste = d0.etappen || [];
+        const wahl = [{ key: "e0", value: "", label: "— keiner Etappe —" }].concat(
+          liste.map((x, k) => ({ key: x.i, value: x.i, label: (k + 1) + ". " + (String(x.name || "").trim() || "ohne Namen") }))
+        );
+        return {
+          hat: liste.length > 0,
+          wahl: wahl,
+          layout: d0.etLayout === "split" ? "split" : "gesamt",
+          layouts: ET_LAYOUT.map((x) => ({ key: x[0], value: x[0], label: x[1] })),
+          onLayout: (ev) => self.setState({ draft: Object.assign({}, self.state.draft, { etLayout: ev.target.value }) }),
+          neu: self.etNeu,
+          liste: liste.map((x, k) => ({
+            key: x.i, nr: (k + 1) + ".",
+            name: x.name || "", ort: x.ort || "", tag: x.tag || "", note: x.note || "",
+            onName: (ev) => self.etSet(x.i, "name", ev.target.value),
+            onOrt: (ev) => self.etSet(x.i, "ort", ev.target.value),
+            onTag: (ev) => self.etSet(x.i, "tag", ev.target.value),
+            onNote: (ev) => self.etSet(x.i, "note", ev.target.value),
+            hoch: k > 0, runter: k < liste.length - 1,
+            auf: () => self.etSchieben(x.i, -1),
+            ab: () => self.etSchieben(x.i, 1),
+            weg: () => self.etWeg(x.i)
+          }))
+        };
+      })(this),
+      et: (function (self) {
+        const liste = d0.etappen || [];
+        const wahl = [{ key: "e0", value: "", label: "— keiner Etappe —" }].concat(
+          liste.map((x, k) => ({ key: x.i, value: x.i, label: (k + 1) + ". " + (String(x.name || "").trim() || "ohne Namen") }))
+        );
+        return {
+          hat: liste.length > 0,
+          wahl: wahl,
+          layout: d0.etLayout === "split" ? "split" : "gesamt",
+          layouts: ET_LAYOUT.map((x) => ({ key: x[0], value: x[0], label: x[1] })),
+          onLayout: (ev) => self.setState({ draft: Object.assign({}, self.state.draft, { etLayout: ev.target.value }) }),
+          neu: self.etNeu,
+          liste: liste.map((x, k) => ({
+            key: x.i, nr: (k + 1) + ".",
+            name: x.name || "", ort: x.ort || "", tag: x.tag || "", note: x.note || "",
+            onName: (ev) => self.etSet(x.i, "name", ev.target.value),
+            onOrt: (ev) => self.etSet(x.i, "ort", ev.target.value),
+            onTag: (ev) => self.etSet(x.i, "tag", ev.target.value),
+            onNote: (ev) => self.etSet(x.i, "note", ev.target.value),
+            hoch: k > 0, runter: k < liste.length - 1,
+            auf: () => self.etSchieben(x.i, -1),
+            ab: () => self.etSchieben(x.i, 1),
+            weg: () => self.etWeg(x.i)
+          }))
         };
       })(this),
       polls: (function (self) {
@@ -4937,6 +5233,8 @@ class Component extends DCLogic {
                 weg: () => self.pollSet(p.id, { opts: (p.opts || []).filter((_, j) => j !== i) })
               })),
               optNeu: () => self.pollSet(p.id, { opts: (p.opts || []).concat([{ i: "o" + uid(), label: "" }]) }),
+              et: p.et || "",
+              onEt: (ev) => self.pollSet(p.id, { et: ev.target.value }),
               wer: p.wer || "alle",
               werOpts: POLL_WER.map((w) => ({ key: w[0], value: w[0], label: w[1] })),
               onWer: (ev) => self.pollSet(p.id, { wer: ev.target.value }),
@@ -5481,7 +5779,7 @@ class Component extends DCLogic {
               return "Vergib dein neues Passwort — gespeichert wird es erst, wenn du im nächsten Schritt bestätigst."
                 + (rest > 0 ? " Der Link gilt noch etwa " + rest + (rest === 1 ? " Minute." : " Minuten.") : "");
             })()
-            : "Willkommen zurück — deine Chronik wartet. Nach dem Anklicken von 'Anmelden' kann es etwas dauern, bis du weitergeleitet wirst.")
+            : "Willkommen zurück — deine Chronik wartet.")
           : st.authMode === "reset"
           ? "Ohne Datenbank kann diese Chronik keine E-Mail verschicken — hier lässt sich das Passwort nicht zurücksetzen."
           : st.users.length === 0 ? "Dein erstes Konto in dieser Chronik. Alles, was du anlegst, ist zuerst privat."
