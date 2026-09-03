@@ -106,7 +106,7 @@
         <span>Dein Leben</span>
         <span>Eure Geschichten</span>
         <span>Erleben wie damals</span>
-        <span>Mit mehr Organgen</span>
+        <span>Mit mehr Organgen?</span>
       </div>
     </div>
 
@@ -512,6 +512,17 @@
                             <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.55;">Route</div>
                             <div style="font-size: 11px; letter-spacing: 0.06em; opacity: 0.5;">{{ c.routeLabel }}</div>
                           </div>
+                          <sc-if value="{{ c.hatKarte }}" hint-placeholder-val="{{ false }}">
+                            <div style="display: grid; gap: 5px;">
+                              <iframe ref="{{ c.karteRef }}" src="karte.html" title="Karte der Route" style="width: 100%; height: 320px; border: 0; border-radius: var(--t-radius, 2px); background: color-mix(in srgb, var(--t-ink, #201e1d) 8%, transparent); display: block;"></iframe>
+                              <div style="display: flex; gap: 10px; flex-wrap: wrap; font-size: 11px; letter-spacing: 0.06em; opacity: 0.55;">
+                                <span>Kartendaten © OpenStreetMap-Mitwirkende</span>
+                                <sc-for list="{{ c.wegListe }}" as="w" hint-placeholder-count="0">
+                                  <span>{{ w.label }}</span>
+                                </sc-for>
+                              </div>
+                            </div>
+                          </sc-if>
                           <div style="display: grid; gap: 0;">
                             <sc-for list="{{ c.route }}" as="rt" hint-placeholder-count="2">
                               <div style="display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start;">
@@ -532,6 +543,9 @@
                                     </sc-if>
                                     <sc-if value="{{ rt.hatTag }}" hint-placeholder-val="{{ false }}">
                                       <span>{{ rt.tag }}</span>
+                                    </sc-if>
+                                    <sc-if value="{{ rt.hatWeg }}" hint-placeholder-val="{{ false }}">
+                                      <span>{{ rt.weg }}</span>
                                     </sc-if>
                                   </div>
                                   <sc-if value="{{ rt.hatNote }}" hint-placeholder-val="{{ false }}">
@@ -856,7 +870,7 @@
         <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: var(--space-2);">Jemanden finden</div>
         <div style="display: grid; gap: 7px; margin-bottom: var(--space-6);">
           <div style="display: flex; gap: 6px;">
-            <input class="input" type="search" value="{{ contacts.q }}" onChange="{{ contacts.onQ }}" onKeyDown="{{ contacts.onKey }}" placeholder="E-Mail" style="flex: 1;">
+            <input class="input" type="search" value="{{ contacts.q }}" onChange="{{ contacts.onQ }}" onKeyDown="{{ contacts.onKey }}" placeholder="Benutzername oder E-Mail" style="flex: 1;">
             <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ contacts.search }}">Suchen</button>
           </div>
           <sc-for list="{{ contacts.found }}" as="p" hint-placeholder-count="0">
@@ -1277,13 +1291,46 @@
                   <div class="field" style="margin: 0;"><label>Station</label><input class="input" type="text" value="{{ x.name }}" onChange="{{ x.onName }}" placeholder="z. B. Aufstieg zur Hütte"></div>
                   <div class="field" style="margin: 0;"><label>Ort</label><input class="input" type="text" value="{{ x.ort }}" onChange="{{ x.onOrt }}" placeholder="z. B. Kreuzeck"></div>
                 </div>
-                <div class="field" style="margin: 0;"><label>Zeit oder Tag</label><input class="input" type="text" value="{{ x.tag }}" onChange="{{ x.onTag }}" placeholder="z. B. Samstag früh"></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                  <div class="field" style="margin: 0;"><label>Zeit oder Tag</label><input class="input" type="text" value="{{ x.tag }}" onChange="{{ x.onTag }}" placeholder="z. B. Samstag früh"></div>
+                  <sc-if value="{{ x.zeigeWeg }}" hint-placeholder-val="{{ false }}">
+                    <div class="field" style="margin: 0;"><label>Wie hierher gekommen</label>
+                      <select class="input" value="{{ x.wegArt }}" onChange="{{ x.onWeg }}">
+                        <sc-for list="{{ x.wege }}" as="w" hint-placeholder-count="8">
+                          <option value="{{ w.value }}">{{ w.label }}</option>
+                        </sc-for>
+                      </select>
+                    </div>
+                  </sc-if>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                  <button onClick="{{ x.setzToggle }}" style="{{ x.setzStyle }}">{{ x.setzLabel }}</button>
+                  <span style="{{ x.punktStyle }}">{{ x.punkt }}</span>
+                  <sc-if value="{{ x.hatOrtPunkt }}" hint-placeholder-val="{{ false }}">
+                    <button onClick="{{ x.punktWeg }}" style="font: inherit; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-neutral-700); text-decoration: underline; white-space: nowrap;">Punkt löschen</button>
+                  </sc-if>
+                </div>
                 <div class="field" style="margin: 0;"><label>Notiz</label><input class="input" type="text" value="{{ x.note }}" onChange="{{ x.onNote }}" placeholder="kurz, was dort war"></div>
               </div>
             </sc-for>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
               <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ form.et.neu }}">＋ Etappe</button>
             </div>
+            <sc-if value="{{ form.et.hat }}" hint-placeholder-val="{{ false }}">
+              <div style="display: grid; gap: 6px;">
+                <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px;">
+                  <div style="font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-700);">Karte</div>
+                  <sc-if value="{{ form.et.setzt }}" hint-placeholder-val="{{ false }}">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <span style="font-size: 11.5px; color: var(--color-accent-700);">setzt: {{ form.et.zielName }}</span>
+                      <button onClick="{{ form.et.setzenAus }}" style="font: inherit; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-neutral-700); text-decoration: underline; white-space: nowrap;">fertig</button>
+                    </div>
+                  </sc-if>
+                </div>
+                <iframe ref="{{ form.et.karteRef }}" src="karte.html" title="Karte der Etappen" style="width: 100%; height: 300px; border: 0; border-radius: var(--radius-md); background: var(--color-neutral-100); display: block;"></iframe>
+                <div style="font-size: 11.5px; line-height: 1.45; color: var(--color-neutral-700);">Kartendaten © OpenStreetMap-Mitwirkende. Ohne Routendienst zeichnet die Chronik Verbindungen, keine Straßenverläufe — die Machart der Linie zeigt aber, wie der Weg zurückgelegt wurde.</div>
+              </div>
+            </sc-if>
             <sc-if value="{{ form.et.hat }}" hint-placeholder-val="{{ false }}">
               <div class="field" style="margin: 0;"><label>Wie soll das angezeigt werden</label>
                 <select class="input" value="{{ form.et.layout }}" onChange="{{ form.et.onLayout }}">
@@ -1872,10 +1919,28 @@ const filterWert = function (id) {
 const ECHO_EMOJI = ["\u2665", "\u2605", "\u2713", "\u2718", "\u2726", "\u2691"];
 
 /* Wer darf mitmachen: alle, die das Ereignis sehen, oder engere Kreise. */
+/* Wie der Weg zur Station zurückgelegt wurde. Die Karte zeichnet
+   je Art eine andere Linienmachart. */
+const ET_WEGE = [
+  ["ohne", "unbestimmt"],
+  ["fuss", "zu Fuß"],
+  ["rad", "Fahrrad"],
+  ["auto", "Auto"],
+  ["bahn", "Bahn (Fernverkehr)"],
+  ["nah", "Nahverkehr (Bus, Tram)"],
+  ["flug", "Flugzeug"],
+  ["schiff", "Schiff"]
+];
+
+const wegName = function (id) {
+  const t = ET_WEGE.filter((x) => x[0] === id)[0];
+  return t ? t[1] : "unbestimmt";
+};
+
 const ET_LAYOUT = [["gesamt", "Route oben, alles darunter"], ["split", "Route oben, dann je Etappe"]];
 
 const leereEtappe = function (n) {
-  return { i: "e" + uid(), name: "", ort: "", note: "", tag: "" };
+  return { i: "e" + uid(), name: "", ort: "", note: "", tag: "", weg: "ohne", lat: null, lon: null };
 };
 
 const POLL_WER = [["alle", "Alle, die das Ereignis sehen"], ["personen", "Nur ausgewählte Personen"], ["gruppen", "Nur bestimmte Gruppen"]];
@@ -2299,6 +2364,8 @@ class Component extends DCLogic {
     imgEdit: null,
     pollOpen: null,
     pSuche: {},
+    etZiel: null,
+    etKarte: false,
     strahl: "mein",
     jahrOffen: {},
     feed: { oeffentlich: false, freunde: true, vorschau: false },
@@ -2353,6 +2420,7 @@ class Component extends DCLogic {
   };
 
   componentDidMount() {
+    window.addEventListener("message", this.kartenKlick);
     this.setState({ formAt: Date.now(), quiz: this.newQuiz(), botOk: false });
     const CC = window.ChronikCloud;
     if (CC && CC.enabled) {
@@ -2420,6 +2488,10 @@ class Component extends DCLogic {
 
   componentDidUpdate(vp, vs) {
     this.applyTheme();
+    /* Karten versorgen: im Editor mit Setz-Modus, auf der Karte nur zum Ansehen. */
+    if (this.state.draft) this.kartenSenden("editor", this.state.draft, !!this.state.etZiel);
+    const auf = this.state.events.filter((x) => x.id === this.state.openId)[0];
+    if (auf) this.kartenSenden("karte", auf, false);
     /* Nach dem Anmelden einmal ans neueste Ereignis springen. */
     if (!this.zumNeuesten && this.stage && this.me() && !this.state.booting && (this.geoItems || []).length) {
       this.zumNeuesten = true;
@@ -4067,6 +4139,54 @@ class Component extends DCLogic {
     this.setState({ draft: Object.assign({}, d, { etappen: liste }) });
   }
 
+  /* Nur Etappen mit Koordinaten kommen auf die Karte. */
+  kartenStationen(e) {
+    return ((e || {}).etappen || [])
+      .filter((x) => typeof x.lat === "number" && typeof x.lon === "number")
+      .map((x, k) => ({
+        name: String(x.name || "").trim() || (k + 1) + ". Etappe",
+        ort: x.ort || "", tag: x.tag || "",
+        weg: x.weg || "ohne",
+        lat: x.lat, lon: x.lon
+      }));
+  }
+
+  /* Die Karte liegt in einem eigenen Dokument (Leaflet braucht einen
+     fertig gemessenen Container). Daten gehen per Nachricht hinein. */
+  kartenRef = (name) => (el) => {
+    this.frames = this.frames || {};
+    if (el) this.frames[name] = el; else delete this.frames[name];
+  };
+
+  kartenSenden(name, e, setzen) {
+    const f = (this.frames || {})[name];
+    if (!f || !f.contentWindow) return;
+    const t = this.theme();
+    const nutz = JSON.stringify({ st: this.kartenStationen(e), setzen: !!setzen, f: t.accent, f2: t.accent2 });
+    this.letzteKarte = this.letzteKarte || {};
+    if (this.letzteKarte[name] === nutz) return;
+    this.letzteKarte[name] = nutz;
+    f.contentWindow.postMessage({
+      typ: "stationen", stationen: this.kartenStationen(e),
+      setzen: !!setzen, farbe: t.accent, farbe2: t.accent2
+    }, "*");
+  }
+
+  /* Klick auf die Karte setzt die gerade gewählte Station. */
+  kartenKlick = (ev) => {
+    const d = ev.data || {};
+    if (d.typ === "bereit") { this.letzteKarte = {}; this.forceUpdate(); return; }
+    if (d.typ !== "klick") return;
+    const ziel = this.state.etZiel;
+    const dr = this.state.draft;
+    if (!ziel || !dr) return;
+    this.setState({
+      draft: Object.assign({}, dr, {
+        etappen: (dr.etappen || []).map((x) => (x.i === ziel ? Object.assign({}, x, { lat: d.lat, lon: d.lon }) : x))
+      })
+    });
+  };
+
   /* Bilder in Anzeigereihenfolge, mit Gruppenkopf beim ersten je Etappe.
      Ohne Split-Modus bleibt die Reihenfolge unverändert. */
   nachEtappen(e) {
@@ -4657,6 +4777,8 @@ class Component extends DCLogic {
             key: x.i, nr: String(k + 1),
             name: String(x.name || "").trim() || (k + 1) + ". Etappe",
             ort: x.ort || "", tag: x.tag || "", note: x.note || "",
+            weg: k > 0 && (x.weg || "ohne") !== "ohne" ? wegName(x.weg) : "",
+            hatWeg: k > 0 && (x.weg || "ohne") !== "ohne",
             hatOrt: !!String(x.ort || "").trim(),
             hatTag: !!String(x.tag || "").trim(),
             hatNote: !!String(x.note || "").trim(),
@@ -4664,6 +4786,11 @@ class Component extends DCLogic {
           }));
         })(),
         hatRoute: (e.etappen || []).length > 0,
+        hatKarte: this.kartenStationen(e).length > 0,
+        karteRef: this.kartenRef("karte"),
+        wegListe: (e.etappen || []).slice(1).filter((x) => (x.weg || "ohne") !== "ohne")
+          .map((x, k) => ({ key: "w" + k, label: wegName(x.weg) }))
+          .filter((x, k, arr) => arr.findIndex((y) => y.label === x.label) === k),
         routeLabel: plural((e.etappen || []).length, "Etappe", "Etappen"),
         hasInfos: (e.infos || []).length > 0, hasPeople: (e.people || []).length > 0, hasImages: nImg > 0,
         canEdit: lvl >= 3, canFull: lvl >= 4,
@@ -5164,9 +5291,43 @@ class Component extends DCLogic {
           layouts: ET_LAYOUT.map((x) => ({ key: x[0], value: x[0], label: x[1] })),
           onLayout: (ev) => self.setState({ draft: Object.assign({}, self.state.draft, { etLayout: ev.target.value }) }),
           neu: self.etNeu,
+          karteRef: self.kartenRef("editor"),
+          zielName: (function () {
+            const z = liste.filter((x) => x.i === self.state.etZiel)[0];
+            if (!z) return "";
+            const at = liste.indexOf(z);
+            return (at + 1) + ". " + (String(z.name || "").trim() || "Station");
+          })(),
+          setzt: !!self.state.etZiel,
+          setzenAus: () => self.setState({ etZiel: null }),
           liste: liste.map((x, k) => ({
             key: x.i, nr: (k + 1) + ".",
             name: x.name || "", ort: x.ort || "", tag: x.tag || "", note: x.note || "",
+            wegArt: x.weg || "ohne",
+            wege: ET_WEGE.map((w) => ({ key: w[0], value: w[0], label: w[1] })),
+            onWeg: (ev) => self.etSet(x.i, "weg", ev.target.value),
+            zeigeWeg: k > 0,
+            hatOrtPunkt: typeof x.lat === "number" && typeof x.lon === "number",
+            punkt: typeof x.lat === "number" ? x.lat.toFixed(4) + ", " + x.lon.toFixed(4) : "nicht auf der Karte",
+            punktStyle: {
+              fontSize: "10.5px", letterSpacing: "0.04em", whiteSpace: "nowrap",
+              color: typeof x.lat === "number" ? "var(--color-accent-700)" : "var(--color-neutral-600)"
+            },
+            setzen: self.state.etZiel === x.i,
+            setzLabel: self.state.etZiel === x.i ? "◉ tippt auf die Karte" : "○ Auf Karte setzen",
+            setzStyle: {
+              font: "inherit", fontSize: "11px", letterSpacing: "0.06em", padding: "4px 10px", cursor: "pointer",
+              whiteSpace: "nowrap", borderRadius: "99px",
+              border: "1px solid " + (self.state.etZiel === x.i ? "var(--color-accent)" : "var(--color-divider)"),
+              background: self.state.etZiel === x.i ? "var(--color-accent)" : "transparent",
+              color: self.state.etZiel === x.i ? "var(--color-bg)" : "var(--color-text)"
+            },
+            setzToggle: () => self.setState({ etZiel: self.state.etZiel === x.i ? null : x.i }),
+            punktWeg: () => self.setState({
+              draft: Object.assign({}, self.state.draft, {
+                etappen: (self.state.draft.etappen || []).map((y) => (y.i === x.i ? Object.assign({}, y, { lat: null, lon: null }) : y))
+              })
+            }),
             onName: (ev) => self.etSet(x.i, "name", ev.target.value),
             onOrt: (ev) => self.etSet(x.i, "ort", ev.target.value),
             onTag: (ev) => self.etSet(x.i, "tag", ev.target.value),
@@ -5190,9 +5351,43 @@ class Component extends DCLogic {
           layouts: ET_LAYOUT.map((x) => ({ key: x[0], value: x[0], label: x[1] })),
           onLayout: (ev) => self.setState({ draft: Object.assign({}, self.state.draft, { etLayout: ev.target.value }) }),
           neu: self.etNeu,
+          karteRef: self.kartenRef("editor"),
+          zielName: (function () {
+            const z = liste.filter((x) => x.i === self.state.etZiel)[0];
+            if (!z) return "";
+            const at = liste.indexOf(z);
+            return (at + 1) + ". " + (String(z.name || "").trim() || "Station");
+          })(),
+          setzt: !!self.state.etZiel,
+          setzenAus: () => self.setState({ etZiel: null }),
           liste: liste.map((x, k) => ({
             key: x.i, nr: (k + 1) + ".",
             name: x.name || "", ort: x.ort || "", tag: x.tag || "", note: x.note || "",
+            wegArt: x.weg || "ohne",
+            wege: ET_WEGE.map((w) => ({ key: w[0], value: w[0], label: w[1] })),
+            onWeg: (ev) => self.etSet(x.i, "weg", ev.target.value),
+            zeigeWeg: k > 0,
+            hatOrtPunkt: typeof x.lat === "number" && typeof x.lon === "number",
+            punkt: typeof x.lat === "number" ? x.lat.toFixed(4) + ", " + x.lon.toFixed(4) : "nicht auf der Karte",
+            punktStyle: {
+              fontSize: "10.5px", letterSpacing: "0.04em", whiteSpace: "nowrap",
+              color: typeof x.lat === "number" ? "var(--color-accent-700)" : "var(--color-neutral-600)"
+            },
+            setzen: self.state.etZiel === x.i,
+            setzLabel: self.state.etZiel === x.i ? "◉ tippt auf die Karte" : "○ Auf Karte setzen",
+            setzStyle: {
+              font: "inherit", fontSize: "11px", letterSpacing: "0.06em", padding: "4px 10px", cursor: "pointer",
+              whiteSpace: "nowrap", borderRadius: "99px",
+              border: "1px solid " + (self.state.etZiel === x.i ? "var(--color-accent)" : "var(--color-divider)"),
+              background: self.state.etZiel === x.i ? "var(--color-accent)" : "transparent",
+              color: self.state.etZiel === x.i ? "var(--color-bg)" : "var(--color-text)"
+            },
+            setzToggle: () => self.setState({ etZiel: self.state.etZiel === x.i ? null : x.i }),
+            punktWeg: () => self.setState({
+              draft: Object.assign({}, self.state.draft, {
+                etappen: (self.state.draft.etappen || []).map((y) => (y.i === x.i ? Object.assign({}, y, { lat: null, lon: null }) : y))
+              })
+            }),
             onName: (ev) => self.etSet(x.i, "name", ev.target.value),
             onOrt: (ev) => self.etSet(x.i, "ort", ev.target.value),
             onTag: (ev) => self.etSet(x.i, "tag", ev.target.value),
