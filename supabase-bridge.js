@@ -521,7 +521,7 @@
       place: row.place || "", kicker: row.kicker || "", note: d.note || "",
       infos: d.infos || [], people: d.people || [], images: imgs,
       deco: d.deco || { fx: [], pal: "thema", stickers: [] },
-      vis: (row.vis === "selected" ? "people" : row.vis) || "private", who: row.who || [], gwho: row.gwho || [], perms: row.perms || {}, polls: row.polls || [], share: row.share || "view",
+      vis: (row.vis === "selected" ? "people" : row.vis) || "private", who: row.who || [], gwho: row.gwho || [], perms: row.perms || {}, polls: row.polls || [], etappen: row.etappen || [], etLayout: row.et_layout === "split" ? "split" : "gesamt", share: row.share || "view",
       changedBy: row.changed_by || ""
     };
   }
@@ -530,7 +530,7 @@
     return {
       name: e.name || "", date: e.date || null, end_date: e.end || null,
       place: e.place || "", kicker: e.kicker || "",
-      vis: e.vis || "private", who: e.who || [], gwho: e.gwho || [], perms: e.perms || {}, polls: e.polls || [], share: e.share || "view",
+      vis: e.vis || "private", who: e.who || [], gwho: e.gwho || [], perms: e.perms || {}, polls: e.polls || [], etappen: e.etappen || [], et_layout: e.etLayout === "split" ? "split" : "gesamt", share: e.share || "view",
       data: {
         note: e.note || "", infos: e.infos || [], people: e.people || [], deco: e.deco || null,
         images: (e.images || []).map(function (im) {
@@ -627,6 +627,13 @@
     }
 
     var r = await push(row);
+    if (r.error && /etappen|et_layout/i.test(String(r.error.message || ""))) {
+      var ohneEt = Object.assign({}, row);
+      delete ohneEt.etappen;
+      delete ohneEt.et_layout;
+      r = await push(ohneEt);
+      if (!r.error) row = ohneEt;
+    }
     if (r.error && /polls/i.test(String(r.error.message || ""))) {
       var noPolls = Object.assign({}, row);
       delete noPolls.polls;
