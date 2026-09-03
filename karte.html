@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chronik · Karte</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="broadsheet.css">
+<style>
+  html, body { margin: 0; height: 100%; background: var(--color-bg); }
+  #karte { position: absolute; inset: 0; }
+  .leaflet-container { font-family: var(--font-body); background: var(--color-neutral-100); }
+  .leaflet-popup-content { font-family: var(--font-body); font-size: 13px; line-height: 1.45; }
+
+  /* Stationsnadel: Nummer im Kreis, in der Themenfarbe */
+  .nadel {
+    display: grid; place-items: center;
+    width: 26px; height: 26px; border-radius: 99px;
+    font-family: var(--font-heading); font-size: 12.5px; font-weight: 600;
+    color: #fff; box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.45);
+    border: 2px solid #fff;
+  }
+  .nadel-start { border-color: #fff; }
+  .nadel-ziel { border-radius: 4px; }
+
+  /* Hinweis, solange keine Station gesetzt ist */
+  #leer {
+    position: absolute; inset: 0; z-index: 500;
+    display: grid; place-items: center; text-align: center;
+    padding: var(--space-6); pointer-events: none;
+    background: color-mix(in srgb, var(--color-bg) 78%, transparent);
+    font-family: var(--font-body); font-size: 14px; line-height: 1.5;
+    color: var(--color-neutral-700);
+  }
+  #leer[hidden] { display: none; }
+</style>
+</head>
+<body>
+<div id="karte"></div>
+<div id="leer">Noch keine Station auf der Karte.</div>
+
+<script>
+/* ============================================================
+   CHRONIK · Kartenansicht der Etappen
+
+   Eigenes Dokument, weil Leaflet einen fertig gemessenen
+   Container braucht. Die Chronik schickt die Stationen per
+   postMessage herein; im Setz-Modus meldet ein Klick die
+   angeklickte Stelle zurück.
+
+   Nachrichten HEREIN:
+     { typ: "stationen", stationen: [...], farbe, farbe2, setzen }
+     { typ: "aktiv", i: <index> }          Station hervorheben
+   Nachrichten HINAUS:
+     { typ: "klick", lat, lon }
+     { typ: "bereit" }
+   ============================================================ */
+
+var karte = L.map("karte", { zoomControl: true, scrollWheelZoom: true });
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: "© OpenStreetMap contributors",
+  maxZoom: 19
+}).addTo(karte);
+karte.setView([51.16, 10.45], 5);
+
+var ebene = L.layerGroup().addTo(karte);
+var setzModus = false;
+var leer = document.getElementById("leer");
+
+/* Wie ein Weg gezeichnet wird. Ohne Routing-Dienst sind das
+   Verbindungen, keine Straßenverläufe — die Machart sagt aber,
+   wie der Weg zurückgelegt wurde. */
+var WEGE = {
+  fuss:  { breite: 3,   strich: "1 7",    kappe: "round", bogen: 0.06, deckung: 0.9 },
+  rad:   { breite: 3.5, strich: "7 5",    kappe: "round", bogen: 0.06, deckung: 0.9 },
+  auto:  { breite: 5,   strich: null,     kappe: "round", bogen: 0.04, deckung: 0.85 },
+  bahn:  { breite: 5,   strich: null,     kappe: "butt",  bogen: 0.03, deckung: 0.85, schiene: true },
+  nah:   { breite: 4,   strich: "12 6",   kappe: "butt",  bogen: 0.05, deckung: 0.85 },
+  flug:  { breite: 2.5, strich: "9 8",    kappe: "round", bogen: 0.34, deckung: 0.95 },
+  schiff:{ breite: 3,   strich: "16 9",   kappe: "round", bogen: 0.16, deckung: 0.9 },
+  ohne:  { breite: 2,   strich: "3 6",    kappe: "round", bogen: 0.02, deckung: 0.5 }
+};
+
+/* Gebogene Verbindung: je stärker der Bogen, desto weiter weg
+   von der Luftlinie — beim Flug fast eine Flugkurve. */
+function bogenPunkte(a, b, staerke) {
+  if (!staerke) return [a, b];
+  var mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
+  var dx = b[0] - a[0], dy = b[1] - a[1];
+  /* Senkrecht zur Verbindung ausweichen */
+  var kx = mx - dy * staerke, ky = my + dx * staerke;
+  var pkte = [];
+  for (var t = 0; t <= 1.0001; t += 1 / 24) {
+    var u = 1 - t;
+    pkte.push([
+      u * u * a[0] + 2 * u * t * kx + t * t * b[0],
+      u * u * a[1] + 2 * u * t * ky + t * t * b[1]
+    ]);
+  }
+  return pkte;
+}
+
+function zeichne(daten) {
+  ebene.clearLayers();
+  var st = (daten.stationen || []).filter(function (s) {
+    return typeof s.lat === "number" && typeof s.lon === "number";
+  });
+  var farbe = daten.farbe || "#0088b0";
+  var farbe2 = daten.farbe2 || "#d6006c";
+  leer.hidden = st.length > 0;
+  if (!st.length) return;
+
+  /* Erst die Wege, damit die Nadeln darüber liegen. */
+  for (var i = 1; i < st.length; i++) {
+    var a = [st[i - 1].lat, st[i - 1].lon];
+    var b = [st[i].lat, st[i].lon];
+    var w = WEGE[st[i].weg] || WEGE.ohne;
+    var linie = bogenPunkte(a, b, w.bogen);
+
+    if (w.schiene) {
+      /* Bahn: dunkles Band mit hellen Schwellen darüber */
+      L.polyline(linie, { color: farbe, weight: w.breite, opacity: w.deckung, lineCap: w.kappe }).addTo(ebene);
+      L.polyline(linie, { color: "#fff", weight: w.breite - 2.6, opacity: 0.85, dashArray: "2 9", lineCap: "butt" }).addTo(ebene);
+    } else {
+      L.polyline(linie, {
+        color: st[i].weg === "flug" ? farbe2 : farbe,
+        weight: w.breite, opacity: w.deckung,
+        dashArray: w.strich, lineCap: w.kappe
+      }).addTo(ebene);
+    }
+  }
+
+  /* Nadeln */
+  st.forEach(function (s, i) {
+    var start = i === 0, ziel = i === st.length - 1 && st.length > 1;
+    var klasse = "nadel" + (start ? " nadel-start" : "") + (ziel ? " nadel-ziel" : "");
+    var hg = start ? farbe2 : farbe;
+    var nadel = L.divIcon({
+      className: "",
+      html: '<div class="' + klasse + '" style="background:' + hg + '">' + (i + 1) + "</div>",
+      iconSize: [26, 26],
+      iconAnchor: [13, 13]
+    });
+    var m = L.marker([s.lat, s.lon], { icon: nadel, title: s.name || "" }).addTo(ebene);
+    var teile = [];
+    if (s.name) teile.push("<strong>" + esc(s.name) + "</strong>");
+    if (s.ort) teile.push(esc(s.ort));
+    if (s.tag) teile.push(esc(s.tag));
+    if (start) teile.push("<em>Start</em>");
+    else if (ziel) teile.push("<em>Ziel</em>");
+    if (teile.length) m.bindPopup(teile.join("<br>"));
+  });
+
+  /* Ausschnitt auf alles legen */
+  var grenzen = L.latLngBounds(st.map(function (s) { return [s.lat, s.lon]; }));
+  if (st.length === 1) karte.setView([st[0].lat, st[0].lon], 12);
+  else karte.fitBounds(grenzen, { padding: [34, 34] });
+}
+
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+  });
+}
+
+karte.on("click", function (ev) {
+  if (!setzModus) return;
+  parent.postMessage({ typ: "klick", lat: +ev.latlng.lat.toFixed(6), lon: +ev.latlng.lng.toFixed(6) }, "*");
+});
+
+window.addEventListener("message", function (ev) {
+  var d = ev.data || {};
+  if (d.typ === "stationen") {
+    setzModus = !!d.setzen;
+    document.getElementById("karte").style.cursor = setzModus ? "crosshair" : "";
+    leer.textContent = setzModus
+      ? "Auf die Karte tippen, um die gewählte Station dort zu setzen."
+      : "Noch keine Station auf der Karte.";
+    zeichne(d);
+  } else if (d.typ === "aktiv" && typeof d.i === "number") {
+    /* Hervorheben durch Anfahren — bleibt schlicht und robust. */
+    var s = (d.stationen || [])[d.i];
+    if (s && typeof s.lat === "number") karte.setView([s.lat, s.lon], Math.max(karte.getZoom(), 11));
+  }
+});
+
+/* Größe nachmessen, wenn der Iframe erscheint oder wächst. */
+if (typeof ResizeObserver === "function") {
+  new ResizeObserver(function () { karte.invalidateSize(); }).observe(document.body);
+}
+window.addEventListener("resize", function () { karte.invalidateSize(); });
+
+parent.postMessage({ typ: "bereit" }, "*");
+</script>
+</body>
+</html>
