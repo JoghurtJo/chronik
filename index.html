@@ -106,7 +106,7 @@
         <span>Dein Leben</span>
         <span>Eure Geschichten</span>
         <span>Erleben wie damals</span>
-        <span>Mit mehr Organgen?</span>
+        <span>Mit mehr Organgen</span>
       </div>
     </div>
 
@@ -235,6 +235,7 @@
         <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ openShowAll }}">▦ Fotoshow</button>
         <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ toggleDrawer }}">Design · {{ themeName }}</button>
         <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ toggleAdmin }}">{{ contactsLabel }}</button>
+        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ vgl.toggle }}">Vergleichen</button>
         <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ konto.toggle }}">Mein Konto</button>
         <div class="seg" role="group" style="margin: 0;">
           <sc-for list="{{ strahl.arten }}" as="a" hint-placeholder-count="2">
@@ -531,7 +532,7 @@
                                   <sc-if value="{{ rt.letzte }}" hint-placeholder-val="{{ false }}">
                                     <span style="display: block; height: 4px;"></span>
                                   </sc-if>
-                                  <sc-if value="{{ rt.letzte }}" hint-placeholder-val="{{ true }}">
+                                  <sc-if value="{{ rt.weiter }}" hint-placeholder-val="{{ true }}">
                                     <span style="display: block; width: 2px; flex: 1; min-height: 16px; background: color-mix(in srgb, var(--t-accent, #0088b0) 40%, transparent);"></span>
                                   </sc-if>
                                 </div>
@@ -1680,6 +1681,119 @@
   </div>
 </sc-if>
 
+<sc-if value="{{ vgl.open }}" hint-placeholder-val="{{ false }}">
+  <div data-noprint="" data-screen-label="Vergleich" style="position: fixed; inset: 0; z-index: 139; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 42%, transparent);">
+    <div style="width: min(760px, 100%); max-height: 90vh; overflow-y: auto; background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: var(--space-6);">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4);">
+        <div>
+          <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">Zwei Chroniken</div>
+          <h2 style="margin: 3px 0 0; font-size: 28px; line-height: 1.05;">Vergleichen</h2>
+        </div>
+        <button class="btn btn-secondary btn-icon" onClick="{{ vgl.zu }}">✕</button>
+      </div>
+      <div style="height: 3px; background: var(--color-text); margin: var(--space-4) 0 var(--space-4);"></div>
+
+      <sc-if value="{{ vgl.leer }}" hint-placeholder-val="{{ true }}">
+        <div style="font-size: 13.5px; line-height: 1.55; color: var(--color-neutral-700);">Dafür brauchst du erst einen Kontakt. Such jemanden unter „Kontakte“ und schick eine Anfrage.</div>
+      </sc-if>
+
+      <sc-if value="{{ vgl.hatKontakte }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; gap: 6px; margin-bottom: var(--space-6);">
+          <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">Mit wem</div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <sc-for list="{{ vgl.kontakte }}" as="k" hint-placeholder-count="2">
+              <button onClick="{{ k.pick }}" style="{{ k.style }}">{{ k.name }}</button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ vgl.gewaehlt }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; gap: var(--space-6); flex-wrap: wrap; margin-bottom: var(--space-6);">
+          <sc-for list="{{ vgl.zahlen }}" as="z" hint-placeholder-count="3">
+            <div style="display: grid; gap: 1px;">
+              <div style="font-family: var(--font-heading); font-size: 32px; line-height: 1; letter-spacing: -0.02em;">{{ z.wert }}</div>
+              <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">{{ z.label }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ vgl.hinweis }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size: 13.5px; line-height: 1.55; padding: 11px 13px; border-radius: var(--radius-md); background: var(--color-surface); color: var(--color-neutral-700); margin-bottom: var(--space-6);">{{ vgl.hinweis }}</div>
+        </sc-if>
+
+        <sc-if value="{{ vgl.hatTreffer }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: var(--space-2);">Am selben Tag unterwegs</div>
+          <div style="display: grid; gap: 7px; margin-bottom: var(--space-6);">
+            <sc-for list="{{ vgl.treffer }}" as="t" hint-placeholder-count="1">
+              <div style="display: grid; gap: 2px; padding: 9px 11px; border-radius: var(--radius-md); background: var(--color-surface);">
+                <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">{{ t.tag }}</div>
+                <div style="font-size: 13.5px; line-height: 1.4;">{{ t.meins }} — {{ t.seins }}</div>
+                <div style="{{ t.urteilStyle }}">{{ t.urteil }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ vgl.hatOrte }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-2-700); margin-bottom: var(--space-2);">Beide schon einmal hier</div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: var(--space-6);">
+            <sc-for list="{{ vgl.orte }}" as="o" hint-placeholder-count="0">
+              <span style="font-size: 12px; letter-spacing: 0.04em; padding: 4px 11px; border-radius: 99px; background: var(--color-accent-2-100); color: var(--color-accent-2-700);">{{ o.label }}</span>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ vgl.hatJahre }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: var(--space-2);">Jahr für Jahr · links du, rechts {{ vgl.name }}</div>
+          <div style="display: grid; gap: var(--space-4);">
+            <sc-for list="{{ vgl.jahre }}" as="j" hint-placeholder-count="1">
+              <div style="display: grid; gap: 5px;">
+                <div style="display: flex; align-items: baseline; gap: 8px;">
+                  <span style="font-family: var(--font-heading); font-size: 19px; line-height: 1;">{{ j.jahr }}</span>
+                  <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); align-items: start;">
+                  <div style="display: grid; gap: 4px;">
+                    <sc-for list="{{ j.meine }}" as="e" hint-placeholder-count="1">
+                      <div style="{{ e.style }}">
+                        <div style="font-size: 13px; line-height: 1.3;">{{ e.name }}</div>
+                        <div style="font-size: 11px; letter-spacing: 0.04em; color: var(--color-neutral-700);">{{ e.datum }}</div>
+                        <sc-if value="{{ e.hatOrt }}" hint-placeholder-val="{{ false }}">
+                          <div style="font-size: 11px; color: var(--color-neutral-700);">{{ e.ort }}</div>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                    <sc-if value="{{ j.keineA }}" hint-placeholder-val="{{ false }}">
+                      <div style="font-size: 11.5px; color: var(--color-neutral-600); padding: 4px 2px;">nichts von dir</div>
+                    </sc-if>
+                  </div>
+                  <div style="display: grid; gap: 4px;">
+                    <sc-for list="{{ j.seine }}" as="e" hint-placeholder-count="1">
+                      <div style="{{ e.style }}">
+                        <div style="font-size: 13px; line-height: 1.3;">{{ e.name }}</div>
+                        <div style="font-size: 11px; letter-spacing: 0.04em; color: var(--color-neutral-700);">{{ e.datum }}</div>
+                        <sc-if value="{{ e.hatOrt }}" hint-placeholder-val="{{ false }}">
+                          <div style="font-size: 11px; color: var(--color-neutral-700);">{{ e.ort }}</div>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                    <sc-if value="{{ j.keineB }}" hint-placeholder-val="{{ false }}">
+                      <div style="font-size: 11.5px; color: var(--color-neutral-600); padding: 4px 2px;">nichts sichtbar</div>
+                    </sc-if>
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <div style="font-size: 11.5px; line-height: 1.5; color: var(--color-neutral-700); margin-top: var(--space-6);">Gezeigt wird nur, was diese Person für dich freigegeben hat. Private Ereignisse bleiben unsichtbar — auch im Vergleich.</div>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+
 <sc-if value="{{ konto.open }}" hint-placeholder-val="{{ false }}">
   <div data-noprint="" data-screen-label="Mein Konto" style="position: fixed; inset: 0; z-index: 138; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 42%, transparent);">
     <div style="width: min(500px, 100%); max-height: 88vh; overflow-y: auto; background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: var(--space-6);">
@@ -2365,6 +2479,8 @@ class Component extends DCLogic {
     pollOpen: null,
     pSuche: {},
     etZiel: null,
+    vgl: false,
+    vglMit: null,
     etKarte: false,
     strahl: "mein",
     jahrOffen: {},
@@ -2960,10 +3076,17 @@ class Component extends DCLogic {
   }
 
   /* Zwei Bildschirmaufbauten abwarten: erst dann ist der Kreisel zu sehen. */
+  /* Zwei Bildaufbauten abwarten, damit die Ladeanzeige sichtbar wird —
+     aber niemals länger als 140 ms. Im Hintergrund-Tab feuert
+     requestAnimationFrame gar nicht; ohne diesen Rückfall würde die
+     Anmeldung dort hängen bleiben. */
   zeichnen() {
     return new Promise((res) => {
-      if (typeof requestAnimationFrame !== "function") return setTimeout(res, 32);
-      requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(res, 16)));
+      let fertig = false;
+      const einmal = () => { if (!fertig) { fertig = true; res(); } };
+      setTimeout(einmal, 140);
+      if (typeof requestAnimationFrame !== "function") return;
+      requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(einmal, 16)));
     });
   }
 
@@ -4139,6 +4262,110 @@ class Component extends DCLogic {
     this.setState({ draft: Object.assign({}, d, { etappen: liste }) });
   }
 
+  /* ---------- Zeitstrahlen vergleichen ---------- */
+
+  /* Was ich von dieser Person sehen darf — nichts weiter.
+     Der Vergleich zeigt niemals mehr als der Zeitstrahl selbst. */
+  sichtbarVon(userId) {
+    return this.state.events
+      .filter((e) => (e.by || "") === userId && this.levelFor(e) >= 1)
+      .sort((a, b) => dp(a.date) - dp(b.date));
+  }
+
+  /* Alle Punkte eines Ereignisses: die Etappen-Koordinaten. */
+  punkteVon(e) {
+    return ((e || {}).etappen || []).filter((x) => typeof x.lat === "number" && typeof x.lon === "number");
+  }
+
+  /* Luftlinie in Kilometern (Haversine). */
+  kmZwischen(a, b) {
+    const R = 6371;
+    const rad = (g) => (g * Math.PI) / 180;
+    const dLat = rad(b.lat - a.lat);
+    const dLon = rad(b.lon - a.lon);
+    const h = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+      + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    return Math.round(2 * R * Math.asin(Math.min(1, Math.sqrt(h))));
+  }
+
+  /* Tage, die ein Ereignis abdeckt (von Datum bis Ende). */
+  tageVon(e) {
+    const a = dp(e.date);
+    const b = e.end ? dp(e.end) : a;
+    if (!a) return [];
+    const raus = [];
+    const eins = 86400000;
+    /* Ortszeit, nicht UTC — sonst rutscht jeder Tag westlich von
+       Greenwich um einen zurück. */
+    const alsTag = (ms) => {
+      const d = new Date(ms);
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const tt = String(d.getDate()).padStart(2, "0");
+      return d.getFullYear() + "-" + mm + "-" + tt;
+    };
+    for (let t = a; t <= b && raus.length < 400; t += eins) raus.push(alsTag(t));
+    return raus.length ? raus : [e.date];
+  }
+
+  /* Der ganze Vergleich in einem Durchgang. */
+  vergleich(userId) {
+    const me = this.me();
+    if (!me || !userId) return null;
+    const meine = this.sichtbarVon(me.id);
+    const seine = this.sichtbarVon(userId);
+
+    /* Zeitliche Überschneidungen: gleiche Kalendertage. */
+    const tagKarte = {};
+    meine.forEach((e) => this.tageVon(e).forEach((t) => {
+      tagKarte[t] = tagKarte[t] || { a: [], b: [] };
+      tagKarte[t].a.push(e);
+    }));
+    seine.forEach((e) => this.tageVon(e).forEach((t) => {
+      tagKarte[t] = tagKarte[t] || { a: [], b: [] };
+      tagKarte[t].b.push(e);
+    }));
+
+    const treffer = [];
+    Object.keys(tagKarte).sort().forEach((t) => {
+      const z = tagKarte[t];
+      if (!z.a.length || !z.b.length) return;
+      z.a.forEach((ea) => z.b.forEach((eb) => {
+        const ortA = normName(ea.place || "");
+        const ortB = normName(eb.place || "");
+        const gleicherOrt = !!ortA && ortA === ortB;
+        const pa = this.punkteVon(ea);
+        const pb = this.punkteVon(eb);
+        let km = null;
+        if (pa.length && pb.length) {
+          km = Math.min.apply(null, pa.map((x) => Math.min.apply(null, pb.map((y) => this.kmZwischen(x, y)))));
+        }
+        treffer.push({ tag: t, a: ea, b: eb, gleicherOrt: gleicherOrt, km: km });
+      }));
+    });
+
+    /* Je Paar nur den engsten Treffer behalten. */
+    const gesehen = {};
+    const knapp = [];
+    treffer.forEach((x) => {
+      const k = x.a.id + "|" + x.b.id;
+      if (gesehen[k]) return;
+      gesehen[k] = true;
+      knapp.push(x);
+    });
+
+    /* Orte, an denen beide waren — auch zu verschiedenen Zeiten. */
+    const orteA = {};
+    meine.forEach((e) => { const o = normName(e.place || ""); if (o) orteA[o] = e.place; });
+    const orteBeide = [];
+    const schon = {};
+    seine.forEach((e) => {
+      const o = normName(e.place || "");
+      if (o && orteA[o] && !schon[o]) { schon[o] = true; orteBeide.push(orteA[o]); }
+    });
+
+    return { meine: meine, seine: seine, treffer: knapp, orteBeide: orteBeide };
+  }
+
   /* Nur Etappen mit Koordinaten kommen auf die Karte. */
   kartenStationen(e) {
     return ((e || {}).etappen || [])
@@ -4782,7 +5009,8 @@ class Component extends DCLogic {
             hatOrt: !!String(x.ort || "").trim(),
             hatTag: !!String(x.tag || "").trim(),
             hatNote: !!String(x.note || "").trim(),
-            letzte: k === liste.length - 1
+            letzte: k === liste.length - 1,
+            weiter: k < liste.length - 1
           }));
         })(),
         hatRoute: (e.etappen || []).length > 0,
@@ -5797,6 +6025,96 @@ class Component extends DCLogic {
             hint: "Legt ein Kontakt ein Ereignis mit Datum in der Zukunft an, bekommst du eine Nachricht." }
         ];
       })(this),
+      vgl: (function (self) {
+        const fids = me ? self.friendIds() : [];
+        const wer = st.vglMit && fids.indexOf(st.vglMit) >= 0 ? st.vglMit : null;
+        const uById = {};
+        st.users.forEach((u) => { uById[u.id] = u; });
+        const v = wer ? self.vergleich(wer) : null;
+
+        /* Jahresweise gegenüberstellen — links ich, rechts die andere Person. */
+        const jahre = [];
+        if (v) {
+          const alleJ = {};
+          v.meine.forEach((e) => { alleJ[String(e.date || "").slice(0, 4)] = true; });
+          v.seine.forEach((e) => { alleJ[String(e.date || "").slice(0, 4)] = true; });
+          const trefferIds = {};
+          v.treffer.forEach((x) => { trefferIds[x.a.id] = true; trefferIds[x.b.id] = true; });
+          Object.keys(alleJ).filter((j) => j && j !== "unde").sort().reverse().forEach((j) => {
+            const zeile = (liste) => liste.filter((e) => String(e.date || "").slice(0, 4) === j)
+              .map((e) => ({
+                key: e.id, name: e.name || "ohne Titel",
+                datum: fmtDate(e.date), ort: e.place || "",
+                hatOrt: !!String(e.place || "").trim(),
+                treffer: !!trefferIds[e.id],
+                style: {
+                  display: "grid", gap: "1px", padding: "6px 9px", borderRadius: "var(--radius-md)",
+                  background: trefferIds[e.id] ? "color-mix(in srgb, var(--color-accent) 12%, transparent)" : "var(--color-surface)",
+                  boxShadow: trefferIds[e.id] ? "inset 0 0 0 1px var(--color-accent-300)" : "none"
+                }
+              }));
+            const a = zeile(v.meine), b = zeile(v.seine);
+            jahre.push({
+              key: j, jahr: j,
+              meine: a, seine: b,
+              keineA: a.length === 0, keineB: b.length === 0
+            });
+          });
+        }
+
+        return {
+          open: !!st.vgl && !!me,
+          toggle: () => self.setState({ vgl: !st.vgl, konto: false, admin: false, drawer: false }),
+          zu: () => self.setState({ vgl: false }),
+          kontakte: fids.map((id) => ({
+            key: id, name: (uById[id] || {}).username || "?",
+            on: wer === id,
+            style: {
+              font: "inherit", fontSize: "12px", letterSpacing: "0.04em", padding: "5px 12px", cursor: "pointer",
+              whiteSpace: "nowrap", borderRadius: "99px",
+              border: "1px solid " + (wer === id ? "var(--color-accent)" : "var(--color-divider)"),
+              background: wer === id ? "var(--color-accent)" : "transparent",
+              color: wer === id ? "var(--color-bg)" : "var(--color-text)"
+            },
+            pick: () => self.setState({ vglMit: id })
+          })),
+          leer: fids.length === 0,
+          hatKontakte: fids.length > 0,
+          gewaehlt: !!wer,
+          name: wer ? ((uById[wer] || {}).username || "?") : "",
+          /* Kennzahlen */
+          zahlen: v ? [
+            { key: "z1", wert: String(v.treffer.length), label: v.treffer.length === 1 ? "gleicher Tag" : "gleiche Tage" },
+            { key: "z2", wert: String(v.orteBeide.length), label: v.orteBeide.length === 1 ? "gemeinsamer Ort" : "gemeinsame Orte" },
+            { key: "z3", wert: String(v.seine.length), label: "davon sichtbar" }
+          ] : [],
+          /* Begegnungen im Klartext */
+          treffer: v ? v.treffer.slice(0, 40).map((x, k) => ({
+            key: "t" + k,
+            tag: fmtDate(x.tag),
+            meins: x.a.name || "ohne Titel",
+            seins: x.b.name || "ohne Titel",
+            urteil: x.gleicherOrt
+              ? "am selben Ort: " + x.a.place
+              : x.km !== null
+                ? (x.km < 25 ? "nur " + x.km + " km auseinander" : x.km + " km auseinander")
+                : "am selben Tag, Ort unbekannt",
+            nah: x.gleicherOrt || (x.km !== null && x.km < 25),
+            urteilStyle: {
+              fontSize: "11.5px", letterSpacing: "0.04em",
+              color: (x.gleicherOrt || (x.km !== null && x.km < 25)) ? "var(--color-accent-700)" : "var(--color-neutral-700)"
+            }
+          })) : [],
+          hatTreffer: !!v && v.treffer.length > 0,
+          orte: v ? v.orteBeide.slice(0, 24).map((o, k) => ({ key: "o" + k, label: o })) : [],
+          hatOrte: !!v && v.orteBeide.length > 0,
+          jahre: jahre,
+          hatJahre: jahre.length > 0,
+          hinweis: v && !v.treffer.length && !v.orteBeide.length
+            ? "Keine Überschneidung — ihr wart nie am selben Tag und nie am selben Ort unterwegs."
+            : ""
+        };
+      })(this),
       konto: {
         open: !!st.konto && !!me,
         name: me ? me.username : "",
@@ -5930,7 +6248,7 @@ class Component extends DCLogic {
         toggleReset: () => this.setState({ authMode: st.authMode === "reset" ? "login" : "reset", authError: "", authNotice: "" }),
         resetLink: st.authMode === "reset" ? "Zurück zur Anmeldung" : "Passwort vergessen?",
         title: st.authMode === "newpw" ? "Neues Passwort wählen" : st.authMode === "reset" ? (st.cloud ? "Passwort zurücksetzen" : "Neues Passwort setzen") : st.authMode === "register" ? (st.users.length ? "Konto anlegen" : "Chronik einrichten") : "Willkommen zurück",
-        idLabel: st.authMode === "login" ? "E-Mail" : "E-Mail",
+        idLabel: st.authMode === "login" ? "e-Mail" : "E-Mail",
         pwLabel: "Passwort",
         pwAuto: st.authMode === "login" ? "current-password" : "new-password",
         username: st.authForm.username, email: st.authForm.email, pw: st.authForm.pw, pw2: st.authForm.pw2, 
