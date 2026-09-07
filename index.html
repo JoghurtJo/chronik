@@ -35,6 +35,8 @@
   @keyframes deco-twinkle { 0%, 100% { opacity: 0.22; } 50% { opacity: 1; } }
   @keyframes deco-sway { 0%, 100% { rotate: -2.5deg; } 50% { rotate: 2.5deg; } }
   @keyframes tl-spin { to { transform: rotate(360deg); } }
+  @keyframes tour-glow { 0% { transform: scale(1); opacity: 0.95; } 70% { transform: scale(2.6); opacity: 0; } 100% { transform: scale(2.6); opacity: 0; } }
+  @keyframes tour-kern { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.22); } }
   @keyframes tl-strip { from { background-position: 0 0; } to { background-position: 34px 0; } }
   @keyframes tl-flap { 0% { transform: rotateX(-90deg); opacity: 0; } 58% { transform: rotateX(9deg); opacity: 1; } 78% { transform: rotateX(-4deg); } 100% { transform: rotateX(0deg); opacity: 1; } }
   @keyframes deco-pop { from { opacity: 0; scale: 0.4; } to { opacity: 1; scale: 1; } }
@@ -111,7 +113,7 @@
         <span>Dein Leben</span>
         <span>Eure Geschichten</span>
         <span>Erleben wie damals</span>
-        <span>Mit mehr #Organgen</span>
+        <span>Mit mehr #Organgen?</span>
       </div>
     </div>
 
@@ -235,14 +237,15 @@
       </div>
       <div style="display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; padding-bottom: 4px;">
         <sc-if value="{{ canCreate }}" hint-placeholder-val="{{ true }}">
-          <button class="btn btn-primary" style="white-space: nowrap;" onClick="{{ guardedNew }}">＋ Ereignis</button>
+          <button class="btn btn-primary" data-tour="neu" style="white-space: nowrap;" onClick="{{ guardedNew }}">＋ Ereignis</button>
         </sc-if>
-        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ openShowAll }}">▦ Fotoshow</button>
-        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ toggleDrawer }}">Design · {{ themeName }}</button>
-        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ toggleAdmin }}">{{ contactsLabel }}</button>
-        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ vgl.toggle }}">Vergleichen</button>
-        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ konto.toggle }}">Mein Konto</button>
-        <div class="seg" role="group" style="margin: 0;">
+        <button class="btn btn-secondary" data-tour="show" style="white-space: nowrap;" onClick="{{ openShowAll }}">▦ Fotoshow</button>
+        <button class="btn btn-secondary" data-tour="design" style="white-space: nowrap;" onClick="{{ toggleDrawer }}">Design · {{ themeName }}</button>
+        <button class="btn btn-secondary" data-tour="kontakte" style="white-space: nowrap;" onClick="{{ toggleAdmin }}">{{ contactsLabel }}</button>
+        <button class="btn btn-secondary" data-tour="vergleich" style="white-space: nowrap;" onClick="{{ vgl.toggle }}">Vergleichen</button>
+        <button class="btn btn-secondary" data-tour="konto" style="white-space: nowrap;" onClick="{{ konto.toggle }}">Mein Konto</button>
+        <button class="btn btn-secondary" data-tour="hilfe" style="white-space: nowrap;" onClick="{{ tour.start }}">? Hilfe</button>
+        <div class="seg" role="group" data-tour="strahl" style="margin: 0;">
           <sc-for list="{{ strahl.arten }}" as="a" hint-placeholder-count="2">
             <label class="seg-opt"><input type="radio" name="strahlwahl" checked="{{ a.on }}" onChange="{{ a.pick }}" style="position: absolute; opacity: 0; pointer-events: none;">{{ a.label }}</label>
           </sc-for>
@@ -268,7 +271,7 @@
 
   <div data-screen-label="Menüband" style="{{ lay.ribbon }}">
     <div style="display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap;">
-      <div style="display: flex; align-items: stretch; gap: var(--space-4);">
+      <div data-tour="band" style="display: flex; align-items: stretch; gap: var(--space-4);">
         <sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="3">
           <button onClick="{{ tb.click }}" style="{{ tb.style }}">{{ tb.label }}</button>
         </sc-for>
@@ -662,7 +665,7 @@
                                   </sc-if>
                                   <sc-if value="{{ im.empty }}" hint-placeholder-val="{{ true }}">
                                     <div style="width: 100%; aspect-ratio: var(--t-img-ratio, 4 / 3); border-radius: var(--t-img-radius, 0); display: grid; place-items: center; text-align: center; padding: 8px; background-color: color-mix(in srgb, var(--t-ink, #201e1d) 6%, transparent); background-image: repeating-linear-gradient(45deg, color-mix(in srgb, var(--t-ink, #201e1d) 9%, transparent) 0 6px, transparent 6px 12px);">
-                                      <span style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px; letter-spacing: 0.06em; color: color-mix(in srgb, var(--t-ink, #201e1d) 62%, var(--t-card, #eae9e9));">{{ im.caption }}</span>
+                                      <span style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px; letter-spacing: 0.06em; color: color-mix(in srgb, var(--t-ink, #201e1d) 62%, var(--t-card, #eae9e9));">{{ im.leerText }}</span>
                                     </div>
                                   </sc-if>
                                 </figure>
@@ -1017,7 +1020,7 @@
         <sc-if value="{{ cloudAn }}" hint-placeholder-val="{{ false }}">
           <div style="height: 1px; background: var(--color-divider); margin: var(--space-6) 0 var(--space-4);"></div>
           <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: var(--space-2);">Letzte Änderungen zurücknehmen</div>
-          <p style="font-size: 12px; line-height: 1.5; margin: 0 0 var(--space-2); color: var(--color-neutral-700);">Hier stehen alle Änderungen an Ereignissen, die du angelegt hast — auch die von anderen. Ein Klick stellt den Stand davor wieder her.</p>
+          <p style="font-size: 12px; line-height: 1.5; margin: 0 0 var(--space-2); color: var(--color-neutral-700);">Hier stehen Änderungen an Ereignissen, die du angelegt hast — auch die von anderen — und deine eigenen Änderungen an fremden Ereignissen. Ein Klick stellt den Stand davor wieder her.</p>
           <div style="display: grid; gap: 5px;">
             <sc-for list="{{ hist }}" as="h" hint-placeholder-count="3">
               <div style="display: flex; align-items: baseline; gap: 8px; font-size: 12.5px;">
@@ -1033,6 +1036,12 @@
                 </sc-if>
               </div>
             </sc-for>
+            <sc-if value="{{ histMehr }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ histAlleZeigen }}" style="justify-self: start; font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 2px 0; cursor: pointer; color: var(--color-accent-700); text-decoration: underline; white-space: nowrap;">{{ histMehrLabel }}</button>
+            </sc-if>
+            <sc-if value="{{ histWeniger }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ histWenigerZeigen }}" style="justify-self: start; font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 2px 0; cursor: pointer; color: var(--color-accent-700); text-decoration: underline; white-space: nowrap;">weniger anzeigen</button>
+            </sc-if>
             <sc-if value="{{ histEmpty }}" hint-placeholder-val="{{ true }}">
               <div style="font-size: 12.5px; color: var(--color-neutral-600);">{{ histHint }}</div>
             </sc-if>
@@ -1590,7 +1599,9 @@
     <div data-noprint="" onClick="{{ zoom.close }}" style="position: fixed; inset: 0; z-index: 130; display: grid; grid-template-rows: 1fr auto; gap: var(--space-3); padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 88%, transparent); cursor: zoom-out;">
       <img src="{{ zoom.src }}" alt="{{ zoom.caption }}" style="min-height: 0; width: 100%; height: 100%; object-fit: contain;">
       <div style="display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-4); color: var(--color-bg);">
-        <span style="font-size: 14px; line-height: 1.4;">{{ zoom.caption }}</span>
+        <sc-if value="{{ zoom.caption }}" hint-placeholder-val="{{ false }}">
+          <span style="font-size: 14px; line-height: 1.4;">{{ zoom.caption }}</span>
+        </sc-if>
         <span style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.7; white-space: nowrap;">{{ zoom.event }} · Klick schließt</span>
       </div>
     </div>
@@ -1631,7 +1642,9 @@
       </div>
       <div style="padding: var(--space-2) var(--space-6) var(--space-4);">
         <div style="display: flex; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; padding-bottom: var(--space-2);">
-          <span style="font-size: 12.5px; font-style: italic;">{{ show.caption }}</span>
+          <sc-if value="{{ show.caption }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size: 12.5px; font-style: italic;">{{ show.caption }}</span>
+          </sc-if>
           <span style="flex: 1;"></span>
           <span style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ show.meta }}</span>
         </div>
@@ -1677,6 +1690,50 @@
 </sc-if>
 
 
+
+<sc-if value="{{ tour.frage }}" hint-placeholder-val="{{ false }}">
+  <div data-noprint="" data-screen-label="Leitfaden anbieten" style="position: fixed; inset: 0; z-index: 250; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 46%, transparent);">
+    <div style="width: min(430px, 100%); padding: var(--space-6); background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); display: grid; gap: var(--space-3);">
+      <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">Erster Besuch</div>
+      <h2 style="margin: 0; font-size: 30px; line-height: 1.05;">Kurz herumführen?</h2>
+      <p style="margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--color-neutral-700);">Zehn kleine Schritte zeigen dir, wo hier was steckt. Dauert zwei Minuten, und du kannst jederzeit abbrechen.</p>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: var(--space-2);">
+        <button class="btn btn-primary" style="white-space: nowrap;" onClick="{{ tour.frageJa }}">Ja, zeig mir das</button>
+        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ tour.frageNein }}">Später — ich schau selbst</button>
+      </div>
+      <div style="font-size: 11.5px; color: var(--color-neutral-600);">Du findest den Leitfaden jederzeit oben unter „? Hilfe“.</div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ tour.offen }}" hint-placeholder-val="{{ false }}">
+  <div data-noprint="" data-screen-label="Leitfaden">
+    <div style="{{ tour.schleier }}"></div>
+    <div style="{{ tour.rahmen }}"></div>
+    <div style="{{ tour.punkt }}">
+      <span style="{{ tour.ring }}"></span>
+      <span style="{{ tour.kern }}"></span>
+    </div>
+    <div style="{{ tour.karte }}">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3);">
+        <div style="font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-accent-700);">Schritt {{ tour.schritt }}</div>
+        <button onClick="{{ tour.ende }}" style="font: inherit; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-neutral-700); text-decoration: underline; white-space: nowrap;">Abbrechen</button>
+      </div>
+      <div style="font-family: var(--font-heading); font-size: 21px; line-height: 1.15;">{{ tour.titel }}</div>
+      <p style="margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--color-neutral-700); text-wrap: pretty;">{{ tour.text }}</p>
+      <div style="display: flex; gap: 8px; align-items: center; margin-top: var(--space-2);">
+        <sc-if value="{{ tour.ersteSeite }}" hint-placeholder-val="{{ true }}">
+          <span style="flex: 1;"></span>
+        </sc-if>
+        <sc-if value="{{ tour.hatZiel }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ tour.zurueck }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-accent-700); text-decoration: underline; white-space: nowrap;">Zurück</button>
+          <span style="flex: 1;"></span>
+        </sc-if>
+        <button class="btn btn-primary" style="white-space: nowrap;" onClick="{{ tour.weiter }}">{{ tour.weiterLabel }}</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
 
 <sc-if value="{{ arbeitet }}" hint-placeholder-val="{{ false }}">
   <div data-noprint="" style="position: fixed; left: 0; right: 0; top: 0; z-index: 200; pointer-events: none;">
@@ -1732,12 +1789,19 @@
       <sc-if value="{{ vgl.gewaehlt }}" hint-placeholder-val="{{ false }}">
         <div style="display: grid; gap: var(--space-3); margin-bottom: var(--space-6);">
           <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-            <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">Filter</div>
+            <button onClick="{{ vgl.filterAuf }}" style="display: flex; align-items: center; gap: 7px; font: inherit; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-neutral-700);">
+              <span style="{{ vgl.filterZeichen }}">▸</span>
+              <span>Filter</span>
+            </button>
+            <sc-if value="{{ vgl.gefiltert }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size: 11px; letter-spacing: 0.06em; color: var(--color-accent-700); white-space: nowrap;">{{ vgl.filterZahl }}</span>
+            </sc-if>
             <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
             <sc-if value="{{ vgl.gefiltert }}" hint-placeholder-val="{{ false }}">
               <button onClick="{{ vgl.filterWeg }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-accent-2-700); text-decoration: underline; white-space: nowrap;">Filter zurücksetzen</button>
             </sc-if>
           </div>
+          <sc-if value="{{ vgl.filterOffen }}" hint-placeholder-val="{{ false }}">
           <input class="input" type="search" value="{{ vgl.suchtext }}" onChange="{{ vgl.onSuchtext }}" placeholder="In beiden Chroniken suchen — Name, Ort, Notiz, Person">
           <sc-for list="{{ vgl.filter }}" as="fb" hint-placeholder-count="3">
             <div style="display: grid; gap: 5px;">
@@ -1755,6 +1819,7 @@
               </sc-if>
             </div>
           </sc-for>
+          </sc-if>
         </div>
 
         <div style="display: flex; gap: var(--space-6); flex-wrap: wrap; margin-bottom: var(--space-6);">
@@ -1811,7 +1876,15 @@
         </sc-if>
 
         <sc-if value="{{ vgl.hatJahre }}" hint-placeholder-val="{{ false }}">
-          <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: var(--space-2);">Jahr für Jahr · links du, rechts {{ vgl.name }}</div>
+          <div style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; margin-bottom: var(--space-3);">
+            <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">Jahr für Jahr · links du, rechts {{ vgl.name }}</div>
+            <span style="flex: 1;"></span>
+            <div class="seg" role="group" style="margin: 0;">
+              <sc-for list="{{ vgl.ansichten }}" as="a" hint-placeholder-count="2">
+                <label class="seg-opt"><input type="radio" name="vglansicht" checked="{{ a.on }}" onChange="{{ a.pick }}" style="position: absolute; opacity: 0; pointer-events: none;">{{ a.label }}</label>
+              </sc-for>
+            </div>
+          </div>
           <div style="display: grid; gap: var(--space-4);">
             <sc-for list="{{ vgl.jahre }}" as="j" hint-placeholder-count="1">
               <div style="display: grid; gap: 5px;">
@@ -1819,6 +1892,7 @@
                   <span style="font-family: var(--font-heading); font-size: 19px; line-height: 1;">{{ j.jahr }}</span>
                   <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
                 </div>
+                <sc-if value="{{ vgl.kompakt }}" hint-placeholder-val="{{ true }}">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); align-items: start;">
                   <div style="display: grid; gap: 4px;">
                     <sc-for list="{{ j.meine }}" as="e" hint-placeholder-count="1">
@@ -1849,6 +1923,33 @@
                     </sc-if>
                   </div>
                 </div>
+                </sc-if>
+
+                <sc-if value="{{ vgl.neben }}" hint-placeholder-val="{{ false }}">
+                  <div style="display: grid; gap: 3px;">
+                    <sc-for list="{{ j.paare }}" as="p" hint-placeholder-count="2">
+                      <div style="display: grid; gap: 2px;">
+                        <sc-if value="{{ p.zeigeTag }}" hint-placeholder-val="{{ true }}">
+                          <div style="font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-600); padding: 3px 6px 0;">{{ p.tag }}</div>
+                        </sc-if>
+                        <div style="{{ p.zeilenStil }}">
+                          <div style="{{ p.links.style }}">
+                            <div style="font-size: 13px; line-height: 1.3;">{{ p.links.name }}</div>
+                            <sc-if value="{{ p.links.hatOrt }}" hint-placeholder-val="{{ false }}">
+                              <div style="font-size: 11px; color: var(--color-neutral-700);">{{ p.links.ort }}</div>
+                            </sc-if>
+                          </div>
+                          <div style="{{ p.rechts.style }}">
+                            <div style="font-size: 13px; line-height: 1.3;">{{ p.rechts.name }}</div>
+                            <sc-if value="{{ p.rechts.hatOrt }}" hint-placeholder-val="{{ false }}">
+                              <div style="font-size: 11px; color: var(--color-neutral-700);">{{ p.rechts.ort }}</div>
+                            </sc-if>
+                          </div>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
               </div>
             </sc-for>
           </div>
@@ -2009,7 +2110,7 @@
                   </sc-if>
                   <sc-if value="{{ im.empty }}" hint-placeholder-val="{{ true }}">
                     <div style="width: 100%; aspect-ratio: 4 / 3; background-color: #f1efec; background-image: repeating-linear-gradient(45deg, #e0dcd7 0 6px, transparent 6px 12px); display: grid; place-items: center; text-align: center; padding: 6px;">
-                      <span style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 9px; color: #6a6663;">{{ im.caption }}</span>
+                      <span style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 9px; color: #6a6663;">ohne Bild</span>
                     </div>
                   </sc-if>
                 </div>
@@ -2583,6 +2684,12 @@ class Component extends DCLogic {
     vglFilter: { q: "", ort: "", kat: "", jahr: "" },
     inhaltSuche: { wer: "", thema: "", ort: "" },
     vglSuche: { wer: "", ort: "", kat: "", jahr: "" },
+    vglFilterAuf: false,
+    tour: null,
+    tourFrage: false,
+    tourBox: null,
+    vglNeben: false,
+    histAlle: false,
     etKarte: false,
     strahl: "mein",
     jahrOffen: {},
@@ -2691,6 +2798,7 @@ class Component extends DCLogic {
     window.addEventListener("keydown", this.onKey);
     window.addEventListener("resize", this.onResize);
     this.onResize();
+    window.setTimeout(() => this.tourFragen(), 1400);
   }
 
   /* Handy, Tablet oder Schreibtisch — die Breite entscheidet über das Layout. */
@@ -2701,11 +2809,17 @@ class Component extends DCLogic {
       this.resizeWait = false;
       const w = window.innerWidth;
       if (Math.abs(w - this.state.vw) > 8) this.setState({ vw: w });
+      /* Der Punkt muss mitwandern, wenn die Knöpfe umbrechen. */
+      if (this.state.tour != null) this.tourMessen();
     });
   };
 
   componentDidUpdate(vp, vs) {
     this.applyTheme();
+    /* Erstes Anmelden: einmal fragen, ob der Leitfaden laufen soll. */
+    this.tourFragen();
+    /* Punkt und Text dürfen nicht auseinanderlaufen — jeden Takt abgleichen. */
+    if (this.state.tour != null) this.tourMessen();
     /* Karten versorgen: im Editor mit Setz-Modus, auf der Karte nur zum Ansehen. */
     if (this.state.draft) this.kartenSenden("editor", this.state.draft, !!this.state.etZiel);
     const auf = this.state.events.filter((x) => x.id === this.state.openId)[0];
@@ -3388,9 +3502,11 @@ class Component extends DCLogic {
       authForm: { username: "", email: "", pw: "", pw2: "" },
       authMode: "login", authError: "", authNotice: "", pwShow: false,
       botOk: false, quiz: this.newQuiz(), quizAnswer: "", honey: "", formAt: Date.now(),
+      tour: null, tourFrage: false, tourBox: null,
       fq: "", fFound: [], fMsg: ""
     });
     this.botOkMem = false;
+    this.tourGefragt = false;
   };
 
   /* ---------- Wer darf was? ---------- */
@@ -3434,6 +3550,91 @@ class Component extends DCLogic {
     if (!CC || !CC.notify) return;
     CC.notify(empfaengerId, art, betreff, text).catch(() => {});
   }
+
+  /* ---------- Leitfaden ---------- */
+
+  tourSchritte() {
+    return [
+      { ziel: "", titel: "Willkommen in deiner Chronik",
+        text: "In zehn kurzen Schritten zeige ich dir, was hier geht. Ein leuchtender Punkt führt dich zu jedem Knopf. Du kannst jederzeit abbrechen — und den Leitfaden später über ‚Hilfe‘ neu starten." },
+      { ziel: "neu", titel: "Ein Ereignis anlegen",
+        text: "Alles beginnt hier: Name, Datum, Ort. Dazu Notizen, Personen, Bilder, Abstimmungen — und Etappen, wenn es eine Reise war. Wer es sehen darf, entscheidest du im selben Fenster." },
+      { ziel: "strahl", titel: "Zwei Zeitstrahlen",
+        text: "Links deine eigene Chronik, rechts der öffentliche Strahl mit allem, was andere für alle freigegeben haben. In ‚Mein Konto‘ legst du fest, was davon auch bei dir erscheint." },
+      { ziel: "band", titel: "Ansicht, Filter, Daten",
+        text: "Hinter diesen drei Reitern steckt die Feinarbeit: Zoom und Abspielen, Suche nach Ort, Person oder Zeitraum, Sticker zum Aufkleben — und das Sichern und Laden deiner Daten." },
+      { ziel: "show", titel: "Fotoshow",
+        text: "Zeigt alle Bilder deiner gefilterten Auswahl groß, mit Übergängen und wahlweise mit Musik. Gut für einen Abend zu zweit oder für die Leinwand beim Fest." },
+      { ziel: "design", titel: "Über dreißig Gesichter",
+        text: "Von Zeitungssatz über Emailschild bis zur Flughafen-Klapptafel. Jedes Design lässt sich weiter verstellen — Farben, Schrift, Marker, Dichte. Deine Wahl gilt nur für dich." },
+      { ziel: "kontakte", titel: "Kontakte",
+        text: "Suche jemanden nach Name oder E-Mail und schick eine Anfrage. Erst wenn sie bestätigt ist, könnt ihr einander Ereignisse freigeben. Hier legst du auch Personengruppen an." },
+      { ziel: "vergleich", titel: "Vergleichen",
+        text: "Stellt deine Chronik der eines Kontakts gegenüber: gemeinsame Ereignisse, gemeinsame Orte und Tage, an denen ihr beide etwas erlebt habt — jeder für sich." },
+      { ziel: "konto", titel: "Mein Konto",
+        text: "Deine Angaben, was auf deinem Zeitstrahl erscheinen soll, wann du eine Mail bekommst — und, wenn du willst, das endgültige Löschen deines Kontos." },
+      { ziel: "hilfe", titel: "Das war es",
+        text: "Über diesen Knopf kommst du jederzeit hierher zurück. Viel Freude beim Sammeln — und trau dich, Dinge auszuprobieren: rückgängig machen kannst du fast alles." }
+    ];
+  }
+
+  tourStart = () => {
+    this.setState({ tour: 0, tourFrage: false, drawer: false, admin: false, konto: false, vgl: false }, () => this.tourMessen());
+    this.tourGesehen();
+  };
+
+  tourEnde = () => {
+    this.setState({ tour: null, tourFrage: false, tourBox: null });
+    this.tourGesehen();
+  };
+
+  tourWeiter = (richtung) => {
+    const n = (this.state.tour == null ? 0 : this.state.tour) + richtung;
+    if (n < 0) return;
+    if (n >= this.tourSchritte().length) return this.tourEnde();
+    this.setState({ tour: n }, () => this.tourMessen());
+  };
+
+  tourGesehen() {
+    try { window.localStorage.setItem("chronik.tour.v1", "1"); } catch (e) { /* egal */ }
+  }
+
+  tourSchonGesehen() {
+    try { return window.localStorage.getItem("chronik.tour.v1") === "1"; } catch (e) { return true; }
+  }
+
+  /* Wo sitzt das Ziel gerade? Wird bei jedem Schritt und bei Größen-
+     änderungen neu gemessen — feste Werte wären nach dem Umbrechen falsch. */
+  tourFragen() {
+    if (this.tourGefragt) return;
+    if (!this.me() || this.state.booting) return;
+    if (this.tourSchonGesehen()) { this.tourGefragt = true; return; }
+    if (this.state.tourFrage || this.state.tour != null) return;
+    this.tourGefragt = true;
+    this.setState({ tourFrage: true });
+  }
+
+  tourZielBox() {
+    if (this.state.tour == null) return null;
+    const sch = this.tourSchritte()[this.state.tour];
+    if (!sch || !sch.ziel) return null;
+    const el = document.querySelector('[data-tour="' + sch.ziel + '"]');
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    if (!r.width && !r.height) return null;
+    return { ziel: sch.ziel, x: r.left + r.width / 2, y: r.top + r.height / 2, t: r.top, b: r.bottom, l: r.left, w: r.width, h: r.height };
+  }
+
+  tourMessen = () => {
+    if (this.state.tour == null) return;
+    const box = this.tourZielBox();
+    const alt = this.state.tourBox;
+    if (!box && !alt) return;
+    if (box && alt && alt.ziel === box.ziel
+      && Math.abs(alt.x - box.x) < 1 && Math.abs(alt.y - box.y) < 1
+      && Math.abs(alt.w - box.w) < 1 && Math.abs(alt.h - box.h) < 1) return;
+    this.setState({ tourBox: box });
+  };
 
   /* ---------- Eigenes Konto ---------- */
 
@@ -3795,7 +3996,7 @@ class Component extends DCLogic {
     const out = [];
     evs.forEach((e) => {
       (e.images || []).forEach((im, j) => {
-        out.push({ key: e.id + ":" + j, src: im.src || "", caption: im.caption || "ohne Bildunterschrift", event: e.name, date: fmtDate(e.date), n: (im.comments || []).length });
+        out.push({ key: e.id + ":" + j, src: im.src || "", caption: im.caption || "", event: e.name, date: fmtDate(e.date), n: (im.comments || []).length });
       });
     });
     return out;
@@ -4239,7 +4440,7 @@ class Component extends DCLogic {
       let out = blob;
       try { out = new File([blob], name + ".jpg", { type: "image/jpeg" }); }
       catch (e) { out = blob; out.name = name + ".jpg"; }
-      return { file: out, dataUrl: cv.toDataURL("image/jpeg", quality), caption: name };
+      return { file: out, dataUrl: cv.toDataURL("image/jpeg", quality) };
     } finally {
       URL.revokeObjectURL(url);
     }
@@ -4284,10 +4485,11 @@ class Component extends DCLogic {
           /* key = Cloudflare R2, path = Supabase-Speicher — beides mitnehmen,
              sonst findet die Chronik das Bild nach dem Neuladen nicht wieder. */
           const r = await window.ChronikCloud.uploadImage(prep ? prep.file : raw);
-          rows.push({ src: r.src || "", key: r.key || "", path: r.path || "", caption: prep ? prep.caption : name, comments: [] });
+          /* Kein Dateiname als Bildunterschrift — die trägt nur ein, wer will. */
+          rows.push({ src: r.src || "", key: r.key || "", path: r.path || "", caption: "", comments: [] });
         } else {
           const dataUrl = prep ? prep.dataUrl : await this.readAsDataUrl(raw);
-          rows.push({ src: dataUrl, caption: name, comments: [] });
+          rows.push({ src: dataUrl, caption: "", comments: [] });
         }
       } catch (e) {
         failed++;
@@ -4952,7 +5154,7 @@ class Component extends DCLogic {
 
     const blob = await new Promise((res) => b.toBlob(res, "image/jpeg", 0.88));
     if (!blob) throw new Error("D-15");
-    return new File([blob], (r.caption || "bild") + ".jpg", { type: "image/jpeg" });
+    return new File([blob], "bild.jpg", { type: "image/jpeg" });
   }
 
   speichereBild = async () => {
@@ -5233,7 +5435,7 @@ class Component extends DCLogic {
           wrap: kopf
             ? { display: "grid", gap: "6px", gridColumn: "1 / -1" }
             : { display: "grid", gap: "6px" },
-          key: "m" + j, src: r.src || "", empty: !r.src, caption: r.caption || "bild",
+          key: "m" + j, src: r.src || "", empty: !r.src, caption: r.caption || "", leerText: r.caption || "ohne Bild",
           comments: (function (self) {
             const alleC = (r.comments || []).map((cm, k) => Object.assign({}, cm, { _k: k }));
             const oben = alleC.filter((cm) => !cm.parent);
@@ -6098,7 +6300,7 @@ class Component extends DCLogic {
         name: e.name, place: e.place || "", note: e.note || "", big: big,
         infos: big ? (e.infos || []).map((r, j) => ({ key: "pi" + j, label: r.label, value: r.value })) : [],
         peopleLine: big ? (e.people || []).map((p) => p.name + (p.role ? " (" + p.role + ")" : "")).join(", ") : "",
-        images: big ? (e.images || []).slice(0, 2).map((r, j) => ({ key: "pm" + j, src: r.src || "", empty: !r.src, caption: r.caption || "bild" })) : []
+        images: big ? (e.images || []).slice(0, 2).map((r, j) => ({ key: "pm" + j, src: r.src || "", empty: !r.src, caption: r.caption || "" })) : []
       };
     });
 
@@ -6214,6 +6416,73 @@ class Component extends DCLogic {
       guardedNew: this.guardedNew,
       cloudAdmin: !!st.cloud && !!me && normName(me.username) === WARTUNG,
       cloudAn: !!st.cloud && !!me,
+      tour: (function (self) {
+        const i = st.tour;
+        const alle = self.tourSchritte();
+        const sch = i == null ? null : alle[i];
+        const box = st.tourBox;
+        const vw = window.innerWidth || 1200;
+        const vh = window.innerHeight || 800;
+        /* Die Karte weicht dem Ziel aus: unterhalb, wenn oben kein Platz ist. */
+        const unten = box ? box.b + 190 < vh || box.t < 200 : false;
+        return {
+          start: self.tourStart,
+          offen: i != null,
+          frage: !!st.tourFrage && i == null,
+          frageJa: self.tourStart,
+          frageNein: self.tourEnde,
+          titel: sch ? sch.titel : "",
+          text: sch ? sch.text : "",
+          schritt: i == null ? "" : (i + 1) + " von " + alle.length,
+          ersteSeite: i === 0,
+          weiter: () => self.tourWeiter(1),
+          zurueck: () => self.tourWeiter(-1),
+          ende: self.tourEnde,
+          weiterLabel: i != null && i === alle.length - 1 ? "Fertig" : "Weiter",
+          hatZiel: !!box,
+          mittig: i != null && !box,
+          punkt: box ? {
+            position: "fixed", left: box.x + "px", top: box.y + "px", width: "18px", height: "18px",
+            marginLeft: "-9px", marginTop: "-9px", zIndex: 246, pointerEvents: "none"
+          } : { display: "none" },
+          ring: {
+            position: "absolute", inset: 0, borderRadius: "50%",
+            background: "var(--color-accent)", animation: "tour-glow 1700ms ease-out infinite"
+          },
+          kern: {
+            position: "absolute", inset: "4px", borderRadius: "50%",
+            background: "var(--color-accent)", boxShadow: "0 0 0 3px color-mix(in srgb, var(--color-bg) 80%, transparent)",
+            animation: "tour-kern 1700ms ease-in-out infinite"
+          },
+          /* Rahmen um das Ziel, damit klar ist, was gemeint ist. */
+          rahmen: box ? {
+            position: "fixed", left: (box.l - 6) + "px", top: (box.t - 6) + "px",
+            width: (box.w + 12) + "px", height: (box.h + 12) + "px",
+            border: "2px solid var(--color-accent)", borderRadius: "var(--radius-md)",
+            zIndex: 245, pointerEvents: "none",
+            boxShadow: "0 0 0 9999px color-mix(in srgb, var(--color-text) 46%, transparent)"
+          } : { display: "none" },
+          karte: box ? {
+            position: "fixed", zIndex: 247, width: "min(340px, calc(100vw - 32px))",
+            left: Math.max(16, Math.min(vw - 356, box.x - 170)) + "px",
+            top: unten ? (box.b + 22) + "px" : "auto",
+            bottom: unten ? "auto" : (vh - box.t + 22) + "px",
+            padding: "var(--space-4) var(--space-4) var(--space-4)",
+            background: "var(--color-bg)", borderRadius: "var(--radius-lg)",
+            boxShadow: "var(--shadow-lg)", display: "grid", gap: "var(--space-2)"
+          } : {
+            position: "fixed", zIndex: 247, width: "min(400px, calc(100vw - 32px))",
+            left: "50%", top: "50%", transform: "translate(-50%, -50%)",
+            padding: "var(--space-4) var(--space-6) var(--space-6)",
+            background: "var(--color-bg)", borderRadius: "var(--radius-lg)",
+            boxShadow: "var(--shadow-lg)", display: "grid", gap: "var(--space-2)"
+          },
+          schleier: box ? { display: "none" } : {
+            position: "fixed", inset: 0, zIndex: 245,
+            background: "color-mix(in srgb, var(--color-text) 46%, transparent)"
+          }
+        };
+      })(this),
       strahl: {
         mein: st.strahl !== "oeffentlich",
         offen: st.strahl === "oeffentlich",
@@ -6424,10 +6693,64 @@ class Component extends DCLogic {
                 }
               }));
             const a = zeile(v.meine), b = zeile(v.seine);
+
+            /* Gegenüberstellung: gleiche Tage in einer Zeile. Dazu beide
+               Seiten nach Tag gruppieren und paarweise auffüllen. */
+            const nachTag = (liste) => {
+              const m = {};
+              liste.filter((e) => String(e.date || "").slice(0, 4) === j)
+                .forEach((e) => { const t = String(e.date || ""); (m[t] = m[t] || []).push(e); });
+              return m;
+            };
+            const tagA = nachTag(v.meine), tagB = nachTag(v.seine);
+            const tagSet = {};
+            Object.keys(tagA).concat(Object.keys(tagB)).forEach((t) => { tagSet[t] = true; });
+            const alleTage = Object.keys(tagSet).sort();
+            const kachel = (e, spalte) => e ? {
+              name: e.name || "ohne Titel", datum: fmtDate(e.date), ort: e.place || "",
+              hatOrt: !!String(e.place || "").trim(),
+              style: {
+                gridColumn: String(spalte), display: "grid", gap: "1px", padding: "6px 9px",
+                borderRadius: "var(--radius-md)",
+                background: trefferIds[e.id] ? "color-mix(in srgb, var(--color-accent) 12%, transparent)" : "var(--color-surface)",
+                boxShadow: trefferIds[e.id] ? "inset 0 0 0 1px var(--color-accent-300)" : "none"
+              }
+            } : {
+              name: "", datum: "", ort: "", hatOrt: false,
+              style: {
+                gridColumn: String(spalte), display: "grid", padding: "6px 9px",
+                borderRadius: "var(--radius-md)", minHeight: "1px",
+                background: "color-mix(in srgb, var(--color-text) 3%, transparent)"
+              }
+            };
+            const paare = [];
+            alleTage.forEach((t) => {
+              const la = tagA[t] || [], lb = tagB[t] || [];
+              const n = Math.max(la.length, lb.length);
+              for (let k = 0; k < n; k++) {
+                const ea = la[k], eb = lb[k];
+                paare.push({
+                  key: t + "-" + k,
+                  tag: k === 0 ? fmtDate(t) : "",
+                  zeigeTag: k === 0,
+                  beide: !!(ea && eb),
+                  links: kachel(ea, 1), rechts: kachel(eb, 2),
+                  zeilenStil: {
+                    display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)",
+                    alignItems: "start", padding: (ea && eb) ? "5px 6px" : "5px 6px",
+                    borderRadius: "var(--radius-md)",
+                    background: (ea && eb) ? "color-mix(in srgb, var(--color-accent) 7%, transparent)" : "transparent"
+                  }
+                });
+              }
+            });
+
             jahre.push({
               key: j, jahr: j,
               meine: a, seine: b,
-              keineA: a.length === 0, keineB: b.length === 0
+              keineA: a.length === 0, keineB: b.length === 0,
+              paare: paare,
+              gleicheTage: paare.filter((p) => p.beide).length
             });
           });
         }
@@ -6474,6 +6797,17 @@ class Component extends DCLogic {
           werSuche: fSuche.wer || "",
           onWerSuche: setSuche("wer"),
           werRest: werListe.rest ? "… " + werListe.rest + " weitere — oben suchen" : "",
+          filterOffen: !!st.vglFilterAuf,
+          filterAuf: () => self.setState({ vglFilterAuf: !st.vglFilterAuf }),
+          filterZeichen: {
+            display: "inline-block", transition: "rotate 160ms ease",
+            rotate: st.vglFilterAuf ? "90deg" : "0deg"
+          },
+          filterZahl: (function () {
+            const f = st.vglFilter || {};
+            const n = ["q", "ort", "kat", "jahr"].filter((k) => String(f[k] || "").trim()).length;
+            return n ? plural(n, "Filter aktiv", "Filter aktiv") : "";
+          })(),
           werKeinTreffer: werListe.keinTreffer,
           werNurGewaehlt: werListe.nurGewaehlt,
           /* 3) Filter — Vorschläge aus der ungefilterten Grundmenge beider Seiten */
@@ -6513,7 +6847,7 @@ class Component extends DCLogic {
           /* Kennzahlen */
           zahlen: v ? [
             { key: "z0", wert: String(v.gemeinsam.length), label: v.gemeinsam.length === 1 ? "gemeinsames Ereignis" : "gemeinsame Ereignisse" },
-            { key: "z1", wert: String(v.treffer.length), label: v.treffer.length === 1 ? "gleicher Tag" : "gleiche Tage" },
+            { key: "z1", wert: String(v.treffer.length), label: v.treffer.length === 1 ? "Tag mit je eigenem Ereignis" : "Tage mit je eigenem Ereignis" },
             { key: "z2", wert: String(v.orteBeide.length), label: v.orteBeide.length === 1 ? "gemeinsamer Ort" : "gemeinsame Orte" },
             { key: "z3", wert: String(v.seine.length), label: "davon sichtbar" }
           ] : [],
@@ -6545,6 +6879,12 @@ class Component extends DCLogic {
           hatOrte: !!v && v.orteBeide.length > 0,
           jahre: jahre,
           hatJahre: jahre.length > 0,
+          kompakt: !st.vglNeben,
+          neben: !!st.vglNeben,
+          ansichten: [
+            { key: "k", label: "Untereinander", on: !st.vglNeben, pick: () => self.setState({ vglNeben: false }) },
+            { key: "n", label: "Gleiche Tage nebeneinander", on: !!st.vglNeben, pick: () => self.setState({ vglNeben: true }) }
+          ],
           hinweis: v && !v.treffer.length && !v.orteBeide.length && !v.gemeinsam.length
             ? (self.state.vglFilter && (self.state.vglFilter.q || self.state.vglFilter.ort || self.state.vglFilter.kat || self.state.vglFilter.jahr)
               ? "Mit diesen Filtern keine Überschneidung — probier es mit weniger Filtern."
@@ -6589,7 +6929,12 @@ class Component extends DCLogic {
           { key: "bq5", label: "Datenverkehr im Monat", value: b.egress.label, bar: bar(b.egress.used, b.egress.cap) }
         ];
       })(st.budget),
-      hist: (st.histList || []).map((h) => ({
+      histMehr: (st.histList || []).length > 5 && !st.histAlle,
+      histMehrLabel: "… " + Math.max(0, (st.histList || []).length - 5) + " weitere anzeigen",
+      histWeniger: (st.histList || []).length > 5 && !!st.histAlle,
+      histAlleZeigen: () => this.setState({ histAlle: true }),
+      histWenigerZeigen: () => this.setState({ histAlle: false }),
+      hist: (st.histList || []).slice(0, st.histAlle ? 999 : 5).map((h) => ({
         key: "h" + h.id,
         dot: { width: "7px", height: "7px", borderRadius: "50%", display: "block", background: h.action === "delete" ? "var(--color-accent-2)" : "var(--color-accent)" },
         label: (h.action === "delete" ? "Gelöscht: " : "Geändert: ") + h.name + " · " + (((st.users.filter((u) => u.id === h.actor)[0]) || {}).username || "unbekannt"),
@@ -6685,7 +7030,7 @@ class Component extends DCLogic {
         toggleReset: () => this.setState({ authMode: st.authMode === "reset" ? "login" : "reset", authError: "", authNotice: "" }),
         resetLink: st.authMode === "reset" ? "Zurück zur Anmeldung" : "Passwort vergessen?",
         title: st.authMode === "newpw" ? "Neues Passwort wählen" : st.authMode === "reset" ? (st.cloud ? "Passwort zurücksetzen" : "Neues Passwort setzen") : st.authMode === "register" ? (st.users.length ? "Konto anlegen" : "Chronik einrichten") : "Willkommen zurück",
-        idLabel: st.authMode === "login" ? "E- Mail" : "E-Mail",
+        idLabel: st.authMode === "login" ? "E-Mail" : "E-Mail",
         pwLabel: "Passwort",
         pwAuto: st.authMode === "login" ? "current-password" : "new-password",
         username: st.authForm.username, email: st.authForm.email, pw: st.authForm.pw, pw2: st.authForm.pw2, 
@@ -7139,7 +7484,7 @@ class Component extends DCLogic {
         });
         return {
           open: true,
-          titel: r.caption || "Bild",
+          titel: r.caption || "Bild bearbeiten",
           close: self.closeImgEdit,
           canvasRef: (el) => { self.editCanvas = el; },
           linksDrehen: () => self.imgSet({ rot: (e.rot + 270) % 360, crop: null }),
