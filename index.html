@@ -43,6 +43,11 @@
   @keyframes sh-zoom { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
   @keyframes sh-burns { from { transform: scale(0.94) translate(1.4%, 1%); } to { transform: scale(1) translate(0, 0); } }
   @keyframes sh-flip { from { opacity: 0; transform: perspective(1400px) rotateY(38deg); transform-origin: left center; } to { opacity: 1; transform: perspective(1400px) rotateY(0deg); } }
+  @keyframes sh-fade-b { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes sh-slide-b { from { opacity: 0; transform: translateX(6%) scale(0.97); } to { opacity: 1; transform: none; } }
+  @keyframes sh-zoom-b { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+  @keyframes sh-burns-b { from { transform: scale(0.94) translate(1.4%, 1%); } to { transform: scale(1) translate(0, 0); } }
+  @keyframes sh-flip-b { from { opacity: 0; transform: perspective(1400px) rotateY(38deg); transform-origin: left center; } to { opacity: 1; transform: perspective(1400px) rotateY(0deg); } }
   [data-stage]::-webkit-scrollbar { height: 14px; }
   [data-stage]::-webkit-scrollbar-track { background: color-mix(in srgb, var(--color-text) 6%, transparent); }
   [data-stage]::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--color-text) 34%, transparent); border: 4px solid transparent; background-clip: padding-box; border-radius: 8px; }
@@ -106,7 +111,7 @@
         <span>Dein Leben</span>
         <span>Eure Geschichten</span>
         <span>Erleben wie damals</span>
-        <span>Mit mehr Organgen</span>
+        <span>Mit mehr #Organgen</span>
       </div>
     </div>
 
@@ -284,11 +289,13 @@
         </div>
         <div style="display: flex; align-items: center; gap: var(--space-2); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">
           <span>Maßstab</span>
-          <input type="range" min="0.35" max="3" step="0.05" value="{{ zoom }}" onChange="{{ setZoom }}" style="width: 130px; accent-color: var(--color-accent);">
+          <input type="range" min="0.35" max="3" step="0.05" value="{{ zoomWert }}" onChange="{{ setZoom }}" style="width: 130px; accent-color: var(--color-accent);">
           <span style="min-width: 42px; color: var(--color-text);">{{ zoomLabel }}</span>
         </div>
         <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ togglePlay }}">{{ playLabel }}</button>
-        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ stick.toggle }}">{{ stick.label }}</button>
+        <sc-if value="{{ stick.moeglich }}" hint-placeholder-val="{{ true }}">
+          <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ stick.toggle }}">{{ stick.label }}</button>
+        </sc-if>
       </div>
       <sc-if value="{{ stick.on }}" hint-placeholder-val="{{ false }}">
         <div style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; padding: var(--space-2) 0 var(--space-3); border-top: 1px solid var(--color-divider);">
@@ -416,8 +423,10 @@
             <sc-for list="{{ markers }}" as="m" hint-placeholder-count="4">
               <div style="{{ m.pos }}">
                 <div style="position: absolute; left: 50%; top: 0; width: 1px; height: 100%; background: color-mix(in srgb, var(--t-ink, #201e1d) 28%, transparent); transform: translateX(-0.5px);"></div>
-                <button onClick="{{ m.toggle }}" title="{{ m.title }}" style="position: absolute; left: 50%; top: 0; width: var(--t-marker-w, 14px); height: var(--t-marker-h, 14px); margin-left: calc(var(--t-marker-w, 14px) / -2); margin-top: calc(var(--t-marker-h, 14px) / -2); padding: 0; cursor: pointer; background: var(--t-marker-bg, #0088b0); border-width: var(--t-marker-bw, 0); border-style: solid; border-color: var(--t-accent, #0088b0); border-radius: var(--t-marker-radius, 0); rotate: var(--t-marker-rotate, 0deg); transition: scale 200ms ease;" style-hover="scale: 1.45;"></button>
+                <button onClick="{{ m.toggle }}" title="{{ m.title }}" style="position: absolute; left: 50%; bottom: 0; width: var(--t-marker-w, 14px); height: var(--t-marker-h, 14px); margin-left: calc(var(--t-marker-w, 14px) / -2); margin-bottom: calc(var(--t-marker-h, 14px) / -2); padding: 0; cursor: pointer; box-sizing: border-box; background: var(--t-marker-bg, var(--t-accent, #0088b0)); border: var(--t-marker-bw, 0) solid var(--t-accent, #0088b0); border-radius: var(--t-marker-radius, 2px); rotate: var(--t-marker-rotate, 0deg);"></button>
                 <div style="{{ m.ping }}"></div>
+                <div style="{{ m.knick }}"></div>
+                <div style="{{ m.knickAb }}"></div>
               </div>
             </sc-for>
 
@@ -1700,15 +1709,54 @@
       <sc-if value="{{ vgl.hatKontakte }}" hint-placeholder-val="{{ false }}">
         <div style="display: grid; gap: 6px; margin-bottom: var(--space-6);">
           <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">Mit wem</div>
+          <sc-if value="{{ vgl.werSuchbar }}" hint-placeholder-val="{{ false }}">
+            <input class="input" type="search" value="{{ vgl.werSuche }}" onChange="{{ vgl.onWerSuche }}" placeholder="Kontaktliste durchsuchen …">
+          </sc-if>
           <div style="display: flex; gap: 6px; flex-wrap: wrap;">
             <sc-for list="{{ vgl.kontakte }}" as="k" hint-placeholder-count="2">
               <button onClick="{{ k.pick }}" style="{{ k.style }}">{{ k.name }}</button>
             </sc-for>
           </div>
+          <sc-if value="{{ vgl.werKeinTreffer }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size: 12px; color: var(--color-neutral-600);">Kein Kontakt passt zur Suche.</div>
+          </sc-if>
+          <sc-if value="{{ vgl.werNurGewaehlt }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size: 12px; color: var(--color-neutral-600);">Nur der gewählte Kontakt — sonst passt keiner zur Suche.</div>
+          </sc-if>
+          <sc-if value="{{ vgl.werRest }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size: 11.5px; color: var(--color-neutral-600);">{{ vgl.werRest }}</div>
+          </sc-if>
         </div>
       </sc-if>
 
       <sc-if value="{{ vgl.gewaehlt }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; gap: var(--space-3); margin-bottom: var(--space-6);">
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">Filter</div>
+            <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
+            <sc-if value="{{ vgl.gefiltert }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ vgl.filterWeg }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-accent-2-700); text-decoration: underline; white-space: nowrap;">Filter zurücksetzen</button>
+            </sc-if>
+          </div>
+          <input class="input" type="search" value="{{ vgl.suchtext }}" onChange="{{ vgl.onSuchtext }}" placeholder="In beiden Chroniken suchen — Name, Ort, Notiz, Person">
+          <sc-for list="{{ vgl.filter }}" as="fb" hint-placeholder-count="3">
+            <div style="display: grid; gap: 5px;">
+              <div style="font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-700);">{{ fb.titel }}</div>
+              <sc-if value="{{ fb.suchbar }}" hint-placeholder-val="{{ false }}">
+                <input class="input" type="search" value="{{ fb.suche }}" onChange="{{ fb.onSuche }}" placeholder="durchsuchen …" style="font-size: 12.5px; padding-top: 4px; padding-bottom: 4px;">
+              </sc-if>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <sc-for list="{{ fb.werte }}" as="w" hint-placeholder-count="3">
+                  <button onClick="{{ w.pick }}" style="{{ w.style }}">{{ w.label }}</button>
+                </sc-for>
+              </div>
+              <sc-if value="{{ fb.hatRest }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size: 11.5px; color: var(--color-neutral-600);">{{ fb.rest }}</div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+
         <div style="display: flex; gap: var(--space-6); flex-wrap: wrap; margin-bottom: var(--space-6);">
           <sc-for list="{{ vgl.zahlen }}" as="z" hint-placeholder-count="3">
             <div style="display: grid; gap: 1px;">
@@ -1720,6 +1768,24 @@
 
         <sc-if value="{{ vgl.hinweis }}" hint-placeholder-val="{{ false }}">
           <div style="font-size: 13.5px; line-height: 1.55; padding: 11px 13px; border-radius: var(--radius-md); background: var(--color-surface); color: var(--color-neutral-700); margin-bottom: var(--space-6);">{{ vgl.hinweis }}</div>
+        </sc-if>
+
+        <sc-if value="{{ vgl.hatGemeinsam }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: var(--space-2);">Da wart ihr zusammen</div>
+          <div style="display: grid; gap: 6px; margin-bottom: var(--space-6);">
+            <sc-for list="{{ vgl.gemeinsam }}" as="g" hint-placeholder-count="1">
+              <div style="display: grid; gap: 2px; padding: 9px 11px; border-radius: var(--radius-md); background: color-mix(in srgb, var(--color-accent) 12%, transparent); box-shadow: inset 0 0 0 1px var(--color-accent-300);">
+                <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent-700);">{{ g.datum }}</div>
+                <div style="font-size: 14.5px; line-height: 1.3;">{{ g.name }}</div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; font-size: 11.5px; color: var(--color-neutral-700);">
+                  <sc-if value="{{ g.hatOrt }}" hint-placeholder-val="{{ false }}">
+                    <span>{{ g.ort }}</span>
+                  </sc-if>
+                  <span>{{ g.wer }}</span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
         </sc-if>
 
         <sc-if value="{{ vgl.hatTreffer }}" hint-placeholder-val="{{ false }}">
@@ -1822,6 +1888,39 @@
           </div>
         </sc-for>
       </div>
+
+      <sc-if value="{{ inhalt.hatGruppen }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: var(--space-2);">
+          <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Inhalte auswählen</div>
+          <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
+          <sc-if value="{{ inhalt.hatAktiv }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ inhalt.weg }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-accent-2-700); text-decoration: underline; white-space: nowrap;">Regeln aufheben</button>
+          </sc-if>
+        </div>
+        <div style="font-size: 11.5px; line-height: 1.5; color: var(--color-neutral-700); margin-bottom: var(--space-3);">Links „nur das“, rechts „nicht das“. {{ inhalt.hinweis }}</div>
+        <div style="display: grid; gap: var(--space-4); margin-bottom: var(--space-6);">
+          <sc-for list="{{ inhalt.gruppen }}" as="g" hint-placeholder-count="3">
+            <div style="display: grid; gap: 5px;">
+              <div style="font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-700);">{{ g.titel }}</div>
+              <sc-if value="{{ g.suchbar }}" hint-placeholder-val="{{ false }}">
+                <input class="input" type="search" value="{{ g.suche }}" onChange="{{ g.onSuche }}" placeholder="durchsuchen …" style="font-size: 12.5px; padding-top: 4px; padding-bottom: 4px;">
+              </sc-if>
+              <div style="display: grid; gap: 4px;">
+                <sc-for list="{{ g.werte }}" as="w" hint-placeholder-count="3">
+                  <div style="display: flex; align-items: center; gap: 7px;">
+                    <span style="flex: 1; min-width: 0; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ w.label }}</span>
+                    <button onClick="{{ w.nurPick }}" style="{{ w.nurStyle }}">nur das</button>
+                    <button onClick="{{ w.ohnePick }}" style="{{ w.ohneStyle }}">nicht das</button>
+                  </div>
+                </sc-for>
+              </div>
+              <sc-if value="{{ g.hatRest }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size: 11.5px; color: var(--color-neutral-600);">{{ g.rest }}</div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
 
       <div style="height: 1px; background: var(--color-divider); margin: 0 0 var(--space-4);"></div>
 
@@ -2481,6 +2580,9 @@ class Component extends DCLogic {
     etZiel: null,
     vgl: false,
     vglMit: null,
+    vglFilter: { q: "", ort: "", kat: "", jahr: "" },
+    inhaltSuche: { wer: "", thema: "", ort: "" },
+    vglSuche: { wer: "", ort: "", kat: "", jahr: "" },
     etKarte: false,
     strahl: "mein",
     jahrOffen: {},
@@ -2929,6 +3031,7 @@ class Component extends DCLogic {
 
   placeFree = (ev) => {
     if (!this.state.stickMode) return;
+    if (this.state.strahl === "oeffentlich") return;
     const host = ev.currentTarget;
     /* Freie Fläche heißt: der Scroller selbst oder eine der
        Hintergrundebenen — nicht eine Karte, ein Marker, ein Sticker. */
@@ -3538,6 +3641,7 @@ class Component extends DCLogic {
     if (this.state.strahl === "oeffentlich") return (e.vis || "private") === "public";
     /* Eigener Strahl: immer das Eigene, dazu je Einstellung. */
     if ((e.by || "") === u.id) return true;
+    if (!this.inhaltErlaubt(e)) return false;
     const feed = this.feedPrefs();
     const vis = e.vis || "private";
     if (vis === "public") return !!feed.oeffentlich;
@@ -3548,7 +3652,62 @@ class Component extends DCLogic {
 
   feedPrefs() {
     const f = this.state.feed || {};
-    return { oeffentlich: !!f.oeffentlich, freunde: f.freunde !== false, vorschau: !!f.vorschau };
+    return {
+      oeffentlich: !!f.oeffentlich,
+      freunde: f.freunde !== false,
+      vorschau: !!f.vorschau,
+      /* 1) Was in meiner Chronik erscheinen soll. Leere Liste = alles. */
+      nurVon: Array.isArray(f.nurVon) ? f.nurVon : [],
+      ohneVon: Array.isArray(f.ohneVon) ? f.ohneVon : [],
+      nurThema: Array.isArray(f.nurThema) ? f.nurThema : [],
+      ohneThema: Array.isArray(f.ohneThema) ? f.ohneThema : [],
+      nurOrt: Array.isArray(f.nurOrt) ? f.nurOrt : [],
+      ohneOrt: Array.isArray(f.ohneOrt) ? f.ohneOrt : []
+    };
+  }
+
+  /* Darf diese Person einer Person in einem Ereignis zugeordnet werden?
+     Für das eigene Konto zählt die eigene Einstellung, für andere die ihre. */
+  darfZuordnen(userId) {
+    const me = this.me();
+    /* Für mich selbst zählt der eben umgeschaltete Wert, für andere ihr Profil. */
+    if (me && userId === me.id) return this.meineNotify().zuordnen !== false;
+    const u = this.state.users.filter((x) => x.id === userId)[0];
+    if (!u) return false;
+    return (u.notify || {}).zuordnen !== false;
+  }
+
+  /* Eigene Profil-Einstellungen: frisch Umgeschaltetes hat Vorrang. */
+  meineNotify() {
+    const me = this.me();
+    const ausProfil = (me && (this.state.users.filter((u) => u.id === me.id)[0] || {}).notify) || {};
+    return Object.assign({}, ausProfil, this.state.notify || {});
+  }
+
+  /* 1) Inhaltsregeln der eigenen Chronik. Eigene Ereignisse bleiben
+        immer sichtbar — die schließt man nicht aus Versehen aus. */
+  inhaltErlaubt(e) {
+    const me = this.me();
+    if (!me) return false;
+    if ((e.by || "") === me.id) return true;
+    const f = this.feedPrefs();
+    const wer = e.by || "";
+    const thema = normName(e.kicker || "");
+    const ort = normName(e.place || "");
+    const drin = (liste, wert) => liste.some((x) => normName(x) === wert);
+
+    if (f.ohneVon.indexOf(wer) >= 0) return false;
+    if (thema && drin(f.ohneThema, thema)) return false;
+    if (ort && drin(f.ohneOrt, ort)) return false;
+
+    /* Auswahllisten wirken zusammen: eine Zulassung genügt, aber nur
+       wenn überhaupt eine gesetzt ist. */
+    const hatAuswahl = f.nurVon.length || f.nurThema.length || f.nurOrt.length;
+    if (!hatAuswahl) return true;
+    if (f.nurVon.indexOf(wer) >= 0) return true;
+    if (thema && drin(f.nurThema, thema)) return true;
+    if (ort && drin(f.nurOrt, ort)) return true;
+    return false;
   }
 
   /* Auf dem öffentlichen Strahl je Jahr nur wenige zeigen — sonst
@@ -3732,14 +3891,23 @@ class Component extends DCLogic {
     for (let i = 0; i < o.maxLanes; i++) right.push(-1e9);
     let used = 1;
     const items = evs.map(function (e, i) {
-      const x = o.mode === "even" ? i * (o.cardW + o.gap) : ((dp(e.date) - min) / DAY) * o.pxPerDay;
+      const wunsch = o.mode === "even" ? i * (o.cardW + o.gap) : ((dp(e.date) - min) / DAY) * o.pxPerDay;
       let lane = -1;
-      for (let l = 0; l < o.maxLanes; l++) { if (right[l] + o.gap <= x) { lane = l; break; } }
-      if (lane < 0) { lane = right.indexOf(Math.min.apply(null, right)); }
+      for (let l = 0; l < o.maxLanes; l++) { if (right[l] + o.gap <= wunsch) { lane = l; break; } }
+      /* Ist keine Spur frei, wird die Karte nach rechts geschoben, bis sie
+         passt — vorher wurde sie einfach auf eine belegte Spur gelegt und
+         überdeckte ihre Nachbarin. */
+      let x = wunsch;
+      if (lane < 0) {
+        lane = right.indexOf(Math.min.apply(null, right));
+        x = Math.max(wunsch, right[lane] + o.gap);
+      }
       right[lane] = x + o.cardW;
       used = Math.max(used, lane + 1);
+      /* Verschobene Karten behalten ihren echten Zeitpunkt für Achse und
+         Zeitbalken — x ist die Anzeigeposition, xZeit der Zeitpunkt. */
       const ex = o.mode === "even" ? x : ((dp(e.end || e.date) - min) / DAY) * o.pxPerDay;
-      return { e: e, x: x, ex: ex, lane: lane, i: i };
+      return { e: e, x: x, xZeit: wunsch, ex: ex, lane: lane, i: i };
     });
     let w = 480;
     items.forEach(function (it) { w = Math.max(w, it.x + o.cardW, it.ex + 60); });
@@ -4264,12 +4432,40 @@ class Component extends DCLogic {
 
   /* ---------- Zeitstrahlen vergleichen ---------- */
 
+  /* War diese Person bei diesem Ereignis dabei? Entweder hat sie es
+     angelegt, oder jemand hat ihr Konto einer Person darin zugeordnet. */
+  gehoertZu(e, userId) {
+    if ((e.by || "") === userId) return true;
+    if (!this.darfZuordnen(userId)) return false;
+    return ((e.people || []).some((r) => r && r.uid === userId));
+  }
+
   /* Was ich von dieser Person sehen darf — nichts weiter.
      Der Vergleich zeigt niemals mehr als der Zeitstrahl selbst. */
   sichtbarVon(userId) {
     return this.state.events
-      .filter((e) => (e.by || "") === userId && this.levelFor(e) >= 1)
+      .filter((e) => this.gehoertZu(e, userId) && this.levelFor(e) >= 1)
+      .filter((e) => this.vglPasst(e))
       .sort((a, b) => dp(a.date) - dp(b.date));
+  }
+
+  rohSichtbarVon(userId) {
+    return this.state.events.filter((e) => this.gehoertZu(e, userId) && this.levelFor(e) >= 1);
+  }
+
+  /* 3) Filter des Vergleichs — greifen auf beide Seiten gleich. */
+  vglPasst(e) {
+    const f = this.state.vglFilter || {};
+    const q = normName(f.q || "");
+    if (q) {
+      const heu = normName([e.name, e.place, e.kicker, e.note,
+        ((e.people || []).map((r) => r.name).join(" "))].join(" "));
+      if (heu.indexOf(q) < 0) return false;
+    }
+    if (f.ort && normName(e.place || "") !== normName(f.ort)) return false;
+    if (f.kat && normName(e.kicker || "") !== normName(f.kat)) return false;
+    if (f.jahr && String(e.date || "").slice(0, 4) !== f.jahr) return false;
+    return true;
   }
 
   /* Alle Punkte eines Ereignisses: die Etappen-Koordinaten. */
@@ -4330,6 +4526,7 @@ class Component extends DCLogic {
       const z = tagKarte[t];
       if (!z.a.length || !z.b.length) return;
       z.a.forEach((ea) => z.b.forEach((eb) => {
+        if (ea.id === eb.id) return;
         const ortA = normName(ea.place || "");
         const ortB = normName(eb.place || "");
         const gleicherOrt = !!ortA && ortA === ortB;
@@ -4363,7 +4560,10 @@ class Component extends DCLogic {
       if (o && orteA[o] && !schon[o]) { schon[o] = true; orteBeide.push(orteA[o]); }
     });
 
-    return { meine: meine, seine: seine, treffer: knapp, orteBeide: orteBeide };
+    /* Gemeinsame Ereignisse: dasselbe Ereignis, in dem beide vorkommen. */
+    const gemeinsam = meine.filter((e) => seine.some((x) => x.id === e.id));
+
+    return { meine: meine, seine: seine, treffer: knapp, orteBeide: orteBeide, gemeinsam: gemeinsam };
   }
 
   /* Nur Etappen mit Koordinaten kommen auf die Karte. */
@@ -5256,22 +5456,40 @@ class Component extends DCLogic {
     const markers = L.items.map((it) => {
       const top = laneTop + it.lane * (laneH + gap);
       const isOpen = st.openId === it.e.id;
+      const xz = it.xZeit == null ? it.x : it.xZeit;
+      const versatz = Math.max(0, it.x - xz);
+      /* Damit zwei Knicke desselben Datums in derselben Spur nicht
+         deckungsgleich liegen, staffelt jeder um ein paar Pixel. */
+      const stufe = versatz > 1 ? (it.i % 4) * 4 : 0;
+      const strich = "color-mix(in srgb, var(--t-line, #201e1d) 40%, transparent)";
       return {
         key: "mk" + it.e.id,
+        /* Container an der Karte: hier sitzt das Klickziel, und Karten
+           überlappen sich nicht mehr — also auch die Marker nicht. */
         pos: { position: "absolute", left: (it.x + padL + 14) + "px", top: axisY + "px", width: "1px", height: (top - axisY) + "px", zIndex: 20 },
+        /* Waagerechter Knick zurück zum echten Datum. */
+        knick: versatz > 1
+          ? { position: "absolute", left: (-versatz) + "px", top: stufe + "px", width: versatz + "px", height: "1px", background: strich }
+          : { display: "none" },
+        /* Stummel auf der Achse, am echten Datum. */
+        knickAb: versatz > 1
+          ? { position: "absolute", left: (-versatz) + "px", top: "0", width: "1px", height: Math.max(6, stufe) + "px", background: strich }
+          : { display: "none" },
         ping: isOpen
-          ? { position: "absolute", left: "50%", top: "0", width: "16px", height: "16px", marginLeft: "-8px", marginTop: "-8px", borderRadius: "50%", background: "var(--t-accent, #0088b0)", animationName: "tl-ping", animationDuration: "1600ms", animationIterationCount: "infinite", pointerEvents: "none" }
+          ? { position: "absolute", left: "50%", bottom: "0", width: "16px", height: "16px", marginLeft: "-8px", marginBottom: "-8px", borderRadius: "50%", background: "var(--t-accent, #0088b0)", animationName: "tl-ping", animationDuration: "1600ms", animationIterationCount: "infinite", pointerEvents: "none" }
           : { display: "none" },
         title: it.e.name,
         toggle: () => this.open(it.e.id)
       };
     });
 
-    const bars = L.items.filter((it) => it.e.end && it.ex > it.x + 2).map((it) => {
+    const bars = L.items.filter((it) => it.e.end && it.ex > (it.xZeit == null ? it.x : it.xZeit) + 2).map((it) => {
       const days = Math.round((dp(it.e.end) - dp(it.e.date)) / DAY);
       return {
         key: "b" + it.e.id,
-        pos: { position: "absolute", left: (it.x + padL + 14) + "px", top: (axisY - 5) + "px", width: Math.max(26, it.ex - it.x) + "px", height: "11px", zIndex: 15 },
+        /* Der Zeitbalken gehört auf die Achse, also an den echten Zeitpunkt —
+           nicht an die möglicherweise nach rechts geschobene Karte. */
+        pos: { position: "absolute", left: ((it.xZeit == null ? it.x : it.xZeit) + padL + 14) + "px", top: (axisY - 5) + "px", width: Math.max(26, it.ex - (it.xZeit == null ? it.x : it.xZeit)) + "px", height: "11px", zIndex: 15 },
         label: days + " Tage"
       };
     });
@@ -5402,7 +5620,11 @@ class Component extends DCLogic {
           accounts: (function (self) {
             const erlaubt = self.friendIds();
             const q = normName((st.pSuche || {})["p" + i] || "");
-            const kreis = st.users.filter((u) => (me && u.id === me.id) || erlaubt.indexOf(u.id) >= 0 || u.id === r.uid);
+            const kreis = st.users
+              .filter((u) => (me && u.id === me.id) || erlaubt.indexOf(u.id) >= 0 || u.id === r.uid)
+              /* Zuordnung nur, wenn die Person sie erlaubt — eine bestehende
+                 bleibt sichtbar, damit sie nicht stillschweigend verschwindet. */
+              .filter((u) => u.id === r.uid || self.darfZuordnen(u.id));
             const passend = q
               ? kreis.filter((u) => normName(u.username).indexOf(q) >= 0 || String(u.email || "").toLowerCase().indexOf(q) >= 0)
               : kreis;
@@ -5806,7 +6028,7 @@ class Component extends DCLogic {
       alignItems: "center", justifyContent: "center",
       minHeight: "0", minWidth: "0",
       padding: "var(--space-3)", boxSizing: "border-box",
-      animationName: trans === "none" ? "none" : "sh-" + trans,
+      animationName: trans === "none" ? "none" : "sh-" + trans + (sIdx % 2 ? "-b" : ""),
       animationDuration: trans === "burns" ? Math.round(st.show.speed * 1000) + "ms" : "820ms",
       animationTimingFunction: trans === "burns" ? "linear" : "cubic-bezier(0.16, 1, 0.3, 1)",
       animationFillMode: "both"
@@ -6004,7 +6226,7 @@ class Component extends DCLogic {
       },
       feed: (function (self) {
         const f = self.feedPrefs();
-        const chip = (an) => ({
+        const schalter = (an) => ({
           font: "inherit", fontSize: "12px", letterSpacing: "0.04em", padding: "5px 12px", cursor: "pointer",
           whiteSpace: "nowrap", borderRadius: "99px", textAlign: "left",
           border: "1px solid " + (an ? "var(--color-accent)" : "var(--color-divider)"),
@@ -6012,21 +6234,169 @@ class Component extends DCLogic {
           color: an ? "var(--color-bg)" : "var(--color-text)"
         });
         const setz = (k) => () => {
-          const neu = Object.assign({}, self.feedPrefs());
-          neu[k] = !neu[k];
-          self.setState({ feed: neu });
+          const neuF = Object.assign({}, self.feedPrefs());
+          neuF[k] = !neuF[k];
+          self.setState({ feed: neuF });
         };
         return [
-          { key: "oe", label: "Öffentliche Ereignisse", on: f.oeffentlich, style: chip(f.oeffentlich), toggle: setz("oeffentlich"),
+          { key: "oe", label: "Öffentliche Ereignisse", on: f.oeffentlich, style: schalter(f.oeffentlich), toggle: setz("oeffentlich"),
             hint: "Zeigt Ereignisse, die jemand für alle freigegeben hat, auch auf deinem eigenen Zeitstrahl." },
-          { key: "fr", label: "Ereignisse meiner Kontakte", on: f.freunde, style: chip(f.freunde), toggle: setz("freunde"),
+          { key: "fr", label: "Ereignisse meiner Kontakte", on: f.freunde, style: schalter(f.freunde), toggle: setz("freunde"),
             hint: "Was Kontakte für „Alle Kontakte“ freigeben, erscheint bei dir mit." },
-          { key: "vs", label: "Mail bei künftigen Ereignissen", on: f.vorschau, style: chip(f.vorschau), toggle: setz("vorschau"),
-            hint: "Legt ein Kontakt ein Ereignis mit Datum in der Zukunft an, bekommst du eine Nachricht." }
+          { key: "vs", label: "Mail bei künftigen Ereignissen", on: f.vorschau, style: schalter(f.vorschau), toggle: setz("vorschau"),
+            hint: "Legt ein Kontakt ein Ereignis mit Datum in der Zukunft an, bekommst du eine Nachricht." },
+          { key: "zu", label: "Andere dürfen mich zuordnen", on: self.darfZuordnen((me || {}).id), style: schalter(self.darfZuordnen((me || {}).id)), toggle: () => {
+              const n = Object.assign({}, self.meineNotify());
+              n.zuordnen = n.zuordnen === false;
+              self.setState({ notify: n });
+              if (st.cloud && window.ChronikCloud.saveNotify) {
+                window.ChronikCloud.saveNotify(n).then(() => self.cloudSync()).catch(() => {});
+              }
+            },
+            hint: "Erlaubt anderen, dein Konto einer Person in ihren Ereignissen zuzuordnen. Aus: solche Ereignisse tauchen weder bei dir noch im Vergleich auf, und dein Konto ist dort nicht wählbar." }
         ];
       })(this),
+
+      /* 1) Inhaltsregeln: je Kategorie fünf Vorschläge, dazu eine Suche.
+            Zwei Knöpfe je Wert — „nur das“ und „nicht das“. */
+      inhalt: (function (self) {
+        if (!me) return { gruppen: [], aktiv: 0, hatAktiv: false, hatGruppen: false, weg: () => {}, hinweis: "" };
+        const MAX = 5;
+        const f = self.feedPrefs();
+        const iSuche = st.inhaltSuche || {};
+        const setzeSuche = (k) => (ev) => {
+          const n = Object.assign({}, self.state.inhaltSuche || {});
+          n[k] = ev.target.value;
+          self.setState({ inhaltSuche: n });
+        };
+        const wechsle = (liste, wert) => {
+          const neuF = Object.assign({}, self.feedPrefs());
+          const l = (neuF[liste] || []).slice();
+          const at = l.findIndex((x) => normName(x) === normName(wert));
+          if (at >= 0) l.splice(at, 1); else l.push(wert);
+          neuF[liste] = l;
+          self.setState({ feed: neuF });
+        };
+        const einmal = (werte) => {
+          const g = {}, raus = [];
+          werte.forEach((w) => {
+            const k = normName(w);
+            if (!k || g[k]) return;
+            g[k] = true;
+            raus.push(w);
+          });
+          return raus;
+        };
+        const chip = (an, art) => ({
+          font: "inherit", fontSize: "11.5px", letterSpacing: "0.04em", padding: "4px 10px", cursor: "pointer",
+          whiteSpace: "nowrap", borderRadius: "99px",
+          border: "1px solid " + (an ? (art === "aus" ? "var(--color-accent-2)" : "var(--color-accent)") : "var(--color-divider)"),
+          background: an ? (art === "aus" ? "var(--color-accent-2)" : "var(--color-accent)") : "transparent",
+          color: an ? "var(--color-bg)" : "var(--color-text)"
+        });
+        const fremd = st.events.filter((e) => (e.by || "") !== me.id);
+        const gruppe = (key, titel, werte, nurL, ohneL, beschriften) => {
+          const q = normName(iSuche[key] || "");
+          const passend = q ? werte.filter((w) => normName(beschriften(w)).indexOf(q) >= 0) : werte;
+          const nur = f[nurL] || [], ohne = f[ohneL] || [];
+          const istAktiv = (w) => nur.some((x) => normName(x) === normName(w)) || ohne.some((x) => normName(x) === normName(w));
+          const gezeigt = passend.slice(0, MAX);
+          let extra = 0;
+          werte.filter(istAktiv).forEach((w) => {
+            if (gezeigt.indexOf(w) < 0) { gezeigt.unshift(w); extra++; }
+          });
+          const rest = Math.max(0, passend.length - (MAX + extra));
+          return {
+            key: key, titel: titel,
+            hat: werte.length > 0,
+            suchbar: werte.length > MAX,
+            suche: iSuche[key] || "",
+            onSuche: setzeSuche(key),
+            hatRest: rest > 0,
+            rest: rest ? "… " + rest + " weitere — oben suchen" : "",
+            werte: gezeigt.map((w) => ({
+              key: key + "|" + w, label: beschriften(w),
+              nurStyle: chip(nur.some((x) => normName(x) === normName(w)), "nur"),
+              ohneStyle: chip(ohne.some((x) => normName(x) === normName(w)), "aus"),
+              nurPick: () => wechsle(nurL, w),
+              ohnePick: () => wechsle(ohneL, w)
+            }))
+          };
+        };
+        const gruppen = [
+          gruppe("wer", "Von wem", einmal(fremd.map((e) => e.by || "")), "nurVon", "ohneVon",
+            (id) => (st.users.filter((u) => u.id === id)[0] || {}).username || "unbekannt"),
+          gruppe("thema", "Thema", einmal(fremd.map((e) => String(e.kicker || "").trim())).sort(), "nurThema", "ohneThema", (x) => x),
+          gruppe("ort", "Ort", einmal(fremd.map((e) => String(e.place || "").trim())).sort(), "nurOrt", "ohneOrt", (x) => x)
+        ].filter((g) => g.hat);
+        const anzahlNur = f.nurVon.length + f.nurThema.length + f.nurOrt.length;
+        const anzahlOhne = f.ohneVon.length + f.ohneThema.length + f.ohneOrt.length;
+        return {
+          gruppen: gruppen,
+          hatGruppen: gruppen.length > 0,
+          aktiv: anzahlNur + anzahlOhne,
+          hatAktiv: anzahlNur + anzahlOhne > 0,
+          hinweis: anzahlNur
+            ? "Es erscheint nur, was mindestens einer Zulassung entspricht — deine eigenen Ereignisse immer."
+            : anzahlOhne
+              ? "Ausgeschlossenes erscheint nicht mehr; alles andere bleibt."
+              : "Ohne Regel erscheint alles, was du sehen darfst.",
+          weg: () => {
+            const neuF = Object.assign({}, self.feedPrefs(), {
+              nurVon: [], ohneVon: [], nurThema: [], ohneThema: [], nurOrt: [], ohneOrt: []
+            });
+            self.setState({ feed: neuF });
+          }
+        };
+      })(this),
+
       vgl: (function (self) {
         const fids = me ? self.friendIds() : [];
+        const VGL_MAX = 5;
+        const fSuche = st.vglSuche || {};
+        const fFilter = st.vglFilter || {};
+        const setSuche = (k) => (ev) => {
+          const n = Object.assign({}, self.state.vglSuche || {});
+          n[k] = ev.target.value;
+          self.setState({ vglSuche: n });
+        };
+        const setFilter = (k, w) => () => {
+          const n = Object.assign({}, self.state.vglFilter || {});
+          n[k] = n[k] === w ? "" : w;
+          self.setState({ vglFilter: n });
+        };
+        /* Ein Auswahlblock: fünf Vorschläge, Suchfeld, Restzähler. */
+        const block = (schluessel, titel, werte, aktiv) => {
+          const q = normName(fSuche[schluessel] || "");
+          const passend = q ? werte.filter((w) => normName(w).indexOf(q) >= 0) : werte;
+          const gezeigt = passend.slice(0, VGL_MAX);
+          /* Der aktive Wert muss immer sichtbar bleiben — sonst filtert er
+             weiter, ohne dass man ihn abschalten kann. */
+          let vorne = false;
+          if (aktiv && gezeigt.indexOf(aktiv) < 0) { gezeigt.unshift(aktiv); vorne = true; }
+          /* Ein vorangestellter Wert zählt nicht als „weiterer“. */
+          const rest = Math.max(0, passend.length - (vorne ? VGL_MAX + 1 : gezeigt.length));
+          return {
+            key: schluessel, titel: titel,
+            hat: werte.length > 0,
+            suchbar: werte.length > VGL_MAX,
+            suche: fSuche[schluessel] || "",
+            onSuche: setSuche(schluessel),
+            rest: rest ? "… " + rest + " weitere — oben suchen" : "",
+            hatRest: rest > 0,
+            werte: gezeigt.map((w) => ({
+              key: w, label: w, on: aktiv === w,
+              style: {
+                font: "inherit", fontSize: "12px", letterSpacing: "0.04em", padding: "5px 12px", cursor: "pointer",
+                whiteSpace: "nowrap", borderRadius: "99px",
+                border: "1px solid " + (aktiv === w ? "var(--color-accent)" : "var(--color-divider)"),
+                background: aktiv === w ? "var(--color-accent)" : "transparent",
+                color: aktiv === w ? "var(--color-bg)" : "var(--color-text)"
+              },
+              pick: setFilter(schluessel, w)
+            }))
+          };
+        };
         const wer = st.vglMit && fids.indexOf(st.vglMit) >= 0 ? st.vglMit : null;
         const uById = {};
         st.users.forEach((u) => { uById[u.id] = u; });
@@ -6062,11 +6432,31 @@ class Component extends DCLogic {
           });
         }
 
+        /* Kontaktliste: einmal rechnen, für Chips und Zähler zugleich. */
+        const werListe = (function () {
+          const q = normName(fSuche.wer || "");
+          const passend = fids.filter((id) => {
+            if (!q) return true;
+            const u = uById[id] || {};
+            return normName(u.username).indexOf(q) >= 0 || String(u.email || "").toLowerCase().indexOf(q) >= 0;
+          });
+          const chips = passend.slice(0, VGL_MAX);
+          let vorne = false;
+          if (wer && chips.indexOf(wer) < 0) { chips.unshift(wer); vorne = true; }
+          return {
+            chips: chips,
+            rest: Math.max(0, passend.length - (vorne ? VGL_MAX + 1 : chips.length)),
+            /* Nur der gewählte Chip steht da, sonst passt nichts. */
+            nurGewaehlt: !!q && passend.length === 0 && vorne,
+            keinTreffer: !!q && passend.length === 0 && !vorne
+          };
+        })();
+
         return {
           open: !!st.vgl && !!me,
           toggle: () => self.setState({ vgl: !st.vgl, konto: false, admin: false, drawer: false }),
           zu: () => self.setState({ vgl: false }),
-          kontakte: fids.map((id) => ({
+          kontakte: werListe.chips.map((id) => ({
             key: id, name: (uById[id] || {}).username || "?",
             on: wer === id,
             style: {
@@ -6080,10 +6470,49 @@ class Component extends DCLogic {
           })),
           leer: fids.length === 0,
           hatKontakte: fids.length > 0,
+          werSuchbar: fids.length > VGL_MAX,
+          werSuche: fSuche.wer || "",
+          onWerSuche: setSuche("wer"),
+          werRest: werListe.rest ? "… " + werListe.rest + " weitere — oben suchen" : "",
+          werKeinTreffer: werListe.keinTreffer,
+          werNurGewaehlt: werListe.nurGewaehlt,
+          /* 3) Filter — Vorschläge aus der ungefilterten Grundmenge beider Seiten */
+          filter: (function () {
+            if (!wer) return [];
+            const grund = self.rohSichtbarVon(me.id).concat(self.rohSichtbarVon(wer));
+            const einmal = (werte) => {
+              const gesehen = {};
+              const raus = [];
+              werte.forEach((w) => {
+                const k = normName(w);
+                if (!k || gesehen[k]) return;
+                gesehen[k] = true;
+                raus.push(w);
+              });
+              return raus;
+            };
+            const orte = einmal(grund.map((e) => String(e.place || "").trim())).sort();
+            const kats = einmal(grund.map((e) => String(e.kicker || "").trim())).sort();
+            const jahre = einmal(grund.map((e) => String(e.date || "").slice(0, 4))).sort().reverse();
+            return [
+              block("ort", "Ort", orte, fFilter.ort || ""),
+              block("kat", "Kategorie", kats, fFilter.kat || ""),
+              block("jahr", "Jahr", jahre, fFilter.jahr || "")
+            ].filter((b) => b.hat);
+          })(),
+          suchtext: fFilter.q || "",
+          onSuchtext: (ev) => {
+            const n = Object.assign({}, self.state.vglFilter || {});
+            n.q = ev.target.value;
+            self.setState({ vglFilter: n });
+          },
+          gefiltert: !!(fFilter.q || fFilter.ort || fFilter.kat || fFilter.jahr),
+          filterWeg: () => self.setState({ vglFilter: { q: "", ort: "", kat: "", jahr: "" }, vglSuche: Object.assign({}, self.state.vglSuche, { ort: "", kat: "", jahr: "" }) }),
           gewaehlt: !!wer,
           name: wer ? ((uById[wer] || {}).username || "?") : "",
           /* Kennzahlen */
           zahlen: v ? [
+            { key: "z0", wert: String(v.gemeinsam.length), label: v.gemeinsam.length === 1 ? "gemeinsames Ereignis" : "gemeinsame Ereignisse" },
             { key: "z1", wert: String(v.treffer.length), label: v.treffer.length === 1 ? "gleicher Tag" : "gleiche Tage" },
             { key: "z2", wert: String(v.orteBeide.length), label: v.orteBeide.length === 1 ? "gemeinsamer Ort" : "gemeinsame Orte" },
             { key: "z3", wert: String(v.seine.length), label: "davon sichtbar" }
@@ -6106,12 +6535,20 @@ class Component extends DCLogic {
             }
           })) : [],
           hatTreffer: !!v && v.treffer.length > 0,
+          gemeinsam: v ? v.gemeinsam.slice(0, 30).map((e) => ({
+            key: e.id, name: e.name || "ohne Titel", datum: fmtDate(e.date),
+            ort: e.place || "", hatOrt: !!String(e.place || "").trim(),
+            wer: (e.by || "") === me.id ? "von dir angelegt" : "von " + ((uById[e.by] || {}).username || "jemandem") + " angelegt"
+          })) : [],
+          hatGemeinsam: !!v && v.gemeinsam.length > 0,
           orte: v ? v.orteBeide.slice(0, 24).map((o, k) => ({ key: "o" + k, label: o })) : [],
           hatOrte: !!v && v.orteBeide.length > 0,
           jahre: jahre,
           hatJahre: jahre.length > 0,
-          hinweis: v && !v.treffer.length && !v.orteBeide.length
-            ? "Keine Überschneidung — ihr wart nie am selben Tag und nie am selben Ort unterwegs."
+          hinweis: v && !v.treffer.length && !v.orteBeide.length && !v.gemeinsam.length
+            ? (self.state.vglFilter && (self.state.vglFilter.q || self.state.vglFilter.ort || self.state.vglFilter.kat || self.state.vglFilter.jahr)
+              ? "Mit diesen Filtern keine Überschneidung — probier es mit weniger Filtern."
+              : "Keine Überschneidung — ihr wart nie am selben Tag und nie am selben Ort unterwegs.")
             : ""
         };
       })(this),
@@ -6248,7 +6685,7 @@ class Component extends DCLogic {
         toggleReset: () => this.setState({ authMode: st.authMode === "reset" ? "login" : "reset", authError: "", authNotice: "" }),
         resetLink: st.authMode === "reset" ? "Zurück zur Anmeldung" : "Passwort vergessen?",
         title: st.authMode === "newpw" ? "Neues Passwort wählen" : st.authMode === "reset" ? (st.cloud ? "Passwort zurücksetzen" : "Neues Passwort setzen") : st.authMode === "register" ? (st.users.length ? "Konto anlegen" : "Chronik einrichten") : "Willkommen zurück",
-        idLabel: st.authMode === "login" ? "e-Mail" : "E-Mail",
+        idLabel: st.authMode === "login" ? "E- Mail" : "E-Mail",
         pwLabel: "Passwort",
         pwAuto: st.authMode === "login" ? "current-password" : "new-password",
         username: st.authForm.username, email: st.authForm.email, pw: st.authForm.pw, pw2: st.authForm.pw2, 
@@ -6376,13 +6813,14 @@ class Component extends DCLogic {
       isProp: st.mode !== "even", isEven: st.mode === "even",
       setProp: () => this.setState({ mode: "proportional" }),
       setEven: () => this.setState({ mode: "even" }),
-      zoom: st.zoom, zoomLabel: Math.round(st.zoom * 100) + "%",
+      zoomWert: st.zoom, zoomLabel: Math.round(st.zoom * 100) + "%",
       setZoom: (ev) => this.setState({ zoom: parseFloat(ev.target.value) }),
       playLabel: st.playing ? "■ Stop" : "▶ Abspielen",
       togglePlay: this.togglePlay,
       stop: (ev) => ev.stopPropagation(),
       stageRef: (el) => { this.stage = el; },
       free: (function (self) {
+        if (st.strahl === "oeffentlich") return [];
         const pal = palOf(st.meta.pal || "thema", t);
         return (st.meta.free || []).map((f) => {
           const base = stickerStyle({ k: f.k, st: f.st, c: f.c, s: f.s, r: f.r }, pal, st.stickMode ? "edit" : "view", st.stickMode && st.freeSel === f.i);
@@ -6394,7 +6832,9 @@ class Component extends DCLogic {
         });
       })(this),
       stick: {
-        on: !!st.stickMode,
+        /* Nur auf der eigenen Chronik — der öffentliche Strahl ist geteilt. */
+        moeglich: st.strahl !== "oeffentlich",
+        on: !!st.stickMode && st.strahl !== "oeffentlich",
         label: st.stickMode ? "◉ Aufkleben beenden" : "○ Sticker aufkleben",
         toggle: () => this.setState({ stickMode: !st.stickMode, freeSel: null }),
         place: this.placeFree, move: this.freeMove, up: this.freeUp,
@@ -6641,8 +7081,7 @@ class Component extends DCLogic {
       toggleAdmin: () => this.setState({ admin: !st.admin, drawer: false }),
       contacts: contacts,
       notify: (function (self) {
-        const mich = st.users.filter((u) => me && u.id === me.id)[0] || {};
-        const n = Object.assign({}, mich.notify || st.notify || {});
+        const n = self.meineNotify();
         const setzen = (k) => () => {
           const neu = Object.assign({}, n);
           neu[k] = !neu[k];
