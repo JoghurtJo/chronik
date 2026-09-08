@@ -460,9 +460,19 @@
 
   async function groups() {
     var c = await client();
-    var r = await c.from("groups").select("id, name, members").order("name");
+    var r = await c.from("groups").select("id, owner, name, members").order("name");
     if (r.error) throw fail(code(r.error));
-    return (r.data || []).map(function (g) { return { id: g.id, name: g.name || "", members: g.members || [] }; });
+    return (r.data || []).map(function (g) { return { id: g.id, owner: g.owner || "", name: g.name || "", members: g.members || [] }; });
+  }
+
+  /* Austreten darf jedes Mitglied selbst — die Regel dafür steckt in der
+     Datenbankfunktion, weil Ändern sonst nur der Anlegerin erlaubt ist. */
+  async function leaveGroup(id) {
+    var c = await client();
+    var r = await c.rpc("gruppe_verlassen", { p_id: id });
+    if (r.error) throw fail(code(r.error));
+    bump({ p_writes: 1 });
+    return true;
   }
 
   async function saveGroup(g) {
@@ -513,6 +523,7 @@
       var src = im.src || (im.key ? (urls[im.key] || "") : (im.path ? (urls[im.path] || "") : ""));
       return {
         src: src, key: im.key || "", path: im.path || "", caption: im.caption || "",
+        alb: im.alb || "", et: im.et || "",
         comments: comments[row.id + ":" + i] || []
       };
     });
@@ -521,6 +532,7 @@
       place: row.place || "", kicker: row.kicker || "", note: d.note || "",
       infos: d.infos || [], people: d.people || [], images: imgs,
       deco: d.deco || { fx: [], pal: "thema", stickers: [] },
+      alben: Array.isArray(d.alben) ? d.alben : [],
       vis: (row.vis === "selected" ? "people" : row.vis) || "private", who: row.who || [], gwho: row.gwho || [], perms: row.perms || {}, polls: row.polls || [], etappen: row.etappen || [], etLayout: row.et_layout === "split" ? "split" : "gesamt", share: row.share || "view",
       changedBy: row.changed_by || ""
     };
@@ -533,10 +545,12 @@
       vis: e.vis || "private", who: e.who || [], gwho: e.gwho || [], perms: e.perms || {}, polls: e.polls || [], etappen: e.etappen || [], et_layout: e.etLayout === "split" ? "split" : "gesamt", share: e.share || "view",
       data: {
         note: e.note || "", infos: e.infos || [], people: e.people || [], deco: e.deco || null,
+        alben: e.alben || [],
         images: (e.images || []).map(function (im) {
-          if (im.key) return { key: im.key, caption: im.caption || "" };
-          if (im.path) return { path: im.path, caption: im.caption || "" };
-          return { src: im.src || "", caption: im.caption || "" };
+          var zu = { caption: im.caption || "", alb: im.alb || "", et: im.et || "" };
+          if (im.key) return Object.assign({ key: im.key }, zu);
+          if (im.path) return Object.assign({ path: im.path }, zu);
+          return Object.assign({ src: im.src || "" }, zu);
         })
       }
     };
@@ -841,7 +855,7 @@
     sessionEmail: sessionEmail, notifyChange: notifyChange, linkAge: linkAge,
     emailTaken: emailTaken, nameTaken: nameTaken, emailForName: emailForName,
     profiles: profiles, setBlocked: setBlocked, history: history, undo: undo,
-    groups: groups, saveGroup: saveGroup, removeGroup: removeGroup, saveLook: saveLook,
+    groups: groups, saveGroup: saveGroup, removeGroup: removeGroup, leaveGroup: leaveGroup, saveLook: saveLook,
     saveNotify: saveNotify, notify: notify,
     friends: friends, askFriend: askFriend, answerFriend: answerFriend, unfriend: unfriend,
     loadEvents: loadEvents, saveEvent: saveEvent, removeEvent: removeEvent,
