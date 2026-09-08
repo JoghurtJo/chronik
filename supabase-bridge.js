@@ -1,4 +1,4 @@
-/* Chronik ↔ Supabase */
+/* Chronik ↔ Supabase*/
 (function () {
   var CFG = window.CHRONIK_CONFIG || {};
   var SDK = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
@@ -533,6 +533,7 @@
       infos: d.infos || [], people: d.people || [], images: imgs,
       deco: d.deco || { fx: [], pal: "thema", stickers: [] },
       alben: Array.isArray(d.alben) ? d.alben : [],
+      themeId: d.themeId || "",
       vis: (row.vis === "selected" ? "people" : row.vis) || "private", who: row.who || [], gwho: row.gwho || [], perms: row.perms || {}, polls: row.polls || [], etappen: row.etappen || [], etLayout: row.et_layout === "split" ? "split" : "gesamt", share: row.share || "view",
       changedBy: row.changed_by || ""
     };
@@ -546,6 +547,7 @@
       data: {
         note: e.note || "", infos: e.infos || [], people: e.people || [], deco: e.deco || null,
         alben: e.alben || [],
+        themeId: e.themeId || "",
         images: (e.images || []).map(function (im) {
           var zu = { caption: im.caption || "", alb: im.alb || "", et: im.et || "" };
           if (im.key) return Object.assign({ key: im.key }, zu);
