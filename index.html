@@ -244,7 +244,7 @@
         <button class="btn btn-secondary" data-tour="kontakte" style="white-space: nowrap;" onClick="{{ toggleAdmin }}">{{ contactsLabel }}</button>
         <button class="btn btn-secondary" data-tour="vergleich" style="white-space: nowrap;" onClick="{{ vgl.toggle }}">Vergleichen</button>
         <button class="btn btn-secondary" data-tour="konto" style="white-space: nowrap;" onClick="{{ konto.toggle }}">Mein Konto</button>
-        <button class="btn btn-secondary" data-tour="hilfe" style="white-space: nowrap;" onClick="{{ tour.start }}">? Hilfe</button>
+        <button class="btn btn-secondary" data-tour="hilfe" style="white-space: nowrap;" onClick="{{ tour.start }}">Hilfe</button>
         <div class="seg" role="group" data-tour="strahl" style="margin: 0;">
           <sc-for list="{{ strahl.arten }}" as="a" hint-placeholder-count="2">
             <label class="seg-opt"><input type="radio" name="strahlwahl" checked="{{ a.on }}" onChange="{{ a.pick }}" style="position: absolute; opacity: 0; pointer-events: none;">{{ a.label }}</label>
