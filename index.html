@@ -403,7 +403,7 @@
             <sc-for list="{{ ticks }}" as="tk" hint-placeholder-count="4">
               <div style="{{ tk.pos }}">
                 <div style="width: 1px; height: 100%; background: color-mix(in srgb, var(--t-ink, #201e1d) 18%, transparent);"></div>
-                <div style="position: absolute; top: 0; left: 8px; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: color-mix(in srgb, var(--t-ink, #201e1d) 55%, transparent); white-space: nowrap;">{{ tk.label }}</div>
+                <div style="{{ tk.labelStil }}">{{ tk.label }}</div>
               </div>
             </sc-for>
 
@@ -414,7 +414,7 @@
             <sc-for list="{{ bars }}" as="b" hint-placeholder-count="2">
               <div style="{{ b.pos }}">
                 <div style="height: 100%; background: color-mix(in srgb, var(--t-accent2, #d6006c) 32%, transparent); border-radius: 99px; box-shadow: inset 0 0 0 1px var(--t-accent2, #d6006c);"></div>
-                <div style="position: absolute; top: -19px; left: 0; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; color: var(--t-accent2, #d6006c);">{{ b.label }}</div>
+                <div style="{{ b.labelStil }}">{{ b.label }}</div>
               </div>
             </sc-for>
 
@@ -1330,6 +1330,14 @@
           <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">{{ form.sec.deko.badge }}</span>
         </button>
         <sc-if value="{{ form.sec.deko.on }}" hint-placeholder-val="{{ false }}">
+        <div class="field" style="max-width: 340px;"><label>Design dieses Ereignisses</label>
+          <select class="input" value="{{ form.look.themeId }}" onChange="{{ form.look.onTheme }}">
+            <sc-for list="{{ form.look.wahl }}" as="o" hint-placeholder-count="6">
+              <option value="{{ o.value }}">{{ o.label }}</option>
+            </sc-for>
+          </select>
+        </div>
+        <div style="font-size: 11.5px; line-height: 1.5; color: var(--color-neutral-700); padding-bottom: var(--space-3);">Nur diese Kachel trägt dann das gewählte Design. Ob Kontakte es so sehen oder in ihrem eigenen Design, entscheiden sie unter „Mein Konto“.</div>
         <div style="font-size: 11px; color: var(--color-neutral-700); padding-bottom: var(--space-2);">Sticker antippen, dann in der Vorschau an die richtige Stelle ziehen</div>
         <div style="{{ lay.decoGrid }}">
           <div style="display: grid; gap: var(--space-3);">
@@ -4071,6 +4079,9 @@ class Component extends DCLogic {
     return {
       freunde: f.freunde !== false,
       vorschau: !!f.vorschau,
+      /* Trägt ein Ereignis eines Kontakts ein eigenes Design, zeigen wir
+         es standardmäßig so, wie es gedacht war. */
+      fremdesDesign: f.fremdesDesign !== false,
       /* 1) Was in meiner Chronik erscheinen soll. Leere Liste = alles. */
       nurVon: Array.isArray(f.nurVon) ? f.nurVon : [],
       ohneVon: Array.isArray(f.ohneVon) ? f.ohneVon : [],
@@ -4231,20 +4242,32 @@ class Component extends DCLogic {
     this.setShow({ rot: r }, false);
   };
 
-  /* Vollbild: der Browser darf das nur auf einen Klick hin öffnen. */
+  /* Vollbild ist zuerst unsere eigene Ansicht: schwarz, nur das Bild.
+     Das echte Browser-Vollbild wird zusätzlich versucht — klappt es
+     nicht (etwa in einem eingebetteten Rahmen), sieht man trotzdem
+     nichts als das Foto. */
   showVollbild = () => {
     const el = this.showRoot;
+    const an = !this.state.show.voll;
+    this.setShow({ voll: an, ui: true }, false);
+    if (an) this.uiSchlafen(); else if (this.uiTimer) window.clearTimeout(this.uiTimer);
     try {
-      if (document.fullscreenElement) { document.exitFullscreen(); return; }
-      if (el && el.requestFullscreen) { el.requestFullscreen().catch(() => {}); return; }
-      if (el && el.webkitRequestFullscreen) { el.webkitRequestFullscreen(); return; }
-    } catch (e) { /* dann bleibt es beim Fenster */ }
+      if (an) {
+        if (el && el.requestFullscreen) el.requestFullscreen().catch(() => {});
+        else if (el && el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      } else if (document.fullscreenElement) {
+        document.exitFullscreen();
+      }
+    } catch (e) { /* dann bleibt es bei unserer eigenen Ansicht */ }
   };
 
+  /* Verlässt jemand das Browser-Vollbild über Esc oder die Fensterleiste,
+     gehen wir mit zurück. Umgekehrt richten wir uns nicht danach. */
   onVollbildWechsel = () => {
-    const voll = !!document.fullscreenElement;
-    this.setShow({ voll: voll, ui: true }, false);
-    if (voll) this.uiSchlafen(); else if (this.uiTimer) window.clearTimeout(this.uiTimer);
+    if (!document.fullscreenElement && this.state.show.voll) {
+      this.setShow({ voll: false, ui: true }, false);
+      if (this.uiTimer) window.clearTimeout(this.uiTimer);
+    }
   };
 
   /* Im Vollbild zählt nur das Foto. Die Leiste kommt bei Mausbewegung
@@ -4300,19 +4323,20 @@ class Component extends DCLogic {
     return Object.assign({}, base, this.state.override);
   }
 
-  applyTheme() {
-    const t = this.theme();
+  /* Alle --t-*-Werte eines Designs als Stilobjekt. Auf der Wurzel gilt
+     es für die ganze Seite, an einer Karte nur für dieses Ereignis. */
+  themeVars(t) {
     const d = t.density;
     const m = MARKERS[t.marker] || MARKERS.square;
     const im = IMGS[t.imgShape] || IMGS.rect;
     const pat = (PATTERNS[t.pattern] || PATTERNS.none)(t);
-    const v = {
+    return {
       "--t-bg": t.bg, "--t-ink": t.ink, "--t-card": t.card,
       "--t-border": "color-mix(in srgb, " + t.ink + " 18%, transparent)",
       "--t-accent": t.accent, "--t-accent2": t.accent2, "--t-line": t.line || t.ink,
       "--t-font-head": '"' + t.fontHead + '", Georgia, serif',
       "--t-font-body": '"' + t.fontBody + '", Georgia, serif',
-      "--t-head-weight": t.headWeight, "--t-head-transform": t.headTransform,
+      "--t-head-weight": String(t.headWeight), "--t-head-transform": t.headTransform,
       "--t-head-tracking": t.headTracking + "em",
       "--t-radius": t.radius + "px",
       "--t-shadow": (SHADOWS[t.shadow] || SHADOWS.none)(t),
@@ -4328,8 +4352,79 @@ class Component extends DCLogic {
       "--t-img-radius": im.radius, "--t-img-ratio": im.ratio, "--t-img-pad": im.pad,
       "--t-img-bg": im.bg, "--t-img-rot": im.rot, "--t-img-shadow": im.shadow
     };
+  }
+
+  /* Dasselbe Design noch einmal in der Sprache der Oberfläche: damit
+     Menü, Fenster, Knöpfe und Formulare mitziehen und nicht als
+     Fremdkörper um den Zeitstrahl herumstehen. */
+  uiVars(t) {
+    const mix = (farbe, anteil, gegen) => "color-mix(in srgb, " + farbe + " " + anteil + "%, " + gegen + ")";
+    return {
+      "--color-bg": t.bg,
+      "--color-surface": t.card,
+      "--color-text": t.ink,
+      "--color-divider": mix(t.ink, 18, t.bg),
+      "--color-accent": t.accent,
+      "--color-accent-100": mix(t.accent, 12, t.bg),
+      "--color-accent-200": mix(t.accent, 22, t.bg),
+      "--color-accent-300": mix(t.accent, 36, t.bg),
+      "--color-accent-400": mix(t.accent, 62, t.bg),
+      "--color-accent-500": t.accent,
+      "--color-accent-600": mix(t.accent, 85, t.ink),
+      "--color-accent-700": mix(t.accent, 72, t.ink),
+      "--color-accent-800": mix(t.accent, 58, t.ink),
+      "--color-accent-900": mix(t.accent, 42, t.ink),
+      "--color-accent-2": t.accent2,
+      "--color-accent-2-100": mix(t.accent2, 12, t.bg),
+      "--color-accent-2-200": mix(t.accent2, 22, t.bg),
+      "--color-accent-2-300": mix(t.accent2, 36, t.bg),
+      "--color-accent-2-400": mix(t.accent2, 62, t.bg),
+      "--color-accent-2-500": t.accent2,
+      "--color-accent-2-600": mix(t.accent2, 85, t.ink),
+      "--color-accent-2-700": mix(t.accent2, 72, t.ink),
+      "--color-accent-2-800": mix(t.accent2, 58, t.ink),
+      "--color-accent-2-900": mix(t.accent2, 42, t.ink),
+      "--color-neutral-100": mix(t.ink, 5, t.bg),
+      "--color-neutral-200": mix(t.ink, 11, t.bg),
+      "--color-neutral-300": mix(t.ink, 19, t.bg),
+      "--color-neutral-400": mix(t.ink, 32, t.bg),
+      "--color-neutral-500": mix(t.ink, 46, t.bg),
+      "--color-neutral-600": mix(t.ink, 62, t.bg),
+      "--color-neutral-700": mix(t.ink, 74, t.bg),
+      "--color-neutral-800": mix(t.ink, 86, t.bg),
+      "--color-neutral-900": t.ink,
+      "--font-heading": '"' + t.fontHead + '", Georgia, serif',
+      "--font-body": '"' + t.fontBody + '", Georgia, serif',
+      "--radius-md": Math.min(14, t.radius) + "px",
+      "--radius-lg": Math.min(20, t.radius + 4) + "px"
+    };
+  }
+
+  /* Ein Ereignis darf ein eigenes Design tragen. Ob das auch für
+     Ereignisse von Kontakten gilt, entscheidet jede Person für sich
+     unter „Mein Konto“. */
+  eventTheme(e) {
+    const mein = this.theme();
+    const id = e && e.themeId;
+    if (!id) return mein;
+    const u = this.me();
+    const fremd = !!(e.by && u && e.by !== u.id);
+    if (fremd && !this.feedPrefs().fremdesDesign) return mein;
+    return this.allThemes().filter((x) => x.id === id)[0] || mein;
+  }
+
+  applyTheme() {
+    const t = this.theme();
+    const v = this.themeVars(t);
     const root = document.documentElement;
     Object.keys(v).forEach(function (k) { root.style.setProperty(k, String(v[k])); });
+    /* Und dasselbe für die Oberfläche drumherum. */
+    const u = this.uiVars(t);
+    Object.keys(u).forEach(function (k) { root.style.setProperty(k, String(u[k])); });
+    if (document.body) {
+      document.body.style.background = t.bg;
+      document.body.style.color = t.ink;
+    }
   }
 
   /* ---------- geometry ---------- */
@@ -4418,7 +4513,7 @@ class Component extends DCLogic {
       return;
     }
     if (this.state.show.open) {
-      if (e.key === "Escape") this.closeShow();
+      if (e.key === "Escape") { if (this.state.show.voll) this.showVollbild(); else this.closeShow(); }
       if (e.key === "ArrowRight") this.showStep(1);
       if (e.key === "ArrowLeft") this.showStep(-1);
       return;
@@ -4487,7 +4582,7 @@ class Component extends DCLogic {
 
   newEvent = () => {
     const today = new Date().toISOString().slice(0, 10);
-    this.setState({ draft: { id: null, name: "", date: today, end: "", place: "", kicker: "", note: "", infos: [{ label: "", value: "" }], people: [], images: [], deco: { fx: [], pal: "thema", stickers: [] }, vis: "private", who: [], gwho: [], perms: {}, polls: [], etappen: [], etLayout: "gesamt", alben: [], share: "view", by: (this.me() || {}).id || "", url: "", partial: false }, decoSel: null, pickQ: "", drawer: false, admin: false, secOpen: {} });
+    this.setState({ draft: { id: null, name: "", date: today, end: "", place: "", kicker: "", note: "", infos: [{ label: "", value: "" }], people: [], images: [], deco: { fx: [], pal: "thema", stickers: [] }, vis: "private", who: [], gwho: [], perms: {}, polls: [], etappen: [], etLayout: "gesamt", alben: [], themeId: "", share: "view", by: (this.me() || {}).id || "", url: "", partial: false }, decoSel: null, pickQ: "", drawer: false, admin: false, secOpen: {} });
   };
 
   editEvent(id) {
@@ -4512,6 +4607,7 @@ class Component extends DCLogic {
         by: e.by || "", vis: (e.vis === "selected" ? "people" : e.vis) || "private", who: (e.who || []).slice(), gwho: (e.gwho || []).slice(), perms: Object.assign({}, e.perms || {}), polls: (e.polls || []).map((p) => Object.assign({}, p)), share: e.share || "view",
         etappen: (e.etappen || []).map((x) => Object.assign({}, x)),
         alben: (e.alben || []).map((x) => Object.assign({}, x)),
+        themeId: e.themeId || "",
         etLayout: e.etLayout === "split" ? "split" : "gesamt",
         url: "", partial: lvl < 4
       }
@@ -4546,6 +4642,7 @@ class Component extends DCLogic {
       polls: (d.polls || (old && old.polls) || []).map((p) => Object.assign({}, p)),
       etappen: (d.etappen || (old && old.etappen) || []).map((x) => Object.assign({}, x)),
       alben: (d.alben || (old && old.alben) || []).map((x) => Object.assign({}, x)),
+      themeId: d.themeId != null ? d.themeId : ((old && old.themeId) || ""),
       etLayout: (d.etLayout || (old && old.etLayout)) === "split" ? "split" : "gesamt",
       share: d.share || (old && old.share) || "view"
     };
@@ -5794,6 +5891,10 @@ class Component extends DCLogic {
       const bilder = this.bilderSichtbar(e);
       const nImg = bilder.length;
       const lvl = this.levelFor(e);
+      /* Eigenes Design des Ereignisses: die --t-*-Werte hängen an der
+         Kachel, damit nur sie anders aussieht. */
+      const eT = this.eventTheme(e);
+      const eVars = eT === t ? null : this.themeVars(eT);
       if (isOpen) {
         const w2 = Math.round(cardW * 2.2);
         const nKom = (e.images || []).reduce((n, im) => n + ((im.comments || []).length), 0);
@@ -5804,7 +5905,7 @@ class Component extends DCLogic {
       }
       return {
         key: e.id,
-        pos: { position: "absolute", left: (it.x + padL) + "px", top: top + "px", width: (isOpen ? openW : cardW) + "px", zIndex: isOpen ? 60 : Math.min(50, 10 + it.lane), transition: "width 380ms cubic-bezier(0.16, 1, 0.3, 1)" },
+        pos: Object.assign({ position: "absolute", left: (it.x + padL) + "px", top: top + "px", width: (isOpen ? openW : cardW) + "px", zIndex: isOpen ? 60 : Math.min(50, 10 + it.lane), transition: "width 380ms cubic-bezier(0.16, 1, 0.3, 1)" }, eVars || {}),
         body: { maxHeight: isOpen ? "min(78vh, " + Math.max(520, Math.round(laneH * 4.2)) + "px)" : (laneH - 12) + "px", overflow: isOpen ? "auto" : "hidden", overscrollBehavior: "contain", borderRadius: "var(--t-radius, 2px)", transition: "max-height 420ms cubic-bezier(0.16, 1, 0.3, 1)", animationName: "var(--t-anim, tl-glide)", animationDuration: "var(--t-anim-dur, 620ms)", animationTimingFunction: "var(--t-anim-ease, ease-out)", animationFillMode: "both", animationDelay: (60 + it.i * 55) + "ms" },
         noteClip: { maxHeight: isOpen ? "none" : "51px", overflow: "hidden" },
         name: e.name, dateLabel: fmtDate(e.date), kicker: e.kicker || "", place: e.place || "", note: e.note || "",
@@ -6112,15 +6213,15 @@ class Component extends DCLogic {
           });
         })(this),
         hatPolls: ((e.polls || []).length > 0),
-        plain: !t.flap,
-        flap: !!t.flap,
-        chars: t.flap ? String(e.name || "").slice(0, 46).split("").map((c, ci) => ({
+        plain: !eT.flap,
+        flap: !!eT.flap,
+        chars: eT.flap ? String(e.name || "").slice(0, 46).split("").map((c, ci) => ({
           key: "fc" + ci, c: c === " " ? "\u00a0" : c,
           style: {
             display: "inline-block", minWidth: c === " " ? "0.34em" : "0.62em", textAlign: "center",
             padding: "2px 2px 3px", borderRadius: "2px",
-            background: "linear-gradient(to bottom, color-mix(in srgb, " + t.ink + " 12%, " + t.card + ") 0 calc(50% - 0.5px), " + t.card + " calc(50% - 0.5px) calc(50% + 0.5px), color-mix(in srgb, " + t.ink + " 5%, " + t.card + ") calc(50% + 0.5px) 100%)",
-            boxShadow: "inset 0 0 0 1px color-mix(in srgb, " + t.ink + " 14%, transparent)",
+            background: "linear-gradient(to bottom, color-mix(in srgb, " + eT.ink + " 12%, " + eT.card + ") 0 calc(50% - 0.5px), " + eT.card + " calc(50% - 0.5px) calc(50% + 0.5px), color-mix(in srgb, " + eT.ink + " 5%, " + eT.card + ") calc(50% + 0.5px) 100%)",
+            boxShadow: "inset 0 0 0 1px color-mix(in srgb, " + eT.ink + " 14%, transparent)",
             transformOrigin: "top center", backfaceVisibility: "hidden",
             animationName: "tl-flap", animationDuration: "420ms",
             animationTimingFunction: "cubic-bezier(0.3, 1.5, 0.5, 1)",
@@ -6164,7 +6265,7 @@ class Component extends DCLogic {
             }
           };
         })(this),
-        deco: this.decoParts(e.deco, t, e.id + (isOpen ? "-o" : "-c"), "view"),
+        deco: this.decoParts(e.deco, eT, e.id + (isOpen ? "-o" : "-c"), "view"),
         toggle: () => this.open(e.id),
         show: () => this.openShow("ev", e.id),
         edit: (ev) => { ev.stopPropagation(); this.editEvent(e.id); },
@@ -6174,6 +6275,8 @@ class Component extends DCLogic {
 
     const markers = sichtbareItems.map((it) => {
       const top = reiheY(it.lane);
+      const mT = this.eventTheme(it.e);
+      const mVars = mT === t ? null : this.themeVars(mT);
       const isOpen = st.openId === it.e.id;
       const xz = it.xZeit == null ? it.x : it.xZeit;
       const versatz = Math.max(0, it.x - xz);
@@ -6192,7 +6295,7 @@ class Component extends DCLogic {
            verdeckt ihn seine eigene Karte zur Hälfte — auch die geöffnete,
            die auf 60 liegt. Daher 62. Ein Kasten von 24 px, in dessen
            Mitte der Punkt sitzt. */
-        punktPos: { position: "absolute", left: (it.x + padL + 14) + "px", top: (top - 12) + "px", width: "1px", height: "24px", zIndex: 62 },
+        punktPos: Object.assign({ position: "absolute", left: (it.x + padL + 14) + "px", top: (top - 12) + "px", width: "1px", height: "24px", zIndex: 62 }, mVars || {}),
         /* Waagerechter Knick zurück zum echten Datum. */
         knick: versatz > 1
           ? { position: "absolute", left: (-versatz) + "px", top: stufe + "px", width: versatz + "px", height: "1px", background: strich }
@@ -6209,22 +6312,53 @@ class Component extends DCLogic {
       };
     });
 
+    /* Zeitangaben, die sich überschneiden würden, wandern eine Ebene
+       höher, statt übereinander zu liegen. Der Verteiler sucht für jede
+       Beschriftung die erste Ebene, auf der links noch Platz ist. */
+    const ebenenVerteiler = (breite, maxEbenen) => {
+      const belegt = [];
+      return (x) => {
+        let ebene = -1;
+        for (let i = 0; i < belegt.length; i++) { if (belegt[i] + breite <= x) { ebene = i; break; } }
+        if (ebene < 0) {
+          if (belegt.length < maxEbenen) { ebene = belegt.length; belegt.push(-1e9); }
+          else ebene = belegt.indexOf(Math.min.apply(null, belegt));
+        }
+        belegt[ebene] = x;
+        return ebene;
+      };
+    };
+
+    const balkenEbene = ebenenVerteiler(64, 3);
     const bars = L.items.filter((it) => it.e.end && it.ex > (it.xZeit == null ? it.x : it.xZeit) + 2).map((it) => {
       const days = Math.round((dp(it.e.end) - dp(it.e.date)) / DAY);
+      const x0 = it.xZeit == null ? it.x : it.xZeit;
+      const ebene = balkenEbene(x0);
       return {
         key: "b" + it.e.id,
         /* Der Zeitbalken gehört auf die Achse, also an den echten Zeitpunkt —
            nicht an die möglicherweise nach rechts geschobene Karte. */
-        pos: { position: "absolute", left: ((it.xZeit == null ? it.x : it.xZeit) + padL + 14) + "px", top: (axisY - 5) + "px", width: Math.max(26, it.ex - (it.xZeit == null ? it.x : it.xZeit)) + "px", height: "11px", zIndex: 6 },
+        pos: { position: "absolute", left: (x0 + padL + 14) + "px", top: (axisY - 5) + "px", width: Math.max(26, it.ex - x0) + "px", height: "11px", zIndex: 6 + ebene },
+        labelStil: { position: "absolute", top: (-19 - ebene * 14) + "px", left: 0, fontSize: "10.5px", letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap", color: "var(--t-accent2, #d6006c)" },
         label: days + " Tage"
       };
     });
 
-    const ticks = showRuler ? this.ticks(L, pxPerDay).map((tk) => ({
-      key: tk.key,
-      pos: { position: "absolute", left: (tk.x + padL + 14) + "px", top: "44px", height: "58px", width: "1px" },
-      label: tk.label
-    })) : [];
+    const strichEbene = ebenenVerteiler(58, 3);
+    const ticks = showRuler ? this.ticks(L, pxPerDay).map((tk) => {
+      const ebene = strichEbene(tk.x);
+      return {
+        key: tk.key,
+        pos: { position: "absolute", left: (tk.x + padL + 14) + "px", top: "38px", height: (64 + ebene * 2) + "px", width: "1px" },
+        labelStil: {
+          position: "absolute", top: (ebene * 15) + "px", left: "8px",
+          fontSize: "11px", letterSpacing: "0.14em", textTransform: "uppercase",
+          whiteSpace: "nowrap",
+          color: "color-mix(in srgb, var(--t-ink, #201e1d) 55%, transparent)"
+        },
+        label: tk.label
+      };
+    }) : [];
 
     let tiefeSichtbar = 1;
     sichtbareItems.forEach((it) => { tiefeSichtbar = Math.max(tiefeSichtbar, it.lane + 1); });
@@ -6465,6 +6599,14 @@ class Component extends DCLogic {
           sicht: mk("sicht", "")
         };
       })(this),
+      /* Ein Ereignis kann sein eigenes Design tragen. */
+      look: {
+        themeId: d0.themeId || "",
+        wahl: [{ key: "t0", value: "", label: "— mein eigenes Design —" }].concat(
+          this.allThemes().map((p) => ({ key: p.id, value: p.id, label: p.name }))
+        ),
+        onTheme: (ev) => this.setState({ draft: Object.assign({}, this.state.draft, { themeId: ev.target.value }) })
+      },
       /* Alben: Ordner innerhalb eines Ereignisses, jeder mit eigener
          Sichtbarkeit. Bilder ohne Album folgen dem Ereignis. */
       alb: (function (self) {
@@ -7110,6 +7252,8 @@ class Component extends DCLogic {
         return [
           { key: "fr", label: "Ereignisse meiner Kontakte", on: f.freunde, style: schalter(f.freunde), toggle: setz("freunde"),
             hint: "Was Kontakte für „Alle Kontakte“ freigeben, erscheint bei dir mit." },
+          { key: "dg", label: "Fremdes Ereignis-Design übernehmen", on: f.fremdesDesign, style: schalter(f.fremdesDesign), toggle: setz("fremdesDesign"),
+            hint: "Hat ein Kontakt seinem Ereignis ein eigenes Design gegeben, erscheint es bei dir genau so. Aus: alles trägt dein Design." },
           { key: "vs", label: "Mail bei künftigen Ereignissen", on: f.vorschau, style: schalter(f.vorschau), toggle: setz("vorschau"),
             hint: "Legt ein Kontakt ein Ereignis mit Datum in der Zukunft an, bekommst du eine Nachricht." },
           { key: "zu", label: "Andere dürfen mich zuordnen", on: self.darfZuordnen((me || {}).id), style: schalter(self.darfZuordnen((me || {}).id)), toggle: () => {
@@ -8251,7 +8395,7 @@ class Component extends DCLogic {
             }
           : { padding: "var(--space-2) var(--space-6) var(--space-4)" },
         rahmen: st.show.voll
-          ? { position: "fixed", inset: 0, zIndex: 110, background: "#000", color: "#e8e8e8", display: "grid", gridTemplateRows: "1fr", gridTemplateColumns: "1fr", fontFamily: "var(--font-body)", cursor: st.show.ui ? "auto" : "none" }
+          ? { position: "fixed", inset: 0, zIndex: 400, background: "#000", color: "#e8e8e8", display: "grid", gridTemplateRows: "1fr", gridTemplateColumns: "1fr", fontFamily: "var(--font-body)", cursor: st.show.ui ? "auto" : "none", overflow: "hidden" }
           : { position: "fixed", inset: 0, zIndex: 110, background: "var(--color-bg)", color: "var(--color-text)", display: "grid", gridTemplateRows: "auto 1fr auto", fontFamily: "var(--font-body)" },
         dots: simgs.map((s, i) => ({
           key: "d" + s.key,
