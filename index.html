@@ -113,7 +113,7 @@
         <span>Dein Leben</span>
         <span>Eure Geschichten</span>
         <span>Erleben wie damals</span>
-        <span>Mit mehr #Organgen?</span>
+        <span>Mit mehr #Organgen</span>
       </div>
     </div>
 
@@ -426,10 +426,12 @@
             <sc-for list="{{ markers }}" as="m" hint-placeholder-count="4">
               <div style="{{ m.pos }}">
                 <div style="position: absolute; left: 50%; top: 0; width: 1px; height: 100%; background: color-mix(in srgb, var(--t-ink, #201e1d) 28%, transparent); transform: translateX(-0.5px);"></div>
-                <button onClick="{{ m.toggle }}" title="{{ m.title }}" style="position: absolute; left: 50%; bottom: 0; width: var(--t-marker-w, 14px); height: var(--t-marker-h, 14px); margin-left: calc(var(--t-marker-w, 14px) / -2); margin-bottom: calc(var(--t-marker-h, 14px) / -2); padding: 0; cursor: pointer; box-sizing: border-box; background: var(--t-marker-bg, var(--t-accent, #0088b0)); border: var(--t-marker-bw, 0) solid var(--t-accent, #0088b0); border-radius: var(--t-marker-radius, 2px); rotate: var(--t-marker-rotate, 0deg);"></button>
-                <div style="{{ m.ping }}"></div>
                 <div style="{{ m.knick }}"></div>
                 <div style="{{ m.knickAb }}"></div>
+              </div>
+              <div style="{{ m.punktPos }}">
+                <button onClick="{{ m.toggle }}" title="{{ m.title }}" style="position: absolute; left: 50%; top: 50%; width: var(--t-marker-w, 14px); height: var(--t-marker-h, 14px); margin-left: calc(var(--t-marker-w, 14px) / -2); margin-top: calc(var(--t-marker-h, 14px) / -2); padding: 0; cursor: pointer; box-sizing: border-box; background: var(--t-marker-bg, var(--t-accent, #0088b0)); border: var(--t-marker-bw, 0) solid var(--t-accent, #0088b0); border-radius: var(--t-marker-radius, 2px); rotate: var(--t-marker-rotate, 0deg);"></button>
+                <div style="{{ m.ping }}"></div>
               </div>
             </sc-for>
 
@@ -477,6 +479,23 @@
                       <sc-if value="{{ c.canFull }}" hint-placeholder-val="{{ true }}">
                         <button onClick="{{ c.remove }}" style="cursor: pointer; font: inherit; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 12px; border: 1px solid transparent; border-radius: var(--t-radius, 2px); background: transparent; color: color-mix(in srgb, var(--t-accent2, #d6006c) 90%, var(--t-ink, #201e1d));" style-hover="background: color-mix(in srgb, var(--t-accent2, #d6006c) 12%, transparent);">Löschen</button>
                       </sc-if>
+                      <sc-if value="{{ c.sperre.zeigen }}" hint-placeholder-val="{{ false }}">
+                        <div style="position: relative;">
+                          <button onClick="{{ c.sperre.auf }}" style="cursor: pointer; font: inherit; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 12px; border: 1px solid var(--t-border, rgba(32, 30, 29, 0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);" style-hover="background: color-mix(in srgb, var(--t-accent2, #d6006c) 12%, transparent);">Sperren ▾</button>
+                          <sc-if value="{{ c.sperre.offen }}" hint-placeholder-val="{{ false }}">
+                            <div style="{{ c.sperre.menuStil }}">
+                              <div style="font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.55; padding: 2px 8px 4px;">Nicht mehr zeigen</div>
+                              <sc-for list="{{ c.sperre.wahl }}" as="w" hint-placeholder-count="3">
+                                <button onClick="{{ w.pick }}" style="{{ w.style }}">
+                                  <span style="width: 12px; font-size: 11px; opacity: 0.7;">{{ w.marke }}</span>
+                                  <span style="flex: 1;">{{ w.label }}</span>
+                                </button>
+                              </sc-for>
+                              <button onClick="{{ c.sperre.zu }}" style="font: inherit; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; background: none; border: 0; padding: 5px 8px 2px; cursor: pointer; color: var(--t-ink, #201e1d); opacity: 0.6; text-align: left;">Schließen</button>
+                            </div>
+                          </sc-if>
+                        </div>
+                      </sc-if>
                     </div>
                     <div onClick="{{ stop }}" style="margin-top: var(--space-4); display: grid; gap: var(--space-4); animation-name: tl-fade; animation-duration: 380ms; animation-fill-mode: both; animation-delay: 90ms;">
                       <sc-if value="{{ c.hasInfos }}" hint-placeholder-val="{{ true }}">
@@ -498,7 +517,7 @@
                         <div>
                           <div style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t-accent, #0088b0); margin-bottom: 6px;">Personen</div>
                           <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                            <sc-for list="{{ c.people }}" as="p" hint-placeholder-count="2">
+                            <sc-for list="{{ c.people }}" as="p" hint-placeholder-count="0">
                               <div style="display: flex; align-items: center; gap: 8px; padding: 4px 10px 4px 4px; border-radius: 99px; background: color-mix(in srgb, var(--t-ink, #201e1d) 7%, transparent);">
                                 <sc-if value="{{ p.photo }}" hint-placeholder-val="{{ false }}">
                                   <img src="{{ p.photo }}" alt="{{ p.name }}" style="width: 30px; height: 30px; border-radius: 99px; object-fit: cover; display: block;">
@@ -572,7 +591,7 @@
                       </sc-if>
 
                       <sc-if value="{{ c.hatPolls }}" hint-placeholder-val="{{ false }}">
-                        <div style="display: grid; gap: var(--space-4);">
+                        <div onClick="{{ stop }}" style="display: grid; gap: var(--space-4);">
                           <sc-for list="{{ c.polls }}" as="p" hint-placeholder-count="1">
                             <div style="display: grid; gap: 7px;">
                               <sc-if value="{{ p.hatKopf }}" hint-placeholder-val="{{ false }}">
@@ -597,6 +616,45 @@
                                       <span style="position: relative; font-size: 12px; opacity: 0.65;">{{ o.n }}</span>
                                     </button>
                                   </sc-for>
+                                </div>
+                                <sc-if value="{{ p.offen }}" hint-placeholder-val="{{ false }}">
+                                  <div style="display: flex; gap: 7px; align-items: center; flex-wrap: wrap; margin-top: 2px;">
+                                    <button onClick="{{ p.abgeben }}" style="cursor: pointer; font: inherit; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 13px; border: 1px solid var(--t-accent, #0088b0); border-radius: var(--t-radius, 2px); background: var(--t-accent, #0088b0); color: var(--t-card, #fff);">{{ p.abgebenLabel }}</button>
+                                    <button onClick="{{ p.verwerfen }}" style="cursor: pointer; font: inherit; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 11px; border: 1px solid var(--t-border, rgba(32,30,29,0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);">Abbrechen</button>
+                                  </div>
+                                </sc-if>
+                              </sc-if>
+
+                              <sc-if value="{{ p.istListe }}" hint-placeholder-val="{{ false }}">
+                                <div style="display: grid; gap: 4px;">
+                                  <sc-for list="{{ p.plaetze }}" as="pl" hint-placeholder-count="4">
+                                    <div style="{{ pl.zeileStil }}">
+                                      <span style="width: 22px; font-family: var(--t-font-head, var(--font-heading)); font-size: 13px; opacity: 0.55;">{{ pl.nr }}</span>
+                                      <sc-if value="{{ pl.imFeld }}" hint-placeholder-val="{{ false }}">
+                                        <input type="text" value="{{ pl.entwurf }}" onChange="{{ pl.onText }}" onKeyDown="{{ pl.onKey }}" placeholder="was bringst du mit?" style="flex: 1; min-width: 0; font: inherit; font-size: 13px; padding: 4px 8px; color: var(--t-ink, #201e1d); background: transparent; border: 1px solid var(--t-accent, #0088b0); border-radius: var(--t-radius, 2px);">
+                                        <button onClick="{{ pl.senden }}" style="cursor: pointer; font: inherit; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 10px; border: 0; border-radius: var(--t-radius, 2px); background: var(--t-accent, #0088b0); color: var(--t-card, #eae9e9);">Eintragen</button>
+                                      </sc-if>
+                                      <sc-if value="{{ pl.belegt }}" hint-placeholder-val="{{ true }}">
+                                        <span style="flex: 1; min-width: 0; font-size: 13.5px;">{{ pl.text }}</span>
+                                        <span style="font-size: 11px; opacity: 0.55; white-space: nowrap;">{{ pl.wer }}</span>
+                                        <sc-if value="{{ pl.wahlAn }}" hint-placeholder-val="{{ false }}">
+                                          <button onClick="{{ pl.waehlen }}" title="für diesen Eintrag stimmen" style="{{ pl.wahlStil }}">{{ pl.marke }} {{ pl.stimmen }}</button>
+                                        </sc-if>
+                                        <sc-if value="{{ pl.meins }}" hint-placeholder-val="{{ false }}">
+                                          <button onClick="{{ pl.aendern }}" style="font: inherit; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--t-accent, #0088b0); text-decoration: underline; white-space: nowrap;">ändern</button>
+                                        </sc-if>
+                                      </sc-if>
+                                      <sc-if value="{{ pl.frei }}" hint-placeholder-val="{{ false }}">
+                                        <span style="flex: 1; font-size: 12.5px; opacity: 0.45;">frei</span>
+                                        <sc-if value="{{ pl.kannEintragen }}" hint-placeholder-val="{{ false }}">
+                                          <button onClick="{{ pl.aendern }}" style="cursor: pointer; font: inherit; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border: 1px solid var(--t-border, rgba(32,30,29,0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);">Ich!</button>
+                                        </sc-if>
+                                      </sc-if>
+                                    </div>
+                                  </sc-for>
+                                  <sc-if value="{{ p.platzDazu }}" hint-placeholder-val="{{ false }}">
+                                    <button onClick="{{ p.platzDazuTun }}" style="justify-self: start; font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 3px 0; cursor: pointer; color: var(--t-accent, #0088b0); text-decoration: underline;">＋ weiterer Platz</button>
+                                  </sc-if>
                                 </div>
                                 <sc-if value="{{ p.offen }}" hint-placeholder-val="{{ false }}">
                                   <div style="display: flex; gap: 7px; align-items: center; flex-wrap: wrap; margin-top: 2px;">
@@ -651,7 +709,7 @@
                             <button onClick="{{ c.show }}" style="font: inherit; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--t-accent, #0088b0); text-decoration: underline;">Fotoshow</button>
                           </div>
                           <div style="{{ lay.pairGrid }}">
-                            <sc-for list="{{ c.images }}" as="im" hint-placeholder-count="2">
+                            <sc-for list="{{ c.images }}" as="im" hint-placeholder-count="0">
                               <div style="{{ im.wrap }}">
                                 <sc-if value="{{ im.hatKopf }}" hint-placeholder-val="{{ false }}">
                                   <div style="display: flex; align-items: center; gap: 8px; padding-top: 2px;">
@@ -874,7 +932,7 @@
           <div>
             <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">Menschen</div>
             <h2 style="margin: 3px 0 0; font-size: 27px; line-height: 1.05;">Kontakte</h2>
-            <div style="font-size: 12px; color: var(--color-neutral-700);">Suche jemanden, schick eine Anfrage — sobald sie bestätigt ist, kannst du Ereignisse für diese Person freigeben.</div>
+            <div style="font-size: 12px; color: var(--color-neutral-700);">Suche nach Benutzername oder E-Mail und schick eine Anfrage. Erst nach der Bestätigung könnt ihr einander Ereignisse freigeben.</div>
           </div>
           <button class="btn btn-secondary btn-icon" onClick="{{ toggleAdmin }}">✕</button>
         </div>
@@ -1106,7 +1164,7 @@
         <sc-if value="{{ form.sec.personen.on }}" hint-placeholder-val="{{ false }}">
         <div style="display: grid; gap: 6px; padding-bottom: var(--space-3);">
           <button class="btn btn-ghost" style="white-space: nowrap; justify-self: start;" onClick="{{ form.addPerson }}">＋ Person</button>
-          <div style="font-size: 11.5px; line-height: 1.45; color: var(--color-neutral-700);">Im Auswahlfeld kannst du die Person einem echten Konto zuordnen — dann findet man sie über den Filter ‚Personen‘ wieder.</div>
+          <div style="font-size: 11.5px; line-height: 1.45; color: var(--color-neutral-700);">Ordne die Person einem Konto zu — nur bei Kontakten möglich. Dann findet man sie später über den Filter „Personen“.</div>
           <sc-for list="{{ form.people }}" as="r" hint-placeholder-count="2">
             <div style="display: grid; gap: 4px; padding-bottom: 4px;">
               <div style="{{ lay.rowTwo }}">
@@ -1172,7 +1230,7 @@
           <div style="margin-top: 6px; font-size: 12px; padding: 7px 10px; border-radius: var(--radius-md); background: var(--color-surface); color: var(--color-text); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; overflow-wrap: anywhere;">{{ form.storeCheck }}</div>
         </sc-if>
         <div style="display: grid; gap: 6px; margin-top: 8px;">
-          <sc-for list="{{ form.images }}" as="r" hint-placeholder-count="1">
+          <sc-for list="{{ form.images }}" as="r" hint-placeholder-count="0">
             <div style="display: grid; gap: 4px;">
             <div style="{{ lay.rowImg }}">
               <sc-if value="{{ r.src }}" hint-placeholder-val="{{ false }}">
@@ -1212,7 +1270,7 @@
           <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">{{ form.sec.deko.badge }}</span>
         </button>
         <sc-if value="{{ form.sec.deko.on }}" hint-placeholder-val="{{ false }}">
-        <div style="font-size: 11px; color: var(--color-neutral-700); padding-bottom: var(--space-2);">Sticker anklicken, dann in der Vorschau ziehen</div>
+        <div style="font-size: 11px; color: var(--color-neutral-700); padding-bottom: var(--space-2);">Sticker antippen, dann in der Vorschau an die richtige Stelle ziehen</div>
         <div style="{{ lay.decoGrid }}">
           <div style="display: grid; gap: var(--space-3);">
             <div style="display: flex; gap: 6px; flex-wrap: wrap;">
@@ -1373,6 +1431,7 @@
             <div style="display: flex; gap: 6px; flex-wrap: wrap;">
               <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ form.polls.neueWahl }}">＋ Abstimmung</button>
               <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ form.polls.neueRang }}">＋ Rangliste</button>
+              <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ form.polls.neueListe }}">＋ Liste zum Eintragen</button>
             </div>
             <sc-for list="{{ form.polls.liste }}" as="p" hint-placeholder-count="0">
               <div style="display: grid; gap: 7px; padding: 11px 12px; border-radius: var(--radius-md); background: var(--color-surface);">
@@ -1382,6 +1441,19 @@
                   <button onClick="{{ p.weg }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-accent-2-700); text-decoration: underline; white-space: nowrap;">Entfernen</button>
                 </div>
                 <div class="field" style="margin: 0;"><label>Frage</label><input class="input" type="text" value="{{ p.frage }}" onChange="{{ p.onFrage }}" placeholder="{{ p.platzhalter }}"></div>
+                <sc-if value="{{ p.istListe }}" hint-placeholder-val="{{ false }}">
+                  <div style="display: grid; gap: 7px;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700);">Freie Plätze
+                      <input type="number" min="1" max="24" value="{{ p.plaetze }}" onChange="{{ p.onPlaetze }}" class="input" style="width: 78px;">
+                    </label>
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                      <button onClick="{{ p.offenUm }}" style="{{ p.offenStil }}">{{ p.offenLabel }}</button>
+                      <button onClick="{{ p.stimmenUm }}" style="{{ p.stimmenStil }}">{{ p.stimmenLabel }}</button>
+                    </div>
+                    <div style="font-size: 11.5px; line-height: 1.45; color: var(--color-neutral-700);">Die Plätze bleiben leer — wer mitmacht, trägt selbst ein („Kuchen“). Bei erlaubtem Abstimmen kann für jeden Eintrag gestimmt werden.</div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ p.zeigeOpts }}" hint-placeholder-val="{{ true }}">
                 <div style="display: grid; gap: 5px;">
                   <div style="font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-700);">{{ p.optLabel }}</div>
                   <sc-for list="{{ p.opts }}" as="o" hint-placeholder-count="2">
@@ -1392,6 +1464,7 @@
                   </sc-for>
                   <button class="btn btn-ghost" style="white-space: nowrap; justify-self: start;" onClick="{{ p.optNeu }}">＋ Eintrag</button>
                 </div>
+                </sc-if>
                 <sc-if value="{{ form.et.hat }}" hint-placeholder-val="{{ false }}">
                   <div class="field" style="margin: 0;"><label>Gehört zur Etappe</label>
                     <select class="input" value="{{ p.et }}" onChange="{{ p.onEt }}">
@@ -1608,7 +1681,7 @@
   </sc-if>
 
   <sc-if value="{{ show.open }}" hint-placeholder-val="{{ false }}">
-    <div data-screen-label="Fotoshow" style="position: fixed; inset: 0; z-index: 110; background: var(--color-bg); color: var(--color-text); display: grid; grid-template-rows: auto 1fr auto; font-family: var(--font-body);">
+    <div data-screen-label="Fotoshow" ref="{{ show.rootRef }}" style="{{ show.rahmen }}">
       <div style="display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); padding: var(--space-4) var(--space-6) var(--space-2); flex-wrap: wrap;">
         <div>
           <div style="font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">Fotoshow · {{ show.scopeLabel }}</div>
@@ -1619,15 +1692,15 @@
           <button class="btn btn-secondary btn-icon" onClick="{{ show.close }}">✕</button>
         </div>
       </div>
-      <div style="position: relative; overflow: hidden; padding: 0 var(--space-6);">
-        <sc-for list="{{ show.slides }}" as="s" hint-placeholder-count="1">
+      <div style="{{ show.buehne }}">
+        <sc-for list="{{ show.slides }}" as="s" hint-placeholder-count="0">
           <div style="{{ s.wrap }}">
             <sc-if value="{{ s.src }}" hint-placeholder-val="{{ false }}">
-              <img src="{{ s.src }}" alt="{{ s.caption }}" style="max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; display: block; box-shadow: var(--shadow-lg);">
+              <img src="{{ s.src }}" alt="{{ s.caption }}" style="{{ s.bildStil }}">
             </sc-if>
             <sc-if value="{{ s.empty }}" hint-placeholder-val="{{ true }}">
-              <img src="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27800%27%20height%3D%27600%27%2F%3E" alt="" style="display: block; width: auto; height: auto; max-width: 100%; max-height: 100%; background-color: var(--color-surface); background-image: repeating-linear-gradient(45deg, color-mix(in srgb, var(--color-text) 10%, transparent) 0 9px, transparent 9px 18px); box-shadow: var(--shadow-md);">
-              <span style="position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: var(--space-6); box-sizing: border-box; pointer-events: none; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; letter-spacing: 0.06em; color: var(--color-neutral-700);">{{ s.caption }}</span>
+              <img src="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27800%27%20height%3D%27600%27%2F%3E" alt="" style="display: block; width: auto; height: auto; max-width: 100cqw; max-height: 100cqh; background-color: var(--color-surface); background-image: repeating-linear-gradient(45deg, color-mix(in srgb, var(--color-text) 10%, transparent) 0 9px, transparent 9px 18px); box-shadow: var(--shadow-md);">
+              <span style="position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: var(--space-6); box-sizing: border-box; pointer-events: none; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; letter-spacing: 0.06em; color: var(--color-neutral-700);">{{ s.leerText }}</span>
             </sc-if>
           </div>
         </sc-for>
@@ -1655,8 +1728,13 @@
             <button class="btn btn-primary" style="white-space: nowrap;" onClick="{{ show.toggle }}">{{ show.playLabel }}</button>
             <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ show.next }}">▶</button>
           </div>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <button class="btn btn-secondary" title="nach links drehen" style="white-space: nowrap;" onClick="{{ show.linksDrehen }}">↺</button>
+            <button class="btn btn-secondary" title="nach rechts drehen" style="white-space: nowrap;" onClick="{{ show.rechtsDrehen }}">↻</button>
+            <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ show.vollbild }}">{{ show.vollLabel }}</button>
+          </div>
           <div class="field" style="width: 190px;"><label>Bilddauer · {{ show.speedLabel }}</label>
-            <input type="range" min="1.5" max="14" step="0.5" value="{{ show.speed }}" onChange="{{ show.onSpeed }}" style="width: 100%; accent-color: var(--color-accent);">
+            <input type="range" min="0.2" max="14" step="0.1" value="{{ show.speed }}" onChange="{{ show.onSpeed }}" style="width: 100%; accent-color: var(--color-accent);">
           </div>
           <div class="field" style="width: 170px;"><label>Übergang</label>
             <select class="input" value="{{ show.transition }}" onChange="{{ show.onTransition }}">
@@ -1992,34 +2070,54 @@
 
       <sc-if value="{{ inhalt.hatGruppen }}" hint-placeholder-val="{{ false }}">
         <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: var(--space-2);">
-          <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Inhalte auswählen</div>
+          <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Was auf deinem Zeitstrahl erscheint</div>
           <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
           <sc-if value="{{ inhalt.hatAktiv }}" hint-placeholder-val="{{ false }}">
             <button onClick="{{ inhalt.weg }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-accent-2-700); text-decoration: underline; white-space: nowrap;">Regeln aufheben</button>
           </sc-if>
         </div>
-        <div style="font-size: 11.5px; line-height: 1.5; color: var(--color-neutral-700); margin-bottom: var(--space-3);">Links „nur das“, rechts „nicht das“. {{ inhalt.hinweis }}</div>
-        <div style="display: grid; gap: var(--space-4); margin-bottom: var(--space-6);">
+        <div style="font-size: 11.5px; line-height: 1.5; color: var(--color-neutral-700); margin-bottom: var(--space-3);">„nur“ zeigt ausschließlich diesen Wert, „sperren“ blendet ihn aus. {{ inhalt.hinweis }}</div>
+        <button onClick="{{ inhalt.riegelUm }}" style="{{ inhalt.riegelStil }}">{{ inhalt.riegelLabel }}</button>
+        <div style="display: grid; gap: var(--space-2); margin: var(--space-3) 0 var(--space-6);">
           <sc-for list="{{ inhalt.gruppen }}" as="g" hint-placeholder-count="3">
-            <div style="display: grid; gap: 5px;">
-              <div style="font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-700);">{{ g.titel }}</div>
-              <sc-if value="{{ g.suchbar }}" hint-placeholder-val="{{ false }}">
-                <input class="input" type="search" value="{{ g.suche }}" onChange="{{ g.onSuche }}" placeholder="durchsuchen …" style="font-size: 12.5px; padding-top: 4px; padding-bottom: 4px;">
-              </sc-if>
-              <div style="display: grid; gap: 4px;">
-                <sc-for list="{{ g.werte }}" as="w" hint-placeholder-count="3">
-                  <div style="display: flex; align-items: center; gap: 7px;">
-                    <span style="flex: 1; min-width: 0; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ w.label }}</span>
-                    <button onClick="{{ w.nurPick }}" style="{{ w.nurStyle }}">nur das</button>
-                    <button onClick="{{ w.ohnePick }}" style="{{ w.ohneStyle }}">nicht das</button>
-                  </div>
-                </sc-for>
-              </div>
-              <sc-if value="{{ g.hatRest }}" hint-placeholder-val="{{ false }}">
-                <div style="font-size: 11.5px; color: var(--color-neutral-600);">{{ g.rest }}</div>
+            <div style="display: grid; gap: 4px;">
+              <button onClick="{{ g.umschalten }}" style="display: flex; align-items: center; gap: 7px; width: 100%; font: inherit; font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; background: none; border: 0; padding: 3px 0; cursor: pointer; color: var(--color-neutral-700); text-align: left;">
+                <span style="{{ g.zeichen }}">▸</span>
+                <span>{{ g.titel }}</span>
+                <sc-if value="{{ g.zahl }}" hint-placeholder-val="{{ false }}">
+                  <span style="font-size: 10px; padding: 1px 6px; border-radius: 99px; background: var(--color-accent-2); color: var(--color-bg);">{{ g.zahl }}</span>
+                </sc-if>
+              </button>
+              <sc-if value="{{ g.offen }}" hint-placeholder-val="{{ false }}">
+                <div style="display: grid; gap: 3px; padding-left: 18px;">
+                  <sc-if value="{{ g.suchbar }}" hint-placeholder-val="{{ false }}">
+                    <input class="input" type="search" value="{{ g.suche }}" onChange="{{ g.onSuche }}" placeholder="durchsuchen …" style="font-size: 12px; padding: 3px 8px;">
+                  </sc-if>
+                  <sc-for list="{{ g.werte }}" as="w" hint-placeholder-count="3">
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                      <span style="flex: 1; min-width: 0; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ w.label }}</span>
+                      <button onClick="{{ w.nurPick }}" title="nur diesen Wert zeigen" style="{{ w.nurStyle }}">nur</button>
+                      <button onClick="{{ w.ohnePick }}" title="diesen Wert ausblenden" style="{{ w.ohneStyle }}">sperren</button>
+                    </div>
+                  </sc-for>
+                  <sc-if value="{{ g.hatRest }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size: 11px; color: var(--color-neutral-600);">{{ g.rest }}</div>
+                  </sc-if>
+                </div>
               </sc-if>
             </div>
           </sc-for>
+          <sc-if value="{{ inhalt.hatGesperrt }}" hint-placeholder-val="{{ false }}">
+            <div style="display: grid; gap: 3px; margin-top: var(--space-2);">
+              <div style="font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-accent-2-700);">{{ inhalt.gesperrtTitel }}</div>
+              <sc-for list="{{ inhalt.gesperrt }}" as="x" hint-placeholder-count="1">
+                <div style="display: flex; align-items: center; gap: 7px; font-size: 12.5px;">
+                  <span style="flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ x.label }}</span>
+                  <button onClick="{{ x.frei }}" style="font: inherit; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-accent-700); text-decoration: underline; white-space: nowrap;">wieder zeigen</button>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
         </div>
       </sc-if>
 
@@ -2103,7 +2201,7 @@
               <sc-if value="{{ p.peopleLine }}" hint-placeholder-val="{{ true }}">
                 <div style="font-size: 10.5px; color: #2f2c29;"><span style="letter-spacing: 0.12em; text-transform: uppercase; color: #6a6663;">Personen · </span>{{ p.peopleLine }}</div>
               </sc-if>
-              <sc-for list="{{ p.images }}" as="im" hint-placeholder-count="1">
+              <sc-for list="{{ p.images }}" as="im" hint-placeholder-count="0">
                 <div style="display: grid; gap: 3px;">
                   <sc-if value="{{ im.src }}" hint-placeholder-val="{{ false }}">
                     <img src="{{ im.src }}" alt="{{ im.caption }}" style="display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover;">
@@ -2259,11 +2357,22 @@ const leereEtappe = function (n) {
 
 const POLL_WER = [["alle", "Alle, die das Ereignis sehen"], ["personen", "Nur ausgewählte Personen"], ["gruppen", "Nur bestimmte Gruppen"]];
 
+const LISTE_MAX = 24;
+
 const leerePoll = function (art) {
+  /* Eintragslisten starten mit mehr freien Plätzen als eine Abstimmung
+     Antworten braucht. Bei „liste“ trägt jeder selbst ein: label wird
+     gefüllt, von merkt sich, wer es war. */
+  const anzahl = art === "liste" ? 10 : 2;
+  const opts = [];
+  for (let i = 0; i < anzahl; i++) opts.push({ i: "o" + uid(), label: "", von: "" });
   return {
-    id: "p" + uid(), art: art, frage: "",
-    opts: [{ i: "o" + uid(), label: "" }, { i: "o" + uid(), label: "" }],
-    wer: "alle", who: [], gwho: [], mehr: false, max: 2,
+    id: "p" + uid(), art: art, frage: "", opts: opts,
+    wer: "alle", who: [], gwho: [], mehr: art === "liste", max: art === "liste" ? 3 : 2,
+    /* offen: dürfen Teilnehmende weitere Plätze anhängen? */
+    offen: art === "liste",
+    /* stimmenAn: darf für die Einträge abgestimmt werden? */
+    stimmenAn: art === "liste",
     stimmen: {}, rangliste: {}, echo: {}
   };
 };
@@ -2363,6 +2472,22 @@ const pwRules = function (p) {
     { key: "r4", label: "groß und klein", ok: /[a-z]/.test(s) && /[A-Z]/.test(s) }
   ];
 };
+
+/* Bildunterschriften aus früheren Fassungen sind Dateinamen. Sie werden
+   erkannt und nicht angezeigt — echte Unterschriften bleiben. */
+const wirktWieDateiname = function (v) {
+  const t = String(v || "").trim();
+  if (!t) return false;
+  if (/\s/.test(t)) return false;
+  if (/\.(jpe?g|png|gif|webp|heic|heif|avif|bmp|tiff?)$/i.test(t)) return true;
+  if (/^(img|dsc|dscn|pxl|p|foto|photo|bild|screenshot|signal|whatsapp|pano|mvimg)[-_ ]?\d{3,}$/i.test(t)) return true;
+  if (/^\d{6,}$/.test(t)) return true;
+  if (/^\d{4}-?\d{2}-?\d{2}[-_t]?\d{0,6}$/i.test(t)) return true;
+  if (/^[a-f0-9]{8,}$/i.test(t)) return true;
+  return false;
+};
+
+const zeigbareUnterschrift = function (v) { return wirktWieDateiname(v) ? "" : String(v || ""); };
 
 const normName = function (s) { return String(s || "").trim().toLowerCase().replace(/\s+/g, " "); };
 
@@ -2677,12 +2802,15 @@ class Component extends DCLogic {
     notify: {},
     imgEdit: null,
     pollOpen: null,
+    listeDraft: {},
     pSuche: {},
     etZiel: null,
     vgl: false,
     vglMit: null,
     vglFilter: { q: "", ort: "", kat: "", jahr: "" },
     inhaltSuche: { wer: "", thema: "", ort: "" },
+    inhaltAuf: {},
+    sperrMenu: null,
     vglSuche: { wer: "", ort: "", kat: "", jahr: "" },
     vglFilterAuf: false,
     tour: null,
@@ -2741,7 +2869,7 @@ class Component extends DCLogic {
     stickPick: "stern",
     stickStil: "flach",
     freeSel: null,
-    show: { open: false, idx: 0, playing: true, speed: 5, transition: "fade", scope: "all", ref: "", music: "", musicUrl: "", musicName: "keine", volume: 0.7 }
+    show: { open: false, idx: 0, playing: true, speed: 5, transition: "fade", scope: "all", ref: "", music: "", musicUrl: "", musicName: "keine", volume: 0.7, rot: {}, voll: false }
   };
 
   componentDidMount() {
@@ -2797,6 +2925,7 @@ class Component extends DCLogic {
     this.applyTheme();
     window.addEventListener("keydown", this.onKey);
     window.addEventListener("resize", this.onResize);
+    document.addEventListener("fullscreenchange", this.onVollbildWechsel);
     this.onResize();
     window.setTimeout(() => this.tourFragen(), 1400);
   }
@@ -3565,7 +3694,7 @@ class Component extends DCLogic {
         text: "Hinter diesen drei Reitern steckt die Feinarbeit: Zoom und Abspielen, Suche nach Ort, Person oder Zeitraum, Sticker zum Aufkleben — und das Sichern und Laden deiner Daten." },
       { ziel: "show", titel: "Fotoshow",
         text: "Zeigt alle Bilder deiner gefilterten Auswahl groß, mit Übergängen und wahlweise mit Musik. Gut für einen Abend zu zweit oder für die Leinwand beim Fest." },
-      { ziel: "design", titel: "Über dreißig Gesichter",
+      { ziel: "design", titel: "Jedes Design kannst Du nach deinem Geschmack ändern ",
         text: "Von Zeitungssatz über Emailschild bis zur Flughafen-Klapptafel. Jedes Design lässt sich weiter verstellen — Farben, Schrift, Marker, Dichte. Deine Wahl gilt nur für dich." },
       { ziel: "kontakte", titel: "Kontakte",
         text: "Suche jemanden nach Name oder E-Mail und schick eine Anfrage. Erst wenn sie bestätigt ist, könnt ihr einander Ereignisse freigeben. Hier legst du auch Personengruppen an." },
@@ -3863,8 +3992,26 @@ class Component extends DCLogic {
       nurThema: Array.isArray(f.nurThema) ? f.nurThema : [],
       ohneThema: Array.isArray(f.ohneThema) ? f.ohneThema : [],
       nurOrt: Array.isArray(f.nurOrt) ? f.nurOrt : [],
-      ohneOrt: Array.isArray(f.ohneOrt) ? f.ohneOrt : []
+      ohneOrt: Array.isArray(f.ohneOrt) ? f.ohneOrt : [],
+      /* 2) Einzeln gesperrte Ereignisse und der Riegel für Öffentliches. */
+      ohneEvent: Array.isArray(f.ohneEvent) ? f.ohneEvent : [],
+      keinOeffentlich: !!f.keinOeffentlich
     };
+  }
+
+  /* Etwas sperren oder die Sperre wieder aufheben. */
+  sperreUm(liste, wert) {
+    const f = Object.assign({}, this.feedPrefs());
+    const alt = f[liste] || [];
+    const drin = alt.some((x) => normName(x) === normName(wert));
+    f[liste] = drin ? alt.filter((x) => normName(x) !== normName(wert)) : alt.concat([wert]);
+    this.setState({ feed: f, sperrMenu: null });
+  }
+
+  sperrUmschalten(schluessel) {
+    const f = Object.assign({}, this.feedPrefs());
+    f[schluessel] = !f[schluessel];
+    this.setState({ feed: f });
   }
 
   /* Darf diese Person einer Person in einem Ereignis zugeordnet werden?
@@ -3897,6 +4044,10 @@ class Component extends DCLogic {
     const ort = normName(e.place || "");
     const drin = (liste, wert) => liste.some((x) => normName(x) === wert);
 
+    /* Einzeln gesperrtes Ereignis und der Gesamtriegel für Öffentliches
+       gehen allen anderen Regeln vor. */
+    if ((f.ohneEvent || []).indexOf(e.id) >= 0) return false;
+    if (f.keinOeffentlich && (e.vis || "private") === "public") return false;
     if (f.ohneVon.indexOf(wer) >= 0) return false;
     if (thema && drin(f.ohneThema, thema)) return false;
     if (ort && drin(f.ohneOrt, ort)) return false;
@@ -3996,7 +4147,7 @@ class Component extends DCLogic {
     const out = [];
     evs.forEach((e) => {
       (e.images || []).forEach((im, j) => {
-        out.push({ key: e.id + ":" + j, src: im.src || "", caption: im.caption || "", event: e.name, date: fmtDate(e.date), n: (im.comments || []).length });
+        out.push({ key: e.id + ":" + j, src: im.src || "", caption: zeigbareUnterschrift(im.caption), event: e.name, date: fmtDate(e.date), n: (im.comments || []).length });
       });
     });
     return out;
@@ -4012,6 +4163,30 @@ class Component extends DCLogic {
       });
     });
   }
+
+  /* Drehen gilt nur für die Show — das gespeicherte Bild bleibt, wie es ist. */
+  showDrehen = (richtung) => {
+    const bilder = this.showImages(this.state.show.scope, this.state.show.ref);
+    const cur = bilder[bilder.length ? Math.min(this.state.show.idx, bilder.length - 1) : 0];
+    if (!cur) return;
+    const r = Object.assign({}, this.state.show.rot || {});
+    r[cur.key] = (((r[cur.key] || 0) + richtung * 90) % 360 + 360) % 360;
+    this.setShow({ rot: r }, false);
+  };
+
+  /* Vollbild: der Browser darf das nur auf einen Klick hin öffnen. */
+  showVollbild = () => {
+    const el = this.showRoot;
+    try {
+      if (document.fullscreenElement) { document.exitFullscreen(); return; }
+      if (el && el.requestFullscreen) { el.requestFullscreen().catch(() => {}); return; }
+      if (el && el.webkitRequestFullscreen) { el.webkitRequestFullscreen(); return; }
+    } catch (e) { /* dann bleibt es beim Fenster */ }
+  };
+
+  onVollbildWechsel = () => {
+    this.setShow({ voll: !!document.fullscreenElement }, false);
+  };
 
   startShowTimer() {
     if (this.showTimer) window.clearInterval(this.showTimer);
@@ -4765,7 +4940,14 @@ class Component extends DCLogic {
     /* Gemeinsame Ereignisse: dasselbe Ereignis, in dem beide vorkommen. */
     const gemeinsam = meine.filter((e) => seine.some((x) => x.id === e.id));
 
-    return { meine: meine, seine: seine, treffer: knapp, orteBeide: orteBeide, gemeinsam: gemeinsam };
+    /* Gemeinsame Tage: an diesem Tag hat jede Seite etwas — dasselbe
+       Ereignis oder je ein eigenes. */
+    const tageA = {}, tageB = {};
+    meine.forEach((e) => { const t = String(e.date || ""); if (t) tageA[t] = true; });
+    seine.forEach((e) => { const t = String(e.date || ""); if (t) tageB[t] = true; });
+    const tageBeide = Object.keys(tageA).filter((t) => tageB[t]).sort();
+
+    return { meine: meine, seine: seine, treffer: knapp, orteBeide: orteBeide, gemeinsam: gemeinsam, tageBeide: tageBeide };
   }
 
   /* Nur Etappen mit Koordinaten kommen auf die Karte. */
@@ -4971,6 +5153,33 @@ class Component extends DCLogic {
   };
 
   /* ---------- Umfragen im Editor ---------- */
+
+  /* Einen freien Platz belegen oder den eigenen Eintrag ändern. */
+  listeEintragen = (eventId, pollId, platzId) => {
+    const u = this.me();
+    if (!u) return;
+    const text = String((this.state.listeDraft || {})[pollId + platzId] || "").trim().slice(0, 90);
+    const p = this.pollsVon(eventId).filter((x) => x.id === pollId)[0];
+    if (!p) return;
+    const opts = (p.opts || []).map((o) => {
+      if (o.i !== platzId) return o;
+      /* Leerer Text gibt den Platz wieder frei. */
+      if (!text) return Object.assign({}, o, { label: "", von: "" });
+      return Object.assign({}, o, { label: text, von: u.id });
+    });
+    const d = Object.assign({}, this.state.listeDraft || {});
+    delete d[pollId + platzId];
+    this.setState({ listeDraft: d });
+    this.pollAendern(eventId, pollId, { opts: opts });
+  };
+
+  /* Einen weiteren freien Platz anhängen — falls der Ersteller es erlaubt. */
+  listePlatzDazu = (eventId, pollId) => {
+    const p = this.pollsVon(eventId).filter((x) => x.id === pollId)[0];
+    if (!p || !p.offen) return;
+    if ((p.opts || []).length >= LISTE_MAX) return;
+    this.pollAendern(eventId, pollId, { opts: (p.opts || []).concat([{ i: "o" + uid(), label: "", von: "" }]) });
+  };
 
   pollNeu = (art) => {
     const d = this.state.draft;
@@ -5435,7 +5644,7 @@ class Component extends DCLogic {
           wrap: kopf
             ? { display: "grid", gap: "6px", gridColumn: "1 / -1" }
             : { display: "grid", gap: "6px" },
-          key: "m" + j, src: r.src || "", empty: !r.src, caption: r.caption || "", leerText: r.caption || "ohne Bild",
+          key: "m" + j, src: r.src || "", empty: !r.src, caption: zeigbareUnterschrift(r.caption), leerText: "ohne Bild",
           comments: (function (self) {
             const alleC = (r.comments || []).map((cm, k) => Object.assign({}, cm, { _k: k }));
             const oben = alleC.filter((cm) => !cm.parent);
@@ -5503,7 +5712,7 @@ class Component extends DCLogic {
           onDraft: (ev) => { const cd = Object.assign({}, st.cdraft); cd[e.id + ":" + j] = ev.target.value; this.setState({ cdraft: cd }); },
           onKey: (ev) => { if (ev.key === "Enter") this.addComment(e.id, j); },
           send: () => this.addComment(e.id, j),
-          zoom: (ev) => { ev.stopPropagation(); this.setState({ zoomImg: { src: r.src, caption: r.caption || "", event: e.name } }); }
+          zoom: (ev) => { ev.stopPropagation(); this.setState({ zoomImg: { src: r.src, caption: zeigbareUnterschrift(r.caption), event: e.name } }); }
         })),
         polls: (function (self) {
           let liste = (e.polls || []).filter((p) => p && p.frage !== undefined);
@@ -5533,7 +5742,11 @@ class Component extends DCLogic {
             const meine = entwurf === null ? abgegeben : entwurf;
             const offen = entwurf !== null;
             const rang = p.art === "rank";
-            const gesamt = rang ? Object.keys(p.rangliste || {}).length : Object.keys(p.stimmen || {}).length;
+            const liste = p.art === "liste";
+            const belegt = (p.opts || []).filter((o) => String(o.label || "").trim()).length;
+            const gesamt = rang ? Object.keys(p.rangliste || {}).length
+              : liste ? belegt
+              : Object.keys(p.stimmen || {}).length;
             const zaehler = {};
             Object.keys(p.stimmen || {}).forEach((k) => (p.stimmen[k] || []).forEach((o) => { zaehler[o] = (zaehler[o] || 0) + 1; }));
             const hoechst = Math.max(1, ...Object.keys(zaehler).map((k) => zaehler[k]));
@@ -5547,8 +5760,9 @@ class Component extends DCLogic {
               hatKopf: !!koepfe[p.id],
               istWahl: p.art === "vote",
               istRang: p.art === "rank",
-              frage: p.frage || (p.art === "rank" ? "Rangliste" : "Abstimmung"),
-              art: p.art === "rank" ? "Rangliste" : "Abstimmung",
+              istListe: liste,
+              frage: p.frage || (rang ? "Rangliste" : liste ? "Eintragen" : "Abstimmung"),
+              art: rang ? "Rangliste" : liste ? "Liste zum Eintragen" : "Abstimmung",
               hinweis: !darf
                 ? "Du bist bei dieser Runde nicht dabei."
                 : rang
@@ -5560,9 +5774,11 @@ class Component extends DCLogic {
               abgeben: () => self.stimmeAbgeben(e.id, p.id),
               verwerfen: () => self.wahlVerwerfen(p.id),
               abgebenLabel: meine.length ? "Stimme abgeben" : "Stimme zurückziehen",
-              zahl: gesamt
-                ? plural(gesamt, rang ? "Rangliste" : "Stimme", rang ? "Ranglisten" : "Stimmen")
-                : (rang ? "noch keine Rangliste" : "noch keine Stimme"),
+              zahl: liste
+                ? (belegt ? belegt + " von " + (p.opts || []).length + " belegt" : "noch nichts eingetragen")
+                : gesamt
+                  ? plural(gesamt, rang ? "Rangliste" : "Stimme", rang ? "Ranglisten" : "Stimmen")
+                  : (rang ? "noch keine Rangliste" : "noch keine Stimme"),
               darf: darf,
               /* Abstimmung */
               opts: (p.opts || []).filter((o) => o.label).map((o) => {
@@ -5587,6 +5803,63 @@ class Component extends DCLogic {
                   pick: darf ? () => self.auswaehlen(e.id, p.id, o.i) : () => {}
                 };
               }),
+              /* Eintragsliste: belegte Plätze mit Namen, freie zum Eintragen. */
+              plaetze: liste ? (p.opts || []).map((o, k) => {
+                const text = String(o.label || "").trim();
+                const meins = o.von && me && o.von === me.id;
+                const werName = o.von ? ((st.users.filter((u) => u.id === o.von)[0] || {}).username || "jemand") : "";
+                const an = meine.indexOf(o.i) >= 0;
+                const n = zaehler[o.i] || 0;
+                /* Auf Vorhandensein prüfen, nicht auf Inhalt: ein freier Platz
+                   startet mit leerem Text und soll das Feld trotzdem zeigen. */
+                const bearbeiten = Object.prototype.hasOwnProperty.call(st.listeDraft || {}, p.id + o.i);
+                return {
+                  /* Genau ein Zweig zeigt sich: Feld, belegt oder frei. */
+                  key: o.i, nr: (k + 1) + ".", text: text,
+                  belegt: !!text && !bearbeiten, frei: !text && !bearbeiten,
+                  wer: werName, meins: !!meins,
+                  /* Abstimmen nur bei belegten Plätzen und wenn erlaubt. */
+                  wahlAn: !!(p.stimmenAn && text && darf),
+                  stimmen: n ? String(n) : "",
+                  gewaehlt: an,
+                  /* Ohne Stimme braucht der Knopf ein sichtbares Zeichen,
+                     sonst wäre er leer und unauffindbar. */
+                  marke: an ? (offen ? "\u25cf" : "\u2713") : "\u2606",
+                  wahlStil: {
+                    font: "inherit", fontSize: "11px", letterSpacing: "0.04em", padding: "2px 9px", cursor: "pointer",
+                    whiteSpace: "nowrap", borderRadius: "99px",
+                    border: "1px solid " + (an ? "var(--t-accent, #0088b0)" : "var(--t-border, rgba(32,30,29,0.16))"),
+                    background: an ? "color-mix(in srgb, var(--t-accent, #0088b0) 18%, transparent)" : "transparent",
+                    color: "var(--t-ink, #201e1d)"
+                  },
+                  waehlen: () => self.auswaehlen(e.id, p.id, o.i),
+                  /* Eintragen darf jeder Teilnehmende; ändern nur der eigene Eintrag. */
+                  kannEintragen: darf && (!text || !!meins),
+                  entwurf: (st.listeDraft || {})[p.id + o.i] || "",
+                  imFeld: bearbeiten,
+                  onText: (ev) => {
+                    const d = Object.assign({}, self.state.listeDraft || {});
+                    d[p.id + o.i] = ev.target.value;
+                    self.setState({ listeDraft: d });
+                  },
+                  onKey: (ev) => { if (ev.key === "Enter") self.listeEintragen(e.id, p.id, o.i); },
+                  senden: () => self.listeEintragen(e.id, p.id, o.i),
+                  /* Eigenen Eintrag zum Ändern ins Feld holen. */
+                  aendern: () => {
+                    const d = Object.assign({}, self.state.listeDraft || {});
+                    d[p.id + o.i] = text;
+                    self.setState({ listeDraft: d });
+                  },
+                  zeileStil: {
+                    display: "flex", alignItems: "center", gap: "8px", padding: "5px 9px",
+                    borderRadius: "var(--t-radius, 2px)",
+                    border: "1px solid " + (text ? "var(--t-border, rgba(32,30,29,0.16))" : "transparent"),
+                    background: text ? "transparent" : "color-mix(in srgb, var(--t-ink, #201e1d) 4%, transparent)"
+                  }
+                };
+              }) : [],
+              platzDazu: liste && !!p.offen && darf && (p.opts || []).length < LISTE_MAX,
+              platzDazuTun: () => self.listePlatzDazu(e.id, p.id),
               /* Rangliste: steht so, wie sie angelegt wurde. */
               meineFolge: rang ? (p.opts || []).filter((o) => o.label).map((o, k) => ({
                 key: o.i, platz: (k + 1) + ".", label: o.label
@@ -5647,6 +5920,43 @@ class Component extends DCLogic {
             animationDelay: (ci * 46) + "ms", animationFillMode: "both"
           }
         })) : [],
+        /* Fremden Inhalt direkt sperren — ohne Umweg über die Einstellungen. */
+        sperre: (function (self) {
+          const fremd = (e.by || "") !== (me || {}).id;
+          if (!fremd) return { zeigen: false, offen: false, wahl: [] };
+          const offen = st.sperrMenu === e.id;
+          const werName = (st.users.filter((u) => u.id === e.by)[0] || {}).username || "unbekannt";
+          const thema = String(e.kicker || "").trim();
+          const ort = String(e.place || "").trim();
+          const f = self.feedPrefs();
+          const eintrag = (label, liste, wert, aktiv) => ({
+            key: liste + "|" + wert, label: label, aktiv: aktiv,
+            marke: aktiv ? "✓" : "",
+            style: {
+              display: "flex", alignItems: "center", gap: "7px", width: "100%", font: "inherit",
+              fontSize: "12.5px", textAlign: "left", cursor: "pointer", padding: "5px 8px",
+              borderRadius: "var(--t-radius, 2px)", border: 0,
+              background: aktiv ? "color-mix(in srgb, var(--t-accent2, #d6006c) 14%, transparent)" : "transparent",
+              color: "var(--t-ink, #201e1d)"
+            },
+            pick: () => self.sperreUm(liste, wert)
+          });
+          const wahl = [eintrag("Dieses Ereignis", "ohneEvent", e.id, (f.ohneEvent || []).indexOf(e.id) >= 0)];
+          wahl.push(eintrag("Alles von " + werName, "ohneVon", e.by || "", (f.ohneVon || []).indexOf(e.by || "") >= 0));
+          if (thema) wahl.push(eintrag("Thema „" + thema + "“", "ohneThema", thema, f.ohneThema.some((x) => normName(x) === normName(thema))));
+          if (ort) wahl.push(eintrag("Ort „" + ort + "“", "ohneOrt", ort, f.ohneOrt.some((x) => normName(x) === normName(ort))));
+          return {
+            zeigen: true, offen: offen, wahl: wahl,
+            auf: (ev) => { ev.stopPropagation(); self.setState({ sperrMenu: offen ? null : e.id }); },
+            zu: (ev) => { ev.stopPropagation(); self.setState({ sperrMenu: null }); },
+            menuStil: {
+              position: "absolute", right: "0", top: "100%", marginTop: "5px", zIndex: 70,
+              minWidth: "210px", display: "grid", gap: "1px", padding: "6px",
+              background: "var(--t-card, #eae9e9)", borderRadius: "var(--t-radius, 2px)",
+              boxShadow: "var(--shadow-lg)"
+            }
+          };
+        })(this),
         deco: this.decoParts(e.deco, t, e.id + (isOpen ? "-o" : "-c"), "view"),
         toggle: () => this.open(e.id),
         show: () => this.openShow("ev", e.id),
@@ -5668,7 +5978,14 @@ class Component extends DCLogic {
         key: "mk" + it.e.id,
         /* Container an der Karte: hier sitzt das Klickziel, und Karten
            überlappen sich nicht mehr — also auch die Marker nicht. */
-        pos: { position: "absolute", left: (it.x + padL + 14) + "px", top: axisY + "px", width: "1px", height: (top - axisY) + "px", zIndex: 20 },
+        /* zIndex 6: über der Achse (5), aber hinter allen Karten (ab 10) —
+           so verdecken die Striche keine Nachbarereignisse. */
+        pos: { position: "absolute", left: (it.x + padL + 14) + "px", top: axisY + "px", width: "1px", height: (top - axisY) + "px", zIndex: 6 },
+        /* Der Punkt braucht eine eigene Ebene über ALLEN Karten, sonst
+           verdeckt ihn seine eigene Karte zur Hälfte — auch die geöffnete,
+           die auf 60 liegt. Daher 62. Ein Kasten von 24 px, in dessen
+           Mitte der Punkt sitzt. */
+        punktPos: { position: "absolute", left: (it.x + padL + 14) + "px", top: (top - 12) + "px", width: "1px", height: "24px", zIndex: 62 },
         /* Waagerechter Knick zurück zum echten Datum. */
         knick: versatz > 1
           ? { position: "absolute", left: (-versatz) + "px", top: stufe + "px", width: versatz + "px", height: "1px", background: strich }
@@ -5678,7 +5995,7 @@ class Component extends DCLogic {
           ? { position: "absolute", left: (-versatz) + "px", top: "0", width: "1px", height: Math.max(6, stufe) + "px", background: strich }
           : { display: "none" },
         ping: isOpen
-          ? { position: "absolute", left: "50%", bottom: "0", width: "16px", height: "16px", marginLeft: "-8px", marginBottom: "-8px", borderRadius: "50%", background: "var(--t-accent, #0088b0)", animationName: "tl-ping", animationDuration: "1600ms", animationIterationCount: "infinite", pointerEvents: "none" }
+          ? { position: "absolute", left: "50%", top: "50%", width: "16px", height: "16px", marginLeft: "-8px", marginTop: "-8px", borderRadius: "50%", background: "var(--t-accent, #0088b0)", animationName: "tl-ping", animationDuration: "1600ms", animationIterationCount: "infinite", pointerEvents: "none" }
           : { display: "none" },
         title: it.e.name,
         toggle: () => this.open(it.e.id)
@@ -5691,7 +6008,7 @@ class Component extends DCLogic {
         key: "b" + it.e.id,
         /* Der Zeitbalken gehört auf die Achse, also an den echten Zeitpunkt —
            nicht an die möglicherweise nach rechts geschobene Karte. */
-        pos: { position: "absolute", left: ((it.xZeit == null ? it.x : it.xZeit) + padL + 14) + "px", top: (axisY - 5) + "px", width: Math.max(26, it.ex - (it.xZeit == null ? it.x : it.xZeit)) + "px", height: "11px", zIndex: 15 },
+        pos: { position: "absolute", left: ((it.xZeit == null ? it.x : it.xZeit) + padL + 14) + "px", top: (axisY - 5) + "px", width: Math.max(26, it.ex - (it.xZeit == null ? it.x : it.xZeit)) + "px", height: "11px", zIndex: 6 },
         label: days + " Tage"
       };
     });
@@ -5857,7 +6174,7 @@ class Component extends DCLogic {
           const rows = (this.state.draft.images || []).slice();
           rows[i] = Object.assign({}, rows[i], { et: ev.target.value });
           this.setState({ draft: Object.assign({}, this.state.draft, { images: rows }) });
-        }, key: "fm" + i, src: r.src || "", empty: !r.src, caption: r.caption || "", edit: () => this.openImgEdit(i), onCaption: this.rowSet("images", i, "caption"), remove: this.rowDel("images", i) })),
+        }, key: "fm" + i, src: r.src || "", empty: !r.src, caption: zeigbareUnterschrift(r.caption), edit: () => this.openImgEdit(i), onCaption: this.rowSet("images", i, "caption"), remove: this.rowDel("images", i) })),
       addInfo: this.rowAdd("infos", { label: "", value: "" }),
       addPerson: this.rowAdd("people", { name: "", role: "", uid: "" }),
       addUrl: () => {
@@ -6063,16 +6380,38 @@ class Component extends DCLogic {
         return {
           neueWahl: () => self.pollNeu("vote"),
           neueRang: () => self.pollNeu("rank"),
+          neueListe: () => self.pollNeu("liste"),
           liste: (d0.polls || []).map((p) => {
             const rang = p.art === "rank";
+            const eintrag = p.art === "liste";
             return {
               key: p.id,
-              art: rang ? "Rangliste" : "Abstimmung",
-              istWahl: !rang,
+              art: rang ? "Rangliste" : eintrag ? "Liste zum Eintragen" : "Abstimmung",
+              istWahl: !rang && !eintrag,
+              istListe: eintrag,
+              /* Bei einer Eintragsliste zählt nur, wie viele Plätze es gibt —
+                 die Beschriftung tragen die Teilnehmenden selbst ein. */
+              plaetze: String((p.opts || []).length),
+              onPlaetze: (ev) => {
+                const soll = Math.max(1, Math.min(LISTE_MAX, Number(ev.target.value) || 1));
+                const alt = (p.opts || []).slice();
+                while (alt.length < soll) alt.push({ i: "o" + uid(), label: "", von: "" });
+                while (alt.length > soll && !String(alt[alt.length - 1].label || "").trim()) alt.pop();
+                self.pollSet(p.id, { opts: alt });
+              },
+              offen: !!p.offen,
+              offenLabel: p.offen ? "Weitere Plätze erlaubt" : "Feste Anzahl an Plätzen",
+              offenStil: chip(!!p.offen),
+              offenUm: () => self.pollSet(p.id, { offen: !p.offen }),
+              stimmenAn: !!p.stimmenAn,
+              stimmenLabel: p.stimmenAn ? "Abstimmen erlaubt" : "Nur eintragen, kein Abstimmen",
+              stimmenStil: chip(!!p.stimmenAn),
+              stimmenUm: () => self.pollSet(p.id, { stimmenAn: !p.stimmenAn }),
               frage: p.frage || "",
-              platzhalter: rang ? "z. B. Die Acts von gestern" : "z. B. Wohin fahren wir nächstes Jahr?",
+              platzhalter: rang ? "z. B. Die Acts von gestern" : eintrag ? "z. B. Wer bringt was zu essen mit?" : "z. B. Wohin fahren wir nächstes Jahr?",
               onFrage: (ev) => self.pollSet(p.id, { frage: ev.target.value }),
               optLabel: rang ? "Reihenfolge — Platz 1 zuerst" : "Antworten",
+              zeigeOpts: !eintrag,
               opts: (p.opts || []).map((o, i) => ({
                 key: o.i, label: o.label || "",
                 platzhalter: rang ? "Platz " + (i + 1) : "Antwort " + (i + 1),
@@ -6229,7 +6568,7 @@ class Component extends DCLogic {
       position: "absolute", inset: "0", display: "flex",
       alignItems: "center", justifyContent: "center",
       minHeight: "0", minWidth: "0",
-      padding: "var(--space-3)", boxSizing: "border-box",
+      padding: "0", boxSizing: "border-box",
       animationName: trans === "none" ? "none" : "sh-" + trans + (sIdx % 2 ? "-b" : ""),
       animationDuration: trans === "burns" ? Math.round(st.show.speed * 1000) + "ms" : "820ms",
       animationTimingFunction: trans === "burns" ? "linear" : "cubic-bezier(0.16, 1, 0.3, 1)",
@@ -6300,7 +6639,7 @@ class Component extends DCLogic {
         name: e.name, place: e.place || "", note: e.note || "", big: big,
         infos: big ? (e.infos || []).map((r, j) => ({ key: "pi" + j, label: r.label, value: r.value })) : [],
         peopleLine: big ? (e.people || []).map((p) => p.name + (p.role ? " (" + p.role + ")" : "")).join(", ") : "",
-        images: big ? (e.images || []).slice(0, 2).map((r, j) => ({ key: "pm" + j, src: r.src || "", empty: !r.src, caption: r.caption || "" })) : []
+        images: big ? (e.images || []).slice(0, 2).map((r, j) => ({ key: "pm" + j, src: r.src || "", empty: !r.src, caption: zeigbareUnterschrift(r.caption) })) : []
       };
     });
 
@@ -6557,7 +6896,7 @@ class Component extends DCLogic {
           return raus;
         };
         const chip = (an, art) => ({
-          font: "inherit", fontSize: "11.5px", letterSpacing: "0.04em", padding: "4px 10px", cursor: "pointer",
+          font: "inherit", fontSize: "10.5px", letterSpacing: "0.04em", padding: "2px 8px", cursor: "pointer",
           whiteSpace: "nowrap", borderRadius: "99px",
           border: "1px solid " + (an ? (art === "aus" ? "var(--color-accent-2)" : "var(--color-accent)") : "var(--color-divider)"),
           background: an ? (art === "aus" ? "var(--color-accent-2)" : "var(--color-accent)") : "transparent",
@@ -6575,9 +6914,19 @@ class Component extends DCLogic {
             if (gezeigt.indexOf(w) < 0) { gezeigt.unshift(w); extra++; }
           });
           const rest = Math.max(0, passend.length - (MAX + extra));
+          const wieViele = werte.filter(istAktiv).length;
+          const auf = !!(st.inhaltAuf || {})[key];
           return {
             key: key, titel: titel,
             hat: werte.length > 0,
+            offen: auf,
+            zeichen: { display: "inline-block", transition: "rotate 160ms ease", rotate: auf ? "90deg" : "0deg" },
+            zahl: wieViele ? String(wieViele) : "",
+            umschalten: () => {
+              const o = Object.assign({}, st.inhaltAuf || {});
+              o[key] = !o[key];
+              self.setState({ inhaltAuf: o });
+            },
             suchbar: werte.length > MAX,
             suche: iSuche[key] || "",
             onSuche: setzeSuche(key),
@@ -6600,19 +6949,41 @@ class Component extends DCLogic {
         ].filter((g) => g.hat);
         const anzahlNur = f.nurVon.length + f.nurThema.length + f.nurOrt.length;
         const anzahlOhne = f.ohneVon.length + f.ohneThema.length + f.ohneOrt.length;
+        const gesperrt = (f.ohneEvent || []).map((id) => {
+          const ev = st.events.filter((x) => x.id === id)[0];
+          return {
+            key: id,
+            label: ev ? (ev.name || "ohne Titel") + " · " + fmtDate(ev.date) : "gelöschtes Ereignis",
+            frei: () => self.sperreUm("ohneEvent", id)
+          };
+        });
         return {
           gruppen: gruppen,
           hatGruppen: gruppen.length > 0,
-          aktiv: anzahlNur + anzahlOhne,
-          hatAktiv: anzahlNur + anzahlOhne > 0,
+          aktiv: anzahlNur + anzahlOhne + (f.ohneEvent || []).length + (f.keinOeffentlich ? 1 : 0),
+          hatAktiv: anzahlNur + anzahlOhne + (f.ohneEvent || []).length > 0 || !!f.keinOeffentlich,
+          /* Ein Riegel für alles Öffentliche — unabhängig von Person und Thema. */
+          riegel: !!f.keinOeffentlich,
+          riegelLabel: f.keinOeffentlich ? "Öffentliches ist gesperrt" : "Alles Öffentliche sperren",
+          riegelStil: {
+            font: "inherit", fontSize: "12px", letterSpacing: "0.04em", padding: "5px 12px", cursor: "pointer",
+            whiteSpace: "nowrap", borderRadius: "99px", textAlign: "left",
+            border: "1px solid " + (f.keinOeffentlich ? "var(--color-accent-2)" : "var(--color-divider)"),
+            background: f.keinOeffentlich ? "var(--color-accent-2)" : "transparent",
+            color: f.keinOeffentlich ? "var(--color-bg)" : "var(--color-text)"
+          },
+          riegelUm: () => self.sperrUmschalten("keinOeffentlich"),
+          gesperrt: gesperrt,
+          hatGesperrt: gesperrt.length > 0,
+          gesperrtTitel: plural(gesperrt.length, "gesperrtes Ereignis", "gesperrte Ereignisse"),
           hinweis: anzahlNur
-            ? "Es erscheint nur, was mindestens einer Zulassung entspricht — deine eigenen Ereignisse immer."
+            ? "Gerade ausgewählt: nur diese Werte. Deine eigenen Ereignisse siehst du immer."
             : anzahlOhne
-              ? "Ausgeschlossenes erscheint nicht mehr; alles andere bleibt."
-              : "Ohne Regel erscheint alles, was du sehen darfst.",
+              ? "Gerade ausgeblendet: diese Werte. Alles übrige bleibt sichtbar."
+              : "Ohne Auswahl siehst du alles, was für dich freigegeben ist.",
           weg: () => {
             const neuF = Object.assign({}, self.feedPrefs(), {
-              nurVon: [], ohneVon: [], nurThema: [], ohneThema: [], nurOrt: [], ohneOrt: []
+              nurVon: [], ohneVon: [], nurThema: [], ohneThema: [], nurOrt: [], ohneOrt: [], ohneEvent: [], keinOeffentlich: false
             });
             self.setState({ feed: neuF });
           }
@@ -6847,7 +7218,7 @@ class Component extends DCLogic {
           /* Kennzahlen */
           zahlen: v ? [
             { key: "z0", wert: String(v.gemeinsam.length), label: v.gemeinsam.length === 1 ? "gemeinsames Ereignis" : "gemeinsame Ereignisse" },
-            { key: "z1", wert: String(v.treffer.length), label: v.treffer.length === 1 ? "Tag mit je eigenem Ereignis" : "Tage mit je eigenem Ereignis" },
+            { key: "z1", wert: String(v.tageBeide.length), label: v.tageBeide.length === 1 ? "gemeinsamer Tag" : "gemeinsame Tage" },
             { key: "z2", wert: String(v.orteBeide.length), label: v.orteBeide.length === 1 ? "gemeinsamer Ort" : "gemeinsame Orte" },
             { key: "z3", wert: String(v.seine.length), label: "davon sichtbar" }
           ] : [],
@@ -6885,7 +7256,7 @@ class Component extends DCLogic {
             { key: "k", label: "Untereinander", on: !st.vglNeben, pick: () => self.setState({ vglNeben: false }) },
             { key: "n", label: "Gleiche Tage nebeneinander", on: !!st.vglNeben, pick: () => self.setState({ vglNeben: true }) }
           ],
-          hinweis: v && !v.treffer.length && !v.orteBeide.length && !v.gemeinsam.length
+          hinweis: v && !v.tageBeide.length && !v.orteBeide.length && !v.gemeinsam.length
             ? (self.state.vglFilter && (self.state.vglFilter.q || self.state.vglFilter.ort || self.state.vglFilter.kat || self.state.vglFilter.jahr)
               ? "Mit diesen Filtern keine Überschneidung — probier es mit weniger Filtern."
               : "Keine Überschneidung — ihr wart nie am selben Tag und nie am selben Ort unterwegs.")
@@ -7593,7 +7964,36 @@ class Component extends DCLogic {
         caption: cur ? cur.caption : "",
         meta: cur ? cur.date + (cur.n ? " · " + plural(cur.n, "Kommentar", "Kommentare") : "") : "",
         counter: simgs.length ? (sIdx + 1) + " / " + simgs.length : "0",
-        slides: cur ? [{ key: cur.key + ":" + sIdx, src: cur.src, empty: !cur.src, caption: cur.caption, wrap: slideWrap }] : [],
+        slides: cur ? [{
+          key: cur.key + ":" + sIdx, src: cur.src, empty: !cur.src, caption: cur.caption, leerText: "ohne Bild", wrap: slideWrap,
+          bildStil: (function (grad) {
+            const quer = grad === 90 || grad === 270;
+            return {
+              display: "block", objectFit: "contain", boxShadow: "var(--shadow-lg)",
+              /* Durchgehend cqw/cqh: das sind Breite und Höhe der Bühne OHNE
+                 ihren Innenabstand. Prozentwerte würden gegen den Slide messen,
+                 der den Innenabstand mitzählt — 15 px zu viel. Bei Viertel-
+                 drehung tauschen die beiden Grenzen die Rollen. */
+              maxWidth: quer ? "100cqh" : "100cqw",
+              maxHeight: quer ? "100cqw" : "100cqh",
+              width: "auto", height: "auto",
+              rotate: grad + "deg"
+            };
+          })((st.show.rot || {})[cur.key] || 0)
+        }] : [],
+        drehen: st.show.rot && (st.show.rot[cur ? cur.key : ""] || 0) ? "gedreht" : "",
+        linksDrehen: () => this.showDrehen(-1),
+        rechtsDrehen: () => this.showDrehen(1),
+        vollbild: this.showVollbild,
+        vollLabel: st.show.voll ? "⤡ Fenster" : "⛶ Vollbild",
+        voll: !!st.show.voll,
+        rootRef: (el) => { this.showRoot = el; },
+        buehne: st.show.voll
+          ? { position: "relative", minHeight: 0, overflow: "hidden", containerType: "size", padding: "0", background: "#000" }
+          : { position: "relative", minHeight: 0, overflow: "hidden", containerType: "size", padding: "var(--space-3) var(--space-6)" },
+        rahmen: st.show.voll
+          ? { position: "fixed", inset: 0, zIndex: 110, background: "#000", color: "#e8e8e8", display: "grid", gridTemplateRows: "auto 1fr auto", fontFamily: "var(--font-body)" }
+          : { position: "fixed", inset: 0, zIndex: 110, background: "var(--color-bg)", color: "var(--color-text)", display: "grid", gridTemplateRows: "auto 1fr auto", fontFamily: "var(--font-body)" },
         dots: simgs.map((s, i) => ({
           key: "d" + s.key,
           style: { flex: 1, height: "3px", padding: 0, border: 0, cursor: "pointer", background: i === sIdx ? "var(--color-accent)" : "var(--color-neutral-300)" },
