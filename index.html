@@ -112,7 +112,7 @@
       <div style="display: flex; gap: var(--space-6); flex-wrap: wrap; margin-top: var(--space-6); font-size: 13.5px; line-height: 1.4; color: var(--color-neutral-700);">
         <span>Dein Leben</span>
         <span>Eure Geschichten</span>
-        <span>Erleben wie damals</span>
+        <span>Erleben wie damals:)</span>
         <span>Mit mehr #Organgen</span>
       </div>
     </div>
@@ -245,11 +245,6 @@
         <button class="btn btn-secondary" data-tour="vergleich" style="white-space: nowrap;" onClick="{{ vgl.toggle }}">Vergleichen</button>
         <button class="btn btn-secondary" data-tour="konto" style="white-space: nowrap;" onClick="{{ konto.toggle }}">Mein Konto</button>
         <button class="btn btn-secondary" data-tour="hilfe" style="white-space: nowrap;" onClick="{{ tour.start }}">Hilfe</button>
-        <div class="seg" role="group" data-tour="strahl" style="margin: 0;">
-          <sc-for list="{{ strahl.arten }}" as="a" hint-placeholder-count="2">
-            <label class="seg-opt"><input type="radio" name="strahlwahl" checked="{{ a.on }}" onChange="{{ a.pick }}" style="position: absolute; opacity: 0; pointer-events: none;">{{ a.label }}</label>
-          </sc-for>
-        </div>
       </div>
     </div>
     <div style="height: 5px; background: var(--color-text); margin-top: var(--space-3);"></div>
@@ -432,6 +427,12 @@
               <div style="{{ m.punktPos }}">
                 <button onClick="{{ m.toggle }}" title="{{ m.title }}" style="position: absolute; left: 50%; top: 50%; width: var(--t-marker-w, 14px); height: var(--t-marker-h, 14px); margin-left: calc(var(--t-marker-w, 14px) / -2); margin-top: calc(var(--t-marker-h, 14px) / -2); padding: 0; cursor: pointer; box-sizing: border-box; background: var(--t-marker-bg, var(--t-accent, #0088b0)); border: var(--t-marker-bw, 0) solid var(--t-accent, #0088b0); border-radius: var(--t-marker-radius, 2px); rotate: var(--t-marker-rotate, 0deg);"></button>
                 <div style="{{ m.ping }}"></div>
+              </div>
+            </sc-for>
+
+            <sc-for list="{{ stapelKnoepfe }}" as="sk" hint-placeholder-count="0">
+              <div style="{{ sk.pos }}">
+                <button onClick="{{ sk.um }}" style="{{ sk.stil }}">{{ sk.label }}</button>
               </div>
             </sc-for>
 
@@ -727,6 +728,9 @@
                                     </div>
                                   </sc-if>
                                 </figure>
+                                <sc-if value="{{ im.albName }}" hint-placeholder-val="{{ false }}">
+                                  <div style="font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: color-mix(in srgb, var(--t-accent2, #d6006c) 88%, var(--t-ink, #201e1d));">Album · {{ im.albName }}</div>
+                                </sc-if>
                                 <div style="display: grid; gap: 4px;">
                                   <sc-for list="{{ im.comments }}" as="cm" hint-placeholder-count="1">
                                     <div style="{{ cm.einzug }}">
@@ -821,15 +825,6 @@
       </div>
     </div>
     </div>
-    <sc-if value="{{ hatMehrJahre }}" hint-placeholder-val="{{ false }}">
-      <div style="display: flex; align-items: center; gap: 7px; flex-wrap: wrap; padding-top: var(--space-3);">
-        <span style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-700);">Zurückgehalten</span>
-        <sc-for list="{{ mehrJahre }}" as="z" hint-placeholder-count="0">
-          <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ z.zeigen }}">＋ {{ z.label }}</button>
-        </sc-for>
-        <button onClick="{{ alleZeigen }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0 4px; cursor: pointer; color: var(--color-accent-700); text-decoration: underline; white-space: nowrap;">alle zeigen</button>
-      </div>
-    </sc-if>
     <div style="display: flex; justify-content: space-between; gap: var(--space-4); padding-top: var(--space-2); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-600);">
       <span>Klick auf eine Karte oder einen Marker öffnet das Ereignis · ← → blättert</span>
       <span>{{ stats.hint }}</span>
@@ -1021,7 +1016,7 @@
 
         <div style="height: 1px; background: var(--color-divider); margin: var(--space-6) 0 var(--space-4);"></div>
         <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: var(--space-2);">Personengruppen</div>
-        <p style="font-size: 12px; line-height: 1.5; margin: 0 0 var(--space-3); color: var(--color-neutral-700);">Gruppen sind Abkürzungen fürs Freigeben: einmal anlegen, dann bei jedem Ereignis mit einem Klick wählen. Wer später dazukommt, sieht auch die älteren Ereignisse dieser Gruppe.</p>
+        <p style="font-size: 12px; line-height: 1.5; margin: 0 0 var(--space-3); color: var(--color-neutral-700);">Gruppen sind Abkürzungen fürs Freigeben: einmal anlegen, dann bei jedem Ereignis mit einem Klick wählen. Wer später dazukommt, sieht auch die älteren Ereignisse dieser Gruppe. Eine Gruppe ist nur für ihre Mitglieder sichtbar — alle anderen sehen sie nirgends. Aus einer fremden Gruppe kannst du jederzeit austreten.</p>
         <div style="display: grid; gap: 5px; margin-bottom: var(--space-3);">
           <sc-for list="{{ pgroups }}" as="g" hint-placeholder-count="0">
             <div style="display: flex; align-items: baseline; gap: 8px; font-size: 13px;">
@@ -1029,8 +1024,13 @@
               <span>{{ g.name }}</span>
               <span style="color: var(--color-neutral-700); font-size: 11.5px;">{{ g.count }}</span>
               <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
-              <button onClick="{{ g.edit }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-accent-700); text-decoration: underline; white-space: nowrap;">Ändern</button>
-              <button onClick="{{ g.remove }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-accent-2-700); text-decoration: underline; white-space: nowrap;">Löschen</button>
+              <sc-if value="{{ g.meine }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ g.edit }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-accent-700); text-decoration: underline; white-space: nowrap;">Ändern</button>
+                <button onClick="{{ g.remove }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-accent-2-700); text-decoration: underline; white-space: nowrap;">Löschen</button>
+              </sc-if>
+              <sc-if value="{{ g.fremd }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ g.verlassen }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-accent-2-700); text-decoration: underline; white-space: nowrap;">Gruppe verlassen</button>
+              </sc-if>
             </div>
           </sc-for>
           <sc-if value="{{ pgroupsEmpty }}" hint-placeholder-val="{{ true }}">
@@ -1254,6 +1254,13 @@
                 </sc-for>
               </select>
             </sc-if>
+            <sc-if value="{{ form.alb.hat }}" hint-placeholder-val="{{ false }}">
+              <select class="input" value="{{ r.alb }}" onChange="{{ r.onAlb }}" style="font-size: 12px; padding-top: 3px; padding-bottom: 3px;">
+                <sc-for list="{{ form.alb.wahl }}" as="o" hint-placeholder-count="2">
+                  <option value="{{ o.value }}">{{ o.label }}</option>
+                </sc-for>
+              </select>
+            </sc-if>
             </div>
           </sc-for>
         </div>
@@ -1261,6 +1268,59 @@
           <input class="input" type="text" value="{{ form.url }}" onChange="{{ form.onUrl }}" placeholder="https://… Bild-URL einfügen">
           <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ form.addUrl }}">Hinzufügen</button>
         </div>
+        </sc-if>
+
+        <button onClick="{{ form.sec.alben.toggle }}" style="{{ form.sec.head }}">
+          <span style="{{ form.sec.alben.sign }}">▸</span>
+          <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Alben</span>
+          <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
+          <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">{{ form.sec.alben.badge }}</span>
+        </button>
+        <sc-if value="{{ form.sec.alben.on }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size: 12px; line-height: 1.5; color: var(--color-neutral-700); padding-bottom: var(--space-2);">Ein Album bündelt Bilder dieses Ereignisses und hat eigene Rechte: wer es sieht und wer darunter schreiben darf. Bilder ohne Album folgen dem Ereignis.</div>
+          <div style="display: grid; gap: var(--space-3); padding-bottom: var(--space-3);">
+            <sc-for list="{{ form.alb.liste }}" as="a" hint-placeholder-count="0">
+              <div style="display: grid; gap: 7px; padding: 11px 12px; border-radius: var(--radius-md); background: var(--color-surface);">
+                <div style="display: flex; gap: 6px; align-items: flex-end;">
+                  <span style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-accent-700); padding-bottom: 9px;">{{ a.nr }}</span>
+                  <div class="field" style="margin: 0; flex: 1;"><label>Name des Albums</label><input class="input" type="text" value="{{ a.name }}" onChange="{{ a.onName }}" placeholder="z. B. Nur für Oma"></div>
+                  <button class="btn btn-secondary btn-icon" onClick="{{ a.weg }}">✕</button>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                  <div class="field" style="margin: 0;"><label>Wer sieht es</label>
+                    <select class="input" value="{{ a.vis }}" onChange="{{ a.onVis }}">
+                      <sc-for list="{{ a.visWahl }}" as="o" hint-placeholder-count="2">
+                        <option value="{{ o.value }}">{{ o.label }}</option>
+                      </sc-for>
+                    </select>
+                  </div>
+                  <div class="field" style="margin: 0;"><label>Was ist erlaubt</label>
+                    <select class="input" value="{{ a.share }}" onChange="{{ a.onShare }}">
+                      <sc-for list="{{ a.shareWahl }}" as="o" hint-placeholder-count="2">
+                        <option value="{{ o.value }}">{{ o.label }}</option>
+                      </sc-for>
+                    </select>
+                  </div>
+                </div>
+                <sc-if value="{{ a.hatGruppen }}" hint-placeholder-val="{{ false }}">
+                  <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    <sc-for list="{{ a.gruppen }}" as="g" hint-placeholder-count="2">
+                      <button onClick="{{ g.toggle }}" style="{{ g.style }}">{{ g.label }}</button>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ a.hatKontakte }}" hint-placeholder-val="{{ false }}">
+                  <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    <sc-for list="{{ a.kontakte }}" as="k" hint-placeholder-count="3">
+                      <button onClick="{{ k.toggle }}" style="{{ k.style }}">{{ k.label }}</button>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <div style="font-size: 11.5px; color: var(--color-neutral-700);">{{ a.zahl }} zugeordnet · die Zuordnung steht unter jedem Bild in der Liste oben</div>
+              </div>
+            </sc-for>
+            <button class="btn btn-secondary" style="white-space: nowrap; justify-self: start;" onClick="{{ form.alb.neu }}">＋ Album anlegen</button>
+          </div>
         </sc-if>
 
         <button onClick="{{ form.sec.deko.toggle }}" style="{{ form.sec.head }}">
@@ -1681,15 +1741,15 @@
   </sc-if>
 
   <sc-if value="{{ show.open }}" hint-placeholder-val="{{ false }}">
-    <div data-screen-label="Fotoshow" ref="{{ show.rootRef }}" style="{{ show.rahmen }}">
-      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); padding: var(--space-4) var(--space-6) var(--space-2); flex-wrap: wrap;">
+    <div data-screen-label="Fotoshow" ref="{{ show.rootRef }}" onMouseMove="{{ show.weckUi }}" onPointerDown="{{ show.weckUi }}" style="{{ show.rahmen }}">
+      <div style="{{ show.kopf }}">
         <div>
           <div style="font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">Fotoshow · {{ show.scopeLabel }}</div>
           <div style="font-family: var(--font-heading); font-weight: 600; font-size: 25px; line-height: 1.1;">{{ show.title }}</div>
         </div>
         <div style="display: flex; align-items: baseline; gap: var(--space-3);">
           <span style="font-size: 11.5px; letter-spacing: 0.13em; text-transform: uppercase;">{{ show.counter }}</span>
-          <button class="btn btn-secondary btn-icon" onClick="{{ show.close }}">✕</button>
+          <button class="btn btn-secondary btn-icon" title="Fotoshow schließen" onClick="{{ show.close }}" style="color: #d81f2a; border-color: #d81f2a;" style-hover="background: color-mix(in srgb, #d81f2a 14%, transparent); color: #d81f2a;">✕</button>
         </div>
       </div>
       <div style="{{ show.buehne }}">
@@ -1713,7 +1773,7 @@
           </div>
         </sc-if>
       </div>
-      <div style="padding: var(--space-2) var(--space-6) var(--space-4);">
+      <div style="{{ show.leiste }}">
         <div style="display: flex; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; padding-bottom: var(--space-2);">
           <sc-if value="{{ show.caption }}" hint-placeholder-val="{{ false }}">
             <span style="font-size: 12.5px; font-style: italic;">{{ show.caption }}</span>
@@ -2077,7 +2137,6 @@
           </sc-if>
         </div>
         <div style="font-size: 11.5px; line-height: 1.5; color: var(--color-neutral-700); margin-bottom: var(--space-3);">„nur“ zeigt ausschließlich diesen Wert, „sperren“ blendet ihn aus. {{ inhalt.hinweis }}</div>
-        <button onClick="{{ inhalt.riegelUm }}" style="{{ inhalt.riegelStil }}">{{ inhalt.riegelLabel }}</button>
         <div style="display: grid; gap: var(--space-2); margin: var(--space-3) 0 var(--space-6);">
           <sc-for list="{{ inhalt.gruppen }}" as="g" hint-placeholder-count="3">
             <div style="display: grid; gap: 4px;">
@@ -2416,7 +2475,7 @@ const errLabel = function (m) {
   return c ? "Fehler " + c : "";
 };
 
-const VIS_OPTS = [["private", "Privat"], ["people", "Ausgew\u00e4hlte"], ["friends", "Alle Kontakte"], ["public", "\u00d6ffentlich"]];
+const VIS_OPTS = [["private", "Privat"], ["people", "Ausgew\u00e4hlte"], ["friends", "Alle Kontakte"]];
 
 const DEMO = [];
 
@@ -2494,9 +2553,9 @@ const normName = function (s) { return String(s || "").trim().toLowerCase().repl
 /* Verbrauchszahlen und Änderungsverlauf sieht nur dieses Konto. */
 const WARTUNG = "jokken";
 
-/* Öffentlicher Zeitstrahl: so viele Ereignisse je Jahr, bevor man
-   selbst auf „mehr“ tippen muss. */
-const OEFF_PRO_JAHR = 4;
+/* So viele Kacheln stehen untereinander, bevor eine Schaltfläche
+   den Rest aufklappt. */
+const STAPEL_SICHTBAR = 4;
 
 const sameHex = function (a, b) {
   if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
@@ -2819,9 +2878,8 @@ class Component extends DCLogic {
     vglNeben: false,
     histAlle: false,
     etKarte: false,
-    strahl: "mein",
-    jahrOffen: {},
-    feed: { oeffentlich: false, freunde: true, vorschau: false },
+    stapelOffen: {},
+    feed: { freunde: true, vorschau: false },
     konto: false,
     loeschWort: "",
     loeschFehler: "",
@@ -2869,7 +2927,7 @@ class Component extends DCLogic {
     stickPick: "stern",
     stickStil: "flach",
     freeSel: null,
-    show: { open: false, idx: 0, playing: true, speed: 5, transition: "fade", scope: "all", ref: "", music: "", musicUrl: "", musicName: "keine", volume: 0.7, rot: {}, voll: false }
+    show: { open: false, idx: 0, playing: true, speed: 5, transition: "fade", scope: "all", ref: "", music: "", musicUrl: "", musicName: "keine", volume: 0.7, rot: {}, voll: false, ui: true }
   };
 
   componentDidMount() {
@@ -3212,6 +3270,38 @@ class Component extends DCLogic {
 
   /* ---------- Personengruppen ---------- */
 
+  /* Eine Gruppe existiert nur für ihre Mitglieder und ihre Anlegerin.
+     Alle anderen sehen sie nirgends — nicht im Freigeben, nicht in den
+     Regeln, nicht in den Abstimmungen. */
+  gruppenSichtbar() {
+    const u = this.me();
+    if (!u) return [];
+    return (this.state.groups || []).filter((g) =>
+      (g.owner || u.id) === u.id || (g.members || []).indexOf(u.id) >= 0);
+  }
+
+  gruppenEigene() {
+    const u = this.me();
+    if (!u) return [];
+    return (this.state.groups || []).filter((g) => (g.owner || u.id) === u.id);
+  }
+
+  gruppeVerlassen = (id) => {
+    const u = this.me();
+    const g = (this.state.groups || []).filter((x) => x.id === id)[0];
+    if (!u || !g) return;
+    if (this.state.cloud && window.ChronikCloud && window.ChronikCloud.leaveGroup) {
+      window.ChronikCloud.leaveGroup(id)
+        .then(() => this.cloudSync())
+        .catch((e) => this.handleCloudError(e));
+      return;
+    }
+    this.setState({
+      groups: (this.state.groups || []).map((x) =>
+        (x.id === id ? Object.assign({}, x, { members: (x.members || []).filter((m) => m !== u.id) }) : x))
+    });
+  };
+
   saveGroup = () => {
     const d = this.state.gDraft;
     const name = String(d.name || "").trim();
@@ -3225,9 +3315,9 @@ class Component extends DCLogic {
     const gs = (this.state.groups || []).slice();
     if (this.state.gEdit) {
       const at = gs.findIndex((g) => g.id === this.state.gEdit);
-      if (at >= 0) gs[at] = { id: gs[at].id, name: name, members: (d.members || []).slice() };
+      if (at >= 0) gs[at] = { id: gs[at].id, name: name, owner: gs[at].owner || (this.me() || {}).id || "", members: (d.members || []).slice() };
     } else {
-      gs.push({ id: "g" + uid(), name: name, members: (d.members || []).slice() });
+      gs.push({ id: "g" + uid(), name: name, owner: (this.me() || {}).id || "", members: (d.members || []).slice() });
     }
     this.setState({ groups: gs, gDraft: { name: "", members: [] }, gEdit: null });
   };
@@ -3274,7 +3364,6 @@ class Component extends DCLogic {
 
   placeFree = (ev) => {
     if (!this.state.stickMode) return;
-    if (this.state.strahl === "oeffentlich") return;
     const host = ev.currentTarget;
     /* Freie Fläche heißt: der Scroller selbst oder eine der
        Hintergrundebenen — nicht eine Karte, ein Marker, ein Sticker. */
@@ -3657,7 +3746,6 @@ class Component extends DCLogic {
     if (vis === "private") return 0;
     const lv = (x) => RANK[x] || 1;
     const perms = e.perms || {};
-    if (vis === "public") return lv(e.share);
     if (vis === "friends") return this.areFriends(by, u.id) ? lv(e.share) : 0;
     let best = 0;
     if ((e.who || []).indexOf(u.id) >= 0) best = Math.max(best, lv(perms[u.id] || e.share));
@@ -3688,13 +3776,13 @@ class Component extends DCLogic {
         text: "In zehn kurzen Schritten zeige ich dir, was hier geht. Ein leuchtender Punkt führt dich zu jedem Knopf. Du kannst jederzeit abbrechen — und den Leitfaden später über ‚Hilfe‘ neu starten." },
       { ziel: "neu", titel: "Ein Ereignis anlegen",
         text: "Alles beginnt hier: Name, Datum, Ort. Dazu Notizen, Personen, Bilder, Abstimmungen — und Etappen, wenn es eine Reise war. Wer es sehen darf, entscheidest du im selben Fenster." },
-      { ziel: "strahl", titel: "Zwei Zeitstrahlen",
-        text: "Links deine eigene Chronik, rechts der öffentliche Strahl mit allem, was andere für alle freigegeben haben. In ‚Mein Konto‘ legst du fest, was davon auch bei dir erscheint." },
+      { ziel: "", titel: "Dein Zeitstrahl",
+        text: "Alles Eigene und alles, was Kontakte für dich freigeben, steht auf einem Strahl. Die Kacheln stehen unter ihrem Datum; sind es mehr als vier, klappt eine Schaltfläche den Rest auf. In ‚Mein Konto‘ legst du fest, was von anderen bei dir erscheint." },
       { ziel: "band", titel: "Ansicht, Filter, Daten",
         text: "Hinter diesen drei Reitern steckt die Feinarbeit: Zoom und Abspielen, Suche nach Ort, Person oder Zeitraum, Sticker zum Aufkleben — und das Sichern und Laden deiner Daten." },
       { ziel: "show", titel: "Fotoshow",
         text: "Zeigt alle Bilder deiner gefilterten Auswahl groß, mit Übergängen und wahlweise mit Musik. Gut für einen Abend zu zweit oder für die Leinwand beim Fest." },
-      { ziel: "design", titel: "Jedes Design kannst Du nach deinem Geschmack ändern ",
+      { ziel: "design", titel: "Jedes Design kannst Du nach deinem Geschmack ändern",
         text: "Von Zeitungssatz über Emailschild bis zur Flughafen-Klapptafel. Jedes Design lässt sich weiter verstellen — Farben, Schrift, Marker, Dichte. Deine Wahl gilt nur für dich." },
       { ziel: "kontakte", titel: "Kontakte",
         text: "Suche jemanden nach Name oder E-Mail und schick eine Anfrage. Erst wenn sie bestätigt ist, könnt ihr einander Ereignisse freigeben. Hier legst du auch Personengruppen an." },
@@ -3968,13 +4056,11 @@ class Component extends DCLogic {
   imStrahl(e) {
     const u = this.me();
     if (!u) return false;
-    if (this.state.strahl === "oeffentlich") return (e.vis || "private") === "public";
-    /* Eigener Strahl: immer das Eigene, dazu je Einstellung. */
+    /* Immer das Eigene, dazu je Einstellung. */
     if ((e.by || "") === u.id) return true;
     if (!this.inhaltErlaubt(e)) return false;
     const feed = this.feedPrefs();
     const vis = e.vis || "private";
-    if (vis === "public") return !!feed.oeffentlich;
     if (vis === "friends") return !!feed.freunde;
     /* Ausdrücklich für mich freigegeben: immer dabei. */
     return true;
@@ -3983,7 +4069,6 @@ class Component extends DCLogic {
   feedPrefs() {
     const f = this.state.feed || {};
     return {
-      oeffentlich: !!f.oeffentlich,
       freunde: f.freunde !== false,
       vorschau: !!f.vorschau,
       /* 1) Was in meiner Chronik erscheinen soll. Leere Liste = alles. */
@@ -3993,9 +4078,8 @@ class Component extends DCLogic {
       ohneThema: Array.isArray(f.ohneThema) ? f.ohneThema : [],
       nurOrt: Array.isArray(f.nurOrt) ? f.nurOrt : [],
       ohneOrt: Array.isArray(f.ohneOrt) ? f.ohneOrt : [],
-      /* 2) Einzeln gesperrte Ereignisse und der Riegel für Öffentliches. */
-      ohneEvent: Array.isArray(f.ohneEvent) ? f.ohneEvent : [],
-      keinOeffentlich: !!f.keinOeffentlich
+      /* 2) Einzeln gesperrte Ereignisse. */
+      ohneEvent: Array.isArray(f.ohneEvent) ? f.ohneEvent : []
     };
   }
 
@@ -4044,10 +4128,8 @@ class Component extends DCLogic {
     const ort = normName(e.place || "");
     const drin = (liste, wert) => liste.some((x) => normName(x) === wert);
 
-    /* Einzeln gesperrtes Ereignis und der Gesamtriegel für Öffentliches
-       gehen allen anderen Regeln vor. */
+    /* Ein einzeln gesperrtes Ereignis geht allen anderen Regeln vor. */
     if ((f.ohneEvent || []).indexOf(e.id) >= 0) return false;
-    if (f.keinOeffentlich && (e.vis || "private") === "public") return false;
     if (f.ohneVon.indexOf(wer) >= 0) return false;
     if (thema && drin(f.ohneThema, thema)) return false;
     if (ort && drin(f.ohneOrt, ort)) return false;
@@ -4060,33 +4142,6 @@ class Component extends DCLogic {
     if (thema && drin(f.nurThema, thema)) return true;
     if (ort && drin(f.nurOrt, ort)) return true;
     return false;
-  }
-
-  /* Auf dem öffentlichen Strahl je Jahr nur wenige zeigen — sonst
-     ertrinkt man in Fremdem. Aufgeklappte Jahre bleiben vollständig. */
-  proPeriode(liste) {
-    if (this.state.strahl !== "oeffentlich") return liste;
-    const offen = this.state.jahrOffen || {};
-    const zaehler = {};
-    return liste.filter((e) => {
-      const jahr = String(e.date || "").slice(0, 4) || "?";
-      if (offen[jahr]) return true;
-      zaehler[jahr] = (zaehler[jahr] || 0) + 1;
-      return zaehler[jahr] <= OEFF_PRO_JAHR;
-    });
-  }
-
-  /* Was im Moment zurückgehalten wird, je Jahr. */
-  zurueckgehalten() {
-    if (this.state.strahl !== "oeffentlich") return [];
-    const offen = this.state.jahrOffen || {};
-    const zaehler = {};
-    this.rohGefiltert().forEach((e) => {
-      const jahr = String(e.date || "").slice(0, 4) || "?";
-      zaehler[jahr] = (zaehler[jahr] || 0) + 1;
-    });
-    return Object.keys(zaehler).sort().filter((j) => !offen[j] && zaehler[j] > OEFF_PRO_JAHR)
-      .map((j) => ({ jahr: j, mehr: zaehler[j] - OEFF_PRO_JAHR }));
   }
 
   rohGefiltert() {
@@ -4136,7 +4191,7 @@ class Component extends DCLogic {
   /* ---------- photo show ---------- */
 
   filtered() {
-    return this.proPeriode(this.rohGefiltert());
+    return this.rohGefiltert();
   }
 
   showImages(scope, ref) {
@@ -4147,6 +4202,8 @@ class Component extends DCLogic {
     const out = [];
     evs.forEach((e) => {
       (e.images || []).forEach((im, j) => {
+        /* Bilder aus einem Album, das mir nicht offensteht, bleiben draußen. */
+        if (this.albumRecht(e, im.alb || "") < 1) return;
         out.push({ key: e.id + ":" + j, src: im.src || "", caption: zeigbareUnterschrift(im.caption), event: e.name, date: fmtDate(e.date), n: (im.comments || []).length });
       });
     });
@@ -4154,7 +4211,7 @@ class Component extends DCLogic {
   }
 
   openShow(scope, ref) {
-    const s = Object.assign({}, this.state.show, { open: true, idx: 0, playing: true, scope: scope, ref: ref || "" });
+    const s = Object.assign({}, this.state.show, { open: true, idx: 0, playing: true, scope: scope, ref: ref || "", ui: true });
     this.setState({ show: s, playing: false }, () => {
       if (this.timer) window.clearInterval(this.timer);
       this.startShowTimer();
@@ -4185,7 +4242,24 @@ class Component extends DCLogic {
   };
 
   onVollbildWechsel = () => {
-    this.setShow({ voll: !!document.fullscreenElement }, false);
+    const voll = !!document.fullscreenElement;
+    this.setShow({ voll: voll, ui: true }, false);
+    if (voll) this.uiSchlafen(); else if (this.uiTimer) window.clearTimeout(this.uiTimer);
+  };
+
+  /* Im Vollbild zählt nur das Foto. Die Leiste kommt bei Mausbewegung
+     zurück und verschwindet nach fünf Sekunden Ruhe wieder. */
+  uiSchlafen() {
+    if (this.uiTimer) window.clearTimeout(this.uiTimer);
+    this.uiTimer = window.setTimeout(() => {
+      if (this.state.show.open && this.state.show.voll) this.setShow({ ui: false }, false);
+    }, 5000);
+  }
+
+  weckUi = () => {
+    if (!this.state.show.voll) return;
+    if (!this.state.show.ui) this.setShow({ ui: true }, false);
+    this.uiSchlafen();
   };
 
   startShowTimer() {
@@ -4209,8 +4283,10 @@ class Component extends DCLogic {
 
   closeShow = () => {
     if (this.showTimer) window.clearInterval(this.showTimer);
+    if (this.uiTimer) window.clearTimeout(this.uiTimer);
     if (this.audio) this.audio.pause();
-    this.setState({ show: Object.assign({}, this.state.show, { open: false, playing: true }) });
+    try { if (document.fullscreenElement) document.exitFullscreen(); } catch (e) { /* egal */ }
+    this.setState({ show: Object.assign({}, this.state.show, { open: false, playing: true, voll: false, ui: true }) });
   };
 
   /* ---------- theme ---------- */
@@ -4263,31 +4339,39 @@ class Component extends DCLogic {
     const min = evs.length ? dp(evs[0].date) : Date.now();
     let max = min;
     evs.forEach(function (e) { max = Math.max(max, dp(e.end || e.date)); });
+    /* Jede Kachel steht genau unter ihrem Datum und wird nie seitlich
+       verschoben. Was dort nicht mehr nebeneinander passt, rutscht eine
+       Reihe tiefer — so entstehen Stapel unter dem Datum. */
     const right = [];
-    for (let i = 0; i < o.maxLanes; i++) right.push(-1e9);
     let used = 1;
     const items = evs.map(function (e, i) {
-      const wunsch = o.mode === "even" ? i * (o.cardW + o.gap) : ((dp(e.date) - min) / DAY) * o.pxPerDay;
+      const x = o.mode === "even" ? i * (o.cardW + o.gap) : ((dp(e.date) - min) / DAY) * o.pxPerDay;
       let lane = -1;
-      for (let l = 0; l < o.maxLanes; l++) { if (right[l] + o.gap <= wunsch) { lane = l; break; } }
-      /* Ist keine Spur frei, wird die Karte nach rechts geschoben, bis sie
-         passt — vorher wurde sie einfach auf eine belegte Spur gelegt und
-         überdeckte ihre Nachbarin. */
-      let x = wunsch;
-      if (lane < 0) {
-        lane = right.indexOf(Math.min.apply(null, right));
-        x = Math.max(wunsch, right[lane] + o.gap);
-      }
+      for (let l = 0; l < right.length; l++) { if (right[l] + o.gap <= x) { lane = l; break; } }
+      if (lane < 0) { lane = right.length; right.push(-1e9); }
       right[lane] = x + o.cardW;
       used = Math.max(used, lane + 1);
-      /* Verschobene Karten behalten ihren echten Zeitpunkt für Achse und
-         Zeitbalken — x ist die Anzeigeposition, xZeit der Zeitpunkt. */
       const ex = o.mode === "even" ? x : ((dp(e.end || e.date) - min) / DAY) * o.pxPerDay;
-      return { e: e, x: x, xZeit: wunsch, ex: ex, lane: lane, i: i };
+      return { e: e, x: x, xZeit: x, ex: ex, lane: lane, i: i, stapel: "" };
+    });
+    /* Zusammenhängende Überlappungen bilden einen Stapel. Er bekommt
+       einen gemeinsamen Schalter, sobald er zu hoch wird. */
+    const stapel = [];
+    let laufend = null;
+    items.forEach(function (it) {
+      if (!laufend || it.x > laufend.bis + o.gap) {
+        laufend = { id: "s" + it.e.id, x: it.x, bis: it.x + o.cardW, n: 0, tiefe: 0 };
+        stapel.push(laufend);
+      } else {
+        laufend.bis = Math.max(laufend.bis, it.x + o.cardW);
+      }
+      laufend.n += 1;
+      laufend.tiefe = Math.max(laufend.tiefe, it.lane + 1);
+      it.stapel = laufend.id;
     });
     let w = 480;
     items.forEach(function (it) { w = Math.max(w, it.x + o.cardW, it.ex + 60); });
-    return { items: items, min: min, max: max, lanes: used, width: w + 110, spanD: Math.max(1, (max - min) / DAY) };
+    return { items: items, stapel: stapel, min: min, max: max, lanes: used, width: w + 110, spanD: Math.max(1, (max - min) / DAY) };
   }
 
   basePx(evs) {
@@ -4403,7 +4487,7 @@ class Component extends DCLogic {
 
   newEvent = () => {
     const today = new Date().toISOString().slice(0, 10);
-    this.setState({ draft: { id: null, name: "", date: today, end: "", place: "", kicker: "", note: "", infos: [{ label: "", value: "" }], people: [], images: [], deco: { fx: [], pal: "thema", stickers: [] }, vis: "private", who: [], gwho: [], perms: {}, polls: [], etappen: [], etLayout: "gesamt", share: "view", by: (this.me() || {}).id || "", url: "", partial: false }, decoSel: null, pickQ: "", drawer: false, admin: false, secOpen: {} });
+    this.setState({ draft: { id: null, name: "", date: today, end: "", place: "", kicker: "", note: "", infos: [{ label: "", value: "" }], people: [], images: [], deco: { fx: [], pal: "thema", stickers: [] }, vis: "private", who: [], gwho: [], perms: {}, polls: [], etappen: [], etLayout: "gesamt", alben: [], share: "view", by: (this.me() || {}).id || "", url: "", partial: false }, decoSel: null, pickQ: "", drawer: false, admin: false, secOpen: {} });
   };
 
   editEvent(id) {
@@ -4427,6 +4511,7 @@ class Component extends DCLogic {
         },
         by: e.by || "", vis: (e.vis === "selected" ? "people" : e.vis) || "private", who: (e.who || []).slice(), gwho: (e.gwho || []).slice(), perms: Object.assign({}, e.perms || {}), polls: (e.polls || []).map((p) => Object.assign({}, p)), share: e.share || "view",
         etappen: (e.etappen || []).map((x) => Object.assign({}, x)),
+        alben: (e.alben || []).map((x) => Object.assign({}, x)),
         etLayout: e.etLayout === "split" ? "split" : "gesamt",
         url: "", partial: lvl < 4
       }
@@ -4454,12 +4539,13 @@ class Component extends DCLogic {
         stickers: ((d.deco || {}).stickers || []).map((r) => Object.assign({}, r))
       },
       by: d.by || (old && old.by) || ((this.me() || {}).id || ""),
-      vis: d.vis || (old && old.vis) || "public",
+      vis: d.vis || (old && old.vis) || "private",
       who: (d.who || (old && old.who) || []).slice(),
       gwho: (d.gwho || (old && old.gwho) || []).slice(),
       perms: Object.assign({}, (old && old.perms) || {}, d.perms || {}),
       polls: (d.polls || (old && old.polls) || []).map((p) => Object.assign({}, p)),
       etappen: (d.etappen || (old && old.etappen) || []).map((x) => Object.assign({}, x)),
+      alben: (d.alben || (old && old.alben) || []).map((x) => Object.assign({}, x)),
       etLayout: (d.etLayout || (old && old.etLayout)) === "split" ? "split" : "gesamt",
       share: d.share || (old && old.share) || "view"
     };
@@ -4761,6 +4847,96 @@ class Component extends DCLogic {
         st.textContent = "@page { size: " + w + "px " + h + "px; margin: 0; }";
         window.setTimeout(() => window.print(), 180);
       });
+    });
+  }
+
+  /* ---------- Alben ---------- */
+
+  /* Ein Bild kann in einem Album liegen. Das Album bestimmt, wer es
+     sehen und wer es kommentieren darf — unabhängig vom Rest des
+     Ereignisses. Ohne Album gilt das Recht am Ereignis. */
+  albumRecht(e, albId) {
+    const lvl = this.levelFor(e);
+    if (!albId) return lvl;
+    const u = this.me();
+    if (!u) return 0;
+    if ((e.by || "") === u.id) return 4;
+    const a = (e.alben || []).filter((x) => x.i === albId)[0];
+    if (!a) return lvl;
+    if ((a.vis || "alle") !== "alle") {
+      let drin = (a.who || []).indexOf(u.id) >= 0;
+      if (!drin) {
+        drin = (a.gwho || []).some((gid) => {
+          const g = (this.state.groups || []).filter((x) => x.id === gid)[0];
+          return !!(g && (g.members || []).indexOf(u.id) >= 0);
+        });
+      }
+      if (!drin) return 0;
+    }
+    return Math.min(lvl, RANK[a.share || "comment"] || 2);
+  }
+
+  albumName(e, albId) {
+    const a = (e.alben || []).filter((x) => x.i === albId)[0];
+    return a ? String(a.name || "").trim() : "";
+  }
+
+  /* Bilder in Anzeigereihenfolge, ohne die, die in einem Album liegen,
+     das mir nicht offensteht. */
+  bilderSichtbar(e) {
+    return this.nachEtappen(e).map((row) => {
+      const albId = (row.r || {}).alb || "";
+      return Object.assign({}, row, {
+        recht: this.albumRecht(e, albId),
+        albName: this.albumName(e, albId)
+      });
+    }).filter((row) => row.recht >= 1);
+  }
+
+  albNeu = () => {
+    const d = this.state.draft;
+    if (!d) return;
+    this.setState({
+      draft: Object.assign({}, d, {
+        alben: (d.alben || []).concat([{ i: "al" + uid(), name: "", vis: "alle", who: [], gwho: [], share: "comment" }])
+      })
+    });
+  };
+
+  albWeg = (id) => {
+    const d = this.state.draft;
+    if (!d) return;
+    this.setState({
+      draft: Object.assign({}, d, {
+        alben: (d.alben || []).filter((x) => x.i !== id),
+        images: (d.images || []).map((r) => (r.alb === id ? Object.assign({}, r, { alb: "" }) : r))
+      })
+    });
+  };
+
+  albSet(id, feld, wert) {
+    const d = this.state.draft;
+    if (!d) return;
+    this.setState({
+      draft: Object.assign({}, d, {
+        alben: (d.alben || []).map((x) => (x.i === id ? Object.assign({}, x, { [feld]: wert }) : x))
+      })
+    });
+  }
+
+  albWer(id, feld, wert) {
+    const d = this.state.draft;
+    if (!d) return;
+    this.setState({
+      draft: Object.assign({}, d, {
+        alben: (d.alben || []).map((x) => {
+          if (x.i !== id) return x;
+          const l = (x[feld] || []).slice();
+          const at = l.indexOf(wert);
+          if (at >= 0) l.splice(at, 1); else l.push(wert);
+          return Object.assign({}, x, { [feld]: l });
+        })
+      })
     });
   }
 
@@ -5581,12 +5757,42 @@ class Component extends DCLogic {
     const tickRand = 60;
     const trackW = Math.max(L.width + padL + tickRand, openIt ? openIt.x + padL + openW + 24 : 0);
 
+    /* Stapel unter einem Datum: die ersten vier Kacheln stehen da, der
+       Rest kommt erst auf Klick — der Schalter steht in einem eigenen
+       Band unter der vierten Reihe. */
+    const offeneStapel = st.stapelOffen || {};
+    const knopfH = 46;
+    const bandY = laneTop + STAPEL_SICHTBAR * (laneH + gap);
+    const reiheY = (lane) => laneTop + lane * (laneH + gap) + (lane >= STAPEL_SICHTBAR ? knopfH : 0);
+    const sichtbareItems = L.items.filter((it) => it.lane < STAPEL_SICHTBAR || !!offeneStapel[it.stapel]);
+    const stapelKnoepfe = (L.stapel || []).filter((s) => s.tiefe > STAPEL_SICHTBAR).map((s) => {
+      const auf = !!offeneStapel[s.id];
+      return {
+        key: s.id,
+        pos: { position: "absolute", left: (s.x + padL) + "px", top: bandY + "px", width: cardW + "px", zIndex: 61 },
+        label: auf ? "▴ weniger zeigen" : "▾ " + plural(s.tiefe - STAPEL_SICHTBAR, "weiteres Ereignis", "weitere Ereignisse"),
+        stil: {
+          font: "inherit", fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase",
+          width: "100%", padding: "9px 12px", cursor: "pointer", textAlign: "left",
+          background: "var(--t-card, #eae9e9)", color: "var(--t-ink, #201e1d)",
+          border: "1px solid var(--t-border, rgba(32, 30, 29, 0.16))",
+          borderRadius: "var(--t-radius, 2px)", boxShadow: "var(--t-shadow, none)"
+        },
+        um: () => {
+          const o = Object.assign({}, this.state.stapelOffen || {});
+          if (o[s.id]) delete o[s.id]; else o[s.id] = true;
+          this.setState({ stapelOffen: o });
+        }
+      };
+    });
+
     let openBottom = 0;
-    const cards = L.items.map((it) => {
+    const cards = sichtbareItems.map((it) => {
       const e = it.e;
       const isOpen = st.openId === e.id;
-      const top = laneTop + it.lane * (laneH + gap);
-      const nImg = (e.images || []).length;
+      const top = reiheY(it.lane);
+      const bilder = this.bilderSichtbar(e);
+      const nImg = bilder.length;
       const lvl = this.levelFor(e);
       if (isOpen) {
         const w2 = Math.round(cardW * 2.2);
@@ -5598,7 +5804,7 @@ class Component extends DCLogic {
       }
       return {
         key: e.id,
-        pos: { position: "absolute", left: (it.x + padL) + "px", top: top + "px", width: (isOpen ? openW : cardW) + "px", zIndex: isOpen ? 60 : 10 + it.lane, transition: "width 380ms cubic-bezier(0.16, 1, 0.3, 1)" },
+        pos: { position: "absolute", left: (it.x + padL) + "px", top: top + "px", width: (isOpen ? openW : cardW) + "px", zIndex: isOpen ? 60 : Math.min(50, 10 + it.lane), transition: "width 380ms cubic-bezier(0.16, 1, 0.3, 1)" },
         body: { maxHeight: isOpen ? "min(78vh, " + Math.max(520, Math.round(laneH * 4.2)) + "px)" : (laneH - 12) + "px", overflow: isOpen ? "auto" : "hidden", overscrollBehavior: "contain", borderRadius: "var(--t-radius, 2px)", transition: "max-height 420ms cubic-bezier(0.16, 1, 0.3, 1)", animationName: "var(--t-anim, tl-glide)", animationDuration: "var(--t-anim-dur, 620ms)", animationTimingFunction: "var(--t-anim-ease, ease-out)", animationFillMode: "both", animationDelay: (60 + it.i * 55) + "ms" },
         noteClip: { maxHeight: isOpen ? "none" : "51px", overflow: "hidden" },
         name: e.name, dateLabel: fmtDate(e.date), kicker: e.kicker || "", place: e.place || "", note: e.note || "",
@@ -5639,8 +5845,9 @@ class Component extends DCLogic {
         people: (e.people || []).map((r, j) => ({ key: "p" + j, name: r.name, role: r.role || "", photo: r.photo || "", noPhoto: !r.photo, initials: initials(r.name), linked: !!(r.uid && st.users.some((u) => u.id === r.uid)) })),
         /* Im Split-Modus nach Etappe sortiert. r und j behalten ihre
            Bedeutung, weil Kommentare am ursprünglichen Index hängen. */
-        images: this.nachEtappen(e).map(({ r, j, kopf }) => ({
+        images: bilder.map(({ r, j, kopf, albName, recht }) => ({
           etKopf: kopf || "", hatKopf: !!kopf,
+          albName: albName || "",
           wrap: kopf
             ? { display: "grid", gap: "6px", gridColumn: "1 / -1" }
             : { display: "grid", gap: "6px" },
@@ -5668,7 +5875,7 @@ class Component extends DCLogic {
                 einzug: { paddingLeft: (tief * 14) + "px" },
                 canDelete: !cm.deleted && !!me && (cm.userId === me.id),
                 remove: () => self.removeComment(e.id, j, cm._k),
-                zeichen: (lvl >= 2 && !cm.deleted) ? ECHO_EMOJI.map((em) => ({
+                zeichen: (recht >= 2 && !cm.deleted) ? ECHO_EMOJI.map((em) => ({
                   key: em, em: em, n: zeichenZahl[em] ? String(zeichenZahl[em]) : "",
                   style: {
                     font: "inherit", fontSize: "12px", lineHeight: 1, padding: "2px 6px", cursor: "pointer",
@@ -5679,7 +5886,7 @@ class Component extends DCLogic {
                   },
                   pick: () => self.reagieren(e.id, j, cm.id, em)
                 })) : [],
-                kannAntworten: lvl >= 2 && !cm.deleted && tief < 3,
+                kannAntworten: recht >= 2 && !cm.deleted && tief < 3,
                 antwortOffen: antwortOffen,
                 antwortLabel: antwortOffen ? "Abbrechen" : "Antworten",
                 antwortToggle: () => self.antwortAuf(rSchluessel),
@@ -5707,7 +5914,7 @@ class Component extends DCLogic {
             ? "weniger anzeigen"
             : "… " + ((r.comments || []).filter((cm) => !cm.parent).length - 3) + " weitere",
           mehrCToggle: () => this.antwortAuf("img" + e.id + j),
-          canComment: lvl >= 2,
+          canComment: recht >= 2,
           draft: (st.cdraft || {})[e.id + ":" + j] || "",
           onDraft: (ev) => { const cd = Object.assign({}, st.cdraft); cd[e.id + ":" + j] = ev.target.value; this.setState({ cdraft: cd }); },
           onKey: (ev) => { if (ev.key === "Enter") this.addComment(e.id, j); },
@@ -5965,8 +6172,8 @@ class Component extends DCLogic {
       };
     });
 
-    const markers = L.items.map((it) => {
-      const top = laneTop + it.lane * (laneH + gap);
+    const markers = sichtbareItems.map((it) => {
+      const top = reiheY(it.lane);
       const isOpen = st.openId === it.e.id;
       const xz = it.xZeit == null ? it.x : it.xZeit;
       const versatz = Math.max(0, it.x - xz);
@@ -6019,7 +6226,10 @@ class Component extends DCLogic {
       label: tk.label
     })) : [];
 
-    const totalH = Math.max(laneTop + L.lanes * (laneH + gap) + 30, openBottom + 40);
+    let tiefeSichtbar = 1;
+    sichtbareItems.forEach((it) => { tiefeSichtbar = Math.max(tiefeSichtbar, it.lane + 1); });
+    const bandExtra = stapelKnoepfe.length ? knopfH : 0;
+    const totalH = Math.max(laneTop + tiefeSichtbar * (laneH + gap) + bandExtra + 30, openBottom + 40);
 
     const presets = this.allThemes().map((p) => {
       const active = p.id === t.id;
@@ -6169,6 +6379,12 @@ class Component extends DCLogic {
         };
       }),
       images: (d0.images || []).map((r, i) => ({
+        alb: r.alb || "",
+        onAlb: (ev) => {
+          const rows = (this.state.draft.images || []).slice();
+          rows[i] = Object.assign({}, rows[i], { alb: ev.target.value });
+          this.setState({ draft: Object.assign({}, this.state.draft, { images: rows }) });
+        },
         et: r.et || "",
         onEt: (ev) => {
           const rows = (this.state.draft.images || []).slice();
@@ -6244,8 +6460,65 @@ class Component extends DCLogic {
           polls: mk("polls", (d0.polls || []).length ? plural((d0.polls || []).length, "Runde", "Runden") : "keine"),
           etappen: mk("etappen", (d0.etappen || []).length ? plural((d0.etappen || []).length, "Etappe", "Etappen") : "keine"),
           bilder: mk("bilder", zahl((d0.images || []).length, "Bild", "Bilder")),
+          alben: mk("alben", (d0.alben || []).length ? plural((d0.alben || []).length, "Album", "Alben") : "keine"),
           deko: mk("deko", dekoN ? plural(dekoN, "Element", "Elemente") : "keine"),
           sicht: mk("sicht", "")
+        };
+      })(this),
+      /* Alben: Ordner innerhalb eines Ereignisses, jeder mit eigener
+         Sichtbarkeit. Bilder ohne Album folgen dem Ereignis. */
+      alb: (function (self) {
+        const liste = d0.alben || [];
+        const eigene = self.gruppenEigene();
+        const fids = self.friendIds();
+        const kontakte = st.users.filter((u) => fids.indexOf(u.id) >= 0);
+        const chip = (an) => ({
+          font: "inherit", fontSize: "11.5px", letterSpacing: "0.04em", padding: "4px 10px",
+          cursor: "pointer", whiteSpace: "nowrap", borderRadius: "99px", textAlign: "left",
+          border: "1px solid " + (an ? "var(--color-accent)" : "var(--color-divider)"),
+          background: an ? "var(--color-accent)" : "transparent",
+          color: an ? "var(--color-bg)" : "var(--color-text)"
+        });
+        return {
+          hat: liste.length > 0,
+          neu: self.albNeu,
+          wahl: [{ key: "a0", value: "", label: "— kein Album —" }].concat(
+            liste.map((x, k) => ({ key: x.i, value: x.i, label: String(x.name || "").trim() || (k + 1) + ". Album" }))
+          ),
+          liste: liste.map((x, k) => {
+            const nurWer = (x.vis || "alle") !== "alle";
+            return {
+              key: x.i,
+              nr: (k + 1) + ".",
+              name: x.name || "",
+              onName: (ev) => self.albSet(x.i, "name", ev.target.value),
+              vis: x.vis || "alle",
+              visWahl: [
+                { key: "alle", value: "alle", label: "Alle, die das Ereignis sehen" },
+                { key: "personen", value: "personen", label: "Nur ausgewählte Kontakte" }
+              ],
+              onVis: (ev) => self.albSet(x.i, "vis", ev.target.value),
+              share: x.share || "comment",
+              shareWahl: [
+                { key: "view", value: "view", label: "Nur ansehen" },
+                { key: "comment", value: "comment", label: "Ansehen und kommentieren" }
+              ],
+              onShare: (ev) => self.albSet(x.i, "share", ev.target.value),
+              nurWer: nurWer,
+              hatGruppen: nurWer && eigene.length > 0,
+              gruppen: eigene.map((g) => {
+                const an = (x.gwho || []).indexOf(g.id) >= 0;
+                return { key: g.id, label: (an ? "✓ " : "") + g.name, style: chip(an), toggle: () => self.albWer(x.i, "gwho", g.id) };
+              }),
+              hatKontakte: nurWer && kontakte.length > 0,
+              kontakte: kontakte.map((u) => {
+                const an = (x.who || []).indexOf(u.id) >= 0;
+                return { key: u.id, label: (an ? "✓ " : "") + u.username, style: chip(an), toggle: () => self.albWer(x.i, "who", u.id) };
+              }),
+              zahl: plural((d0.images || []).filter((r) => r.alb === x.i).length, "Bild", "Bilder"),
+              weg: () => self.albWeg(x.i)
+            };
+          })
         };
       })(this),
       et: (function (self) {
@@ -6426,7 +6699,7 @@ class Component extends DCLogic {
               onWer: (ev) => self.pollSet(p.id, { wer: ev.target.value }),
               zeigeGruppen: (p.wer || "alle") === "gruppen",
               zeigePersonen: (p.wer || "alle") === "personen",
-              gruppen: (st.groups || []).map((g) => {
+              gruppen: self.gruppenEigene().map((g) => {
                 const an = (p.gwho || []).indexOf(g.id) >= 0;
                 return {
                   key: g.id, label: g.name + " · " + (g.members || []).length, style: chip(an),
@@ -6462,7 +6735,7 @@ class Component extends DCLogic {
         const who = d0.who || [];
         const gwho = d0.gwho || [];
         const perms = d0.perms || {};
-        const groups = st.groups || [];
+        const groups = self.gruppenEigene();
         const fids = self.friendIds();
         const share = d0.share || "view";
         const setDraft = (patch) => self.setState({ draft: Object.assign({}, self.state.draft, patch) });
@@ -6484,8 +6757,8 @@ class Component extends DCLogic {
             pick: () => setDraft({ vis: o[0] })
           })),
           isPeople: vis === "people",
-          oneLevel: vis === "friends" || vis === "public",
-          shareLabel: vis === "friends" ? "Was dürfen deine Kontakte" : "Was dürfen alle",
+          oneLevel: vis === "friends",
+          shareLabel: "Was dürfen deine Kontakte",
           share: share,
           shares: SHARE_OPTS.map((o) => ({ key: o[0], value: o[0], label: o[1] })),
           onShare: (ev) => setDraft({ share: ev.target.value }),
@@ -6528,14 +6801,12 @@ class Component extends DCLogic {
             ? "Du hast noch keine Kontakte — such sie oben unter ‚Kontakte‘."
             : "Kein Kontakt passt zur Suche.",
           count: vis === "private" ? "nur du"
-            : vis === "public" ? "alle angemeldeten"
             : vis === "friends" ? plural(fids.length, "Kontakt", "Kontakte")
             : plural(reach, "Person", "Personen"),
           hint: vis === "private"
             ? "Nur du siehst dieses Ereignis. Das ist die Voreinstellung — niemand sonst kommt heran."
             : vis === "people" ? "Nur die angehakten Kontakte und die gewählten Gruppen sehen es. Neben jedem Eintrag stellst du ein, wie viel diese Person oder Gruppe darf."
-            : vis === "friends" ? "Alle deine bestätigten Kontakte sehen dieses Ereignis — auch die, die später dazukommen."
-            : "Jeder, der ein Konto in dieser Chronik hat, sieht dieses Ereignis."
+            : "Alle deine bestätigten Kontakte sehen dieses Ereignis — auch die, die später dazukommen."
         };
       })(this) : null
     } : null;
@@ -6822,16 +7093,6 @@ class Component extends DCLogic {
           }
         };
       })(this),
-      strahl: {
-        mein: st.strahl !== "oeffentlich",
-        offen: st.strahl === "oeffentlich",
-        label: st.strahl === "oeffentlich" ? "Öffentlicher Zeitstrahl" : "Deine Chronik",
-        waehle: (id) => this.setState({ strahl: id, openId: null }),
-        arten: [
-          { key: "mein", label: "Meine Chronik", on: st.strahl !== "oeffentlich", pick: () => this.setState({ strahl: "mein", openId: null }) },
-          { key: "oeff", label: "Öffentlich", on: st.strahl === "oeffentlich", pick: () => this.setState({ strahl: "oeffentlich", openId: null }) }
-        ]
-      },
       feed: (function (self) {
         const f = self.feedPrefs();
         const schalter = (an) => ({
@@ -6847,8 +7108,6 @@ class Component extends DCLogic {
           self.setState({ feed: neuF });
         };
         return [
-          { key: "oe", label: "Öffentliche Ereignisse", on: f.oeffentlich, style: schalter(f.oeffentlich), toggle: setz("oeffentlich"),
-            hint: "Zeigt Ereignisse, die jemand für alle freigegeben hat, auch auf deinem eigenen Zeitstrahl." },
           { key: "fr", label: "Ereignisse meiner Kontakte", on: f.freunde, style: schalter(f.freunde), toggle: setz("freunde"),
             hint: "Was Kontakte für „Alle Kontakte“ freigeben, erscheint bei dir mit." },
           { key: "vs", label: "Mail bei künftigen Ereignissen", on: f.vorschau, style: schalter(f.vorschau), toggle: setz("vorschau"),
@@ -6960,19 +7219,8 @@ class Component extends DCLogic {
         return {
           gruppen: gruppen,
           hatGruppen: gruppen.length > 0,
-          aktiv: anzahlNur + anzahlOhne + (f.ohneEvent || []).length + (f.keinOeffentlich ? 1 : 0),
-          hatAktiv: anzahlNur + anzahlOhne + (f.ohneEvent || []).length > 0 || !!f.keinOeffentlich,
-          /* Ein Riegel für alles Öffentliche — unabhängig von Person und Thema. */
-          riegel: !!f.keinOeffentlich,
-          riegelLabel: f.keinOeffentlich ? "Öffentliches ist gesperrt" : "Alles Öffentliche sperren",
-          riegelStil: {
-            font: "inherit", fontSize: "12px", letterSpacing: "0.04em", padding: "5px 12px", cursor: "pointer",
-            whiteSpace: "nowrap", borderRadius: "99px", textAlign: "left",
-            border: "1px solid " + (f.keinOeffentlich ? "var(--color-accent-2)" : "var(--color-divider)"),
-            background: f.keinOeffentlich ? "var(--color-accent-2)" : "transparent",
-            color: f.keinOeffentlich ? "var(--color-bg)" : "var(--color-text)"
-          },
-          riegelUm: () => self.sperrUmschalten("keinOeffentlich"),
+          aktiv: anzahlNur + anzahlOhne + (f.ohneEvent || []).length,
+          hatAktiv: anzahlNur + anzahlOhne + (f.ohneEvent || []).length > 0,
           gesperrt: gesperrt,
           hatGesperrt: gesperrt.length > 0,
           gesperrtTitel: plural(gesperrt.length, "gesperrtes Ereignis", "gesperrte Ereignisse"),
@@ -6983,7 +7231,7 @@ class Component extends DCLogic {
               : "Ohne Auswahl siehst du alles, was für dich freigegeben ist.",
           weg: () => {
             const neuF = Object.assign({}, self.feedPrefs(), {
-              nurVon: [], ohneVon: [], nurThema: [], ohneThema: [], nurOrt: [], ohneOrt: [], ohneEvent: [], keinOeffentlich: false
+              nurVon: [], ohneVon: [], nurThema: [], ohneThema: [], nurOrt: [], ohneOrt: [], ohneEvent: []
             });
             self.setState({ feed: neuF });
           }
@@ -7322,21 +7570,6 @@ class Component extends DCLogic {
         again: (st.limitNote || {}).again || "",
         close: () => this.setState({ limitNote: null })
       },
-      mehrJahre: this.zurueckgehalten().map((z) => ({
-        key: z.jahr,
-        label: z.jahr + " · " + plural(z.mehr, "weiteres Ereignis", "weitere Ereignisse"),
-        zeigen: () => {
-          const o = Object.assign({}, this.state.jahrOffen || {});
-          o[z.jahr] = true;
-          this.setState({ jahrOffen: o });
-        }
-      })),
-      hatMehrJahre: this.zurueckgehalten().length > 0,
-      alleZeigen: () => {
-        const o = {};
-        this.zurueckgehalten().forEach((z) => { o[z.jahr] = true; });
-        this.setState({ jahrOffen: Object.assign({}, this.state.jahrOffen || {}, o) });
-      },
       arbeitet: !!st.cloudBusy && !st.imgBusy,
       arbeitetText: st.booting ? "Chronik wird geladen …" : "wird gespeichert …",
       cloudErr: st.cloudErr ? errLabel(st.cloudErr) : "",
@@ -7460,13 +7693,19 @@ class Component extends DCLogic {
       titleEditable: true,
       titleHint: "Anklicken und überschreiben",
       onTitleBlur: this.onTitleBlur,
-      pgroups: (st.groups || []).map((g) => ({
-        key: g.id, name: g.name,
-        count: (g.members || []).length === 1 ? "1 Person" : (g.members || []).length + " Personen",
-        edit: () => this.editGroup(g.id),
-        remove: () => this.removeGroup(g.id)
-      })),
-      pgroupsEmpty: (st.groups || []).length === 0,
+      pgroups: this.gruppenSichtbar().map((g) => {
+        const meine = (g.owner || (me || {}).id) === (me || {}).id;
+        return {
+          key: g.id, name: g.name,
+          count: ((g.members || []).length === 1 ? "1 Person" : (g.members || []).length + " Personen")
+            + (meine ? "" : " · von " + ((st.users.filter((u) => u.id === g.owner)[0] || {}).username || "unbekannt")),
+          meine: meine, fremd: !meine,
+          edit: () => this.editGroup(g.id),
+          remove: () => this.removeGroup(g.id),
+          verlassen: () => this.gruppeVerlassen(g.id)
+        };
+      }),
+      pgroupsEmpty: this.gruppenSichtbar().length === 0,
       gForm: {
         label: st.gEdit ? "Gruppe ändern" : "Neue Gruppe",
         name: st.gDraft.name,
@@ -7536,7 +7775,6 @@ class Component extends DCLogic {
       stop: (ev) => ev.stopPropagation(),
       stageRef: (el) => { this.stage = el; },
       free: (function (self) {
-        if (st.strahl === "oeffentlich") return [];
         const pal = palOf(st.meta.pal || "thema", t);
         return (st.meta.free || []).map((f) => {
           const base = stickerStyle({ k: f.k, st: f.st, c: f.c, s: f.s, r: f.r }, pal, st.stickMode ? "edit" : "view", st.stickMode && st.freeSel === f.i);
@@ -7548,9 +7786,8 @@ class Component extends DCLogic {
         });
       })(this),
       stick: {
-        /* Nur auf der eigenen Chronik — der öffentliche Strahl ist geteilt. */
-        moeglich: st.strahl !== "oeffentlich",
-        on: !!st.stickMode && st.strahl !== "oeffentlich",
+        moeglich: true,
+        on: !!st.stickMode,
         label: st.stickMode ? "◉ Aufkleben beenden" : "○ Sticker aufkleben",
         toggle: () => this.setState({ stickMode: !st.stickMode, freeSel: null }),
         place: this.placeFree, move: this.freeMove, up: this.freeUp,
@@ -7790,7 +8027,7 @@ class Component extends DCLogic {
         height: Math.max(560, totalH) + "px", minHeight: "100%"
       },
       axisStyle: { position: "absolute", left: "0", top: axisY + "px", width: trackW + "px", zIndex: 5 },
-      cards: cards, markers: markers, bars: bars, ticks: ticks,
+      cards: cards, markers: markers, bars: bars, ticks: ticks, stapelKnoepfe: stapelKnoepfe,
       drawer: st.drawer,
       toggleDrawer: () => this.setState({ drawer: !st.drawer, admin: false }),
       admin: st.admin,
@@ -7988,11 +8225,33 @@ class Component extends DCLogic {
         vollLabel: st.show.voll ? "⤡ Fenster" : "⛶ Vollbild",
         voll: !!st.show.voll,
         rootRef: (el) => { this.showRoot = el; },
+        weckUi: this.weckUi,
         buehne: st.show.voll
-          ? { position: "relative", minHeight: 0, overflow: "hidden", containerType: "size", padding: "0", background: "#000" }
+          ? { position: "relative", minHeight: 0, overflow: "hidden", containerType: "size", padding: "0", background: "#000", gridArea: "1 / 1" }
           : { position: "relative", minHeight: 0, overflow: "hidden", containerType: "size", padding: "var(--space-3) var(--space-6)" },
+        /* Im Vollbild liegen Kopf und Leiste als Schleier über dem Bild —
+           sichtbar nur, solange die Maus sich rührt. */
+        kopf: st.show.voll
+          ? {
+              gridArea: "1 / 1", alignSelf: "start", zIndex: 3,
+              display: "flex", alignItems: "baseline", justifyContent: "space-between",
+              gap: "var(--space-4)", padding: "var(--space-4) var(--space-6) var(--space-3)", flexWrap: "wrap",
+              background: "linear-gradient(#000000cc, #00000000)",
+              opacity: st.show.ui ? 1 : 0, pointerEvents: st.show.ui ? "auto" : "none",
+              transition: "opacity 320ms ease"
+            }
+          : { display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "var(--space-4)", padding: "var(--space-4) var(--space-6) var(--space-2)", flexWrap: "wrap" },
+        leiste: st.show.voll
+          ? {
+              gridArea: "1 / 1", alignSelf: "end", zIndex: 3,
+              padding: "var(--space-3) var(--space-6) var(--space-4)",
+              background: "linear-gradient(#00000000, #000000d9)",
+              opacity: st.show.ui ? 1 : 0, pointerEvents: st.show.ui ? "auto" : "none",
+              transition: "opacity 320ms ease"
+            }
+          : { padding: "var(--space-2) var(--space-6) var(--space-4)" },
         rahmen: st.show.voll
-          ? { position: "fixed", inset: 0, zIndex: 110, background: "#000", color: "#e8e8e8", display: "grid", gridTemplateRows: "auto 1fr auto", fontFamily: "var(--font-body)" }
+          ? { position: "fixed", inset: 0, zIndex: 110, background: "#000", color: "#e8e8e8", display: "grid", gridTemplateRows: "1fr", gridTemplateColumns: "1fr", fontFamily: "var(--font-body)", cursor: st.show.ui ? "auto" : "none" }
           : { position: "fixed", inset: 0, zIndex: 110, background: "var(--color-bg)", color: "var(--color-text)", display: "grid", gridTemplateRows: "auto 1fr auto", fontFamily: "var(--font-body)" },
         dots: simgs.map((s, i) => ({
           key: "d" + s.key,
