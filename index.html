@@ -389,6 +389,12 @@
     </sc-if>
   </div>
 
+  <sc-if value="{{ stapelKnopf.zeigen }}" hint-placeholder-val="{{ false }}">
+    <div data-noprint="" style="position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 90;">
+      <button onClick="{{ stapelKnopf.um }}" style="{{ stapelKnopf.stil }}">{{ stapelKnopf.label }}</button>
+    </div>
+  </sc-if>
+
   <div style="{{ lay.stagePad }}" data-screen-label="Zeitstrahl">
     <div style="{{ shellStyle }}">
     <div data-stage="" ref="{{ stageRef }}" onScroll="{{ onScroll }}" onPointerDown="{{ stick.place }}" onPointerMove="{{ stick.move }}" onPointerUp="{{ stick.up }}" onPointerLeave="{{ stick.up }}" style="position: relative; overflow-x: auto; overflow-y: auto; max-height: 86vh; overscroll-behavior-x: contain; background-color: var(--t-bg, #f3f2f2); border-radius: var(--radius-lg); box-shadow: inset 0 0 0 1px var(--color-divider); cursor: {{ stick.cursor }};">
@@ -427,12 +433,6 @@
               <div style="{{ m.punktPos }}">
                 <button onClick="{{ m.toggle }}" title="{{ m.title }}" style="position: absolute; left: 50%; top: 50%; width: var(--t-marker-w, 14px); height: var(--t-marker-h, 14px); margin-left: calc(var(--t-marker-w, 14px) / -2); margin-top: calc(var(--t-marker-h, 14px) / -2); padding: 0; cursor: pointer; box-sizing: border-box; background: var(--t-marker-bg, var(--t-accent, #0088b0)); border: var(--t-marker-bw, 0) solid var(--t-accent, #0088b0); border-radius: var(--t-marker-radius, 2px); rotate: var(--t-marker-rotate, 0deg);"></button>
                 <div style="{{ m.ping }}"></div>
-              </div>
-            </sc-for>
-
-            <sc-for list="{{ stapelKnoepfe }}" as="sk" hint-placeholder-count="0">
-              <div style="{{ sk.pos }}">
-                <button onClick="{{ sk.um }}" style="{{ sk.stil }}">{{ sk.label }}</button>
               </div>
             </sc-for>
 
@@ -482,7 +482,7 @@
                       </sc-if>
                       <sc-if value="{{ c.sperre.zeigen }}" hint-placeholder-val="{{ false }}">
                         <div style="position: relative;">
-                          <button onClick="{{ c.sperre.auf }}" style="cursor: pointer; font: inherit; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 12px; border: 1px solid var(--t-border, rgba(32, 30, 29, 0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);" style-hover="background: color-mix(in srgb, var(--t-accent2, #d6006c) 12%, transparent);">Sperren ▾</button>
+                          <button onClick="{{ c.sperre.auf }}" style="cursor: pointer; font: inherit; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 12px; border: 1px solid var(--t-border, rgba(32, 30, 29, 0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);" style-hover="background: color-mix(in srgb, var(--t-accent2, #d6006c) 12%, transparent);">Blockieren ▾</button>
                           <sc-if value="{{ c.sperre.offen }}" hint-placeholder-val="{{ false }}">
                             <div style="{{ c.sperre.menuStil }}">
                               <div style="font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.55; padding: 2px 8px 4px;">Nicht mehr zeigen</div>
@@ -521,7 +521,7 @@
                             <sc-for list="{{ c.people }}" as="p" hint-placeholder-count="0">
                               <div style="display: flex; align-items: center; gap: 8px; padding: 4px 10px 4px 4px; border-radius: 99px; background: color-mix(in srgb, var(--t-ink, #201e1d) 7%, transparent);">
                                 <sc-if value="{{ p.photo }}" hint-placeholder-val="{{ false }}">
-                                  <img src="{{ p.photo }}" alt="{{ p.name }}" style="width: 30px; height: 30px; border-radius: 99px; object-fit: cover; display: block;">
+                                  <span role="img" aria-label="{{ p.name }}" style="{{ p.fotoStil }}"></span>
                                 </sc-if>
                                 <sc-if value="{{ p.noPhoto }}" hint-placeholder-val="{{ true }}">
                                   <span style="width: 30px; height: 30px; border-radius: 99px; display: grid; place-items: center; font-size: 11px; letter-spacing: 0.04em; background: color-mix(in srgb, var(--t-accent, #0088b0) 20%, transparent); color: color-mix(in srgb, var(--t-accent, #0088b0) 85%, var(--t-ink, #201e1d));">{{ p.initials }}</span>
@@ -639,7 +639,7 @@
                                         <span style="flex: 1; min-width: 0; font-size: 13.5px;">{{ pl.text }}</span>
                                         <span style="font-size: 11px; opacity: 0.55; white-space: nowrap;">{{ pl.wer }}</span>
                                         <sc-if value="{{ pl.wahlAn }}" hint-placeholder-val="{{ false }}">
-                                          <button onClick="{{ pl.waehlen }}" title="für diesen Eintrag stimmen" style="{{ pl.wahlStil }}">{{ pl.marke }} {{ pl.stimmen }}</button>
+                                          <button onClick="{{ pl.waehlen }}" title="für diesen Eintrag stimmen" style="{{ pl.wahlStil }}">{{ pl.marke }}</button>
                                         </sc-if>
                                         <sc-if value="{{ pl.meins }}" hint-placeholder-val="{{ false }}">
                                           <button onClick="{{ pl.aendern }}" style="font: inherit; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--t-accent, #0088b0); text-decoration: underline; white-space: nowrap;">ändern</button>
@@ -720,7 +720,7 @@
                                 </sc-if>
                                 <figure style="margin: 0; background: var(--t-img-bg, transparent); padding: var(--t-img-pad, 0); border-radius: var(--t-img-radius, 0); rotate: var(--t-img-rot, 0deg); box-shadow: var(--t-img-shadow, none);">
                                   <sc-if value="{{ im.src }}" hint-placeholder-val="{{ false }}">
-                                    <img src="{{ im.src }}" alt="{{ im.caption }}" onClick="{{ im.zoom }}" title="größer ansehen" style="display: block; width: 100%; aspect-ratio: var(--t-img-ratio, 4 / 3); object-fit: cover; border-radius: var(--t-img-radius, 0); cursor: zoom-in;">
+                                    <span role="img" aria-label="{{ im.caption }}" onClick="{{ im.zoom }}" title="größer ansehen" style="{{ im.bildStil }}"></span>
                                   </sc-if>
                                   <sc-if value="{{ im.empty }}" hint-placeholder-val="{{ true }}">
                                     <div style="width: 100%; aspect-ratio: var(--t-img-ratio, 4 / 3); border-radius: var(--t-img-radius, 0); display: grid; place-items: center; text-align: center; padding: 8px; background-color: color-mix(in srgb, var(--t-ink, #201e1d) 6%, transparent); background-image: repeating-linear-gradient(45deg, color-mix(in srgb, var(--t-ink, #201e1d) 9%, transparent) 0 6px, transparent 6px 12px);">
@@ -1122,7 +1122,7 @@
         </div>
         <div style="height: 3px; background: var(--color-text); margin: var(--space-3) 0 var(--space-4);"></div>
         <sc-if value="{{ form.partial }}" hint-placeholder-val="{{ false }}">
-          <div style="font-size: 12.5px; line-height: 1.45; padding: 9px 11px; border-radius: var(--radius-md); background: var(--color-accent-100); color: var(--color-accent-700); margin-bottom: var(--space-3);">Du darfst Inhalte pflegen — Name, Datum, Ort und Kategorie sind für dich gesperrt.</div>
+          <div style="font-size: 12.5px; line-height: 1.45; padding: 9px 11px; border-radius: var(--radius-md); background: var(--color-accent-100); color: var(--color-accent-700); margin-bottom: var(--space-3);">Du darfst Inhalte pflegen — Name, Datum, Ort und Kategorie sind für dich nicht änderbar.</div>
         </sc-if>
 
         <div style="{{ lay.rowDate }}">
@@ -1234,7 +1234,7 @@
             <div style="display: grid; gap: 4px;">
             <div style="{{ lay.rowImg }}">
               <sc-if value="{{ r.src }}" hint-placeholder-val="{{ false }}">
-                <img src="{{ r.src }}" alt="" style="width: 56px; height: 42px; object-fit: cover; border-radius: var(--radius-md); display: block;">
+                <span style="{{ r.vorschauStil }}"></span>
               </sc-if>
               <sc-if value="{{ r.empty }}" hint-placeholder-val="{{ true }}">
                 <span style="width: 56px; height: 42px; border-radius: var(--radius-md); display: block; background-color: var(--color-surface); background-image: repeating-linear-gradient(45deg, color-mix(in srgb, var(--color-text) 10%, transparent) 0 5px, transparent 5px 10px);"></span>
@@ -1338,6 +1338,17 @@
           </select>
         </div>
         <div style="font-size: 11.5px; line-height: 1.5; color: var(--color-neutral-700); padding-bottom: var(--space-3);">Nur diese Kachel trägt dann das gewählte Design. Ob Kontakte es so sehen oder in ihrem eigenen Design, entscheiden sie unter „Mein Konto“.</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--space-2); padding-bottom: var(--space-3);">
+          <sc-for list="{{ form.look.fein }}" as="fe" hint-placeholder-count="4">
+            <div class="field" style="margin: 0;"><label>{{ fe.label }}</label>
+              <select class="input" value="{{ fe.wert }}" onChange="{{ fe.onWahl }}">
+                <sc-for list="{{ fe.wahl }}" as="o" hint-placeholder-count="4">
+                  <option value="{{ o.value }}">{{ o.label }}</option>
+                </sc-for>
+              </select>
+            </div>
+          </sc-for>
+        </div>
         <div style="font-size: 11px; color: var(--color-neutral-700); padding-bottom: var(--space-2);">Sticker antippen, dann in der Vorschau an die richtige Stelle ziehen</div>
         <div style="{{ lay.decoGrid }}">
           <div style="display: grid; gap: var(--space-3);">
@@ -2144,7 +2155,7 @@
             <button onClick="{{ inhalt.weg }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-accent-2-700); text-decoration: underline; white-space: nowrap;">Regeln aufheben</button>
           </sc-if>
         </div>
-        <div style="font-size: 11.5px; line-height: 1.5; color: var(--color-neutral-700); margin-bottom: var(--space-3);">„nur“ zeigt ausschließlich diesen Wert, „sperren“ blendet ihn aus. {{ inhalt.hinweis }}</div>
+        <div style="font-size: 11.5px; line-height: 1.5; color: var(--color-neutral-700); margin-bottom: var(--space-3);">„nur“ zeigt ausschließlich diesen Wert, „blockieren“ blendet ihn aus. {{ inhalt.hinweis }}</div>
         <div style="display: grid; gap: var(--space-2); margin: var(--space-3) 0 var(--space-6);">
           <sc-for list="{{ inhalt.gruppen }}" as="g" hint-placeholder-count="3">
             <div style="display: grid; gap: 4px;">
@@ -2164,7 +2175,7 @@
                     <div style="display: flex; align-items: center; gap: 5px;">
                       <span style="flex: 1; min-width: 0; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ w.label }}</span>
                       <button onClick="{{ w.nurPick }}" title="nur diesen Wert zeigen" style="{{ w.nurStyle }}">nur</button>
-                      <button onClick="{{ w.ohnePick }}" title="diesen Wert ausblenden" style="{{ w.ohneStyle }}">sperren</button>
+                      <button onClick="{{ w.ohnePick }}" title="diesen Wert ausblenden" style="{{ w.ohneStyle }}">blockieren</button>
                     </div>
                   </sc-for>
                   <sc-if value="{{ g.hatRest }}" hint-placeholder-val="{{ false }}">
@@ -2271,7 +2282,7 @@
               <sc-for list="{{ p.images }}" as="im" hint-placeholder-count="0">
                 <div style="display: grid; gap: 3px;">
                   <sc-if value="{{ im.src }}" hint-placeholder-val="{{ false }}">
-                    <img src="{{ im.src }}" alt="{{ im.caption }}" style="display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover;">
+                    <span role="img" aria-label="{{ im.caption }}" style="{{ im.bildStil }}"></span>
                   </sc-if>
                   <sc-if value="{{ im.empty }}" hint-placeholder-val="{{ true }}">
                     <div style="width: 100%; aspect-ratio: 4 / 3; background-color: #f1efec; background-image: repeating-linear-gradient(45deg, #e0dcd7 0 6px, transparent 6px 12px); display: grid; place-items: center; text-align: center; padding: 6px;">
@@ -2375,8 +2386,17 @@ const SHADOWS = {
   hard: function (t) { return "7px 7px 0 " + t.ink; }
 };
 
+/* Was ein Ereignis über sein Design hinaus noch selbst festlegen darf.
+   Die Werte reisen in der Design-Kopie mit, also sehen Kontakte sie. */
+const FEIN = [
+  { k: "imgShape", label: "Bildform", opts: [["rect", "Rechteck"], ["round", "Runde Ecken"], ["circle", "Kreis"], ["polaroid", "Sofortbild"]] },
+  { k: "marker", label: "Markierung", opts: [["square", "Quadrat"], ["circle", "Punkt"], ["diamond", "Raute"], ["ring", "Ring"], ["bar", "Balken"]] },
+  { k: "pattern", label: "Hintergrundmuster", opts: [["none", "keins"], ["dots", "Punkte"], ["grid", "Gitter"], ["lines", "Linien"], ["scan", "Zeilen"], ["halftone", "Raster"]] },
+  { k: "shadow", label: "Schatten", opts: [["none", "keiner"], ["sm", "zart"], ["md", "mittel"], ["lg", "weich"], ["hard", "hart"]] }
+];
+
 const TRANSITIONS = [["fade", "Überblenden"], ["slide", "Schieben"], ["zoom", "Zoom"], ["burns", "Ken Burns"], ["flip", "Blättern"], ["none", "Hart"]];
-const LEVELS = [["view", "Nur ansehen"], ["comment", "Bilder kommentieren"], ["edit", "Inhalte bearbeiten"], ["full", "Alles bearbeiten"], ["blocked", "Gesperrt"]];
+const LEVELS = [["view", "Nur ansehen"], ["comment", "Bilder kommentieren"], ["edit", "Inhalte bearbeiten"], ["full", "Alles bearbeiten"], ["blocked", "Blockiert"]];
 const RANK = { none: 0, view: 1, comment: 2, edit: 3, full: 4 };
 const PW_LINK_SEK = 600;
 
@@ -2887,6 +2907,7 @@ class Component extends DCLogic {
     histAlle: false,
     etKarte: false,
     stapelOffen: {},
+    blickX: 0,
     feed: { freunde: true, vorschau: false },
     konto: false,
     loeschWort: "",
@@ -3255,7 +3276,7 @@ class Component extends DCLogic {
     } catch (e) { /* egal */ }
   };
 
-  /* ---------- Sperren und Rückgängig ---------- */
+  /* ---------- Blockieren und Rückgängig ---------- */
 
   toggleBlock = async (userId, blocked) => {
     const CC = window.ChronikCloud;
@@ -4109,12 +4130,12 @@ class Component extends DCLogic {
       ohneThema: Array.isArray(f.ohneThema) ? f.ohneThema : [],
       nurOrt: Array.isArray(f.nurOrt) ? f.nurOrt : [],
       ohneOrt: Array.isArray(f.ohneOrt) ? f.ohneOrt : [],
-      /* 2) Einzeln gesperrte Ereignisse. */
+      /* 2) Einzeln blockierte Ereignisse. */
       ohneEvent: Array.isArray(f.ohneEvent) ? f.ohneEvent : []
     };
   }
 
-  /* Etwas sperren oder die Sperre wieder aufheben. */
+  /* Etwas blockieren oder die Blockade wieder aufheben. */
   sperreUm(liste, wert) {
     const f = Object.assign({}, this.feedPrefs());
     const alt = f[liste] || [];
@@ -4159,7 +4180,7 @@ class Component extends DCLogic {
     const ort = normName(e.place || "");
     const drin = (liste, wert) => liste.some((x) => normName(x) === wert);
 
-    /* Ein einzeln gesperrtes Ereignis geht allen anderen Regeln vor. */
+    /* Ein einzeln blockiertes Ereignis geht allen anderen Regeln vor. */
     if ((f.ohneEvent || []).indexOf(e.id) >= 0) return false;
     if (f.ohneVon.indexOf(wer) >= 0) return false;
     if (thema && drin(f.ohneThema, thema)) return false;
@@ -4291,12 +4312,12 @@ class Component extends DCLogic {
   };
 
   /* Im Vollbild zählt nur das Foto. Die Leiste kommt bei Mausbewegung
-     zurück und verschwindet nach fünf Sekunden Ruhe wieder. */
+     zurück und verschwindet nach 2 Sekunden Ruhe wieder. */
   uiSchlafen() {
     if (this.uiTimer) window.clearTimeout(this.uiTimer);
     this.uiTimer = window.setTimeout(() => {
       if (this.state.show.open && this.state.show.voll) this.setShow({ ui: false }, false);
-    }, 5000);
+    }, 2000);
   }
 
   weckUi = () => {
@@ -4427,14 +4448,35 @@ class Component extends DCLogic {
      eigenen Ereignis die Design-Kopie, wird sie hier nachgetragen. */
   eventTheme(e) {
     const mein = this.theme();
-    if (!e || (!e.themeId && !e.themeSnap)) return mein;
+    const hatFein = e && e.themeFein && Object.keys(e.themeFein).length > 0;
+    if (!e || (!e.themeId && !e.themeSnap && !hatFein)) return mein;
+    /* Nur Feinheiten, kein eigenes Design: sie sitzen auf meinem. */
+    if (!e.themeId && !e.themeSnap) {
+      const u0 = this.me();
+      const fremd0 = !!(e.by && u0 && e.by !== u0.id);
+      if (fremd0 && !this.feedPrefs().fremdesDesign) return mein;
+      return this.mitFein(mein, e.themeFein);
+    }
     const u = this.me();
     const fremd = !!(e.by && u && e.by !== u.id);
     if (fremd && !this.feedPrefs().fremdesDesign) return mein;
     /* Die Kopie am Ereignis zählt: eigene Designs des Erstellers kennt
        ein Kontakt sonst nicht, und Feinjustierungen wären verloren. */
-    if (e.themeSnap && e.themeSnap.bg) return e.themeSnap;
-    return this.allThemes().filter((x) => x.id === e.themeId)[0] || mein;
+    const basis = (e.themeSnap && e.themeSnap.bg)
+      ? e.themeSnap
+      : (this.allThemes().filter((x) => x.id === e.themeId)[0] || mein);
+    return this.mitFein(basis, e.themeFein);
+  }
+
+  /* Feinheiten, die ein Ereignis über sein Design hinaus setzt —
+     Bildform, Markierung, Muster, Schatten. */
+  mitFein(basis, fein) {
+    const gueltig = {};
+    FEIN.forEach((f) => {
+      const v = (fein || {})[f.k];
+      if (v && f.opts.some((o) => o[0] === v)) gueltig[f.k] = v;
+    });
+    return Object.keys(gueltig).length ? Object.assign({}, basis, gueltig) : basis;
   }
 
   /* Das gewählte Design als vollständige Kopie — so reist es mit dem
@@ -4500,7 +4542,7 @@ class Component extends DCLogic {
     let laufend = null;
     items.forEach(function (it) {
       if (!laufend || it.x > laufend.bis + o.gap) {
-        laufend = { id: "s" + it.e.id, x: it.x, bis: it.x + o.cardW, n: 0, tiefe: 0 };
+        laufend = { id: "s" + it.e.id, x: it.x, bis: it.x + o.cardW, n: 0, tiefe: 0, date: it.e.date };
         stapel.push(laufend);
       } else {
         laufend.bis = Math.max(laufend.bis, it.x + o.cardW);
@@ -4621,13 +4663,21 @@ class Component extends DCLogic {
 
   onScroll = (e) => {
     const el = e.currentTarget.firstElementChild;
-    if (!el) return;
-    el.style.setProperty("--t-parallax", Math.round(-e.currentTarget.scrollLeft * 0.35) + "px");
+    if (el) el.style.setProperty("--t-parallax", Math.round(-e.currentTarget.scrollLeft * 0.35) + "px");
+    /* Die Blickmitte merken: der schwebende Knopf unten soll immer den
+       Stapel bedienen, der gerade vor einem liegt. */
+    const box = e.currentTarget;
+    const mitte = box.scrollLeft + box.clientWidth / 2;
+    if (this.blickRaf) return;
+    this.blickRaf = window.requestAnimationFrame(() => {
+      this.blickRaf = 0;
+      if (Math.abs((this.state.blickX || 0) - mitte) > 12) this.setState({ blickX: mitte });
+    });
   };
 
   newEvent = () => {
     const today = new Date().toISOString().slice(0, 10);
-    this.setState({ draft: { id: null, name: "", date: today, end: "", place: "", kicker: "", note: "", infos: [{ label: "", value: "" }], people: [], images: [], deco: { fx: [], pal: "thema", stickers: [] }, vis: "private", who: [], gwho: [], perms: {}, polls: [], etappen: [], etLayout: "gesamt", alben: [], themeId: "", themeSnap: null, share: "view", by: (this.me() || {}).id || "", url: "", partial: false }, decoSel: null, pickQ: "", drawer: false, admin: false, secOpen: {} });
+    this.setState({ draft: { id: null, name: "", date: today, end: "", place: "", kicker: "", note: "", infos: [{ label: "", value: "" }], people: [], images: [], deco: { fx: [], pal: "thema", stickers: [] }, vis: "private", who: [], gwho: [], perms: {}, polls: [], etappen: [], etLayout: "gesamt", alben: [], themeId: "", themeSnap: null, themeFein: {}, share: "view", by: (this.me() || {}).id || "", url: "", partial: false }, decoSel: null, pickQ: "", drawer: false, admin: false, secOpen: {} });
   };
 
   editEvent(id) {
@@ -4654,6 +4704,7 @@ class Component extends DCLogic {
         alben: (e.alben || []).map((x) => Object.assign({}, x)),
         themeId: e.themeId || "",
         themeSnap: this.themeSnapNachtragen(e).themeSnap || null,
+        themeFein: Object.assign({}, e.themeFein || {}),
         etLayout: e.etLayout === "split" ? "split" : "gesamt",
         url: "", partial: lvl < 4
       }
@@ -4689,6 +4740,7 @@ class Component extends DCLogic {
       etappen: (d.etappen || (old && old.etappen) || []).map((x) => Object.assign({}, x)),
       alben: (d.alben || (old && old.alben) || []).map((x) => Object.assign({}, x)),
       themeId: d.themeId != null ? d.themeId : ((old && old.themeId) || ""),
+      themeFein: Object.assign({}, (old && old.themeFein) || {}, d.themeFein || {}),
       /* Eine aktiv gewählte Kopie gilt. Sonst die vorhandene. Nachtragen
          darf nur die Erstellerin — ein bearbeitender Kontakt würde sonst
          sein eigenes Design als das des Erstellers festschreiben. */
@@ -5914,7 +5966,6 @@ class Component extends DCLogic {
        Rest kommt erst auf Klick — der Schalter steht in einem eigenen
        Band unter der vierten Reihe. */
     const offeneStapel = st.stapelOffen || {};
-    const knopfH = 46;
     const reiheY = (lane) => laneTop + lane * (laneH + gap);
     /* Eine aufgeklappte Karte wird immer gezeichnet, auch wenn ihre Reihe
        im eingeklappten Teil eines Stapels liegt — sonst verschwindet
@@ -5997,7 +6048,12 @@ class Component extends DCLogic {
         editLabel: lvl >= 4 ? "Bearbeiten" : "Inhalte pflegen",
         rights: lvl >= 4 ? "" : lvl >= 3 ? "Teilrechte" : lvl >= 2 ? "Kommentieren erlaubt" : "Nur ansehen",
         infos: (e.infos || []).map((r, j) => ({ key: "i" + j, label: r.label, value: r.value })),
-        people: (e.people || []).map((r, j) => ({ key: "p" + j, name: r.name, role: r.role || "", photo: r.photo || "", noPhoto: !r.photo, initials: initials(r.name), linked: !!(r.uid && st.users.some((u) => u.id === r.uid)) })),
+        people: (e.people || []).map((r, j) => ({ key: "p" + j, name: r.name, role: r.role || "", photo: r.photo || "", noPhoto: !r.photo,
+          /* Als Hintergrund statt <img>: so fragt der Browser während des
+             Aufbaus nie eine noch unaufgelöste Adresse ab. */
+          fotoStil: r.photo
+            ? { width: "30px", height: "30px", borderRadius: "99px", backgroundImage: "url(" + r.photo + ")", backgroundSize: "cover", backgroundPosition: "center", display: "block" }
+            : { display: "none" }, initials: initials(r.name), linked: !!(r.uid && st.users.some((u) => u.id === r.uid)) })),
         /* Im Split-Modus nach Etappe sortiert. r und j behalten ihre
            Bedeutung, weil Kommentare am ursprünglichen Index hängen. */
         images: bilder.map(({ r, j, kopf, albName, recht }) => ({
@@ -6007,6 +6063,19 @@ class Component extends DCLogic {
             ? { display: "grid", gap: "6px", gridColumn: "1 / -1" }
             : { display: "grid", gap: "6px" },
           key: "m" + j, src: r.src || "", empty: !r.src, caption: zeigbareUnterschrift(r.caption), leerText: "ohne Bild",
+          /* Als Hintergrund statt <img>: so fragt der Browser während des
+             Aufbaus nie eine noch unaufgelöste Adresse ab. Form und
+             Zoom-Zeiger bleiben, damit die Bildform des Ereignisses gilt. */
+          bildStil: r.src
+            ? {
+                display: "block", width: "100%",
+                aspectRatio: "var(--t-img-ratio, 4 / 3)",
+                borderRadius: "var(--t-img-radius, 0)",
+                backgroundImage: "url(" + r.src + ")",
+                backgroundSize: "cover", backgroundPosition: "center",
+                cursor: "zoom-in"
+              }
+            : { display: "none" },
           comments: (function (self) {
             const alleC = (r.comments || []).map((cm, k) => Object.assign({}, cm, { _k: k }));
             const oben = alleC.filter((cm) => !cm.parent);
@@ -6182,11 +6251,12 @@ class Component extends DCLogic {
                   wer: werName, meins: !!meins,
                   /* Abstimmen nur bei belegten Plätzen und wenn erlaubt. */
                   wahlAn: !!(p.stimmenAn && text && darf),
-                  stimmen: n ? String(n) : "",
+                  /* Zustimmung zählt hoch: +1, +2, … — kein Stern. Die
+                     Zahl ist immer der echte Stand; ohne Zustimmung lädt
+                     „+1“ zum Mitmachen ein. */
+                  stimmen: "",
                   gewaehlt: an,
-                  /* Ohne Stimme braucht der Knopf ein sichtbares Zeichen,
-                     sonst wäre er leer und unauffindbar. */
-                  marke: an ? (offen ? "\u25cf" : "\u2713") : "\u2606",
+                  marke: n ? "+" + n : "+1",
                   wahlStil: {
                     font: "inherit", fontSize: "11px", letterSpacing: "0.04em", padding: "2px 9px", cursor: "pointer",
                     whiteSpace: "nowrap", borderRadius: "99px",
@@ -6282,7 +6352,7 @@ class Component extends DCLogic {
             animationDelay: (ci * 46) + "ms", animationFillMode: "both"
           }
         })) : [],
-        /* Fremden Inhalt direkt sperren — ohne Umweg über die Einstellungen. */
+        /* Fremden Inhalt direkt blockieren — ohne Umweg über die Einstellungen. */
         sperre: (function (self) {
           const fremd = (e.by || "") !== (me || {}).id;
           if (!fremd) return { zeigen: false, offen: false, wahl: [] };
@@ -6327,39 +6397,46 @@ class Component extends DCLogic {
       };
     });
 
-    /* Jeder zu hohe Stapel trägt seinen eigenen Knopf, und der sitzt
-       immer direkt unter der letzten sichtbaren Kachel beziehungsweise
-       unter einer aufgeklappten Karte — beim Ausklappen wandert er also
-       mit nach unten. */
-    const stapelKnoepfe = (L.stapel || []).filter((s) => s.tiefe > STAPEL_SICHTBAR).map((s) => {
+    /* Der Knopf klebt nicht am Zeitstrahl, sondern unten in der Mitte
+       des Bildschirms — beim Scrollen bedient er immer den Stapel, der
+       gerade vor einem liegt. Ohne ihn wäre ein dichter Zeitraum weit
+       links nicht mehr erreichbar. */
+    const dichte = (L.stapel || []).filter((s) => s.tiefe > STAPEL_SICHTBAR);
+    const blick = st.blickX || 0;
+    let ziel = null;
+    /* Ein geöffneter Stapel behält den Knopf — sonst könnte man ihn
+       nicht mehr zuklappen, sobald man weiterscrollt. */
+    const offeneDichte = dichte.filter((s) => !!offenAuch[s.id]);
+    const kandidaten = offeneDichte.length ? offeneDichte : dichte;
+    kandidaten.forEach((s) => {
+      const d = Math.abs(s.x + cardW / 2 - blick);
+      if (!ziel || d < ziel.d) ziel = { s: s, d: d };
+    });
+    const stapelKnopf = (function (self) {
+      if (!ziel) return { zeigen: false };
+      const s = ziel.s;
       const auf = !!offenAuch[s.id];
-      const tiefe = auf ? s.tiefe : STAPEL_SICHTBAR;
-      /* Ist in diesem Stapel eine Karte aufgeklappt, weicht der Knopf
-         unter deren unteren Rand aus, statt über ihrem Inhalt zu liegen. */
-      const eigenesOffen = offenesStapelEnde[s.id] || 0;
-      const y = Math.max(laneTop + tiefe * (laneH + gap) + 4, eigenesOffen ? eigenesOffen + 12 : 0);
+      const wann = fmtDate(s.date);
       return {
-        key: s.id,
-        untenY: y,
-        pos: { position: "absolute", left: (s.x + padL) + "px", top: y + "px", width: cardW + "px", zIndex: 61 },
-        label: auf ? "▴ weniger zeigen" : "▾ " + plural(s.tiefe - STAPEL_SICHTBAR, "weiteres Ereignis", "weitere Ereignisse"),
+        zeigen: true,
+        label: auf
+          ? "▴ weniger zeigen · " + wann
+          : "▾ " + plural(s.tiefe - STAPEL_SICHTBAR, "weiteres Ereignis", "weitere Ereignisse") + " · " + wann,
         stil: {
-          font: "inherit", fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase",
-          width: "100%", padding: "9px 12px", cursor: "pointer", textAlign: "left",
-          background: "var(--t-card, #eae9e9)", color: "var(--t-ink, #201e1d)",
-          border: "1px solid var(--t-border, rgba(32, 30, 29, 0.16))",
-          borderRadius: "var(--t-radius, 2px)", boxShadow: "var(--t-shadow, none)"
+          font: "inherit", fontSize: "12.5px", letterSpacing: "0.08em", textTransform: "uppercase",
+          padding: "11px 20px", cursor: "pointer", whiteSpace: "nowrap",
+          background: "var(--color-surface)", color: "var(--color-text)",
+          border: "1px solid var(--color-divider)",
+          borderRadius: "999px", boxShadow: "var(--shadow-lg)"
         },
         um: () => {
-          const o = Object.assign({}, this.state.stapelOffen || {});
-          /* „auf“ kann auch von einer aufgeklappten Karte kommen — dann
-             schließt der Knopf beides, sonst hätte er keine Wirkung. */
-          if (auf) { delete o[s.id]; this.setState({ stapelOffen: o, openId: null }); return; }
+          const o = Object.assign({}, self.state.stapelOffen || {});
+          if (auf) { delete o[s.id]; self.setState({ stapelOffen: o, openId: null }); return; }
           o[s.id] = true;
-          this.setState({ stapelOffen: o });
+          self.setState({ stapelOffen: o });
         }
       };
-    });
+    })(this);
 
 
     const markers = sichtbareItems.map((it) => {
@@ -6453,10 +6530,7 @@ class Component extends DCLogic {
 
     let tiefeSichtbar = 1;
     sichtbareItems.forEach((it) => { tiefeSichtbar = Math.max(tiefeSichtbar, it.lane + 1); });
-    /* Platz für den tiefsten mitgewanderten Knopf. */
-    let knopfUnten = 0;
-    stapelKnoepfe.forEach((k) => { knopfUnten = Math.max(knopfUnten, k.untenY + knopfH); });
-    const totalH = Math.max(laneTop + tiefeSichtbar * (laneH + gap) + 30, knopfUnten + 30, openBottom + 40);
+    const totalH = Math.max(laneTop + tiefeSichtbar * (laneH + gap) + 30, openBottom + 40);
 
     const presets = this.allThemes().map((p) => {
       const active = p.id === t.id;
@@ -6617,7 +6691,12 @@ class Component extends DCLogic {
           const rows = (this.state.draft.images || []).slice();
           rows[i] = Object.assign({}, rows[i], { et: ev.target.value });
           this.setState({ draft: Object.assign({}, this.state.draft, { images: rows }) });
-        }, key: "fm" + i, src: r.src || "", empty: !r.src, caption: zeigbareUnterschrift(r.caption), edit: () => this.openImgEdit(i), onCaption: this.rowSet("images", i, "caption"), remove: this.rowDel("images", i) })),
+        }, key: "fm" + i, src: r.src || "", empty: !r.src,
+        /* Als Hintergrund statt <img>: so fragt der Browser während des
+           Aufbaus nie eine noch unaufgelöste Adresse ab. */
+        vorschauStil: r.src
+          ? { width: "56px", height: "42px", borderRadius: "var(--radius-md)", backgroundImage: "url(" + r.src + ")", backgroundSize: "cover", backgroundPosition: "center", display: "block" }
+          : { display: "none" }, caption: zeigbareUnterschrift(r.caption), edit: () => this.openImgEdit(i), onCaption: this.rowSet("images", i, "caption"), remove: this.rowDel("images", i) })),
       addInfo: this.rowAdd("infos", { label: "", value: "" }),
       addPerson: this.rowAdd("people", { name: "", role: "", uid: "" }),
       addUrl: () => {
@@ -6701,7 +6780,21 @@ class Component extends DCLogic {
         onTheme: (ev) => {
           const id = ev.target.value;
           this.setState({ draft: Object.assign({}, this.state.draft, { themeId: id, themeSnap: this.themeSnapFor(id) }) });
-        }
+        },
+        /* Feinheiten über dem gewählten Design — sie reisen mit. */
+        fein: FEIN.map((f) => ({
+          key: f.k,
+          label: f.label,
+          wert: (d0.themeFein || {})[f.k] || "",
+          wahl: [{ key: "x", value: "", label: "— wie im Design —" }].concat(
+            f.opts.map((o) => ({ key: o[0], value: o[0], label: o[1] }))
+          ),
+          onWahl: (ev) => {
+            const fein = Object.assign({}, this.state.draft.themeFein || {});
+            if (ev.target.value) fein[f.k] = ev.target.value; else delete fein[f.k];
+            this.setState({ draft: Object.assign({}, this.state.draft, { themeFein: fein }) });
+          }
+        }))
       },
       /* Alben: Ordner innerhalb eines Ereignisses, jeder mit eigener
          Sichtbarkeit. Bilder ohne Album folgen dem Ereignis. */
@@ -7148,7 +7241,20 @@ class Component extends DCLogic {
         name: e.name, place: e.place || "", note: e.note || "", big: big,
         infos: big ? (e.infos || []).map((r, j) => ({ key: "pi" + j, label: r.label, value: r.value })) : [],
         peopleLine: big ? (e.people || []).map((p) => p.name + (p.role ? " (" + p.role + ")" : "")).join(", ") : "",
-        images: big ? (e.images || []).slice(0, 2).map((r, j) => ({ key: "pm" + j, src: r.src || "", empty: !r.src, caption: zeigbareUnterschrift(r.caption) })) : []
+        images: big ? (e.images || []).slice(0, 2).map((r, j) => ({
+          key: "pm" + j, src: r.src || "", empty: !r.src, caption: zeigbareUnterschrift(r.caption),
+          /* Hintergrund statt <img>, damit beim Aufbau keine unaufgelöste
+             Adresse geladen wird. Beim Druck muss der Grund erhalten
+             bleiben, sonst fehlt das Bild im PDF. */
+          bildStil: r.src
+            ? {
+                display: "block", width: "100%", aspectRatio: "4 / 3",
+                backgroundImage: "url(" + r.src + ")",
+                backgroundSize: "cover", backgroundPosition: "center",
+                printColorAdjust: "exact", WebkitPrintColorAdjust: "exact"
+              }
+            : { display: "none" }
+        })) : []
       };
     });
 
@@ -7463,7 +7569,7 @@ class Component extends DCLogic {
           hatAktiv: anzahlNur + anzahlOhne + (f.ohneEvent || []).length > 0,
           gesperrt: gesperrt,
           hatGesperrt: gesperrt.length > 0,
-          gesperrtTitel: plural(gesperrt.length, "gesperrtes Ereignis", "gesperrte Ereignisse"),
+          gesperrtTitel: plural(gesperrt.length, "blockiertes Ereignis", "blockierte Ereignisse"),
           hinweis: anzahlNur
             ? "Gerade ausgewählt: nur diese Werte. Deine eigenen Ereignisse siehst du immer."
             : anzahlOhne
@@ -8267,7 +8373,7 @@ class Component extends DCLogic {
         height: Math.max(560, totalH) + "px", minHeight: "100%"
       },
       axisStyle: { position: "absolute", left: "0", top: axisY + "px", width: trackW + "px", zIndex: 5 },
-      cards: cards, markers: markers, bars: bars, ticks: ticks, stapelKnoepfe: stapelKnoepfe,
+      cards: cards, markers: markers, bars: bars, ticks: ticks, stapelKnopf: stapelKnopf,
       drawer: st.drawer,
       toggleDrawer: () => this.setState({ drawer: !st.drawer, admin: false }),
       admin: st.admin,
