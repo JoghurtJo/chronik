@@ -826,7 +826,7 @@
     </div>
     </div>
     <div style="display: flex; justify-content: space-between; gap: var(--space-4); padding-top: var(--space-2); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-600);">
-      <span>Klick auf eine Karte oder einen Marker öffnet das Ereignis · ← → blättert</span>
+      <span>Klick auf eine Karte oder einen Marker öffnet das Ereignis</span>
       <span>{{ stats.hint }}</span>
     </div>
   </div>
@@ -5915,31 +5915,17 @@ class Component extends DCLogic {
        Band unter der vierten Reihe. */
     const offeneStapel = st.stapelOffen || {};
     const knopfH = 46;
-    const bandY = laneTop + STAPEL_SICHTBAR * (laneH + gap);
-    const reiheY = (lane) => laneTop + lane * (laneH + gap) + (lane >= STAPEL_SICHTBAR ? knopfH : 0);
-    const sichtbareItems = L.items.filter((it) => it.lane < STAPEL_SICHTBAR || !!offeneStapel[it.stapel]);
-    const stapelKnoepfe = (L.stapel || []).filter((s) => s.tiefe > STAPEL_SICHTBAR).map((s) => {
-      const auf = !!offeneStapel[s.id];
-      return {
-        key: s.id,
-        pos: { position: "absolute", left: (s.x + padL) + "px", top: bandY + "px", width: cardW + "px", zIndex: 61 },
-        label: auf ? "▴ weniger zeigen" : "▾ " + plural(s.tiefe - STAPEL_SICHTBAR, "weiteres Ereignis", "weitere Ereignisse"),
-        stil: {
-          font: "inherit", fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase",
-          width: "100%", padding: "9px 12px", cursor: "pointer", textAlign: "left",
-          background: "var(--t-card, #eae9e9)", color: "var(--t-ink, #201e1d)",
-          border: "1px solid var(--t-border, rgba(32, 30, 29, 0.16))",
-          borderRadius: "var(--t-radius, 2px)", boxShadow: "var(--t-shadow, none)"
-        },
-        um: () => {
-          const o = Object.assign({}, this.state.stapelOffen || {});
-          if (o[s.id]) delete o[s.id]; else o[s.id] = true;
-          this.setState({ stapelOffen: o });
-        }
-      };
-    });
-
+    const reiheY = (lane) => laneTop + lane * (laneH + gap);
+    /* Eine aufgeklappte Karte wird immer gezeichnet, auch wenn ihre Reihe
+       im eingeklappten Teil eines Stapels liegt — sonst verschwindet
+       genau das, was man gerade lesen will. Ihr Stapel gilt dann als
+       offen, damit die Reihen darüber nicht fehlen. */
+    const offenAuch = Object.assign({}, offeneStapel);
+    const offenesItem = L.items.filter((it) => it.e.id === st.openId)[0];
+    if (offenesItem) offenAuch[offenesItem.stapel] = true;
+    const sichtbareItems = L.items.filter((it) => it.lane < STAPEL_SICHTBAR || !!offenAuch[it.stapel]);
     let openBottom = 0;
+    const offenesStapelEnde = {};
     const cards = sichtbareItems.map((it) => {
       const e = it.e;
       const isOpen = st.openId === e.id;
@@ -5950,7 +5936,18 @@ class Component extends DCLogic {
       /* Eigenes Design des Ereignisses: die --t-*-Werte hängen an der
          Kachel, damit nur sie anders aussieht. */
       const eT = this.eventTheme(e);
-      const eVars = eT === t ? null : this.themeVars(eT);
+      /* Beide Sätze an die Kachel: die --t-*-Werte für Karte, Marker und
+         Bilder, die --color-*-Werte für alles darin, was in der Sprache
+         der Oberfläche gebaut ist (Kommentare, Abstimmungen, Knöpfe).
+         Ohne die zweite Hälfte stünde fremde Schrift in eigener Farbe
+         auf fremdem Grund und wäre nicht zu lesen. */
+      /* Die Werte allein genügen nicht: geerbte Schriftfarbe und Schrift
+         kommen weiter von der Bühne. Beides wird an der Kachel gesetzt,
+         sonst stünde eigene Tinte auf fremdem Grund. */
+      const eVars = eT === t ? null : Object.assign(
+        { color: "var(--t-ink)", fontFamily: "var(--t-font-body)" },
+        this.themeVars(eT), this.uiVars(eT)
+      );
       if (isOpen) {
         const w2 = Math.round(cardW * 2.2);
         const nKom = (e.images || []).reduce((n, im) => n + ((im.comments || []).length), 0);
@@ -5958,6 +5955,7 @@ class Component extends DCLogic {
           + ((e.people || []).length ? 84 : 0) + Math.ceil(nImg / 2) * ((w2 - 40) / 2 * 0.8 + 96)
           + nKom * 26 + (e.polls || []).length * 190 + 140;
         openBottom = top + est;
+        offenesStapelEnde[it.stapel] = Math.max(offenesStapelEnde[it.stapel] || 0, openBottom);
       }
       return {
         key: e.id,
@@ -6329,10 +6327,47 @@ class Component extends DCLogic {
       };
     });
 
+    /* Jeder zu hohe Stapel trägt seinen eigenen Knopf, und der sitzt
+       immer direkt unter der letzten sichtbaren Kachel beziehungsweise
+       unter einer aufgeklappten Karte — beim Ausklappen wandert er also
+       mit nach unten. */
+    const stapelKnoepfe = (L.stapel || []).filter((s) => s.tiefe > STAPEL_SICHTBAR).map((s) => {
+      const auf = !!offenAuch[s.id];
+      const tiefe = auf ? s.tiefe : STAPEL_SICHTBAR;
+      /* Ist in diesem Stapel eine Karte aufgeklappt, weicht der Knopf
+         unter deren unteren Rand aus, statt über ihrem Inhalt zu liegen. */
+      const eigenesOffen = offenesStapelEnde[s.id] || 0;
+      const y = Math.max(laneTop + tiefe * (laneH + gap) + 4, eigenesOffen ? eigenesOffen + 12 : 0);
+      return {
+        key: s.id,
+        untenY: y,
+        pos: { position: "absolute", left: (s.x + padL) + "px", top: y + "px", width: cardW + "px", zIndex: 61 },
+        label: auf ? "▴ weniger zeigen" : "▾ " + plural(s.tiefe - STAPEL_SICHTBAR, "weiteres Ereignis", "weitere Ereignisse"),
+        stil: {
+          font: "inherit", fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase",
+          width: "100%", padding: "9px 12px", cursor: "pointer", textAlign: "left",
+          background: "var(--t-card, #eae9e9)", color: "var(--t-ink, #201e1d)",
+          border: "1px solid var(--t-border, rgba(32, 30, 29, 0.16))",
+          borderRadius: "var(--t-radius, 2px)", boxShadow: "var(--t-shadow, none)"
+        },
+        um: () => {
+          const o = Object.assign({}, this.state.stapelOffen || {});
+          /* „auf“ kann auch von einer aufgeklappten Karte kommen — dann
+             schließt der Knopf beides, sonst hätte er keine Wirkung. */
+          if (auf) { delete o[s.id]; this.setState({ stapelOffen: o, openId: null }); return; }
+          o[s.id] = true;
+          this.setState({ stapelOffen: o });
+        }
+      };
+    });
+
+
     const markers = sichtbareItems.map((it) => {
       const top = reiheY(it.lane);
       const mT = this.eventTheme(it.e);
-      const mVars = mT === t ? null : this.themeVars(mT);
+      const mVars = mT === t ? null : Object.assign(
+        { color: "var(--t-ink)" }, this.themeVars(mT), this.uiVars(mT)
+      );
       const isOpen = st.openId === it.e.id;
       const xz = it.xZeit == null ? it.x : it.xZeit;
       const versatz = Math.max(0, it.x - xz);
@@ -6418,8 +6453,10 @@ class Component extends DCLogic {
 
     let tiefeSichtbar = 1;
     sichtbareItems.forEach((it) => { tiefeSichtbar = Math.max(tiefeSichtbar, it.lane + 1); });
-    const bandExtra = stapelKnoepfe.length ? knopfH : 0;
-    const totalH = Math.max(laneTop + tiefeSichtbar * (laneH + gap) + bandExtra + 30, openBottom + 40);
+    /* Platz für den tiefsten mitgewanderten Knopf. */
+    let knopfUnten = 0;
+    stapelKnoepfe.forEach((k) => { knopfUnten = Math.max(knopfUnten, k.untenY + knopfH); });
+    const totalH = Math.max(laneTop + tiefeSichtbar * (laneH + gap) + 30, knopfUnten + 30, openBottom + 40);
 
     const presets = this.allThemes().map((p) => {
       const active = p.id === t.id;
