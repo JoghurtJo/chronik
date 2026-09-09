@@ -534,6 +534,7 @@
       deco: d.deco || { fx: [], pal: "thema", stickers: [] },
       alben: Array.isArray(d.alben) ? d.alben : [],
       themeId: d.themeId || "",
+      themeSnap: d.themeSnap || null,
       vis: (row.vis === "selected" ? "people" : row.vis) || "private", who: row.who || [], gwho: row.gwho || [], perms: row.perms || {}, polls: row.polls || [], etappen: row.etappen || [], etLayout: row.et_layout === "split" ? "split" : "gesamt", share: row.share || "view",
       changedBy: row.changed_by || ""
     };
@@ -548,6 +549,7 @@
         note: e.note || "", infos: e.infos || [], people: e.people || [], deco: e.deco || null,
         alben: e.alben || [],
         themeId: e.themeId || "",
+        themeSnap: e.themeSnap || null,
         images: (e.images || []).map(function (im) {
           var zu = { caption: im.caption || "", alb: im.alb || "", et: im.et || "" };
           if (im.key) return Object.assign({ key: im.key }, zu);
