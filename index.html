@@ -113,7 +113,7 @@
         <span>Dein Leben</span>
         <span>Eure Geschichten</span>
         <span>Erleben wie damals:)</span>
-        <span>Mit mehr #Organgen</span>
+        <span>Mit mehr Organgen!</span>
       </div>
     </div>
 
@@ -369,9 +369,15 @@
           </div>
           <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
             <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">Personen</span>
+            <sc-if value="{{ f.personSuchbar }}" hint-placeholder-val="{{ false }}">
+              <input class="input" type="search" value="{{ f.personSuche }}" onChange="{{ f.onPersonSuche }}" placeholder="Person suchen" style="width: 150px; padding: 4px 9px; font-size: 12px;">
+            </sc-if>
             <sc-for list="{{ f.persons }}" as="c" hint-placeholder-count="4">
               <button onClick="{{ c.toggle }}" style="{{ c.style }}">{{ c.label }}</button>
             </sc-for>
+            <sc-if value="{{ f.personRest }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">{{ f.personRest }}</span>
+            </sc-if>
           </div>
         </div>
       </div>
@@ -826,7 +832,7 @@
     </div>
     </div>
     <div style="display: flex; justify-content: space-between; gap: var(--space-4); padding-top: var(--space-2); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-600);">
-      <span>Klick auf eine Karte oder einen Marker öffnet das Ereignis</span>
+      <span>Klick auf eine Karte oder einen Marker öffnet das Ereignis · ← → blättert</span>
       <span>{{ stats.hint }}</span>
     </div>
   </div>
@@ -1302,6 +1308,15 @@
                     </select>
                   </div>
                 </div>
+                <sc-if value="{{ a.hatEt }}" hint-placeholder-val="{{ false }}">
+                  <div class="field" style="margin: 0;"><label>Gehört zur Etappe</label>
+                    <select class="input" value="{{ a.et }}" onChange="{{ a.onEt }}">
+                      <sc-for list="{{ a.etWahl }}" as="o" hint-placeholder-count="2">
+                        <option value="{{ o.value }}">{{ o.label }}</option>
+                      </sc-for>
+                    </select>
+                  </div>
+                </sc-if>
                 <sc-if value="{{ a.hatGruppen }}" hint-placeholder-val="{{ false }}">
                   <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                     <sc-for list="{{ a.gruppen }}" as="g" hint-placeholder-count="2">
@@ -2896,6 +2911,7 @@ class Component extends DCLogic {
     vglMit: null,
     vglFilter: { q: "", ort: "", kat: "", jahr: "" },
     inhaltSuche: { wer: "", thema: "", ort: "" },
+    personSuche: "",
     inhaltAuf: {},
     sperrMenu: null,
     vglSuche: { wer: "", ort: "", kat: "", jahr: "" },
@@ -4312,12 +4328,12 @@ class Component extends DCLogic {
   };
 
   /* Im Vollbild zählt nur das Foto. Die Leiste kommt bei Mausbewegung
-     zurück und verschwindet nach 2 Sekunden Ruhe wieder. */
+     zurück und verschwindet nach fünf Sekunden Ruhe wieder. */
   uiSchlafen() {
     if (this.uiTimer) window.clearTimeout(this.uiTimer);
     this.uiTimer = window.setTimeout(() => {
       if (this.state.show.open && this.state.show.voll) this.setShow({ ui: false }, false);
-    }, 2000);
+    }, 2500);
   }
 
   weckUi = () => {
@@ -5103,7 +5119,7 @@ class Component extends DCLogic {
     if (!d) return;
     this.setState({
       draft: Object.assign({}, d, {
-        alben: (d.alben || []).concat([{ i: "al" + uid(), name: "", vis: "alle", who: [], gwho: [], share: "comment" }])
+        alben: (d.alben || []).concat([{ i: "al" + uid(), name: "", vis: "alle", who: [], gwho: [], share: "comment", et: "" }])
       })
     });
   };
@@ -5150,7 +5166,13 @@ class Component extends DCLogic {
   etNeu = () => {
     const d = this.state.draft;
     if (!d) return;
-    this.setState({ draft: Object.assign({}, d, { etappen: (d.etappen || []).concat([leereEtappe()]) }) });
+    /* Gleich aufs Setzen der Karte umschalten — der nächste Tipp auf die
+       Karte setzt den Startpunkt der neuen Etappe. */
+    const neu = leereEtappe();
+    this.setState({
+      draft: Object.assign({}, d, { etappen: (d.etappen || []).concat([neu]) }),
+      etZiel: neu.i
+    });
   };
 
   etWeg = (id) => {
@@ -5162,6 +5184,7 @@ class Component extends DCLogic {
       draft: Object.assign({}, d, {
         etappen: (d.etappen || []).filter((x) => x.i !== id),
         images: (d.images || []).map((r) => (r.et === id ? Object.assign({}, r, { et: "" }) : r)),
+        alben: (d.alben || []).map((a) => (a.et === id ? Object.assign({}, a, { et: "" }) : a)),
         polls: (d.polls || []).map((p) => (p.et === id ? Object.assign({}, p, { et: "" }) : p))
       })
     });
@@ -5381,18 +5404,27 @@ class Component extends DCLogic {
 
   /* Bilder in Anzeigereihenfolge, mit Gruppenkopf beim ersten je Etappe.
      Ohne Split-Modus bleibt die Reihenfolge unverändert. */
+  /* Zu welcher Etappe gehört ein Bild? Die eigene Zuordnung zählt, sonst
+     die seines Albums — ein Album, das an einer Etappe hängt, zieht seine
+     Bilder mit dorthin. */
+  bildEtappe(e, r) {
+    if (r.et) return r.et;
+    const a = (e.alben || []).filter((x) => x.i === (r.alb || ""))[0];
+    return (a && a.et) || "";
+  }
+
   nachEtappen(e) {
-    const roh = (e.images || []).map((r, j) => ({ r: r, j: j, kopf: "" }));
+    const roh = (e.images || []).map((r, j) => ({ r: r, j: j, kopf: "", etId: this.bildEtappe(e, r) }));
     const et = e.etappen || [];
     if (e.etLayout !== "split" || !et.length) return roh;
     const rang = (id) => {
       const at = et.findIndex((x) => x.i === id);
       return at < 0 ? 9999 : at;
     };
-    const sortiert = roh.slice().sort((a, b) => rang(a.r.et || "") - rang(b.r.et || "") || a.j - b.j);
+    const sortiert = roh.slice().sort((a, b) => rang(a.etId) - rang(b.etId) || a.j - b.j);
     let letzte = "\u0000";
     sortiert.forEach((x) => {
-      const id = x.r.et || "";
+      const id = x.etId;
       if (id !== letzte) {
         x.kopf = id ? this.etName(e, id) : "Ohne Etappe";
         letzte = id;
@@ -6412,15 +6444,19 @@ class Component extends DCLogic {
       const d = Math.abs(s.x + cardW / 2 - blick);
       if (!ziel || d < ziel.d) ziel = { s: s, d: d };
     });
+    /* Der Knopf schwebt über der Seite. Ist unten gerade etwas anderes
+       offen — ein Reiter des Bands, ein Fenster, der Editor —, würde er
+       dortige Knöpfe unklickbar machen. Dann bleibt er weg. */
+    const etwasOffen = !!(st.ribbon || st.drawer || st.admin || st.konto || st.vgl
+      || st.draft || st.show.open || st.zoomImg || st.imgEdit || st.tour !== null);
     const stapelKnopf = (function (self) {
-      if (!ziel) return { zeigen: false };
+      if (!ziel || etwasOffen) return { zeigen: false };
       const s = ziel.s;
       const auf = !!offenAuch[s.id];
-      const wann = fmtDate(s.date);
       return {
         zeigen: true,
         label: auf
-          ? "▴ weniger zeigen · " + wann
+          ? "▴ weniger zeigen"
           : "▾ " + plural(s.tiefe - STAPEL_SICHTBAR, "weiteres Ereignis", "weitere Ereignisse"),
         stil: {
           font: "inherit", fontSize: "12.5px", letterSpacing: "0.08em", textTransform: "uppercase",
@@ -6459,11 +6495,10 @@ class Component extends DCLogic {
         /* zIndex 6: über der Achse (5), aber hinter allen Karten (ab 10) —
            so verdecken die Striche keine Nachbarereignisse. */
         pos: { position: "absolute", left: (it.x + padL + 14) + "px", top: axisY + "px", width: "1px", height: (top - axisY) + "px", zIndex: 6 },
-        /* Der Punkt braucht eine eigene Ebene über ALLEN Karten, sonst
-           verdeckt ihn seine eigene Karte zur Hälfte — auch die geöffnete,
-           die auf 60 liegt. Daher 62. Ein Kasten von 24 px, in dessen
-           Mitte der Punkt sitzt. */
-        punktPos: Object.assign({ position: "absolute", left: (it.x + padL + 14) + "px", top: (top - 12) + "px", width: "1px", height: "24px", zIndex: 62 }, mVars || {}),
+        /* Der Punkt liegt hinter allen Karten (die beginnen bei 10) und
+           nur über der Achse — sonst stört er die Nachbarereignisse.
+           Ein Kasten von 24 px, in dessen Mitte der Punkt sitzt. */
+        punktPos: Object.assign({ position: "absolute", left: (it.x + padL + 14) + "px", top: (top - 12) + "px", width: "1px", height: "24px", zIndex: 6 }, mVars || {}),
         /* Waagerechter Knick zurück zum echten Datum. */
         knick: versatz > 1
           ? { position: "absolute", left: (-versatz) + "px", top: stufe + "px", width: versatz + "px", height: "1px", background: strich }
@@ -6829,6 +6864,14 @@ class Component extends DCLogic {
                 { key: "personen", value: "personen", label: "Nur ausgewählte Kontakte" }
               ],
               onVis: (ev) => self.albSet(x.i, "vis", ev.target.value),
+              /* Hängt das Album an einer Etappe, erscheinen seine Bilder
+                 unter deren Überschrift. */
+              et: x.et || "",
+              etWahl: [{ key: "e0", value: "", label: "— keiner Etappe —" }].concat(
+                (d0.etappen || []).map((y, n) => ({ key: y.i, value: y.i, label: String(y.name || "").trim() || (n + 1) + ". Etappe" }))
+              ),
+              hatEt: (d0.etappen || []).length > 0,
+              onEt: (ev) => self.albSet(x.i, "et", ev.target.value),
               share: x.share || "comment",
               shareWahl: [
                 { key: "view", value: "view", label: "Nur ansehen" },
@@ -8087,7 +8130,24 @@ class Component extends DCLogic {
         authors: [{ key: "a0", value: "", label: "Alle Personen" }].concat(st.users.filter((u) => all.some((e) => e.by === u.id)).map((u) => ({ key: "a" + u.id, value: u.id, label: u.username + (me && u.id === me.id ? " (du)" : "") }))),
         places: [{ key: "p0", value: "", label: "Alle Orte" }].concat(places.map((p) => ({ key: "p" + p, value: p, label: p }))),
         cats: cats.map((c) => ({ key: "c" + c, label: c, style: chip(f.cats.indexOf(c) >= 0), toggle: this.toggleChip("cats", c) })),
-        persons: persons.map((p) => ({ key: "n" + p, label: p, style: chip(f.persons.indexOf(p) >= 0), toggle: this.toggleChip("persons", p) })),
+        /* Nur fünf Personen stehen da — bei mehr sucht man. Gewählte
+           bleiben immer sichtbar, sonst könnte man sie nicht abwählen. */
+        personSuche: st.personSuche || "",
+        onPersonSuche: (ev) => this.setState({ personSuche: ev.target.value }),
+        personSuchbar: persons.length > 5,
+        persons: (function (self) {
+          const q = normName(st.personSuche || "");
+          const passend = q ? persons.filter((p) => normName(p).indexOf(q) >= 0) : persons;
+          const gezeigt = passend.slice(0, 5);
+          (f.persons || []).forEach((p) => { if (gezeigt.indexOf(p) < 0) gezeigt.unshift(p); });
+          return gezeigt.map((p) => ({ key: "n" + p, label: p, style: chip((f.persons || []).indexOf(p) >= 0), toggle: self.toggleChip("persons", p) }));
+        })(this),
+        personRest: (function () {
+          const q = normName(st.personSuche || "");
+          const passend = q ? persons.filter((p) => normName(p).indexOf(q) >= 0) : persons;
+          const rest = passend.length - 5;
+          return rest > 0 ? "… " + rest + " weitere — oben suchen" : "";
+        })(),
         summary: evs.length === all.length ? "alle " + all.length + " Ereignisse" : "zeigt " + evs.length + " von " + all.length,
         active: fActive, reset: this.resetFilters
       },
