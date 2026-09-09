@@ -826,6 +826,7 @@
     </div>
     </div>
     <div style="display: flex; justify-content: space-between; gap: var(--space-4); padding-top: var(--space-2); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-600);">
+      <span>Klick auf eine Karte oder einen Marker öffnet das Ereignis · ← → blättert</span>
       <span>{{ stats.hint }}</span>
     </div>
   </div>
@@ -3124,11 +3125,31 @@ class Component extends DCLogic {
       let fr = this.state.friends;
       try { if (CC.friends) fr = await CC.friends(); } catch (e) { /* Kontakte sind optional */ }
       this.setState({ users: users, events: events, groups: gs, friends: fr, cloudBusy: false, cloudErr: "" });
+      this.designNachtragen(events);
     } catch (e) {
       /* Ohne dieses cloudBusy: false bliebe der Balken für immer stehen. */
       this.setState({ cloudBusy: false, cloudErr: String(e.message || e) });
     }
   };
+
+  /* Ereignisse aus der Zeit vor den Design-Kopien: solange ich die
+     Erstellerin bin, kenne ich das gewählte Design noch und schreibe
+     die Kopie einmalig nach — sonst sähen Kontakte weiter mein Design
+     nicht. Läuft still im Hintergrund. */
+  async designNachtragen(events) {
+    const CC = window.ChronikCloud;
+    const u = this.me();
+    if (!CC || !CC.enabled || !CC.saveEvent || !u || this.nachtragLief) return;
+    const offen = (events || []).filter((e) =>
+      (e.by || "") === u.id && e.themeId && !(e.themeSnap && e.themeSnap.bg) && this.themeSnapFor(e.themeId));
+    if (!offen.length) return;
+    this.nachtragLief = true;
+    for (const e of offen) {
+      try { await CC.saveEvent(Object.assign({}, e, { themeSnap: this.themeSnapFor(e.themeId) })); }
+      catch (err) { /* beim nächsten Laden erneut versuchen */ this.nachtragLief = false; return; }
+    }
+    this.cloudSync();
+  }
 
   /* ---------- Bot-Schutz ---------- */
 
@@ -4174,7 +4195,7 @@ class Component extends DCLogic {
         if (!f.persons.some((n) => names.indexOf(n) >= 0)) return false;
       }
       return true;
-    });
+    }).map((e) => this.themeSnapNachtragen(e));
   }
 
   setFilter(key) {
@@ -4402,14 +4423,39 @@ class Component extends DCLogic {
   /* Ein Ereignis darf ein eigenes Design tragen. Ob das auch für
      Ereignisse von Kontakten gilt, entscheidet jede Person für sich
      unter „Mein Konto“. */
+  /* Ereignisse, wie sie im Zeitstrahl gebraucht werden: fehlt einem
+     eigenen Ereignis die Design-Kopie, wird sie hier nachgetragen. */
   eventTheme(e) {
     const mein = this.theme();
-    const id = e && e.themeId;
-    if (!id) return mein;
+    if (!e || (!e.themeId && !e.themeSnap)) return mein;
     const u = this.me();
     const fremd = !!(e.by && u && e.by !== u.id);
     if (fremd && !this.feedPrefs().fremdesDesign) return mein;
-    return this.allThemes().filter((x) => x.id === id)[0] || mein;
+    /* Die Kopie am Ereignis zählt: eigene Designs des Erstellers kennt
+       ein Kontakt sonst nicht, und Feinjustierungen wären verloren. */
+    if (e.themeSnap && e.themeSnap.bg) return e.themeSnap;
+    return this.allThemes().filter((x) => x.id === e.themeId)[0] || mein;
+  }
+
+  /* Das gewählte Design als vollständige Kopie — so reist es mit dem
+     Ereignis zu allen Kontakten. */
+  themeSnapFor(id) {
+    if (!id) return null;
+    const t = this.allThemes().filter((x) => x.id === id)[0];
+    if (!t) return null;
+    return Object.assign({}, t, id === this.theme().id ? (this.state.override || {}) : {});
+  }
+
+  /* Ältere Ereignisse tragen nur die Kennung. Solange ich die Erstellerin
+     bin, kenne ich das Design noch — also lege ich die Kopie jetzt an,
+     damit sie beim nächsten Speichern mitreist. Nie eine gute Kopie
+     durch eine leere ersetzen. */
+  themeSnapNachtragen(e) {
+    const u = this.me();
+    if (!e || !e.themeId || (e.themeSnap && e.themeSnap.bg)) return e;
+    if (!u || (e.by || "") !== u.id) return e;
+    const snap = this.themeSnapFor(e.themeId);
+    return snap ? Object.assign({}, e, { themeSnap: snap }) : e;
   }
 
   applyTheme() {
@@ -4581,7 +4627,7 @@ class Component extends DCLogic {
 
   newEvent = () => {
     const today = new Date().toISOString().slice(0, 10);
-    this.setState({ draft: { id: null, name: "", date: today, end: "", place: "", kicker: "", note: "", infos: [{ label: "", value: "" }], people: [], images: [], deco: { fx: [], pal: "thema", stickers: [] }, vis: "private", who: [], gwho: [], perms: {}, polls: [], etappen: [], etLayout: "gesamt", alben: [], themeId: "", share: "view", by: (this.me() || {}).id || "", url: "", partial: false }, decoSel: null, pickQ: "", drawer: false, admin: false, secOpen: {} });
+    this.setState({ draft: { id: null, name: "", date: today, end: "", place: "", kicker: "", note: "", infos: [{ label: "", value: "" }], people: [], images: [], deco: { fx: [], pal: "thema", stickers: [] }, vis: "private", who: [], gwho: [], perms: {}, polls: [], etappen: [], etLayout: "gesamt", alben: [], themeId: "", themeSnap: null, share: "view", by: (this.me() || {}).id || "", url: "", partial: false }, decoSel: null, pickQ: "", drawer: false, admin: false, secOpen: {} });
   };
 
   editEvent(id) {
@@ -4607,6 +4653,7 @@ class Component extends DCLogic {
         etappen: (e.etappen || []).map((x) => Object.assign({}, x)),
         alben: (e.alben || []).map((x) => Object.assign({}, x)),
         themeId: e.themeId || "",
+        themeSnap: this.themeSnapNachtragen(e).themeSnap || null,
         etLayout: e.etLayout === "split" ? "split" : "gesamt",
         url: "", partial: lvl < 4
       }
@@ -4642,6 +4689,16 @@ class Component extends DCLogic {
       etappen: (d.etappen || (old && old.etappen) || []).map((x) => Object.assign({}, x)),
       alben: (d.alben || (old && old.alben) || []).map((x) => Object.assign({}, x)),
       themeId: d.themeId != null ? d.themeId : ((old && old.themeId) || ""),
+      /* Eine aktiv gewählte Kopie gilt. Sonst die vorhandene. Nachtragen
+         darf nur die Erstellerin — ein bearbeitender Kontakt würde sonst
+         sein eigenes Design als das des Erstellers festschreiben. */
+      themeSnap: (d.themeSnap && d.themeSnap.bg) ? d.themeSnap
+        : ((old && old.themeSnap && old.themeSnap.bg) ? old.themeSnap
+          : this.themeSnapNachtragen({
+              by: (old && old.by) || d.by || (this.me() || {}).id || "",
+              themeId: d.themeId != null ? d.themeId : ((old && old.themeId) || ""),
+              themeSnap: null
+            }).themeSnap || null),
       etLayout: (d.etLayout || (old && old.etLayout)) === "split" ? "split" : "gesamt",
       share: d.share || (old && old.share) || "view"
     };
@@ -6604,7 +6661,10 @@ class Component extends DCLogic {
         wahl: [{ key: "t0", value: "", label: "— mein eigenes Design —" }].concat(
           this.allThemes().map((p) => ({ key: p.id, value: p.id, label: p.name }))
         ),
-        onTheme: (ev) => this.setState({ draft: Object.assign({}, this.state.draft, { themeId: ev.target.value }) })
+        onTheme: (ev) => {
+          const id = ev.target.value;
+          this.setState({ draft: Object.assign({}, this.state.draft, { themeId: id, themeSnap: this.themeSnapFor(id) }) });
+        }
       },
       /* Alben: Ordner innerhalb eines Ereignisses, jeder mit eigener
          Sichtbarkeit. Bilder ohne Album folgen dem Ereignis. */
