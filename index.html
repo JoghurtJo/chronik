@@ -423,7 +423,7 @@
     <div style="{{ shellStyle }}">
     <div data-stage="" ref="{{ stageRef }}" onScroll="{{ onScroll }}" onPointerDown="{{ stick.place }}" onPointerMove="{{ stick.move }}" onPointerUp="{{ stick.up }}" onPointerLeave="{{ stick.up }}" style="position: relative; overflow-x: auto; overflow-y: auto; max-height: 86vh; overscroll-behavior-x: contain; background-color: var(--t-bg, #f3f2f2); border-radius: var(--radius-lg); box-shadow: inset 0 0 0 1px var(--color-divider); cursor: {{ stick.cursor }};">
       <sc-if value="{{ hatStickyAchse }}" hint-placeholder-val="{{ false }}">
-        <div data-noprint="" style="{{ stickyAchse }}">
+        <div data-noprint="" data-sticky-achse="" style="{{ stickyAchse }}">
           <div style="{{ stickyBand }}"></div>
           <div style="{{ stickyLinie }}"></div>
           <sc-for list="{{ stickyTicks }}" as="sk" hint-placeholder-count="4">
@@ -756,7 +756,7 @@
                                     <span style="flex: 1; height: 1px; background: color-mix(in srgb, var(--t-accent, #0088b0) 30%, transparent);"></span>
                                   </div>
                                 </sc-if>
-                                <figure style="margin: 0; background: var(--t-img-bg, transparent); padding: var(--t-img-pad, 0); border-radius: var(--t-img-radius, 0); rotate: var(--t-img-rot, 0deg); box-shadow: var(--t-img-shadow, none);">
+                                <figure style="margin: 0; width: 100%; background: var(--t-img-bg, transparent); padding: var(--t-img-pad, 0); border-radius: var(--t-img-radius, 0); rotate: var(--t-img-rot, 0deg); box-shadow: var(--t-img-shadow, none);">
                                   <sc-if value="{{ im.src }}" hint-placeholder-val="{{ false }}">
                                     <span role="img" aria-label="{{ im.caption }}" onClick="{{ im.zoom }}" title="größer ansehen" style="{{ im.bildStil }}"></span>
                                   </sc-if>
@@ -769,7 +769,7 @@
                                 <sc-if value="{{ im.albName }}" hint-placeholder-val="{{ false }}">
                                   <div style="font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: color-mix(in srgb, var(--t-accent2, #d6006c) 88%, var(--t-ink, #201e1d));">Album · {{ im.albName }}</div>
                                 </sc-if>
-                                <div style="display: grid; gap: 4px;">
+                                <div style="display: grid; gap: 4px; width: 100%;">
                                   <sc-for list="{{ im.comments }}" as="cm" hint-placeholder-count="1">
                                     <div style="{{ cm.einzug }}">
                                     <div style="{{ cm.row }}">
@@ -1735,8 +1735,8 @@
   </sc-if>
 
   <sc-if value="{{ bild.open }}" hint-placeholder-val="{{ false }}">
-    <div data-noprint="" data-screen-label="Bild bearbeiten" style="position: fixed; inset: 0; z-index: 125; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 62%, transparent);">
-      <div style="width: min(920px, 96vw); max-height: 94vh; overflow-y: auto; background: var(--color-bg); color: var(--color-text); border-radius: var(--radius-lg); padding: var(--space-6); box-shadow: var(--shadow-lg);">
+    <div data-noprint="" data-screen-label="Bild bearbeiten" onClick="{{ bild.close }}" style="position: fixed; inset: 0; z-index: 125; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 62%, transparent);">
+      <div onClick="{{ stop }}" style="width: min(920px, 96vw); max-height: 94vh; overflow-y: auto; background: var(--color-bg); color: var(--color-text); border-radius: var(--radius-lg); padding: var(--space-6); box-shadow: var(--shadow-lg);">
         <div style="display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4);">
           <div>
             <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">Bildwerkstatt</div>
@@ -1911,6 +1911,20 @@
 
 
 
+<sc-if value="{{ loesch.offen }}" hint-placeholder-val="{{ false }}">
+  <div data-noprint="" data-screen-label="Löschen bestätigen" onClick="{{ loesch.nein }}" style="position: fixed; inset: 0; z-index: 262; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 46%, transparent);">
+    <div onClick="{{ stop }}" style="width: min(420px, 100%); padding: var(--space-6); background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); display: grid; gap: var(--space-3);">
+      <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-2-700);">Endgültig löschen</div>
+      <h2 style="margin: 0; font-size: 26px; line-height: 1.1;">{{ loesch.name }}</h2>
+      <p style="margin: 0; font-size: 14px; line-height: 1.55; color: var(--color-neutral-700);">Das Ereignis wird mit allen Bildern, Kommentaren und Abstimmungen entfernt. Rückgängig machen lässt sich das nicht.</p>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: var(--space-2);">
+        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ loesch.nein }}">Behalten</button>
+        <button class="btn btn-primary" style="white-space: nowrap;" onClick="{{ loesch.ja }}">Ja, löschen</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
 <sc-if value="{{ lehr.offen }}" hint-placeholder-val="{{ false }}">
   <div data-noprint="" data-screen-label="Ereignis-Leitfaden" style="position: fixed; inset: 0; z-index: 260; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); display: grid; grid-template-rows: auto 1fr auto;">
     <div style="display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); padding: var(--space-4) var(--space-6) var(--space-3); flex-wrap: wrap;">
@@ -1922,21 +1936,21 @@
     </div>
     <div style="height: 3px; background: var(--color-text); margin: 0 var(--space-6);"></div>
 
-    <div style="min-height: 0; overflow-y: auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 340px); gap: var(--space-6); padding: var(--space-5) var(--space-6);">
+    <div data-lehr-wanne="" style="min-height: 0; overflow-y: auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 340px); gap: var(--space-6); padding: var(--space-6);">
       <div style="display: grid; gap: var(--space-3); align-content: start;">
-        <div style="{{ lehr.sKopf }}" onClick="{{ lehr.zeigKopf }}">
+        <div data-lehr="kopf" style="{{ lehr.sKopf }}" onClick="{{ lehr.zeigKopf }}">
           <div style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Beispiel · Kurzurlaub</div>
           <div style="font-size: 22px; line-height: 1.1; font-family: var(--font-heading);">Wochenende am Meer</div>
           <div style="font-size: 12.5px; color: var(--color-neutral-700);">Freitag bis Sonntag · Sylt · drei Tage</div>
         </div>
 
-        <div style="{{ lehr.sRechte }}" onClick="{{ lehr.zeigRechte }}">
+        <div data-lehr="rechte" style="{{ lehr.sRechte }}" onClick="{{ lehr.zeigRechte }}">
           <div style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Sichtbarkeit</div>
           <div style="font-size: 13px;">Alle Kontakte · dürfen kommentieren</div>
           <div style="font-size: 11.5px; color: var(--color-neutral-700);">Jule zusätzlich: Inhalte pflegen</div>
         </div>
 
-        <div style="{{ lehr.sNotiz }}" onClick="{{ lehr.zeigNotiz }}">
+        <div data-lehr="notiz" style="{{ lehr.sNotiz }}" onClick="{{ lehr.zeigNotiz }}">
           <div style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Notiz und Angaben</div>
           <p style="margin: 0; font-size: 13px; line-height: 1.5;">Drei Tage Wind, Sand und viel zu viel Kuchen.</p>
           <div style="display: flex; gap: var(--space-4); flex-wrap: wrap; font-size: 12px;">
@@ -1945,7 +1959,7 @@
           </div>
         </div>
 
-        <div style="{{ lehr.sPersonen }}" onClick="{{ lehr.zeigPersonen }}">
+        <div data-lehr="personen" style="{{ lehr.sPersonen }}" onClick="{{ lehr.zeigPersonen }}">
           <div style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Personen</div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <span style="display: flex; align-items: center; gap: 8px; padding: 3px 11px 3px 3px; border-radius: 99px; background: var(--color-neutral-100); border: 2px solid var(--color-accent);">
@@ -1959,7 +1973,7 @@
           </div>
         </div>
 
-        <div style="{{ lehr.sRoute }}" onClick="{{ lehr.zeigRoute }}">
+        <div data-lehr="route" style="{{ lehr.sRoute }}" onClick="{{ lehr.zeigRoute }}">
           <div style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Route · 3 Etappen</div>
           <div style="display: grid; gap: 5px; font-size: 12.5px;">
             <div>1 · Hamburg <span style="color: var(--color-neutral-700);">— Start</span></div>
@@ -1969,7 +1983,7 @@
           <div style="height: 92px; border-radius: var(--radius-md); background: var(--color-neutral-200); display: grid; place-items: center; font-size: 11.5px; color: var(--color-neutral-700);">Hier steht im Ereignis die Karte mit der verbundenen Route</div>
         </div>
 
-        <div style="{{ lehr.sBilder }}" onClick="{{ lehr.zeigBilder }}">
+        <div data-lehr="bilder" style="{{ lehr.sBilder }}" onClick="{{ lehr.zeigBilder }}">
           <div style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Bilder · 2</div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
             <div style="display: grid; gap: 5px;">
@@ -1985,7 +1999,7 @@
           </div>
         </div>
 
-        <div style="{{ lehr.sWahl }}" onClick="{{ lehr.zeigWahl }}">
+        <div data-lehr="wahl" style="{{ lehr.sWahl }}" onClick="{{ lehr.zeigWahl }}">
           <div style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Abstimmung</div>
           <div style="font-size: 13.5px;">Nächstes Mal wieder?</div>
           <div style="display: grid; gap: 5px;">
@@ -2004,17 +2018,17 @@
           </div>
         </div>
 
-        <div style="{{ lehr.sDeko }}" onClick="{{ lehr.zeigDeko }}">
+        <div data-lehr="deko" style="{{ lehr.sDeko }}" onClick="{{ lehr.zeigDeko }}">
           <div style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Deko und Design</div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size: 12px;">
             <span class="tag tag-accent">Sticker ★</span>
             <span class="tag tag-outline">Design: Riso</span>
-            <span class="tag tag-outline">Bildform: Sofortbild</span>
+            <span class="tag tag-outline">Bildform: Polaroid</span>
             <span class="tag tag-outline">Schatten: hart</span>
           </div>
         </div>
 
-        <div style="{{ lehr.sKommentare }}" onClick="{{ lehr.zeigKommentare }}">
+        <div data-lehr="kommentare" style="{{ lehr.sKommentare }}" onClick="{{ lehr.zeigKommentare }}">
           <div style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Kommentare</div>
           <div style="font-size: 12.5px;"><b>Jule:</b> Der Kuchen in List war der beste. <span style="color: var(--color-neutral-700);">♥ 2</span></div>
           <div style="font-size: 12.5px; padding-left: var(--space-4);"><b>Du:</b> Nächstes Mal zwei Stück.</div>
@@ -2026,8 +2040,9 @@
         <h3 style="margin: 0; font-size: 21px; line-height: 1.15;">{{ lehr.titel }}</h3>
         <p style="margin: 0; font-size: 14px; line-height: 1.6;">{{ lehr.text }}</p>
         <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: var(--space-2);">
-          <sc-if value="{{ lehr.ersteSeite }}" hint-placeholder-val="{{ true }}"></sc-if>
-          <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ lehr.zurueck }}">Zurück</button>
+          <sc-if value="{{ lehr.nichtErste }}" hint-placeholder-val="{{ false }}">
+            <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ lehr.zurueck }}">Zurück</button>
+          </sc-if>
           <button class="btn btn-primary" style="white-space: nowrap;" onClick="{{ lehr.weiter }}">{{ lehr.weiterLabel }}</button>
         </div>
         <div style="height: 1px; background: var(--color-divider); margin: var(--space-2) 0;"></div>
@@ -2044,8 +2059,8 @@
 </sc-if>
 
 <sc-if value="{{ tour.wahl }}" hint-placeholder-val="{{ false }}">
-  <div data-noprint="" data-screen-label="Leitfaden wählen" style="position: fixed; inset: 0; z-index: 252; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 46%, transparent);">
-    <div style="width: min(460px, 100%); padding: var(--space-6); background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); display: grid; gap: var(--space-3);">
+  <div data-noprint="" data-screen-label="Leitfaden wählen" onClick="{{ tour.wahlZu }}" style="position: fixed; inset: 0; z-index: 252; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 46%, transparent);">
+    <div onClick="{{ stop }}" style="width: min(460px, 100%); padding: var(--space-6); background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); display: grid; gap: var(--space-3);">
       <div style="display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4);">
         <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">Leitfaden</div>
         <button class="btn btn-secondary btn-icon" onClick="{{ tour.wahlZu }}">✕</button>
@@ -2075,7 +2090,7 @@
         <button class="btn btn-primary" style="white-space: nowrap;" onClick="{{ tour.frageJa }}">Ja, zeig mir das</button>
         <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ tour.frageNein }}">Später — ich schau selbst</button>
       </div>
-      <div style="font-size: 11.5px; color: var(--color-neutral-600);">Du findest den Leitfaden jederzeit oben unter „? Hilfe“.</div>
+      <div style="font-size: 11.5px; color: var(--color-neutral-600);">Du findest den Leitfaden jederzeit oben unter „Hilfe“.</div>
     </div>
   </div>
 </sc-if>
@@ -2122,8 +2137,8 @@
 </sc-if>
 
 <sc-if value="{{ vgl.open }}" hint-placeholder-val="{{ false }}">
-  <div data-noprint="" data-screen-label="Vergleich" style="position: fixed; inset: 0; z-index: 139; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 42%, transparent);">
-    <div style="width: min(760px, 100%); max-height: 90vh; overflow-y: auto; background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: var(--space-6);">
+  <div data-noprint="" data-screen-label="Vergleich" onClick="{{ vgl.zu }}" style="position: fixed; inset: 0; z-index: 139; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 42%, transparent);">
+    <div onClick="{{ stop }}" style="width: min(760px, 100%); max-height: 90vh; overflow-y: auto; background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: var(--space-6);">
       <div style="display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4);">
         <div>
           <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">Zwei Chroniken</div>
@@ -2336,8 +2351,8 @@
 </sc-if>
 
 <sc-if value="{{ konto.open }}" hint-placeholder-val="{{ false }}">
-  <div data-noprint="" data-screen-label="Mein Konto" style="position: fixed; inset: 0; z-index: 138; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 42%, transparent);">
-    <div style="width: min(500px, 100%); max-height: 88vh; overflow-y: auto; background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: var(--space-6);">
+  <div data-noprint="" data-screen-label="Mein Konto" onClick="{{ konto.zu }}" style="position: fixed; inset: 0; z-index: 138; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 42%, transparent);">
+    <div onClick="{{ stop }}" style="width: min(500px, 100%); max-height: 88vh; overflow-y: auto; background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: var(--space-6);">
       <div style="display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4);">
         <div>
           <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">Konto</div>
@@ -2347,7 +2362,7 @@
       </div>
       <div style="height: 3px; background: var(--color-text); margin: var(--space-4) 0 var(--space-4);"></div>
 
-      <div style="display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-5);">
+      <div style="display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4);">
         <div style="{{ konto.bildStil }}">{{ konto.initialen }}</div>
         <div style="display: grid; gap: 6px; justify-items: start;">
           <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">Profilbild</div>
@@ -2359,6 +2374,9 @@
               <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ konto.bildWeg }}">Entfernen</button>
             </sc-if>
           </div>
+          <sc-if value="{{ konto.bildFehler }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size: 12px; line-height: 1.45; color: var(--color-accent-2-700); max-width: 34ch;">{{ konto.bildFehler }}</div>
+          </sc-if>
         </div>
       </div>
 
@@ -2455,8 +2473,8 @@
 </sc-if>
 
 <sc-if value="{{ limit.open }}" hint-placeholder-val="{{ false }}">
-  <div data-noprint="" data-screen-label="Grenze erreicht" style="position: fixed; inset: 0; z-index: 140; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 38%, transparent);">
-    <div style="width: min(520px, 100%); background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: var(--space-6); animation-name: tl-pop; animation-duration: 300ms; animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); animation-fill-mode: both;">
+  <div data-noprint="" data-screen-label="Grenze erreicht" onClick="{{ limit.close }}" style="position: fixed; inset: 0; z-index: 140; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 38%, transparent);">
+    <div onClick="{{ stop }}" style="width: min(520px, 100%); background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: var(--space-6); animation-name: tl-pop; animation-duration: 300ms; animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); animation-fill-mode: both;">
       <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-2-700);">Kurze Pause · {{ limit.scope }}</div>
       <h2 style="margin: 4px 0 0; font-size: 26px; line-height: 1.1;">Das geht gerade nicht</h2>
       <div style="height: 3px; background: var(--color-text); margin: var(--space-3) 0 var(--space-4);"></div>
@@ -2633,7 +2651,7 @@ const SHADOWS = {
 /* Was ein Ereignis über sein Design hinaus noch selbst festlegen darf.
    Die Werte reisen in der Design-Kopie mit, also sehen Kontakte sie. */
 const FEIN = [
-  { k: "imgShape", label: "Bildform", opts: [["rect", "Rechteck"], ["round", "Runde Ecken"], ["circle", "Kreis"], ["polaroid", "Sofortbild"]] },
+  { k: "imgShape", label: "Bildform", opts: [["rect", "Rechteck"], ["round", "Runde Ecken"], ["circle", "Kreis"], ["polaroid", "Polaroid"]] },
   { k: "marker", label: "Markierung", opts: [["square", "Quadrat"], ["circle", "Punkt"], ["diamond", "Raute"], ["ring", "Ring"], ["bar", "Balken"]] },
   { k: "pattern", label: "Hintergrundmuster", opts: [["none", "keins"], ["dots", "Punkte"], ["grid", "Gitter"], ["lines", "Linien"], ["scan", "Zeilen"], ["halftone", "Raster"], ["regenbogen", "Regenbogen"]] },
   { k: "shadow", label: "Schatten", opts: [["none", "keiner"], ["sm", "zart"], ["md", "mittel"], ["lg", "weich"], ["hard", "hart"]] }
@@ -3163,9 +3181,11 @@ class Component extends DCLogic {
     stageY: 0,
     avatar: "",
     avatarBusy: false,
+    avatarFehler: "",
     lookVorschau: false,
     tourWahl: false,
     lehr: null,
+    loeschEv: null,
     feed: { freunde: true, vorschau: false },
     konto: false,
     loeschWort: "",
@@ -3751,38 +3771,57 @@ class Component extends DCLogic {
      in der Cloud zusätzlich im Profil, damit es auf jedem Gerät gleich aussieht. */
   /* Profilbild: klein gerechnet und ins Bilderlager gelegt, damit es
      nicht als riesige Zeichenkette im Profil steckt. */
+  /* Das Profilbild geht wie jedes andere Bild nach Cloudflare; im Profil
+     steht nur seine Adresse. Eine eingebettete Datenzeichenkette wäre zu
+     groß für die Ablage und ginge beim Neuladen verloren — genau das ist
+     vorher passiert. */
   avatarWahl = async (ev) => {
     const datei = ev.target.files && ev.target.files[0];
     ev.target.value = "";
     if (!datei) return;
-    this.setState({ avatarBusy: true });
+    const CC = window.ChronikCloud;
+    const inCloud = !!(this.state.cloud && CC && CC.uploadImage && CC.saveLook);
+    this.setState({ avatarBusy: true, avatarFehler: "" });
     try {
       const prep = await this.shrinkImage(datei, 320, 0.82);
-      let src = prep ? prep.dataUrl : await this.readAsDataUrl(datei);
-      if (this.state.cloud && window.ChronikCloud && window.ChronikCloud.uploadImage) {
-        const r = await window.ChronikCloud.uploadImage(prep ? prep.file : datei);
-        if (r && r.src) src = r.src;
+      if (inCloud) {
+        /* In der Cloud geht das Bild nach Cloudflare; im Profil steht nur
+           seine Adresse. Eine eingebettete Datenzeichenkette wäre zu groß
+           für die Ablage und ginge beim Neuladen verloren. */
+        const r = await CC.uploadImage(prep ? prep.file : datei);
+        const src = (r && r.src) || "";
+        if (!src) throw new Error("keine Adresse");
+        /* Erst schreiben, dann anzeigen — sonst erschiene ein Bild, das
+           den Neustart nicht übersteht. */
+        await CC.saveLook(Object.assign({}, this.lookOf(), { avatar: src }));
+        this.lastLook = null;
+        this.setState({ avatar: src, avatarBusy: false }, () => this.saveLook());
+        return;
       }
-      /* Sofort schreiben, nicht erst nach der üblichen Wartezeit — ein
-         Neuladen direkt nach der Wahl darf das Bild nicht verlieren. */
-      this.setState({ avatar: src, avatarBusy: false }, () => {
-        this.saveLook();
-        if (this.state.cloud && window.ChronikCloud && window.ChronikCloud.saveLook) {
-          window.ChronikCloud.saveLook(this.lookOf()).catch(() => {});
-        }
-      });
+      /* Ohne Cloud bleibt das Bild in diesem Browser. Damit es in die
+         Ablage passt, wird es klein gerechnet. */
+      const klein = await this.shrinkImage(datei, 200, 0.7);
+      const src = (klein ? klein.dataUrl : null) || (prep ? prep.dataUrl : await this.readAsDataUrl(datei));
+      this.lastLook = null;
+      this.setState({ avatar: src, avatarBusy: false }, () => this.saveLook());
     } catch (e) {
-      this.setState({ avatarBusy: false, cloudErr: "Das Bild ließ sich nicht laden." });
+      this.setState({
+        avatarBusy: false,
+    avatarFehler: "",
+        avatarFehler: inCloud
+          ? "Das Profilbild ließ sich nicht speichern. Bitte noch einmal versuchen."
+          : "Dieses Bild ließ sich nicht öffnen. Versuche ein anderes Format."
+      });
     }
   };
 
-  avatarWeg = () => {
-    this.setState({ avatar: "" }, () => {
-      this.saveLook();
-      if (this.state.cloud && window.ChronikCloud && window.ChronikCloud.saveLook) {
-        window.ChronikCloud.saveLook(this.lookOf()).catch(() => {});
-      }
-    });
+  avatarWeg = async () => {
+    const CC = window.ChronikCloud;
+    if (this.state.cloud && CC && CC.saveLook) {
+      try { await CC.saveLook(Object.assign({}, this.lookOf(), { avatar: "" })); } catch (e) { /* nicht kritisch */ }
+    }
+    this.lastLook = null;
+    this.setState({ avatar: "", avatarFehler: "" }, () => this.saveLook());
   };
 
   /* Das Profilbild einer Person — aus dem eigenen Zustand oder aus dem
@@ -4207,9 +4246,7 @@ class Component extends DCLogic {
   schritteGrund() {
     return [
       { ziel: "", titel: "Willkommen in deiner Chronik",
-        text: "Ich zeige dir kurz, wo hier was steckt. Ein leuchtender Punkt führt dich durch das Programm. Abbrechen kannst du jederzeit — über „Hilfe“ kommst du zurück." },
-      { ziel: "", titel: "Was ist die Chronik?",
-        text: "Du kannst dir hier alle deine Erlebnisse, wie z.B. Festivals, Urlaube, Feiern, ... planen dokumentieren und den Leuten deiner Wahl zur Verfügung stellen. Routen, Bilder, Kommentare, Personen die dabei waren, …. Das alles kannst Du jederzeit wieder erleben und in Erinnerungen und Momenten schwelgen." },
+        text: "In neun kurzen Schritten zeige ich dir, wo hier was steckt. Ein leuchtender Punkt führt dich zu jedem Knopf. Abbrechen darfst du jederzeit — über „Hilfe“ kommst du zurück." },
       { ziel: "neu", titel: "Ein Ereignis anlegen",
         text: "Alles beginnt hier: Name, Datum, Ort. Was ein Ereignis alles kann — Personen, Bilder, Etappen, Abstimmungen, Deko —, erklärt der zweite Leitfaden an einem Beispiel." },
       { ziel: "", titel: "Dein Zeitstrahl",
@@ -4243,7 +4280,7 @@ class Component extends DCLogic {
       { k: "notiz", titel: "Notiz und Angaben",
         text: "Die Notiz ist der Fließtext. Darunter stehen freie Angaben als Paare aus Bezeichnung und Wert — Wetter, Kilometer, Eintrittspreis, was du willst. Sie erscheinen als kleine Tabelle in der Kachel." },
       { k: "personen", titel: "Personen",
-        text: "Wer dabei war. Ist eine Person einem Konto zugewiesen, mit dem du befreundet bist, bekommt sie einen kräftigen Rand — hier Jule. Ohne Rand ist es ein bloßer Name wie Timo. Personen mit Haken wurden einem Account zugewiesen. Hat das Konto ein Profilbild, wird es statt der Anfangsbuchstaben gezeigt." },
+        text: "Wer dabei war. Ist eine Person einem Konto zugewiesen, mit dem du befreundet bist, bekommt sie einen kräftigen Rand — hier Jule. Ohne Rand ist es ein bloßer Name wie Timo.  Personen mit Haken wurden einem Account zugewiesen. Hat das Konto ein Profilbild, wird es statt der Anfangsbuchstaben gezeigt." },
       { k: "route", titel: "Etappen und Route",
         text: "War es eine Reise, legst du Etappen an: wo du warst und womit du hinkamst. Auf der Karte werden sie verbunden, die Linienart zeigt das Verkehrsmittel. Ein Tipp auf die Karte setzt den Punkt." },
       { k: "bilder", titel: "Bilder und Alben",
@@ -4259,15 +4296,33 @@ class Component extends DCLogic {
 
   lehrAuf = () => this.setState({ lehr: 0, tourWahl: false, tourFrage: false });
   lehrZu = () => this.setState({ lehr: null });
+
+  /* Den erklärten Abschnitt ins Sichtfeld holen. Ohne das liest man ab
+     dem vierten Schritt eine Erklärung zu etwas, das weit unterhalb des
+     Fensters steht. */
+  lehrSetzen(n) {
+    this.setState({ lehr: n });
+    /* Nicht im Rückruf von setState — der wird hier nicht aufgerufen.
+       Ein kurzer Aufschub reicht, damit die Hervorhebung schon steht. */
+    const k = this.lehrTeile()[n].k;
+    window.setTimeout(() => {
+      const wanne = document.querySelector("[data-lehr-wanne]");
+      const teil = wanne && wanne.querySelector('[data-lehr="' + k + '"]');
+      if (!wanne || !teil) return;
+      const ziel = wanne.scrollTop + (teil.getBoundingClientRect().top - wanne.getBoundingClientRect().top) - 16;
+      wanne.scrollTop = Math.max(0, ziel);
+    }, 80);
+  }
+
   lehrGeh = (r) => {
     const n = (this.state.lehr == null ? 0 : this.state.lehr) + r;
     if (n < 0) return;
     if (n >= this.lehrTeile().length) return this.lehrZu();
-    this.setState({ lehr: n });
+    this.lehrSetzen(n);
   };
   lehrZu2 = (k) => () => {
     const at = this.lehrTeile().findIndex((t) => t.k === k);
-    if (at >= 0) this.setState({ lehr: at });
+    if (at >= 0) this.lehrSetzen(at);
   };
 
   /* Der Wahlzettel: welchen der beiden Leitfäden hätten Sie gern? */
@@ -5122,14 +5177,14 @@ class Component extends DCLogic {
     /* Die Blickmitte merken: der schwebende Knopf unten soll immer den
        Stapel bedienen, der gerade vor einem liegt. */
     const box = e.currentTarget;
-    const mitte = box.scrollLeft + box.clientWidth / 2;
-    const y = box.scrollTop;
-    if (((this.state.stageY || 0) > 24) !== (y > 24)) this.setState({ stageY: y > 24 ? 100 : 0 });
-    if (this.blickRaf) return;
-    this.blickRaf = window.requestAnimationFrame(() => {
-      this.blickRaf = 0;
-      if (Math.abs((this.state.blickX || 0) - mitte) > 12) this.setState({ blickX: mitte });
-    });
+    /* Direkt am Knoten schalten, nicht über den Zustand: ein setState aus
+       dem Scroll-Handler zeichnet hier nicht neu, das Band blieb sonst
+       aus oder stand dauerhaft doppelt über der echten Achse. */
+    const band = box.querySelector("[data-sticky-achse]");
+    if (band) band.style.opacity = box.scrollTop > 24 ? "1" : "0";
+    /* Die Blickmitte merkt sich der Knopf selbst — sie wird erst beim
+       Antippen gebraucht. */
+    this.blickX = box.scrollLeft + box.clientWidth / 2;
   };
 
   newEvent = () => {
@@ -5244,6 +5299,21 @@ class Component extends DCLogic {
     const evs = d.id ? this.state.events.map((e) => (e.id === d.id ? clean : e)) : this.state.events.concat([clean]);
     this.setState({ events: evs, draft: null, openId: clean.id });
     if (vorgemerkt.length) this.bilderWeg(vorgemerkt);
+  };
+
+  /* Löschen ist endgültig — erst fragen, dann handeln. */
+  removeFragen = (id) => {
+    const e = this.state.events.filter((x) => x.id === id)[0];
+    if (!e || this.levelFor(e) < 4) return;
+    this.setState({ loeschEv: id });
+  };
+
+  removeAbbrechen = () => this.setState({ loeschEv: null });
+
+  removeBestaetigt = () => {
+    const id = this.state.loeschEv;
+    this.setState({ loeschEv: null });
+    if (id) this.removeEvent(id);
   };
 
   removeEvent(id) {
@@ -6569,9 +6639,13 @@ class Component extends DCLogic {
         images: bilder.map(({ r, j, kopf, albName, recht }) => ({
           etKopf: kopf || "", hatKopf: !!kopf,
           albName: albName || "",
+          /* Oben ausgerichtet: beim Aufklappen wächst die Kachel nach
+             rechts, Bild und Beschriftung bleiben an der oberen linken
+             Ecke. Die Breite bleibt voll — sonst schrumpfen die
+             Rasterkinder auf Inhaltsbreite und werden unklickbar. */
           wrap: kopf
-            ? { display: "grid", gap: "6px", gridColumn: "1 / -1" }
-            : { display: "grid", gap: "6px" },
+            ? { display: "grid", gap: "6px", gridColumn: "1 / -1", alignContent: "start" }
+            : { display: "grid", gap: "6px", alignContent: "start" },
           key: "m" + j, src: r.src || "", empty: !r.src, caption: zeigbareUnterschrift(r.caption), leerText: "ohne Bild",
           /* Als Hintergrund statt <img>: so fragt der Browser während des
              Aufbaus nie eine noch unaufgelöste Adresse ab. Form und
@@ -6903,7 +6977,7 @@ class Component extends DCLogic {
         toggle: () => this.open(e.id),
         show: () => this.openShow("ev", e.id),
         edit: (ev) => { ev.stopPropagation(); this.editEvent(e.id); },
-        remove: (ev) => { ev.stopPropagation(); this.removeEvent(e.id); }
+        remove: (ev) => { ev.stopPropagation(); this.removeFragen(e.id); }
       };
     });
 
@@ -6912,16 +6986,23 @@ class Component extends DCLogic {
        gerade vor einem liegt. Ohne ihn wäre ein dichter Zeitraum weit
        links nicht mehr erreichbar. */
     const dichte = (L.stapel || []).filter((s) => s.tiefe > STAPEL_SICHTBAR);
-    const blick = st.blickX || 0;
-    let ziel = null;
     /* Ein geöffneter Stapel behält den Knopf — sonst könnte man ihn
        nicht mehr zuklappen, sobald man weiterscrollt. */
     const offeneDichte = dichte.filter((s) => !!offenAuch[s.id]);
     const kandidaten = offeneDichte.length ? offeneDichte : dichte;
-    kandidaten.forEach((s) => {
-      const d = Math.abs(s.x + cardW / 2 - blick);
-      if (!ziel || d < ziel.d) ziel = { s: s, d: d };
-    });
+    /* Welcher Stapel gemeint ist, entscheidet sich erst beim Antippen
+       anhand der dann sichtbaren Bahn — beim Scrollen wird hier nicht
+       neu gezeichnet, ein zur Zeichenzeit gemerktes Ziel wäre veraltet. */
+    const naechster = () => {
+      const mitte = this.blickX || (this.stage ? this.stage.scrollLeft + this.stage.clientWidth / 2 : 0);
+      let best = null;
+      kandidaten.forEach((s) => {
+        const d = Math.abs(s.x + cardW / 2 - mitte);
+        if (!best || d < best.d) best = { s: s, d: d };
+      });
+      return best && best.s;
+    };
+    const ziel = kandidaten.length ? { s: kandidaten[0] } : null;
     /* Der Knopf schwebt über der Seite. Ist unten gerade etwas anderes
        offen — ein Reiter des Bands, ein Fenster, der Editor —, würde er
        dortige Knöpfe unklickbar machen. Dann bleibt er weg. */
@@ -6944,9 +7025,12 @@ class Component extends DCLogic {
           borderRadius: "999px", boxShadow: "var(--shadow-lg)"
         },
         um: () => {
+          /* Erst jetzt entscheiden, welcher Stapel gemeint ist — beim
+             Scrollen wird nicht neu gezeichnet. */
+          const z = naechster() || s;
           const o = Object.assign({}, self.state.stapelOffen || {});
-          if (auf) { delete o[s.id]; self.setState({ stapelOffen: o, openId: null }); return; }
-          o[s.id] = true;
+          if (o[z.id]) { delete o[z.id]; self.setState({ stapelOffen: o, openId: null }); return; }
+          o[z.id] = true;
           self.setState({ stapelOffen: o });
         }
       };
@@ -7197,7 +7281,7 @@ class Component extends DCLogic {
             const rest = passend.length - gezeigt.length;
             return [{ key: "n0", value: "", label: "— keinem Konto zugeordnet —" }]
               .concat(gezeigt.map((u) => ({ key: "n" + u.id, value: u.id, label: u.username + (me && u.id === me.id ? " (du)" : "") })))
-              .concat(rest > 0 ? [{ key: "nmehr", value: "__hinweis", label: "… " + rest + " weitere — oben suchen", disabled: true }] : [])
+              .concat(rest > 0 ? [{ key: "nmehr", value: "__hinweis", label: "… " + rest + " weitere", disabled: true }] : [])
               .concat(kreis.length === 0 ? [{ key: "nleer", value: "__hinweis", label: "— noch keine Kontakte —", disabled: true }] : []);
           })(this),
           onAccount: (ev) => {
@@ -7932,7 +8016,10 @@ class Component extends DCLogic {
       pairGrid: {
         display: "grid",
         gridTemplateColumns: phone ? "minmax(0, 1fr)" : "repeat(2, minmax(0, 1fr))",
-        gap: "12px"
+        gap: "12px",
+        /* Zeilen nicht dehnen: sonst zieht ein langes Kommentarfeld die
+           Nachbarspalte mit in die Länge. Alles hängt oben. */
+        alignItems: "start"
       },
       sheetGrid: {
         display: "grid",
@@ -7958,6 +8045,17 @@ class Component extends DCLogic {
       guardedNew: this.guardedNew,
       cloudAdmin: !!st.cloud && !!me && normName(me.username) === WARTUNG,
       cloudAn: !!st.cloud && !!me,
+      /* Rückfrage vor dem Löschen — endgültig ist endgültig. */
+      loesch: (function (self) {
+        const id = st.loeschEv;
+        const e = id ? (st.events || []).filter((x) => x.id === id)[0] : null;
+        return {
+          offen: !!e,
+          name: e ? (String(e.name || "").trim() || "dieses Ereignis") : "",
+          nein: self.removeAbbrechen,
+          ja: self.removeBestaetigt
+        };
+      })(this),
       /* Der Ereignis-Leitfaden: ein eigenes Fenster mit einem
          erfundenen Ereignis, Abschnitt für Abschnitt erklärt. */
       lehr: (function (self) {
@@ -7980,11 +8078,11 @@ class Component extends DCLogic {
           schritt: n == null ? "" : (n + 1) + " von " + teile.length,
           weiter: () => self.lehrGeh(1),
           zurueck: () => self.lehrGeh(-1),
-          ersteSeite: n === 0,
+          nichtErste: n > 0,
           weiterLabel: n != null && n === teile.length - 1 ? "Fertig" : "Weiter",
           liste: teile.map((t, k) => ({
             key: t.k, nr: (k + 1) + ".", titel: t.titel,
-            waehle: () => self.setState({ lehr: k }),
+            waehle: () => self.lehrSetzen(k),
             stil: {
               font: "inherit", fontSize: "12.5px", textAlign: "left", width: "100%",
               padding: "7px 10px", cursor: "pointer", borderRadius: "var(--radius-md)",
@@ -8174,7 +8272,7 @@ class Component extends DCLogic {
             suche: iSuche[key] || "",
             onSuche: setzeSuche(key),
             hatRest: rest > 0,
-            rest: rest ? "… " + rest + " weitere — oben suchen" : "",
+            rest: rest ? "… " + rest + " weitere" : "",
             werte: gezeigt.map((w) => ({
               key: key + "|" + w, label: beschriften(w),
               nurStyle: chip(nur.some((x) => normName(x) === normName(w)), "nur"),
@@ -8254,7 +8352,7 @@ class Component extends DCLogic {
             suchbar: werte.length > VGL_MAX,
             suche: fSuche[schluessel] || "",
             onSuche: setSuche(schluessel),
-            rest: rest ? "… " + rest + " weitere — oben suchen" : "",
+            rest: rest ? "… " + rest + " weitere" : "",
             hatRest: rest > 0,
             werte: gezeigt.map((w) => ({
               key: w, label: w, on: aktiv === w,
@@ -8413,7 +8511,7 @@ class Component extends DCLogic {
           werSuchbar: fids.length > VGL_MAX,
           werSuche: fSuche.wer || "",
           onWerSuche: setSuche("wer"),
-          werRest: werListe.rest ? "… " + werListe.rest + " weitere — oben suchen" : "",
+          werRest: werListe.rest ? "… " + werListe.rest + " weitere" : "",
           filterOffen: !!st.vglFilterAuf,
           filterAuf: () => self.setState({ vglFilterAuf: !st.vglFilterAuf }),
           filterZeichen: {
@@ -8523,12 +8621,16 @@ class Component extends DCLogic {
         bild: st.avatar || "",
         hatBild: !!st.avatar,
         bildStil: st.avatar
-          ? { width: "64px", height: "64px", borderRadius: "50%", backgroundImage: "url(" + st.avatar + ")", backgroundSize: "cover", backgroundPosition: "center", flex: "0 0 auto" }
+          ? { width: "64px", height: "64px", borderRadius: "50%", backgroundImage: "url(" + st.avatar + ")", backgroundSize: "cover", backgroundPosition: "center", flex: "0 0 auto", color: "transparent" }
           : { width: "64px", height: "64px", borderRadius: "50%", display: "grid", placeItems: "center", flex: "0 0 auto", background: "var(--color-accent-100)", color: "var(--color-accent-700)", fontSize: "22px", fontFamily: "var(--font-heading)" },
         initialen: initials(me ? me.username : ""),
         bildWaehlen: this.avatarWahl,
         bildWeg: this.avatarWeg,
         bildBusy: !!st.avatarBusy,
+        /* Eigene Meldung, nicht über die Fehlercode-Tabelle — die machte
+           aus dem Satz „Fehler X-99“ und zeigte ihn im Seitenkopf hinter
+           diesem Fenster. */
+        bildFehler: st.avatarFehler || "",
         bildCta: st.avatarBusy ? "Wird geladen …" : (st.avatar ? "Anderes Bild" : "Bild wählen"),
         toggle: () => this.setState({ konto: !st.konto, drawer: false, admin: false, loeschWort: "", loeschFehler: "" }),
         zu: () => this.setState({ konto: false, loeschWort: "", loeschFehler: "" }),
@@ -8644,7 +8746,7 @@ class Component extends DCLogic {
         toggleReset: () => this.setState({ authMode: st.authMode === "reset" ? "login" : "reset", authError: "", authNotice: "" }),
         resetLink: st.authMode === "reset" ? "Zurück zur Anmeldung" : "Passwort vergessen?",
         title: st.authMode === "newpw" ? "Neues Passwort wählen" : st.authMode === "reset" ? (st.cloud ? "Passwort zurücksetzen" : "Neues Passwort setzen") : st.authMode === "register" ? (st.users.length ? "Konto anlegen" : "Chronik einrichten") : "Willkommen zurück",
-        idLabel: st.authMode === "login" ? "E-Mail" : "E-Mail",
+        idLabel: st.authMode === "login" ? "E-Mail oder" : "E-Mail",
         pwLabel: "Passwort",
         pwAuto: st.authMode === "login" ? "current-password" : "new-password",
         username: st.authForm.username, email: st.authForm.email, pw: st.authForm.pw, pw2: st.authForm.pw2, 
@@ -8767,7 +8869,7 @@ class Component extends DCLogic {
           const q = normName(suchtext || "");
           const passend = q ? liste.filter((x) => normName(text(x)).indexOf(q) >= 0) : liste;
           const n = passend.length - FMAX;
-          return n > 0 ? "… " + n + " weitere — oben suchen" : "";
+          return n > 0 ? "… " + n + " weitere" : "";
         };
         return {
         q: f.q, from: f.from, to: f.to, place: f.place, by: f.by || "",
@@ -8783,25 +8885,27 @@ class Component extends DCLogic {
         onSucheOrt: setzeSuche("ort"),
         onSucheWer: setzeSuche("wer"),
         onSucheKat: setzeSuche("kat"),
-        autorenSuchbar: autoren.length > 5,
+        autorenSuchbar: autoren.length > 3,
         authors: [{ key: "a0", value: "", label: "Alle Personen" }].concat(
           treffer(autoren, fSuche.wer, (u) => u.username, f.by ? [f.by] : [], (u) => u.id)
             .map((u) => ({ key: "a" + u.id, value: u.id, label: u.username + (me && u.id === me.id ? " (du)" : "") }))
         ),
         autorenRest: rest(autoren, fSuche.wer, (u) => u.username),
-        orteSuchbar: places.length > 5,
+        orteSuchbar: places.length > 3,
         places: [{ key: "p0", value: "", label: "Alle Orte" }].concat(
           treffer(places, fSuche.ort, (p) => p, f.place ? [f.place] : [], (p) => p)
             .map((p) => ({ key: "p" + p, value: p, label: p }))
         ),
         orteRest: rest(places, fSuche.ort, (p) => p),
-        katSuchbar: cats.length > 5,
+        katSuchbar: cats.length > 3,
         cats: treffer(cats, fSuche.kat, (c) => c, f.cats || [], (c) => c)
           .map((c) => ({ key: "c" + c, label: c, style: chip((f.cats || []).indexOf(c) >= 0), toggle: this.toggleChip("cats", c) })),
         katRest: rest(cats, fSuche.kat, (c) => c),
         personSuche: st.personSuche || "",
         onPersonSuche: (ev) => this.setState({ personSuche: ev.target.value }),
-        personSuchbar: persons.length > 5,
+        /* Immer ein Schriftfeld — auch bei wenigen Namen tippt man
+           lieber, als die Liste abzusuchen. */
+        personSuchbar: persons.length > 0,
         persons: treffer(persons, st.personSuche, (p) => p, f.persons || [], (p) => p)
           .map((p) => ({ key: "n" + p, label: p, style: chip((f.persons || []).indexOf(p) >= 0), toggle: this.toggleChip("persons", p) })),
         personRest: rest(persons, st.personSuche, (p) => p),
@@ -9107,7 +9211,7 @@ class Component extends DCLogic {
         width: trackW + "px", height: "38px", marginBottom: "-38px",
         pointerEvents: "none",
         background: "linear-gradient(var(--t-bg, #f3f2f2) 60%, transparent)",
-        opacity: (st.stageY || 0) > 24 ? 1 : 0,
+        opacity: 0,
         transition: "opacity 200ms linear"
       },
       /* Zwei Ebenen wie bei der Hauptachse: das Farbband für Designs mit
