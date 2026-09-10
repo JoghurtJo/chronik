@@ -113,7 +113,7 @@
         <span>Dein Leben</span>
         <span>Eure Geschichten</span>
         <span>Erleben wie damals:)</span>
-        <span>Mit mehr Organgen</span>
+        <span>Mit mehr Organgen!</span>
       </div>
     </div>
 
@@ -555,11 +555,11 @@
                           <div style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t-accent, #0088b0); margin-bottom: 6px;">Personen</div>
                           <div style="display: flex; flex-wrap: wrap; gap: 8px;">
                             <sc-for list="{{ c.people }}" as="p" hint-placeholder-count="0">
-                              <div style="display: flex; align-items: center; gap: 8px; padding: 4px 10px 4px 4px; border-radius: 99px; background: color-mix(in srgb, var(--t-ink, #201e1d) 7%, transparent);">
-                                <sc-if value="{{ p.photo }}" hint-placeholder-val="{{ false }}">
-                                  <span role="img" aria-label="{{ p.name }}" style="{{ p.fotoStil }}"></span>
+                              <div style="{{ p.chip }}" title="{{ p.name }}">
+                                <sc-if value="{{ p.hatFoto }}" hint-placeholder-val="{{ false }}">
+                                  <span role="img" aria-label="{{ p.name }}" style="{{ p.fotoStil2 }}"></span>
                                 </sc-if>
-                                <sc-if value="{{ p.noPhoto }}" hint-placeholder-val="{{ true }}">
+                                <sc-if value="{{ p.keinFoto }}" hint-placeholder-val="{{ true }}">
                                   <span style="width: 30px; height: 30px; border-radius: 99px; display: grid; place-items: center; font-size: 11px; letter-spacing: 0.04em; background: color-mix(in srgb, var(--t-accent, #0088b0) 20%, transparent); color: color-mix(in srgb, var(--t-accent, #0088b0) 85%, var(--t-ink, #201e1d));">{{ p.initials }}</span>
                                 </sc-if>
                                 <span style="display: grid; line-height: 1.25;">
@@ -1794,7 +1794,7 @@
 
   <sc-if value="{{ zoom.open }}" hint-placeholder-val="{{ false }}">
     <div data-noprint="" onClick="{{ zoom.close }}" style="position: fixed; inset: 0; z-index: 130; display: grid; grid-template-rows: 1fr auto; gap: var(--space-3); padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 88%, transparent); cursor: zoom-out;">
-      <img src="{{ zoom.src }}" alt="{{ zoom.caption }}" style="min-height: 0; width: 100%; height: 100%; object-fit: contain;">
+      <img ref="{{ zoom.bildRef }}" alt="{{ zoom.caption }}" style="min-height: 0; width: 100%; height: 100%; object-fit: contain;">
       <div style="display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-4); color: var(--color-bg);">
         <sc-if value="{{ zoom.caption }}" hint-placeholder-val="{{ false }}">
           <span style="font-size: 14px; line-height: 1.4;">{{ zoom.caption }}</span>
@@ -1820,7 +1820,7 @@
         <sc-for list="{{ show.slides }}" as="s" hint-placeholder-count="0">
           <div style="{{ s.wrap }}">
             <sc-if value="{{ s.src }}" hint-placeholder-val="{{ false }}">
-              <img src="{{ s.src }}" alt="{{ s.caption }}" style="{{ s.bildStil }}">
+              <img ref="{{ s.bildRef }}" alt="{{ s.caption }}" style="{{ s.bildStil }}">
             </sc-if>
             <sc-if value="{{ s.empty }}" hint-placeholder-val="{{ true }}">
               <img src="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27800%27%20height%3D%27600%27%2F%3E" alt="" style="display: block; width: auto; height: auto; max-width: 100cqw; max-height: 100cqh; background-color: var(--color-surface); background-image: repeating-linear-gradient(45deg, color-mix(in srgb, var(--color-text) 10%, transparent) 0 9px, transparent 9px 18px); box-shadow: var(--shadow-md);">
@@ -1884,7 +1884,7 @@
         </div>
       </div>
       <sc-if value="{{ show.hasMusic }}" hint-placeholder-val="{{ false }}">
-        <audio ref="{{ show.audioRef }}" src="{{ show.music }}" loop="{{ true }}"></audio>
+        <audio ref="{{ show.audioRef }}" loop="{{ true }}"></audio>
       </sc-if>
     </div>
   </sc-if>
@@ -2174,6 +2174,21 @@
         <button class="btn btn-secondary btn-icon" onClick="{{ konto.zu }}">✕</button>
       </div>
       <div style="height: 3px; background: var(--color-text); margin: var(--space-4) 0 var(--space-4);"></div>
+
+      <div style="display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-5);">
+        <div style="{{ konto.bildStil }}">{{ konto.initialen }}</div>
+        <div style="display: grid; gap: 6px; justify-items: start;">
+          <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">Profilbild</div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <label class="btn btn-secondary" style="white-space: nowrap; cursor: pointer;">{{ konto.bildCta }}
+              <input type="file" accept="image/*" onChange="{{ konto.bildWaehlen }}" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none;">
+            </label>
+            <sc-if value="{{ konto.hatBild }}" hint-placeholder-val="{{ false }}">
+              <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ konto.bildWeg }}">Entfernen</button>
+            </sc-if>
+          </div>
+        </div>
+      </div>
 
       <div style="display: grid; gap: 4px; font-size: 13.5px; line-height: 1.5; margin-bottom: var(--space-6);">
         <div><span style="color: var(--color-neutral-700);">E-Mail:</span> {{ konto.mail }}</div>
@@ -2957,6 +2972,8 @@ class Component extends DCLogic {
     stapelOffen: {},
     blickX: 0,
     stageY: 0,
+    avatar: "",
+    avatarBusy: false,
     feed: { freunde: true, vorschau: false },
     konto: false,
     loeschWort: "",
@@ -3460,6 +3477,19 @@ class Component extends DCLogic {
 
   /* ---------- Freie Sticker auf dem Zeitstrahl ---------- */
 
+  /* Ein Klick auf freien Grund schließt die offene Karte wieder — man
+     erwartet nicht, sie über die Kachel selbst zumachen zu müssen.
+     Klicks in einer Karte, auf einem Marker oder einem Sticker zählen
+     nicht als „daneben“. */
+  stageDown = (ev) => {
+    this.placeFree(ev);
+    if (!this.state.openId) return;
+    const ziel = ev.target;
+    const host = ev.currentTarget;
+    const daneben = ziel === host || (ziel.dataset && ziel.dataset.bg !== undefined);
+    if (daneben) this.setState({ openId: null });
+  };
+
   placeFree = (ev) => {
     if (!this.state.stickMode) return;
     const host = ev.currentTarget;
@@ -3472,7 +3502,10 @@ class Component extends DCLogic {
     const list = ((this.state.meta.free || []).slice());
     list.push({
       i: "f" + uid(), k: this.state.stickPick, st: this.state.stickStil || "flach",
-      x: Math.round(ev.clientX - box.left + host.scrollLeft), y: Math.round(ev.clientY - box.top),
+      /* Innerhalb der Bahn halten — hinter dem Ende des Zeitstrahls
+         gibt es keinen Grund, auf dem ein Sticker kleben könnte. */
+      x: Math.round(clampN(ev.clientX - box.left + host.scrollLeft, 8, (this.geoW || 1e9) - 8)),
+      y: Math.round(clampN(ev.clientY - box.top, 8, (this.geoH || box.height) - 8)),
       s: 1.3, r: Math.round(-14 + Math.random() * 28), c: list.length % 5
     });
     this.setState({ meta: Object.assign({}, this.state.meta, { free: list }), freeSel: list[list.length - 1].i });
@@ -3493,8 +3526,8 @@ class Component extends DCLogic {
     const host = ev.currentTarget;
     const box = host.getBoundingClientRect();
     this.freeSet(this.dragFree, {
-      x: Math.round(ev.clientX - box.left + host.scrollLeft),
-      y: Math.round(clampN(ev.clientY - box.top, 4, box.height - 4))
+      x: Math.round(clampN(ev.clientX - box.left + host.scrollLeft, 8, (this.geoW || 1e9) - 8)),
+      y: Math.round(clampN(ev.clientY - box.top, 8, Math.min(box.height, this.geoH || box.height) - 8))
     });
   };
 
@@ -3514,10 +3547,44 @@ class Component extends DCLogic {
 
   /* Aussehen und Titel gehören zum Konto: eigener Speicherplatz je Person,
      in der Cloud zusätzlich im Profil, damit es auf jedem Gerät gleich aussieht. */
+  /* Profilbild: klein gerechnet und ins Bilderlager gelegt, damit es
+     nicht als riesige Zeichenkette im Profil steckt. */
+  avatarWahl = async (ev) => {
+    const datei = ev.target.files && ev.target.files[0];
+    ev.target.value = "";
+    if (!datei) return;
+    this.setState({ avatarBusy: true });
+    try {
+      const prep = await this.shrinkImage(datei, 320, 0.82);
+      let src = prep ? prep.dataUrl : await this.readAsDataUrl(datei);
+      if (this.state.cloud && window.ChronikCloud && window.ChronikCloud.uploadImage) {
+        const r = await window.ChronikCloud.uploadImage(prep ? prep.file : datei);
+        if (r && r.src) src = r.src;
+      }
+      this.setState({ avatar: src, avatarBusy: false }, () => this.saveLook());
+    } catch (e) {
+      this.setState({ avatarBusy: false, cloudErr: "Das Bild ließ sich nicht laden." });
+    }
+  };
+
+  avatarWeg = () => {
+    this.setState({ avatar: "" }, () => this.saveLook());
+  };
+
+  /* Das Profilbild einer Person — aus dem eigenen Zustand oder aus dem
+     Profil, das mit den Kontakten geladen wurde. */
+  avatarVon(id) {
+    const me = this.me();
+    if (me && id === me.id) return this.state.avatar || "";
+    const u = (this.state.users || []).filter((x) => x.id === id)[0];
+    return (u && u.look && u.look.avatar) || "";
+  }
+
   lookOf() {
     return {
       themeId: this.state.themeId, override: this.state.override, custom: this.state.custom,
-      meta: this.state.meta, mode: this.state.mode, zoom: this.state.zoom
+      meta: this.state.meta, mode: this.state.mode, zoom: this.state.zoom,
+      avatar: this.state.avatar || ""
     };
   }
 
@@ -3531,7 +3598,8 @@ class Component extends DCLogic {
       custom: Array.isArray(l.custom) ? l.custom : (this.state.custom || []),
       meta: Object.assign({}, this.state.meta, fallbackMeta || {}, l.meta || {}),
       mode: l.mode || "proportional",
-      zoom: l.zoom || 1
+      zoom: l.zoom || 1,
+      avatar: l.avatar || ""
     }, () => this.applyTheme());
   }
 
@@ -3871,9 +3939,9 @@ class Component extends DCLogic {
   tourSchritte() {
     return [
       { ziel: "", titel: "Willkommen in deiner Chronik",
-        text: "Ich zeig dir kurz, was hier geht. Ein leuchtender Punkt führt dich zu den Wichtigsten Punkten. Du kannst jederzeit abbrechen — und den Leitfaden später über ‚Hilfe‘ neu starten." },
+        text: "In zehn kurzen Schritten zeige ich dir, was hier geht. Ein leuchtender Punkt führt dich zu jedem Knopf. Du kannst jederzeit abbrechen — und den Leitfaden später über ‚Hilfe‘ neu starten." },
       { ziel: "", titel: "Was ist die Chronik?",
-        text: "Du kannst dir hier alle deine Erlebnisse, wie z.B. Festivals, Urlaube, Feiern, ... planen, dokumentieren und den Leuten deiner Wahl zur Verfügung stellen. Routen, Bilder, Kommentare, Personen die dabei waren, …. Das alles kannst Du jederzeit wieder erleben und in Erinnerungen und Momenten schwelgen." },
+        text: "Du kannst dir hier alle deine Erlebnisse, wie z.B. Festivals, Urlaube, Feiern, ... planen dokumentieren und den Leuten deiner Wahl zur Verfügung stellen. Routen, Bilder, Kommentare, Personen die dabei waren, …. Das alles kannst Du jederzeit wieder erleben und in Erinnerungen und Momenten schwelgen." },
       { ziel: "neu", titel: "Ein Ereignis anlegen",
         text: "Alles beginnt hier: Name, Datum, Ort. Dazu Notizen, Personen, Bilder, Abstimmungen — und Etappen, wenn es eine Reise war. Wer es sehen darf, entscheidest du im selben Fenster." },
       { ziel: "", titel: "Dein Zeitstrahl",
@@ -3883,7 +3951,7 @@ class Component extends DCLogic {
       { ziel: "show", titel: "Fotoshow",
         text: "Zeigt alle Bilder deiner gefilterten Auswahl groß, mit Übergängen und wahlweise mit Musik. Gut für einen Abend zu zweit oder für die Leinwand beim Fest." },
       { ziel: "design", titel: "Jedes Design kannst Du nach deinem Geschmack ändern",
-        text: "Von Zeitungssatz über Emailschild bis zur Flughafen-Klapptafel. Jedes Design lässt sich weiter verstellen — Farben, Schrift, Marker, Dichte." },
+        text: "Von Zeitungssatz über Emailschild bis zur Flughafen-Klapptafel. Jedes Design lässt sich weiter verstellen — Farben, Schrift, Marker, Dichte. Deine Wahl gilt nur für dich." },
       { ziel: "kontakte", titel: "Kontakte",
         text: "Suche jemanden nach Name oder E-Mail und schick eine Anfrage. Erst wenn sie bestätigt ist, könnt ihr einander Ereignisse freigeben. Hier legst du auch Personengruppen an." },
       { ziel: "vergleich", titel: "Vergleichen",
@@ -4619,7 +4687,7 @@ class Component extends DCLogic {
       let last = null;
       L.items.forEach(function (it) {
         const y = new Date(dp(it.e.date)).getFullYear();
-        if (y !== last) { out.push({ key: "t" + y, x: it.x - 14, label: String(y) }); last = y; }
+        if (y !== last) { out.push({ key: "t" + y, x: it.x - 14, label: String(y), jahr: true }); last = y; }
       });
       return out;
     }
@@ -4635,7 +4703,9 @@ class Component extends DCLogic {
       const label = step >= 12
         ? String(y)
         : new Intl.DateTimeFormat("de-DE", { month: "short" }).format(new Date(t)) + (mo === 0 || out.length === 0 ? " " + String(y).slice(2) : "");
-      if (x > -60) out.push({ key: "t" + y + "-" + mo, x: x, label: label });
+      /* Ein Strich zählt als Jahresmarke, wenn er auf den Januar fällt
+         oder ohnehin nur Jahre gezeigt werden. */
+      if (x > -60) out.push({ key: "t" + y + "-" + mo, x: x, label: label, jahr: step >= 12 || mo === 0 });
       mo += step;
       if (mo > 11) { mo -= 12; y += 1; }
     }
@@ -6125,7 +6195,29 @@ class Component extends DCLogic {
              Aufbaus nie eine noch unaufgelöste Adresse ab. */
           fotoStil: r.photo
             ? { width: "30px", height: "30px", borderRadius: "99px", backgroundImage: "url(" + r.photo + ")", backgroundSize: "cover", backgroundPosition: "center", display: "block" }
-            : { display: "none" }, initials: initials(r.name), linked: !!(r.uid && st.users.some((u) => u.id === r.uid)) })),
+            : { display: "none" },
+          initials: initials(r.name),
+          linked: !!(r.uid && st.users.some((u) => u.id === r.uid)),
+          /* Ist die Person einem Konto zugewiesen, mit dem ich befreundet
+             bin, bekommt sie einen kräftigen Rand — so erkennt man auf
+             einen Blick, wen man selbst kennt. Ein Profilbild dieses
+             Kontos wird gleich mitgezeigt. */
+          chip: (function (self) {
+            const bekannt = !!(r.uid && self.areFriends(r.uid, (me || {}).id));
+            const grund = { display: "flex", alignItems: "center", gap: "8px", padding: "4px 10px 4px 4px", borderRadius: "99px", background: "color-mix(in srgb, var(--t-ink, #201e1d) 7%, transparent)" };
+            return bekannt
+              ? Object.assign(grund, { border: "2px solid var(--t-accent, #0088b0)", padding: "3px 9px 3px 3px" })
+              : grund;
+          })(this),
+          bekannt: !!(r.uid && this.areFriends(r.uid, (me || {}).id)),
+          fotoStil2: (function (self) {
+            const bild = r.photo || (r.uid ? self.avatarVon(r.uid) : "");
+            return bild
+              ? { width: "30px", height: "30px", borderRadius: "99px", backgroundImage: "url(" + bild + ")", backgroundSize: "cover", backgroundPosition: "center", display: "block" }
+              : { display: "none" };
+          })(this),
+          hatFoto: !!(r.photo || (r.uid ? this.avatarVon(r.uid) : "")),
+          keinFoto: !(r.photo || (r.uid ? this.avatarVon(r.uid) : "")) })),
         /* Im Split-Modus nach Etappe sortiert. r und j behalten ihre
            Bedeutung, weil Kommentare am ursprünglichen Index hängen. */
         images: bilder.map(({ r, j, kopf, albName, recht }) => ({
@@ -6592,12 +6684,21 @@ class Component extends DCLogic {
       const ebene = strichEbene(tk.x);
       return {
         key: tk.key,
+        /* Das Jahres-Kennzeichen muss mitgereicht werden — das schmale
+           Achsenband oben baut seine Beschriftungen aus diesem Array. */
+        jahr: !!tk.jahr,
         pos: { position: "absolute", left: (tk.x + padL + 14) + "px", top: "38px", height: (64 + ebene * 2) + "px", width: "1px" },
         labelStil: {
           position: "absolute", top: (ebene * 15) + "px", left: "8px",
-          fontSize: "11px", letterSpacing: "0.14em", textTransform: "uppercase",
+          /* Jahreszahlen tragen die Achse — dafür brauchen sie Gewicht
+             und volle Tinte, nicht das blasse Grau der Zwischentöne. */
+          fontSize: tk.jahr ? "12.5px" : "11px",
+          fontWeight: tk.jahr ? 700 : 400,
+          letterSpacing: "0.14em", textTransform: "uppercase",
           whiteSpace: "nowrap",
-          color: "color-mix(in srgb, var(--t-ink, #201e1d) 55%, transparent)"
+          color: tk.jahr
+            ? "var(--t-ink, #201e1d)"
+            : "color-mix(in srgb, var(--t-ink, #201e1d) 55%, transparent)"
         },
         label: tk.label
       };
@@ -6606,6 +6707,11 @@ class Component extends DCLogic {
     let tiefeSichtbar = 1;
     sichtbareItems.forEach((it) => { tiefeSichtbar = Math.max(tiefeSichtbar, it.lane + 1); });
     const totalH = Math.max(laneTop + tiefeSichtbar * (laneH + gap) + 30, openBottom + 40);
+    /* Maße merken: die freien Sticker liegen außerhalb dieser Rechnung
+       und dürfen die Bahn nicht überragen — sonst steht Deko in einem
+       kahlen Streifen hinter dem Ende des Zeitstrahls. */
+    this.geoW = trackW;
+    this.geoH = totalH;
 
     const presets = this.allThemes().map((p) => {
       const active = p.id === t.id;
@@ -7265,6 +7371,13 @@ class Component extends DCLogic {
     const uById = {};
     st.users.forEach((u) => { uById[u.id] = u; });
     const avatar = { width: "24px", height: "24px", borderRadius: "50%", display: "grid", placeItems: "center", flex: "0 0 auto", fontSize: "10px", letterSpacing: "0.04em", background: "var(--color-accent-100)", color: "var(--color-accent-700)" };
+    /* Wer ein Profilbild hat, wird damit gezeigt — sonst die Initialen. */
+    const avatarFor = (id) => {
+      const bild = this.avatarVon(id);
+      return bild
+        ? Object.assign({}, avatar, { backgroundImage: "url(" + bild + ")", backgroundSize: "cover", backgroundPosition: "center", color: "transparent" })
+        : avatar;
+    };
     const myFriends = me ? this.friendIds() : [];
     const rels = me ? (st.friends || []).filter((f) => f.from === me.id || f.to === me.id) : [];
     const incoming = rels.filter((f) => f.status === "pending" && f.to === me.id);
@@ -7282,14 +7395,14 @@ class Component extends DCLogic {
         const r = relWith(id);
         const st2 = !r ? "" : r.status === "accepted" ? "schon verbunden" : r.from === (me || {}).id ? "Anfrage läuft" : "hat dich angefragt";
         return {
-          key: id, name: u.username || "?", initials: initials(u.username), avatar: avatar,
+          key: id, name: u.username || "?", initials: initials(u.username), avatar: avatarFor(id),
           canAsk: !r, busy: !!r, state: st2,
           ask: () => this.askFriend(id)
         };
       }),
       hasIncoming: incoming.length > 0, inCount: incoming.length,
       incoming: incoming.map((f) => ({
-        key: f.id, name: nameOf(f.from), initials: initials(nameOf(f.from)), avatar: avatar,
+        key: f.id, name: nameOf(f.from), initials: initials(nameOf(f.from)), avatar: avatarFor(f.from),
         accept: () => this.answerFriend(f.id, true),
         decline: () => this.answerFriend(f.id, false)
       })),
@@ -7304,7 +7417,7 @@ class Component extends DCLogic {
         const u = uById[id] || {};
         const r = relWith(id);
         return {
-          key: id, name: u.username || "?", email: u.email || "", initials: initials(u.username), avatar: avatar,
+          key: id, name: u.username || "?", email: u.email || "", initials: initials(u.username), avatar: avatarFor(id),
           drop: () => this.dropFriend((r || {}).id)
         };
       })
@@ -7963,6 +8076,18 @@ class Component extends DCLogic {
           if (!wann) return "unbekannt";
           return new Intl.DateTimeFormat("de-DE", { day: "2-digit", month: "long", year: "numeric" }).format(new Date(wann));
         })(),
+        /* Profilbild — es reist im Profil mit und erscheint überall dort,
+           wo bisher nur die Initialen standen. */
+        bild: st.avatar || "",
+        hatBild: !!st.avatar,
+        bildStil: st.avatar
+          ? { width: "64px", height: "64px", borderRadius: "50%", backgroundImage: "url(" + st.avatar + ")", backgroundSize: "cover", backgroundPosition: "center", flex: "0 0 auto" }
+          : { width: "64px", height: "64px", borderRadius: "50%", display: "grid", placeItems: "center", flex: "0 0 auto", background: "var(--color-accent-100)", color: "var(--color-accent-700)", fontSize: "22px", fontFamily: "var(--font-heading)" },
+        initialen: initials(me ? me.username : ""),
+        bildWaehlen: this.avatarWahl,
+        bildWeg: this.avatarWeg,
+        bildBusy: !!st.avatarBusy,
+        bildCta: st.avatarBusy ? "Wird geladen …" : (st.avatar ? "Anderes Bild" : "Bild wählen"),
         toggle: () => this.setState({ konto: !st.konto, drawer: false, admin: false, loeschWort: "", loeschFehler: "" }),
         zu: () => this.setState({ konto: false, loeschWort: "", loeschFehler: "" }),
         eigene: me ? st.events.filter((e) => (e.by || "") === me.id).length : 0,
@@ -8273,7 +8398,13 @@ class Component extends DCLogic {
       stageRef: (el) => { this.stage = el; },
       free: (function (self) {
         const pal = palOf(st.meta.pal || "thema", t);
-        return (st.meta.free || []).map((f) => {
+        /* Nur Sticker innerhalb der Bahn zeigen — ein Sticker hinter dem
+           Ende des Zeitstrahls stünde auf leerem Grund und würde die
+           Seite verlängern. Beim Aufkleben werden sie ohnehin begrenzt;
+           das hier fängt Altbestand ab. */
+        const maxX = self.geoW || 1e9;
+        const maxY = self.geoH || 1e9;
+        return (st.meta.free || []).filter((f) => f.x <= maxX && f.y <= maxY).map((f) => {
           const base = stickerStyle({ k: f.k, st: f.st, c: f.c, s: f.s, r: f.r }, pal, st.stickMode ? "edit" : "view", st.stickMode && st.freeSel === f.i);
           return {
             key: f.i, glyph: stickerDef(f.k).g,
@@ -8287,7 +8418,7 @@ class Component extends DCLogic {
         on: !!st.stickMode,
         label: st.stickMode ? "◉ Aufkleben beenden" : "○ Sticker aufkleben",
         toggle: () => this.setState({ stickMode: !st.stickMode, freeSel: null }),
-        place: this.placeFree, move: this.freeMove, up: this.freeUp,
+        place: this.stageDown, move: this.freeMove, up: this.freeUp,
         cursor: st.stickMode ? "copy" : "default",
         hint: st.freeSel ? "Ziehen zum Verschieben · Regler für Größe und Drehung" : "Sticker wählen, dann auf eine freie Stelle im Zeitstrahl klicken",
         sheet: STICKERS.map((sk) => ({
@@ -8551,14 +8682,18 @@ class Component extends DCLogic {
           return true;
         });
       })().map((tk) => ({
-        key: "s" + tk.key,
+        key: "s" + tk.key, jahr: !!tk.jahr,
         pos: { position: "absolute", left: (parseFloat(tk.pos.left) || 0) + "px", top: "5px" },
         strich: { width: "1px", height: "16px", marginTop: "5px", background: "color-mix(in srgb, var(--t-ink, #201e1d) 30%, transparent)" },
         labelStil: {
           position: "absolute", top: 0, left: "6px", whiteSpace: "nowrap",
-          fontSize: "10.5px", letterSpacing: "0.14em", textTransform: "uppercase",
+          fontSize: tk.jahr ? "11.5px" : "10.5px",
+          fontWeight: tk.jahr ? 700 : 400,
+          letterSpacing: "0.14em", textTransform: "uppercase",
           fontFamily: "var(--t-font-body, var(--font-body))",
-          color: "color-mix(in srgb, var(--t-ink, #201e1d) 62%, transparent)"
+          color: tk.jahr
+            ? "var(--t-ink, #201e1d)"
+            : "color-mix(in srgb, var(--t-ink, #201e1d) 62%, transparent)"
         },
         label: tk.label
       })),
@@ -8728,6 +8863,11 @@ class Component extends DCLogic {
       zoom: {
         open: !!st.zoomImg,
         src: (st.zoomImg || {}).src || "",
+        /* Die Adresse erst am fertigen Element setzen. Stünde sie im
+           Markup, führe der Browser sie schon beim Aufbau der Seite an —
+           damals noch als roher Platzhalter, was jedes Mal einen
+           Ladefehler in der Konsole hinterließ. */
+        bildRef: (el) => { if (el) el.src = (this.state.zoomImg || {}).src || ""; },
         caption: (st.zoomImg || {}).caption || "",
         event: (st.zoomImg || {}).event || "",
         close: () => this.setState({ zoomImg: null })
@@ -8741,6 +8881,8 @@ class Component extends DCLogic {
         counter: simgs.length ? (sIdx + 1) + " / " + simgs.length : "0",
         slides: cur ? [{
           key: cur.key + ":" + sIdx, src: cur.src, empty: !cur.src, caption: cur.caption, leerText: "ohne Bild", wrap: slideWrap,
+          /* Adresse erst am fertigen Element — siehe zoom.bildRef. */
+          bildRef: (el) => { if (el) el.src = cur.src || ""; },
           bildStil: (function (grad) {
             const quer = grad === 90 || grad === 270;
             return {
@@ -8821,7 +8963,15 @@ class Component extends DCLogic {
         },
         volume: st.show.volume,
         onVolume: (ev) => { const v = parseFloat(ev.target.value); if (this.audio) this.audio.volume = v; this.setShow({ volume: v }, false); },
-        audioRef: (el) => { this.audio = el; if (el) el.volume = this.state.show.volume; }
+        audioRef: (el) => {
+          this.audio = el;
+          if (!el) return;
+          el.volume = this.state.show.volume;
+          /* Quelle erst hier setzen — im Markup wäre sie beim Aufbau der
+             Seite noch ein roher Platzhalter und schlüge fehl. */
+          const quelle = this.state.show.music || "";
+          if (el.getAttribute("src") !== quelle) el.src = quelle;
+        }
       }
     };
   }
