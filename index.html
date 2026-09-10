@@ -92,7 +92,7 @@
         <div style="margin-top: var(--space-6); padding: 12px 15px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700); font-size: 15px; max-width: 40ch;">{{ auth.soloCode }}</div>
       </sc-if>
 
-      <p style="{{ lay.loginClaim }}">Aus vielen Erlebnissen wird eine Geschichte. Du Keck!</p>
+      <p style="{{ lay.loginClaim }}">Aus vielen Abenden wird eine Geschichte.</p>
 
       <div style="{{ lay.loginArt }}">
         <div style="position: absolute; left: 0; right: 0; top: 100px; height: 3px; background: var(--color-text);"></div>
@@ -110,10 +110,9 @@
       </div>
 
       <div style="display: flex; gap: var(--space-6); flex-wrap: wrap; margin-top: var(--space-6); font-size: 13.5px; line-height: 1.4; color: var(--color-neutral-700);">
-        <span>Dein Leben</span>
-        <span>Eure Geschichten</span>
-        <span>Erleben wie damals:)</span>
-        <span>Mit mehr Organgen!</span>
+        <span>Alle schreiben mit</span>
+        <span>Du gibst frei, wer was sieht</span>
+        <span>Achtzehn Gesichter zur Wahl</span>
       </div>
     </div>
 
@@ -244,7 +243,7 @@
         <button class="btn btn-secondary" data-tour="kontakte" style="white-space: nowrap;" onClick="{{ toggleAdmin }}">{{ contactsLabel }}</button>
         <button class="btn btn-secondary" data-tour="vergleich" style="white-space: nowrap;" onClick="{{ vgl.toggle }}">Vergleichen</button>
         <button class="btn btn-secondary" data-tour="konto" style="white-space: nowrap;" onClick="{{ konto.toggle }}">Mein Konto</button>
-        <button class="btn btn-secondary" data-tour="hilfe" style="white-space: nowrap;" onClick="{{ tour.start }}">Hilfe</button>
+        <button class="btn btn-secondary" data-tour="hilfe" style="white-space: nowrap;" onClick="{{ tour.start }}">? Hilfe</button>
       </div>
     </div>
     <div style="height: 5px; background: var(--color-text); margin-top: var(--space-3);"></div>
@@ -473,7 +472,7 @@
             </sc-for>
 
             <sc-for list="{{ cards }}" as="c" hint-placeholder-count="4">
-              <div style="{{ c.pos }}">
+              <div data-ev="{{ c.id }}" style="{{ c.pos }}">
                 <div style="{{ c.body }}">
                 <div onClick="{{ c.toggle }}" style="position: relative; cursor: pointer; background: var(--t-card, #eae9e9); border: 1px solid var(--t-border, rgba(32, 30, 29, 0.16)); border-radius: var(--t-radius, 2px); box-shadow: var(--t-shadow, none); padding: var(--t-pad, 16px); transition: transform 220ms ease;" style-hover="transform: translateY(-3px);">
                   <div style="display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;">
@@ -551,7 +550,7 @@
                       </sc-if>
 
                       <sc-if value="{{ c.hasPeople }}" hint-placeholder-val="{{ true }}">
-                        <div>
+                        <div data-tour="k-personen">
                           <div style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t-accent, #0088b0); margin-bottom: 6px;">Personen</div>
                           <div style="display: flex; flex-wrap: wrap; gap: 8px;">
                             <sc-for list="{{ c.people }}" as="p" hint-placeholder-count="0">
@@ -576,7 +575,7 @@
                       </sc-if>
 
                       <sc-if value="{{ c.hatRoute }}" hint-placeholder-val="{{ false }}">
-                        <div style="display: grid; gap: 8px;">
+                        <div data-tour="k-route" style="display: grid; gap: 8px;">
                           <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px;">
                             <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.55;">Route</div>
                             <div style="font-size: 11px; letter-spacing: 0.06em; opacity: 0.5;">{{ c.routeLabel }}</div>
@@ -740,7 +739,7 @@
                       </sc-if>
 
                       <sc-if value="{{ c.hasImages }}" hint-placeholder-val="{{ true }}">
-                        <div>
+                        <div data-tour="k-bilder">
                           <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 6px;">
                             <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t-accent, #0088b0);">Bilder</span>
                             <button onClick="{{ c.show }}" style="font: inherit; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--t-accent, #0088b0); text-decoration: underline;">Fotoshow</button>
@@ -862,7 +861,7 @@
     </div>
     </div>
     <div style="display: flex; justify-content: space-between; gap: var(--space-4); padding-top: var(--space-2); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-600);">
-      <span>Klick auf eine Karte oder einen Marker öffnet das Ereignis</span>
+      <span>Klick auf eine Karte oder einen Marker öffnet das Ereignis · ← → blättert</span>
       <span>{{ stats.hint }}</span>
     </div>
   </div>
@@ -1154,7 +1153,11 @@
             <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">{{ form.mode }}</div>
             <h2 style="margin: 3px 0 0; font-size: 29px; line-height: 1.05;">Ereignis</h2>
           </div>
-          <button class="btn btn-secondary btn-icon" onClick="{{ closeEditor }}">✕</button>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ closeEditor }}">Abbrechen</button>
+            <button class="btn btn-primary" style="white-space: nowrap;" onClick="{{ saveEvent }}">Speichern</button>
+            <button class="btn btn-secondary btn-icon" title="Schließen" onClick="{{ closeEditor }}">✕</button>
+          </div>
         </div>
         <div style="height: 3px; background: var(--color-text); margin: var(--space-3) 0 var(--space-4);"></div>
         <sc-if value="{{ form.partial }}" hint-placeholder-val="{{ false }}">
@@ -1383,6 +1386,18 @@
           </select>
         </div>
         <div style="font-size: 11.5px; line-height: 1.5; color: var(--color-neutral-700); padding-bottom: var(--space-3);">Nur diese Kachel trägt dann das gewählte Design. Ob Kontakte es so sehen oder in ihrem eigenen Design, entscheiden sie unter „Mein Konto“.</div>
+        <button class="btn btn-secondary" style="white-space: nowrap; justify-self: start; margin-bottom: var(--space-3);" onClick="{{ form.look.vorschauUm }}">◱ {{ form.look.vorschauLabel }}</button>
+        <sc-if value="{{ form.look.vorschauAn }}" hint-placeholder-val="{{ false }}">
+          <div style="{{ form.look.vorschauStil }}">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="{{ form.look.vorschauMarke }}"></span>
+              <span style="{{ form.look.vorschauKicker }}">Vorschau</span>
+            </div>
+            <h3 style="{{ form.look.vorschauTitel }}">{{ form.look.vorschauName }}</h3>
+            <div style="{{ form.look.vorschauBild }}"></div>
+            <p style="{{ form.look.vorschauText }}">So sieht die Kachel mit diesem Design aus — Schrift, Farben, Bildform, Markierung und Schatten wie gewählt.</p>
+          </div>
+        </sc-if>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--space-2); padding-bottom: var(--space-3);">
           <sc-for list="{{ form.look.fein }}" as="fe" hint-placeholder-count="4">
             <div class="field" style="margin: 0;"><label>{{ fe.label }}</label>
@@ -2641,6 +2656,9 @@ const normName = function (s) { return String(s || "").trim().toLowerCase().repl
 /* Verbrauchszahlen und Änderungsverlauf sieht nur dieses Konto. */
 const WARTUNG = "jokken";
 
+/* Das Beispielereignis des Leitfadens — es lebt nur im Arbeitsspeicher. */
+const DEMO_ID = "demo-leitfaden";
+
 /* So viele Kacheln stehen untereinander, bevor eine Schaltfläche
    den Rest aufklappt. */
 const STAPEL_SICHTBAR = 4;
@@ -2974,6 +2992,7 @@ class Component extends DCLogic {
     stageY: 0,
     avatar: "",
     avatarBusy: false,
+    lookVorschau: false,
     feed: { freunde: true, vorschau: false },
     konto: false,
     loeschWort: "",
@@ -3211,7 +3230,10 @@ class Component extends DCLogic {
       try { gs = await CC.groups(); } catch (e) { /* Gruppen sind optional */ }
       let fr = this.state.friends;
       try { if (CC.friends) fr = await CC.friends(); } catch (e) { /* Kontakte sind optional */ }
-      this.setState({ users: users, events: events, groups: gs, friends: fr, cloudBusy: false, cloudErr: "" });
+      /* Das Beispiel des Leitfadens lebt nur hier und darf beim Laden
+         nicht verloren gehen, wenn die Tour gerade läuft. */
+      const demo = (this.state.events || []).filter((e) => e.id === DEMO_ID);
+      this.setState({ users: users, events: events.concat(demo), groups: gs, friends: fr, cloudBusy: false, cloudErr: "" });
       this.designNachtragen(events);
     } catch (e) {
       /* Ohne dieses cloudBusy: false bliebe der Balken für immer stehen. */
@@ -3641,7 +3663,10 @@ class Component extends DCLogic {
     }
     try {
       window.localStorage.setItem("chronik.v1", JSON.stringify({
-        meta: this.state.meta, events: this.state.events, groups: this.state.groups, friends: this.state.friends, feed: this.state.feed
+        meta: this.state.meta,
+        /* Das Beispiel des Leitfadens wird nie gespeichert. */
+        events: (this.state.events || []).filter((e) => e.id !== DEMO_ID),
+        groups: this.state.groups, friends: this.state.friends, feed: this.state.feed
       }));
       window.localStorage.setItem("chronik.auth.v1", JSON.stringify({ users: this.state.users }));
       /* Während des Starts nichts löschen — sonst wäre die Sitzung weg,
@@ -3936,48 +3961,130 @@ class Component extends DCLogic {
 
   /* ---------- Leitfaden ---------- */
 
+  /* Ein erfundenes Ereignis zum Anfassen. Es steht nur während des
+     Leitfadens im Zeitstrahl und verschwindet danach wieder — gespeichert
+     wird es nie. So kann man Haken, Umrandung, Route und Deko an einem
+     echten Beispiel sehen, statt sie nur beschrieben zu bekommen. */
+  demoEvent() {
+    const me = this.me();
+    const heute = new Date();
+    const tag = (v) => new Date(heute.getFullYear(), heute.getMonth(), heute.getDate() + v).toISOString().slice(0, 10);
+    return {
+      id: DEMO_ID,
+      name: "Wochenende am Meer",
+      date: tag(-3), end: tag(-1),
+      place: "Sylt", kicker: "Beispiel",
+      note: "Drei Tage Wind, Sand und viel zu viel Kuchen. Dieses Ereignis gehört zum Leitfaden — es verschwindet gleich wieder.",
+      infos: [{ label: "Wetter", value: "windig, 14°" }, { label: "Kilometer", value: "38 mit dem Rad" }],
+      people: [
+        { name: "Jule", role: "war dabei", demoBekannt: true },
+        { name: "Timo", role: "hat fotografiert" }
+      ],
+      images: [
+        { src: "", caption: "Strandkorb Nr. 41", comments: [], et: "d-et2" },
+        { src: "", caption: "Abendessen im Hafen", comments: [], alb: "d-alb1", et: "d-et3" }
+      ],
+      alben: [{ i: "d-alb1", name: "Nur für Jule", vis: "personen", who: [], gwho: [], share: "comment", et: "d-et3" }],
+      /* Echte Etappenform: je ein Punkt mit Koordinaten; „weg“ bestimmt
+         die Linienart auf der Karte. */
+      etappen: [
+        { i: "d-et1", name: "Start", ort: "Hamburg", note: "", tag: tag(-3), weg: "ohne", lat: 53.55, lon: 9.99 },
+        { i: "d-et2", name: "Hinfahrt", ort: "Westerland", note: "", tag: tag(-3), weg: "bahn", lat: 54.91, lon: 8.31 },
+        { i: "d-et3", name: "Inselrunde", ort: "List", note: "", tag: tag(-1), weg: "rad", lat: 55.02, lon: 8.44 }
+      ],
+      etLayout: "split",
+      deco: { fx: [], pal: "thema", stickers: [{ k: "stern", st: "flach", x: 0.82, y: 0.14, s: 1.2, r: -12, c: 1 }] },
+      /* Echte Abstimmungsform. Eine Stimme ist vorbelegt, damit der
+         Haken ✓ im Leitfaden auch wirklich zu sehen ist. */
+      polls: [{
+        id: "d-p1", art: "vote", frage: "Nächstes Mal wieder?",
+        opts: [{ i: "d-o1", label: "Ja, sofort", von: "" }, { i: "d-o2", label: "Lieber die Berge", von: "" }],
+        wer: "alle", who: [], gwho: [], mehr: false, max: 2, offen: false, stimmenAn: false,
+        stimmen: (me ? { [me.id]: ["d-o1"] } : {}), rangliste: {}, echo: {}
+      }],
+      by: (me || {}).id || "", vis: "friends", who: [], gwho: [], perms: {},
+      share: "comment", themeId: "", themeSnap: null, themeFein: {},
+      demo: true
+    };
+  }
+
   tourSchritte() {
     return [
       { ziel: "", titel: "Willkommen in deiner Chronik",
-        text: "In zehn kurzen Schritten zeige ich dir, was hier geht. Ein leuchtender Punkt führt dich zu jedem Knopf. Du kannst jederzeit abbrechen — und den Leitfaden später über ‚Hilfe‘ neu starten." },
-      { ziel: "", titel: "Was ist die Chronik?",
-        text: "Du kannst dir hier alle deine Erlebnisse, wie z.B. Festivals, Urlaube, Feiern, ... planen dokumentieren und den Leuten deiner Wahl zur Verfügung stellen. Routen, Bilder, Kommentare, Personen die dabei waren, …. Das alles kannst Du jederzeit wieder erleben und in Erinnerungen und Momenten schwelgen." },
-      { ziel: "neu", titel: "Ein Ereignis anlegen",
-        text: "Alles beginnt hier: Name, Datum, Ort. Dazu Notizen, Personen, Bilder, Abstimmungen — und Etappen, wenn es eine Reise war. Wer es sehen darf, entscheidest du im selben Fenster." },
-      { ziel: "", titel: "Dein Zeitstrahl",
-        text: "Alles Eigene und alles, was Kontakte für dich freigeben, steht auf einem Strahl. Die Kacheln stehen unter ihrem Datum; sind es mehr als vier, klappt eine Schaltfläche den Rest auf. In ‚Mein Konto‘ legst du fest, was von anderen bei dir erscheint." },
+        text: "Ich lege gleich ein erfundenes Ereignis an — „Wochenende am Meer“ — und erkläre daran, was die Zeichen bedeuten und was du tun kannst. Es verschwindet am Ende wieder von selbst. Abbrechen darfst du jederzeit; über ‚Hilfe‘ kommst du zurück." },
+      { ziel: "", demo: true, titel: "Das ist eine Kachel", auf: true,
+        text: "Jedes Ereignis steht als Kachel unter seinem Datum. Ein Klick öffnet sie, ein Klick daneben schließt sie wieder. Oben stehen Name, Zeitraum und Ort; darunter alles, was du hinzugefügt hast. Mehrtägiges bekommt einen Balken auf der Achse." },
+      { ziel: "k-personen", demo: true, auf: true, titel: "Personen und die dicke Umrandung",
+        text: "Hier stehen die Menschen, die dabei waren. Ist jemand einem Konto zugewiesen, mit dem du befreundet bist, bekommt der Name einen kräftigen Rand — wie bei Jule. Ohne Rand ist es ein bloßer Name, wie bei Timo. Hat das Konto ein Profilbild, siehst du es gleich mit." },
+      { ziel: "k-route", demo: true, auf: true, titel: "Etappen und Routen",
+        text: "War es eine Reise, legst du Etappen an: von wo nach wo und womit. Die Karte zeichnet sie nach, die Linienart verrät das Verkehrsmittel — durchgezogen für Zug, gestrichelt fürs Rad. Zwei Ansichten gibt es: alles zusammen oder nach Etappen getrennt." },
+      { ziel: "k-bilder", demo: true, auf: true, titel: "Bilder, Alben und Haken",
+        text: "Bilder stehen unter ihrer Etappe. Ein Album fasst welche zusammen und hat eigene Rechte — „Nur für Jule“ sieht sonst niemand. Der Haken ✓ neben einer Zeile heißt: du hast hier schon abgestimmt oder zugestimmt. Unter jedem Bild lässt sich schreiben, wenn du kommentieren darfst." },
+      { ziel: "neu", titel: "Deko und Sticker",
+        text: "Im Editor gibt es einen Abschnitt „Deko“: Sticker aufs Bild, ein eigenes Design nur für dieses Ereignis, dazu Bildform, Markierung, Muster und Schatten. Ein Vorschauknopf zeigt dir das Ergebnis, bevor du speicherst. Freie Sticker klebst du über den Reiter „Ansicht“ direkt in den Zeitstrahl." },
+      { ziel: "neu", titel: "Wer darf was",
+        text: "Beim Anlegen wählst du: privat, ausgewählte Kontakte oder alle Kontakte — und je Person oder Gruppe, ob sie nur sehen, kommentieren oder mitarbeiten darf. Im Kopf der Kachel steht, welche Stufe für dich gilt. Speichern und Abbrechen findest du oben und unten im Fenster." },
       { ziel: "band", titel: "Ansicht, Filter, Daten",
-        text: "Hinter diesen drei Reitern steckt die Feinarbeit: Zoom und Abspielen, Suche nach Ort, Person oder Zeitraum, Sticker zum Aufkleben — und das Sichern und Laden deiner Daten." },
+        text: "Hinter diesen drei Reitern steckt die Feinarbeit: Zoom und Abspielen, Suche nach Ort, Person oder Zeitraum — jeder Filter hat ein Suchfeld —, Sticker zum Aufkleben und das Sichern deiner Daten." },
       { ziel: "show", titel: "Fotoshow",
-        text: "Zeigt alle Bilder deiner gefilterten Auswahl groß, mit Übergängen und wahlweise mit Musik. Gut für einen Abend zu zweit oder für die Leinwand beim Fest." },
-      { ziel: "design", titel: "Jedes Design kannst Du nach deinem Geschmack ändern",
-        text: "Von Zeitungssatz über Emailschild bis zur Flughafen-Klapptafel. Jedes Design lässt sich weiter verstellen — Farben, Schrift, Marker, Dichte. Deine Wahl gilt nur für dich." },
-      { ziel: "kontakte", titel: "Kontakte",
-        text: "Suche jemanden nach Name oder E-Mail und schick eine Anfrage. Erst wenn sie bestätigt ist, könnt ihr einander Ereignisse freigeben. Hier legst du auch Personengruppen an." },
-      { ziel: "vergleich", titel: "Vergleichen",
-        text: "Stellt deine Chronik der eines Kontakts gegenüber: gemeinsame Ereignisse, gemeinsame Orte und Tage, an denen ihr beide etwas erlebt habt — jeder für sich." },
+        text: "Zeigt alle Bilder deiner Auswahl groß, mit Übergängen und wahlweise Musik. Im Vollbild bleibt nur das Foto; bewegst du die Maus, kommt die Leiste kurz zurück." },
+      { ziel: "kontakte", titel: "Kontakte und Gruppen",
+        text: "Suche jemanden nach Name oder E-Mail und schick eine Anfrage. Erst wenn sie bestätigt ist, könnt ihr einander Ereignisse freigeben. Gruppen sind Abkürzungen dafür — sichtbar nur für ihre Mitglieder." },
       { ziel: "konto", titel: "Mein Konto",
-        text: "Deine Angaben, was auf deinem Zeitstrahl erscheinen soll, wann du eine Mail bekommst — und, wenn du willst, das endgültige Löschen deines Kontos." },
+        text: "Profilbild, deine Angaben, was von anderen auf deinem Zeitstrahl erscheinen soll, ob fremde Ereignis-Designs übernommen werden, und wann du eine Mail bekommst." },
       { ziel: "hilfe", titel: "Das war es",
-        text: "Über diesen Knopf kommst du jederzeit hierher zurück. Viel Freude beim Sammeln — und trau dich, Dinge auszuprobieren: rückgängig machen kannst du fast alles." }
+        text: "Das Beispiel räume ich jetzt weg. Über diesen Knopf kommst du jederzeit zurück. Trau dich, Dinge auszuprobieren — rückgängig machen kannst du fast alles." }
     ];
   }
 
   tourStart = () => {
-    this.setState({ tour: 0, tourFrage: false, drawer: false, admin: false, konto: false, vgl: false }, () => this.tourMessen());
+    /* Das Beispiel kommt vorne in die Liste, damit es sicher zu sehen
+       ist, und wird beim Ende restlos entfernt. */
+    const ohne = (this.state.events || []).filter((e) => e.id !== DEMO_ID);
+    this.setState({
+      events: ohne.concat([this.demoEvent()]),
+      tour: 0, tourFrage: false, drawer: false, admin: false, konto: false, vgl: false,
+      openId: null, stapelOffen: {}
+    }, () => this.tourSchrittAn(0));
     this.tourGesehen();
   };
 
   tourEnde = () => {
-    this.setState({ tour: null, tourFrage: false, tourBox: null });
+    this.setState({
+      events: (this.state.events || []).filter((e) => e.id !== DEMO_ID),
+      tour: null, tourFrage: false, tourBox: null,
+      openId: this.state.openId === DEMO_ID ? null : this.state.openId
+    });
     this.tourGesehen();
   };
+
+  /* Je Schritt das Beispiel öffnen oder schließen und hinscrollen —
+     sonst zeigt der Leuchtpunkt auf etwas, das gar nicht sichtbar ist. */
+  tourSchrittAn(n) {
+    const sch = this.tourSchritte()[n];
+    if (!sch) return;
+    const soll = sch.auf ? DEMO_ID : (this.state.openId === DEMO_ID ? null : this.state.openId);
+    if (soll !== this.state.openId) this.setState({ openId: soll });
+    if (sch.demo && this.stage) {
+      const karte = this.stage.querySelector('[data-ev="' + DEMO_ID + '"]');
+      if (karte) {
+        const box = karte.getBoundingClientRect();
+        const wanne = this.stage.getBoundingClientRect();
+        this.stage.scrollTo({
+          left: Math.max(0, this.stage.scrollLeft + box.left - wanne.left - 60),
+          top: Math.max(0, this.stage.scrollTop + box.top - wanne.top - 40),
+          behavior: "smooth"
+        });
+      }
+    }
+    window.setTimeout(this.tourMessen, sch.demo ? 420 : 60);
+  }
 
   tourWeiter = (richtung) => {
     const n = (this.state.tour == null ? 0 : this.state.tour) + richtung;
     if (n < 0) return;
     if (n >= this.tourSchritte().length) return this.tourEnde();
-    this.setState({ tour: n }, () => this.tourMessen());
+    this.setState({ tour: n }, () => this.tourSchrittAn(n));
   };
 
   tourGesehen() {
@@ -4319,6 +4426,9 @@ class Component extends DCLogic {
     const f = this.state.filters;
     const q = String(f.q || "").trim().toLowerCase();
     return this.state.events.filter((e) => {
+      /* Das Beispiel des Leitfadens geht an allen Filtern vorbei — es
+         soll ja gerade gezeigt werden. */
+      if (e.id === DEMO_ID) return this.state.tour != null;
       if (this.levelFor(e) < 1) return false;
       if (!this.imStrahl(e)) return false;
       if (f.by && (e.by || "") !== f.by) return false;
@@ -4837,6 +4947,9 @@ class Component extends DCLogic {
   saveEvent = () => {
     const d = this.state.draft;
     if (!d) return;
+    /* Das Beispiel des Leitfadens wird nie gespeichert — auch nicht,
+       wenn es auf einem Umweg doch im Editor landet. */
+    if (d.id === DEMO_ID) { this.setState({ draft: null }); return; }
     const old = d.id ? this.state.events.filter((e) => e.id === d.id)[0] : null;
     const clean = {
       id: d.id || "e" + uid(),
@@ -4864,16 +4977,22 @@ class Component extends DCLogic {
       alben: (d.alben || (old && old.alben) || []).map((x) => Object.assign({}, x)),
       themeId: d.themeId != null ? d.themeId : ((old && old.themeId) || ""),
       themeFein: Object.assign({}, (old && old.themeFein) || {}, d.themeFein || {}),
-      /* Eine aktiv gewählte Kopie gilt. Sonst die vorhandene. Nachtragen
-         darf nur die Erstellerin — ein bearbeitender Kontakt würde sonst
-         sein eigenes Design als das des Erstellers festschreiben. */
-      themeSnap: (d.themeSnap && d.themeSnap.bg) ? d.themeSnap
-        : ((old && old.themeSnap && old.themeSnap.bg) ? old.themeSnap
-          : this.themeSnapNachtragen({
-              by: (old && old.by) || d.by || (this.me() || {}).id || "",
-              themeId: d.themeId != null ? d.themeId : ((old && old.themeId) || ""),
-              themeSnap: null
-            }).themeSnap || null),
+      /* Die Kopie folgt immer der Wahl. Ohne Design gibt es keine Kopie
+         — sonst bliebe beim Zurückstellen auf „mein eigenes Design“ die
+         alte hängen. Eine bestehende Kopie wird nur behalten, solange
+         dieselbe Kennung gewählt ist. Nachtragen darf nur die
+         Erstellerin; ein bearbeitender Kontakt würde sonst sein eigenes
+         Design als das des Erstellers festschreiben. */
+      themeSnap: (function (self) {
+        const id = d.themeId != null ? d.themeId : ((old && old.themeId) || "");
+        if (!id) return null;
+        if (d.themeSnap && d.themeSnap.bg) return d.themeSnap;
+        if (old && old.themeSnap && old.themeSnap.bg && (old.themeId || "") === id) return old.themeSnap;
+        return self.themeSnapNachtragen({
+          by: (old && old.by) || d.by || (self.me() || {}).id || "",
+          themeId: id, themeSnap: null
+        }).themeSnap || null;
+      })(this),
       etLayout: (d.etLayout || (old && old.etLayout)) === "split" ? "split" : "gesamt",
       share: d.share || (old && old.share) || "view"
     };
@@ -5120,7 +5239,8 @@ class Component extends DCLogic {
   resetTheme = () => this.setState({ override: {} });
 
   exportJSON = () => {
-    const events = this.state.events.filter((e) => this.levelFor(e) > 0);
+    /* Das Beispiel des Leitfadens bleibt draußen. */
+    const events = this.state.events.filter((e) => e.id !== DEMO_ID && this.levelFor(e) > 0);
     const payload = { app: "chronik", version: 4, meta: this.state.meta, events: events, custom: this.state.custom, groups: this.state.groups, themeId: this.theme().id };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
@@ -6151,7 +6271,7 @@ class Component extends DCLogic {
         offenesStapelEnde[it.stapel] = Math.max(offenesStapelEnde[it.stapel] || 0, openBottom);
       }
       return {
-        key: e.id,
+        key: e.id, id: e.id,
         pos: Object.assign({ position: "absolute", left: (it.x + padL) + "px", top: top + "px", width: (isOpen ? openW : cardW) + "px", zIndex: isOpen ? 60 : Math.min(50, 10 + it.lane), transition: "width 380ms cubic-bezier(0.16, 1, 0.3, 1)" }, eVars || {}),
         body: { maxHeight: isOpen ? "min(78vh, " + Math.max(520, Math.round(laneH * 4.2)) + "px)" : (laneH - 12) + "px", overflow: isOpen ? "auto" : "hidden", overscrollBehavior: "contain", borderRadius: "var(--t-radius, 2px)", transition: "max-height 420ms cubic-bezier(0.16, 1, 0.3, 1)", animationName: "var(--t-anim, tl-glide)", animationDuration: "var(--t-anim-dur, 620ms)", animationTimingFunction: "var(--t-anim-ease, ease-out)", animationFillMode: "both", animationDelay: (60 + it.i * 55) + "ms" },
         noteClip: { maxHeight: isOpen ? "none" : "51px", overflow: "hidden" },
@@ -6186,7 +6306,9 @@ class Component extends DCLogic {
           .filter((x, k, arr) => arr.findIndex((y) => y.label === x.label) === k),
         routeLabel: plural((e.etappen || []).length, "Etappe", "Etappen"),
         hasInfos: (e.infos || []).length > 0, hasPeople: (e.people || []).length > 0, hasImages: nImg > 0,
-        canEdit: lvl >= 3, canFull: lvl >= 4,
+        /* Am Beispiel des Leitfadens gibt es nichts zu bearbeiten oder
+           zu löschen — sonst könnte es versehentlich echt angelegt werden. */
+        canEdit: lvl >= 3 && e.id !== DEMO_ID, canFull: lvl >= 4 && e.id !== DEMO_ID,
         editLabel: lvl >= 4 ? "Bearbeiten" : "Inhalte pflegen",
         rights: lvl >= 4 ? "" : lvl >= 3 ? "Teilrechte" : lvl >= 2 ? "Kommentieren erlaubt" : "Nur ansehen",
         infos: (e.infos || []).map((r, j) => ({ key: "i" + j, label: r.label, value: r.value })),
@@ -6203,13 +6325,13 @@ class Component extends DCLogic {
              einen Blick, wen man selbst kennt. Ein Profilbild dieses
              Kontos wird gleich mitgezeigt. */
           chip: (function (self) {
-            const bekannt = !!(r.uid && self.areFriends(r.uid, (me || {}).id));
+            const bekannt = !!r.demoBekannt || !!(r.uid && self.areFriends(r.uid, (me || {}).id));
             const grund = { display: "flex", alignItems: "center", gap: "8px", padding: "4px 10px 4px 4px", borderRadius: "99px", background: "color-mix(in srgb, var(--t-ink, #201e1d) 7%, transparent)" };
             return bekannt
               ? Object.assign(grund, { border: "2px solid var(--t-accent, #0088b0)", padding: "3px 9px 3px 3px" })
               : grund;
           })(this),
-          bekannt: !!(r.uid && this.areFriends(r.uid, (me || {}).id)),
+          bekannt: !!r.demoBekannt || !!(r.uid && this.areFriends(r.uid, (me || {}).id)),
           fotoStil2: (function (self) {
             const bild = r.photo || (r.uid ? self.avatarVon(r.uid) : "");
             return bild
@@ -6689,11 +6811,15 @@ class Component extends DCLogic {
         jahr: !!tk.jahr,
         pos: { position: "absolute", left: (tk.x + padL + 14) + "px", top: "38px", height: (64 + ebene * 2) + "px", width: "1px" },
         labelStil: {
-          position: "absolute", top: (ebene * 15) + "px", left: "8px",
+          position: "absolute", top: (ebene * 15 + (tk.jahr ? -8 : 0)) + "px", left: "8px",
           /* Jahreszahlen tragen die Achse — dafür brauchen sie Gewicht
              und volle Tinte, nicht das blasse Grau der Zwischentöne. */
-          fontSize: tk.jahr ? "12.5px" : "11px",
+          /* Jahreszahlen sind die Orientierung im Zeitstrahl — sie
+             stehen deutlich größer als die Monatsmarken. */
+          fontSize: tk.jahr ? "30px" : "11px",
           fontWeight: tk.jahr ? 700 : 400,
+          fontFamily: tk.jahr ? "var(--t-font-head, var(--font-heading))" : "inherit",
+          lineHeight: tk.jahr ? 1 : 1.2,
           letterSpacing: "0.14em", textTransform: "uppercase",
           whiteSpace: "nowrap",
           color: tk.jahr
@@ -6962,6 +7088,48 @@ class Component extends DCLogic {
           const id = ev.target.value;
           this.setState({ draft: Object.assign({}, this.state.draft, { themeId: id, themeSnap: this.themeSnapFor(id) }) });
         },
+        /* Vorschau: die Kachel im gewählten Design, direkt im Editor.
+           Sonst müsste man speichern, um zu sehen, was man gewählt hat. */
+        vorschauAn: !!st.lookVorschau,
+        vorschauLabel: st.lookVorschau ? "Vorschau ausblenden" : "Vorschau ansehen",
+        vorschauUm: () => this.setState({ lookVorschau: !st.lookVorschau }),
+        vorschauStil: (function (self) {
+          const vt = self.mitFein(
+            self.themeSnapFor(d0.themeId || "") || self.theme(),
+            d0.themeFein
+          );
+          return Object.assign(
+            { display: "grid", gap: "8px", padding: "var(--t-pad, 16px)", marginBottom: "var(--space-3)" },
+            self.themeVars(vt), self.uiVars(vt),
+            {
+              background: "var(--t-card)", color: "var(--t-ink)",
+              fontFamily: "var(--t-font-body)",
+              borderRadius: "var(--t-radius)", boxShadow: "var(--t-shadow)",
+              border: "1px solid var(--t-border)"
+            }
+          );
+        })(this),
+        vorschauTitel: {
+          fontFamily: "var(--t-font-head)", fontSize: "var(--t-title)",
+          fontWeight: "var(--t-head-weight)", textTransform: "var(--t-head-transform)",
+          letterSpacing: "var(--t-head-tracking)", lineHeight: 1.1, margin: 0
+        },
+        vorschauKicker: {
+          fontSize: "10.5px", letterSpacing: "0.16em", textTransform: "uppercase",
+          color: "var(--t-accent)"
+        },
+        vorschauText: { fontSize: "12.5px", lineHeight: 1.5, margin: 0, color: "var(--t-ink)" },
+        vorschauMarke: {
+          width: "var(--t-marker-w)", height: "var(--t-marker-h)",
+          borderRadius: "var(--t-marker-radius)", background: "var(--t-marker-bg)",
+          transform: "rotate(var(--t-marker-rotate))", flex: "0 0 auto"
+        },
+        vorschauBild: {
+          width: "100%", aspectRatio: "var(--t-img-ratio)",
+          borderRadius: "var(--t-img-radius)",
+          background: "color-mix(in srgb, var(--t-ink) 12%, var(--t-card))"
+        },
+        vorschauName: String(d0.name || "").trim() || "Beispielereignis",
         /* Feinheiten über dem gewählten Design — sie reisen mit. */
         fein: FEIN.map((f) => ({
           key: f.k,
@@ -8202,7 +8370,7 @@ class Component extends DCLogic {
         toggleReset: () => this.setState({ authMode: st.authMode === "reset" ? "login" : "reset", authError: "", authNotice: "" }),
         resetLink: st.authMode === "reset" ? "Zurück zur Anmeldung" : "Passwort vergessen?",
         title: st.authMode === "newpw" ? "Neues Passwort wählen" : st.authMode === "reset" ? (st.cloud ? "Passwort zurücksetzen" : "Neues Passwort setzen") : st.authMode === "register" ? (st.users.length ? "Konto anlegen" : "Chronik einrichten") : "Willkommen zurück",
-        idLabel: st.authMode === "login" ? "E-Mail" : "E-Mail",
+        idLabel: st.authMode === "login" ? "E-Mail oder Benutzername" : "E-Mail",
         pwLabel: "Passwort",
         pwAuto: st.authMode === "login" ? "current-password" : "new-password",
         username: st.authForm.username, email: st.authForm.email, pw: st.authForm.pw, pw2: st.authForm.pw2, 
@@ -8662,12 +8830,12 @@ class Component extends DCLogic {
          Platz wieder weg, damit die Bahn nicht nach unten rutscht. */
       stickyAchse: {
         position: "sticky", top: "0", zIndex: 70,
-        width: trackW + "px", height: "30px", marginBottom: "-30px",
+        width: trackW + "px", height: "38px", marginBottom: "-38px",
         pointerEvents: "none",
         background: "linear-gradient(var(--t-bg, #f3f2f2) 60%, transparent)"
       },
       stickyLinie: {
-        position: "absolute", left: 0, right: 0, top: "21px", height: 0,
+        position: "absolute", left: 0, right: 0, top: "29px", height: 0,
         borderTopWidth: "var(--t-line-w, 2px)", borderTopStyle: "var(--t-line-style, solid)",
         borderTopColor: "var(--t-line, #201e1d)", opacity: 0.75
       },
@@ -8684,13 +8852,14 @@ class Component extends DCLogic {
       })().map((tk) => ({
         key: "s" + tk.key, jahr: !!tk.jahr,
         pos: { position: "absolute", left: (parseFloat(tk.pos.left) || 0) + "px", top: "5px" },
-        strich: { width: "1px", height: "16px", marginTop: "5px", background: "color-mix(in srgb, var(--t-ink, #201e1d) 30%, transparent)" },
+        strich: { width: "1px", height: "22px", marginTop: "5px", background: "color-mix(in srgb, var(--t-ink, #201e1d) 30%, transparent)" },
         labelStil: {
-          position: "absolute", top: 0, left: "6px", whiteSpace: "nowrap",
-          fontSize: tk.jahr ? "11.5px" : "10.5px",
+          position: "absolute", top: tk.jahr ? "-4px" : "0", left: "6px", whiteSpace: "nowrap",
+          fontSize: tk.jahr ? "26px" : "10.5px",
           fontWeight: tk.jahr ? 700 : 400,
+          lineHeight: tk.jahr ? 1 : 1.2,
           letterSpacing: "0.14em", textTransform: "uppercase",
-          fontFamily: "var(--t-font-body, var(--font-body))",
+          fontFamily: tk.jahr ? "var(--t-font-head, var(--font-heading))" : "var(--t-font-body, var(--font-body))",
           color: tk.jahr
             ? "var(--t-ink, #201e1d)"
             : "color-mix(in srgb, var(--t-ink, #201e1d) 62%, transparent)"
