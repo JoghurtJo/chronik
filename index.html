@@ -113,7 +113,7 @@
         <span>Dein Leben</span>
         <span>Eure Geschichten</span>
         <span>Erleben wie damals:)</span>
-        <span>Mit mehr Organgen!</span>
+        <span>Mit mehr Organgen</span>
       </div>
     </div>
 
@@ -346,26 +346,44 @@
           <div class="field" style="width: 148px;"><label>Zeitraum von</label><input class="input" type="date" value="{{ f.from }}" onChange="{{ f.onFrom }}"></div>
           <div class="field" style="width: 148px;"><label>bis</label><input class="input" type="date" value="{{ f.to }}" onChange="{{ f.onTo }}"></div>
           <div class="field" style="width: 170px;"><label>Ort</label>
+            <sc-if value="{{ f.orteSuchbar }}" hint-placeholder-val="{{ false }}">
+              <input class="input" type="search" value="{{ f.suche.ort }}" onChange="{{ f.onSucheOrt }}" placeholder="Ort suchen" style="margin-bottom: 4px; padding: 4px 9px; font-size: 12px;">
+            </sc-if>
             <select class="input" value="{{ f.place }}" onChange="{{ f.onPlace }}">
               <sc-for list="{{ f.places }}" as="o" hint-placeholder-count="3">
                 <option value="{{ o.value }}">{{ o.label }}</option>
               </sc-for>
             </select>
+            <sc-if value="{{ f.orteRest }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size: 10.5px; color: var(--color-neutral-600); padding-top: 3px;">{{ f.orteRest }}</div>
+            </sc-if>
           </div>
           <div class="field" style="width: 190px;"><label>Angelegt von</label>
+            <sc-if value="{{ f.autorenSuchbar }}" hint-placeholder-val="{{ false }}">
+              <input class="input" type="search" value="{{ f.suche.wer }}" onChange="{{ f.onSucheWer }}" placeholder="Person suchen" style="margin-bottom: 4px; padding: 4px 9px; font-size: 12px;">
+            </sc-if>
             <select class="input" value="{{ f.by }}" onChange="{{ f.onBy }}">
               <sc-for list="{{ f.authors }}" as="o" hint-placeholder-count="3">
                 <option value="{{ o.value }}">{{ o.label }}</option>
               </sc-for>
             </select>
+            <sc-if value="{{ f.autorenRest }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size: 10.5px; color: var(--color-neutral-600); padding-top: 3px;">{{ f.autorenRest }}</div>
+            </sc-if>
           </div>
         </div>
         <div style="display: flex; gap: var(--space-4); flex-wrap: wrap;">
           <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
             <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">Kategorie</span>
+            <sc-if value="{{ f.katSuchbar }}" hint-placeholder-val="{{ false }}">
+              <input class="input" type="search" value="{{ f.suche.kat }}" onChange="{{ f.onSucheKat }}" placeholder="Kategorie suchen" style="width: 150px; padding: 4px 9px; font-size: 12px;">
+            </sc-if>
             <sc-for list="{{ f.cats }}" as="c" hint-placeholder-count="4">
               <button onClick="{{ c.toggle }}" style="{{ c.style }}">{{ c.label }}</button>
             </sc-for>
+            <sc-if value="{{ f.katRest }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">{{ f.katRest }}</span>
+            </sc-if>
           </div>
           <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
             <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">Personen</span>
@@ -404,6 +422,18 @@
   <div style="{{ lay.stagePad }}" data-screen-label="Zeitstrahl">
     <div style="{{ shellStyle }}">
     <div data-stage="" ref="{{ stageRef }}" onScroll="{{ onScroll }}" onPointerDown="{{ stick.place }}" onPointerMove="{{ stick.move }}" onPointerUp="{{ stick.up }}" onPointerLeave="{{ stick.up }}" style="position: relative; overflow-x: auto; overflow-y: auto; max-height: 86vh; overscroll-behavior-x: contain; background-color: var(--t-bg, #f3f2f2); border-radius: var(--radius-lg); box-shadow: inset 0 0 0 1px var(--color-divider); cursor: {{ stick.cursor }};">
+      <sc-if value="{{ hatStickyAchse }}" hint-placeholder-val="{{ false }}">
+        <div data-noprint="" style="{{ stickyAchse }}">
+          <div style="{{ stickyLinie }}"></div>
+          <sc-for list="{{ stickyTicks }}" as="sk" hint-placeholder-count="4">
+            <div style="{{ sk.pos }}">
+              <div style="{{ sk.strich }}"></div>
+              <div style="{{ sk.labelStil }}">{{ sk.label }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
       <sc-for list="{{ free }}" as="fs" hint-placeholder-count="0">
         <div onPointerDown="{{ fs.onDown }}" style="{{ fs.style }}">{{ fs.glyph }}</div>
       </sc-for>
@@ -2911,7 +2941,9 @@ class Component extends DCLogic {
     vglMit: null,
     vglFilter: { q: "", ort: "", kat: "", jahr: "" },
     inhaltSuche: { wer: "", thema: "", ort: "" },
-    personSuche: "",
+    /* Ein Suchtext je Filter — reine Dropdowns werden mit der Zeit zu
+       lang, um sie durchzublättern. */
+    filterSuche: { ort: "", wer: "", kat: "" },
     inhaltAuf: {},
     sperrMenu: null,
     vglSuche: { wer: "", ort: "", kat: "", jahr: "" },
@@ -2924,6 +2956,7 @@ class Component extends DCLogic {
     etKarte: false,
     stapelOffen: {},
     blickX: 0,
+    stageY: 0,
     feed: { freunde: true, vorschau: false },
     konto: false,
     loeschWort: "",
@@ -3839,6 +3872,8 @@ class Component extends DCLogic {
     return [
       { ziel: "", titel: "Willkommen in deiner Chronik",
         text: "In zehn kurzen Schritten zeige ich dir, was hier geht. Ein leuchtender Punkt führt dich zu jedem Knopf. Du kannst jederzeit abbrechen — und den Leitfaden später über ‚Hilfe‘ neu starten." },
+      { ziel: "", titel: "Was ist die Chronik?",
+        text: "Du kannst dir hier alle deine Erlebnisse, wie z.B. Festivals, Urlaube, Feiern, ... planen dokumentieren und den Leuten deiner Wahl zur Verfügung stellen. Routen, Bilder, Kommentare, Personen die dabei waren, …. Das alles kannst Du jederzeit wieder erleben und in Erinnerungen und Momenten schwelgen." },
       { ziel: "neu", titel: "Ein Ereignis anlegen",
         text: "Alles beginnt hier: Name, Datum, Ort. Dazu Notizen, Personen, Bilder, Abstimmungen — und Etappen, wenn es eine Reise war. Wer es sehen darf, entscheidest du im selben Fenster." },
       { ziel: "", titel: "Dein Zeitstrahl",
@@ -3848,7 +3883,7 @@ class Component extends DCLogic {
       { ziel: "show", titel: "Fotoshow",
         text: "Zeigt alle Bilder deiner gefilterten Auswahl groß, mit Übergängen und wahlweise mit Musik. Gut für einen Abend zu zweit oder für die Leinwand beim Fest." },
       { ziel: "design", titel: "Jedes Design kannst Du nach deinem Geschmack ändern",
-        text: "Von Zeitungssatz über Emailschild bis zur Flughafen-Klapptafel. Jedes Design lässt sich weiter verstellen — Farben, Schrift, Marker, Dichte. Deine Wahl gilt nur für dich." },
+        text: "Von Zeitungssatz über Emailschild bis zur Flughafen-Klapptafel. Jedes Design lässt sich weiter verstellen — Farben, Schrift, Marker, Dichte." },
       { ziel: "kontakte", titel: "Kontakte",
         text: "Suche jemanden nach Name oder E-Mail und schick eine Anfrage. Erst wenn sie bestätigt ist, könnt ihr einander Ereignisse freigeben. Hier legst du auch Personengruppen an." },
       { ziel: "vergleich", titel: "Vergleichen",
@@ -4333,7 +4368,7 @@ class Component extends DCLogic {
     if (this.uiTimer) window.clearTimeout(this.uiTimer);
     this.uiTimer = window.setTimeout(() => {
       if (this.state.show.open && this.state.show.voll) this.setShow({ ui: false }, false);
-    }, 2500);
+    }, 5000);
   }
 
   weckUi = () => {
@@ -4684,6 +4719,8 @@ class Component extends DCLogic {
        Stapel bedienen, der gerade vor einem liegt. */
     const box = e.currentTarget;
     const mitte = box.scrollLeft + box.clientWidth / 2;
+    const y = box.scrollTop;
+    if (((this.state.stageY || 0) > 24) !== (y > 24)) this.setState({ stageY: y });
     if (this.blickRaf) return;
     this.blickRaf = window.requestAnimationFrame(() => {
       this.blickRaf = 0;
@@ -5347,8 +5384,11 @@ class Component extends DCLogic {
     /* Gemeinsame Tage: an diesem Tag hat jede Seite etwas — dasselbe
        Ereignis oder je ein eigenes. */
     const tageA = {}, tageB = {};
-    meine.forEach((e) => { const t = String(e.date || ""); if (t) tageA[t] = true; });
-    seine.forEach((e) => { const t = String(e.date || ""); if (t) tageB[t] = true; });
+    /* Mehrtägiges zählt mit jedem seiner Tage — ein Ereignis über eine
+       ganze Woche überschneidet sich auch dann, wenn die Starttage
+       auseinanderliegen. */
+    meine.forEach((e) => this.tageVon(e).forEach((t) => { if (t) tageA[t] = true; }));
+    seine.forEach((e) => this.tageVon(e).forEach((t) => { if (t) tageB[t] = true; }));
     const tageBeide = Object.keys(tageA).filter((t) => tageB[t]).sort();
 
     return { meine: meine, seine: seine, treffer: knapp, orteBeide: orteBeide, gemeinsam: gemeinsam, tageBeide: tageBeide };
@@ -7683,12 +7723,20 @@ class Component extends DCLogic {
         const jahre = [];
         if (v) {
           const alleJ = {};
-          v.meine.forEach((e) => { alleJ[String(e.date || "").slice(0, 4)] = true; });
-          v.seine.forEach((e) => { alleJ[String(e.date || "").slice(0, 4)] = true; });
+          /* Ein Ereignis gehört zu jedem Jahr, das es berührt — sonst
+             fehlte ein Silvester-Urlaub im neuen Jahr. */
+          const jahreVon = (e) => {
+            const js = {};
+            self.tageVon(e).forEach((t) => { js[String(t).slice(0, 4)] = true; });
+            return Object.keys(js);
+          };
+          v.meine.forEach((e) => jahreVon(e).forEach((j) => { alleJ[j] = true; }));
+          v.seine.forEach((e) => jahreVon(e).forEach((j) => { alleJ[j] = true; }));
           const trefferIds = {};
           v.treffer.forEach((x) => { trefferIds[x.a.id] = true; trefferIds[x.b.id] = true; });
           Object.keys(alleJ).filter((j) => j && j !== "unde").sort().reverse().forEach((j) => {
-            const zeile = (liste) => liste.filter((e) => String(e.date || "").slice(0, 4) === j)
+            const imJahr = (e) => jahreVon(e).indexOf(j) >= 0;
+            const zeile = (liste) => liste.filter(imJahr)
               .map((e) => ({
                 key: e.id, name: e.name || "ohne Titel",
                 datum: fmtDate(e.date), ort: e.place || "",
@@ -7706,8 +7754,14 @@ class Component extends DCLogic {
                Seiten nach Tag gruppieren und paarweise auffüllen. */
             const nachTag = (liste) => {
               const m = {};
-              liste.filter((e) => String(e.date || "").slice(0, 4) === j)
-                .forEach((e) => { const t = String(e.date || ""); (m[t] = m[t] || []).push(e); });
+              /* Mehrtägiges steht an jedem seiner Tage dieses Jahres —
+                 nur so trifft es auf das, was am mittleren Tag lief. */
+              liste.filter(imJahr).forEach((e) => {
+                self.tageVon(e).forEach((t) => {
+                  if (String(t).slice(0, 4) !== j) return;
+                  (m[t] = m[t] || []).push(e);
+                });
+              });
               return m;
             };
             const tagA = nachTag(v.meine), tagB = nachTag(v.seine);
@@ -8121,36 +8175,73 @@ class Component extends DCLogic {
         span: evs.length ? fmtDate(evs[0].date) + " – " + fmtDate(evs[evs.length - 1].end || evs[evs.length - 1].date) : "—",
         hint: st.mode === "even" ? "Gleichmäßige Abstände" : "Abstände maßstabsgetreu · " + Math.round(L.spanD) + " Tage"
       },
-      f: {
+      f: (function () {
+        const fSuche = Object.assign({ ort: "", wer: "", kat: "" }, st.filterSuche || {});
+        const setzeSuche = (k) => (ev) => this.setState({
+          filterSuche: Object.assign({}, this.state.filterSuche || {}, { [k]: ev.target.value })
+        });
+        const autoren = st.users.filter((u) => all.some((e) => e.by === u.id));
+        const FMAX = 5;
+        /* Die ersten fünf Passenden, dazu vorne alles bereits Gewählte. */
+        const treffer = (liste, suchtext, text, gewaehlt, ident) => {
+          const q = normName(suchtext || "");
+          const passend = q ? liste.filter((x) => normName(text(x)).indexOf(q) >= 0) : liste;
+          const raus = passend.slice(0, FMAX);
+          const drin = {};
+          raus.forEach((x) => { drin[ident(x)] = true; });
+          (gewaehlt || []).forEach((g) => {
+            if (drin[g]) return;
+            const x = liste.filter((y) => ident(y) === g)[0];
+            if (x) raus.unshift(x);
+          });
+          return raus;
+        };
+        const rest = (liste, suchtext, text) => {
+          const q = normName(suchtext || "");
+          const passend = q ? liste.filter((x) => normName(text(x)).indexOf(q) >= 0) : liste;
+          const n = passend.length - FMAX;
+          return n > 0 ? "… " + n + " weitere — oben suchen" : "";
+        };
+        return {
         q: f.q, from: f.from, to: f.to, place: f.place, by: f.by || "",
         onQ: this.setFilter("q"), onFrom: this.setFilter("from"), onTo: this.setFilter("to"), onPlace: this.setFilter("place"), onBy: this.setFilter("by"),
         aktiv: !!(f.q || f.from || f.to || f.place || f.by || (f.cats || []).length || (f.persons || []).length),
         anzahl: [f.q, f.from, f.to, f.place, f.by].filter(Boolean).length + (f.cats || []).length + (f.persons || []).length,
         reset: this.resetFilters,
-        authors: [{ key: "a0", value: "", label: "Alle Personen" }].concat(st.users.filter((u) => all.some((e) => e.by === u.id)).map((u) => ({ key: "a" + u.id, value: u.id, label: u.username + (me && u.id === me.id ? " (du)" : "") }))),
-        places: [{ key: "p0", value: "", label: "Alle Orte" }].concat(places.map((p) => ({ key: "p" + p, value: p, label: p }))),
-        cats: cats.map((c) => ({ key: "c" + c, label: c, style: chip(f.cats.indexOf(c) >= 0), toggle: this.toggleChip("cats", c) })),
-        /* Nur fünf Personen stehen da — bei mehr sucht man. Gewählte
-           bleiben immer sichtbar, sonst könnte man sie nicht abwählen. */
+        /* Jeder Filter hat ein Suchfeld — reine Dropdowns und
+           Knopfreihen werden mit der Zeit zu lang zum Durchblättern.
+           Gewähltes bleibt immer sichtbar, sonst wäre es nicht mehr
+           abwählbar. */
+        suche: fSuche,
+        onSucheOrt: setzeSuche("ort"),
+        onSucheWer: setzeSuche("wer"),
+        onSucheKat: setzeSuche("kat"),
+        autorenSuchbar: autoren.length > 5,
+        authors: [{ key: "a0", value: "", label: "Alle Personen" }].concat(
+          treffer(autoren, fSuche.wer, (u) => u.username, f.by ? [f.by] : [], (u) => u.id)
+            .map((u) => ({ key: "a" + u.id, value: u.id, label: u.username + (me && u.id === me.id ? " (du)" : "") }))
+        ),
+        autorenRest: rest(autoren, fSuche.wer, (u) => u.username),
+        orteSuchbar: places.length > 5,
+        places: [{ key: "p0", value: "", label: "Alle Orte" }].concat(
+          treffer(places, fSuche.ort, (p) => p, f.place ? [f.place] : [], (p) => p)
+            .map((p) => ({ key: "p" + p, value: p, label: p }))
+        ),
+        orteRest: rest(places, fSuche.ort, (p) => p),
+        katSuchbar: cats.length > 5,
+        cats: treffer(cats, fSuche.kat, (c) => c, f.cats || [], (c) => c)
+          .map((c) => ({ key: "c" + c, label: c, style: chip((f.cats || []).indexOf(c) >= 0), toggle: this.toggleChip("cats", c) })),
+        katRest: rest(cats, fSuche.kat, (c) => c),
         personSuche: st.personSuche || "",
         onPersonSuche: (ev) => this.setState({ personSuche: ev.target.value }),
         personSuchbar: persons.length > 5,
-        persons: (function (self) {
-          const q = normName(st.personSuche || "");
-          const passend = q ? persons.filter((p) => normName(p).indexOf(q) >= 0) : persons;
-          const gezeigt = passend.slice(0, 5);
-          (f.persons || []).forEach((p) => { if (gezeigt.indexOf(p) < 0) gezeigt.unshift(p); });
-          return gezeigt.map((p) => ({ key: "n" + p, label: p, style: chip((f.persons || []).indexOf(p) >= 0), toggle: self.toggleChip("persons", p) }));
-        })(this),
-        personRest: (function () {
-          const q = normName(st.personSuche || "");
-          const passend = q ? persons.filter((p) => normName(p).indexOf(q) >= 0) : persons;
-          const rest = passend.length - 5;
-          return rest > 0 ? "… " + rest + " weitere — oben suchen" : "";
-        })(),
+        persons: treffer(persons, st.personSuche, (p) => p, f.persons || [], (p) => p)
+          .map((p) => ({ key: "n" + p, label: p, style: chip((f.persons || []).indexOf(p) >= 0), toggle: this.toggleChip("persons", p) })),
+        personRest: rest(persons, st.personSuche, (p) => p),
         summary: evs.length === all.length ? "alle " + all.length + " Ereignisse" : "zeigt " + evs.length + " von " + all.length,
         active: fActive, reset: this.resetFilters
-      },
+        };
+      }).call(this),
       tabs: [["view", "Ansicht"], ["filter", "Filter"], ["data", "Daten"]].map((tb) => {
         const on = st.ribbon === tb[0];
         return {
@@ -8433,6 +8524,47 @@ class Component extends DCLogic {
         height: Math.max(560, totalH) + "px", minHeight: "100%"
       },
       axisStyle: { position: "absolute", left: "0", top: axisY + "px", width: trackW + "px", zIndex: 5 },
+      /* Beim Runterscrollen bleibt oben eine schmale Zeitachse stehen —
+         sonst weiß man in einem tiefen Stapel nicht mehr, welcher Tag
+         gerade unter einem liegt. Sie klebt vertikal und wandert
+         waagerecht mit dem Inhalt. Das negative Untenmaß nimmt ihr den
+         Platz wieder weg, damit die Bahn nicht nach unten rutscht. */
+      stickyAchse: {
+        position: "sticky", top: "0", zIndex: 70,
+        width: trackW + "px", height: "30px", marginBottom: "-30px",
+        pointerEvents: "none",
+        background: "linear-gradient(var(--t-bg, #f3f2f2) 60%, transparent)"
+      },
+      stickyLinie: {
+        position: "absolute", left: 0, right: 0, top: "21px", height: 0,
+        borderTopWidth: "var(--t-line-w, 2px)", borderTopStyle: "var(--t-line-style, solid)",
+        borderTopColor: "var(--t-line, #201e1d)", opacity: 0.75
+      },
+      stickyTicks: (function () {
+        /* Doppelte Beschriftungen aussortieren: das schmale Band hat
+           keinen Platz für zwei Striche an derselben Stelle. */
+        const gesehen = {};
+        return ticks.filter((tk) => {
+          const k = Math.round(parseFloat(tk.pos.left) || 0) + "|" + tk.label;
+          if (gesehen[k]) return false;
+          gesehen[k] = true;
+          return true;
+        });
+      })().map((tk) => ({
+        key: "s" + tk.key,
+        pos: { position: "absolute", left: (parseFloat(tk.pos.left) || 0) + "px", top: "5px" },
+        strich: { width: "1px", height: "16px", marginTop: "5px", background: "color-mix(in srgb, var(--t-ink, #201e1d) 30%, transparent)" },
+        labelStil: {
+          position: "absolute", top: 0, left: "6px", whiteSpace: "nowrap",
+          fontSize: "10.5px", letterSpacing: "0.14em", textTransform: "uppercase",
+          fontFamily: "var(--t-font-body, var(--font-body))",
+          color: "color-mix(in srgb, var(--t-ink, #201e1d) 62%, transparent)"
+        },
+        label: tk.label
+      })),
+      /* Erst beim Scrollen zeigen — oben stünde sie sonst genau auf der
+         echten Achse und alles wäre doppelt. */
+      hatStickyAchse: ticks.length > 0 && (st.stageY || 0) > 24,
       cards: cards, markers: markers, bars: bars, ticks: ticks, stapelKnopf: stapelKnopf,
       drawer: st.drawer,
       toggleDrawer: () => this.setState({ drawer: !st.drawer, admin: false }),
