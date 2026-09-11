@@ -512,12 +512,6 @@
 
                   <sc-if value="{{ c.isOpen }}" hint-placeholder-val="{{ false }}">
                     <div onClick="{{ stop }}" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: var(--space-3);">
-                      <sc-if value="{{ c.canEdit }}" hint-placeholder-val="{{ true }}">
-                        <button onClick="{{ c.edit }}" style="cursor: pointer; font: inherit; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 12px; border: 1px solid var(--t-border, rgba(32, 30, 29, 0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);" style-hover="background: color-mix(in srgb, var(--t-accent, #0088b0) 12%, transparent);">{{ c.editLabel }}</button>
-                      </sc-if>
-                      <sc-if value="{{ c.canFull }}" hint-placeholder-val="{{ true }}">
-                        <button onClick="{{ c.remove }}" style="cursor: pointer; font: inherit; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 12px; border: 1px solid transparent; border-radius: var(--t-radius, 2px); background: transparent; color: color-mix(in srgb, var(--t-accent2, #d6006c) 90%, var(--t-ink, #201e1d));" style-hover="background: color-mix(in srgb, var(--t-accent2, #d6006c) 12%, transparent);">Löschen</button>
-                      </sc-if>
                       <sc-if value="{{ c.sperre.zeigen }}" hint-placeholder-val="{{ false }}">
                         <div style="position: relative;">
                           <button onClick="{{ c.sperre.auf }}" style="cursor: pointer; font: inherit; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 12px; border: 1px solid var(--t-border, rgba(32, 30, 29, 0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);" style-hover="background: color-mix(in srgb, var(--t-accent2, #d6006c) 12%, transparent);">Blockieren ▾</button>
@@ -817,13 +811,13 @@
                       </sc-if>
 
                       <div style="display: flex; gap: 8px; align-items: center; padding-top: 2px; flex-wrap: wrap;">
+                        <span style="margin-right: auto; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: color-mix(in srgb, var(--t-ink, #201e1d) 48%, var(--t-card, #eae9e9));">{{ c.rights }}</span>
                         <sc-if value="{{ c.canEdit }}" hint-placeholder-val="{{ true }}">
                           <button onClick="{{ c.edit }}" style="cursor: pointer; font: inherit; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 12px; border: 1px solid var(--t-border, rgba(32, 30, 29, 0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);" style-hover="background: color-mix(in srgb, var(--t-accent, #0088b0) 12%, transparent);">{{ c.editLabel }}</button>
                         </sc-if>
                         <sc-if value="{{ c.canFull }}" hint-placeholder-val="{{ true }}">
                           <button onClick="{{ c.remove }}" style="cursor: pointer; font: inherit; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 12px; border: 1px solid transparent; border-radius: var(--t-radius, 2px); background: transparent; color: color-mix(in srgb, var(--t-accent2, #d6006c) 90%, var(--t-ink, #201e1d));" style-hover="background: color-mix(in srgb, var(--t-accent2, #d6006c) 12%, transparent);">Löschen</button>
                         </sc-if>
-                        <span style="font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: color-mix(in srgb, var(--t-ink, #201e1d) 48%, var(--t-card, #eae9e9));">{{ c.rights }}</span>
                       </div>
                     </div>
                   </sc-if>
@@ -1926,14 +1920,19 @@
 </sc-if>
 
 <sc-if value="{{ lehr.offen }}" hint-placeholder-val="{{ false }}">
-  <div data-noprint="" data-screen-label="Ereignis-Leitfaden" style="position: fixed; inset: 0; z-index: 260; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); display: grid; grid-template-rows: auto 1fr;">
-    <div style="padding: var(--space-4) var(--space-6) 0;">
-      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap;">
+  <div data-noprint="" data-screen-label="Ereignis-Leitfaden" style="position: fixed; inset: 0; z-index: 260; background: color-mix(in srgb, var(--color-text) 32%, transparent); color: var(--color-text); font-family: var(--font-body); display: grid; grid-template-rows: 1fr; padding: var(--space-4);">
+    <div style="min-height: 0; width: min(1180px, 100%); justify-self: center; display: grid; grid-template-rows: auto 1fr; padding: var(--space-6) var(--space-6) 0; background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);">
+    <div>
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap;">
         <div>
-          <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">Leitfaden · Ereignis bearbeiten</div>
-          <h2 style="margin: 3px 0 0; font-size: 27px; line-height: 1.05;">So legst du ein Ereignis an</h2>
+          <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">Leitfaden · so sieht „Bearbeiten“ aus</div>
+          <h2 style="margin: 3px 0 0; font-size: 29px; line-height: 1.05;">Ereignis</h2>
         </div>
-        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ lehr.zu }}">✕ Schließen</button>
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <span class="tag tag-outline">Abbrechen</span>
+          <span class="tag tag-accent">Speichern</span>
+          <button class="btn btn-secondary btn-icon" title="Leitfaden schließen" onClick="{{ lehr.zu }}">✕</button>
+        </div>
       </div>
       <div style="height: 3px; background: var(--ui-saum, var(--color-text)); margin: var(--space-3) 0 0;"></div>
     </div>
@@ -1943,7 +1942,7 @@
 
         <div data-lehr="grund" style="{{ lehr.sGrund }}" onClick="{{ lehr.zeigGrund }}">
           <div style="display: flex; align-items: baseline; gap: 8px;">
-            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">1 · Grunddaten</span>
+            <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">▾ 1 · Grunddaten</span>
             <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
             <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">Pflicht: nur der Name</span>
           </div>
@@ -1960,12 +1959,12 @@
 
         <div data-lehr="sicht" style="{{ lehr.sSicht }}" onClick="{{ lehr.zeigSicht }}">
           <div style="display: flex; align-items: baseline; gap: 8px;">
-            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">2 · Sichtbarkeit</span>
+            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">▾ 2 · Sichtbarkeit</span>
             <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
             <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">3 Stufen</span>
           </div>
           <div class="seg" role="group" style="margin: 0;">
-            <span class="seg-opt">Privat</span><span class="seg-opt">Ausgewählte</span><span class="seg-opt" style="background: var(--color-accent); color: var(--color-bg);">Alle Kontakte</span>
+            <span class="seg-opt" style="white-space: nowrap;">Privat</span><span class="seg-opt" style="white-space: nowrap;">Ausgewählte</span><span class="seg-opt" style="white-space: nowrap; background: var(--color-accent); color: var(--color-bg);">Alle Kontakte</span>
           </div>
           <div style="font-size: 12.5px; color: var(--color-neutral-700);">Alle bestätigten Kontakte sehen es — auch die, die später dazukommen.</div>
           <div style="display: flex; gap: 6px; flex-wrap: wrap;">
@@ -1976,7 +1975,7 @@
 
         <div data-lehr="notiz" style="{{ lehr.sNotiz }}" onClick="{{ lehr.zeigNotiz }}">
           <div style="display: flex; align-items: baseline; gap: 8px;">
-            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">3 · Notiz und Angaben</span>
+            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">▾ 3 · Notiz und Angaben</span>
             <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
             <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">frei</span>
           </div>
@@ -1989,7 +1988,7 @@
 
         <div data-lehr="personen" style="{{ lehr.sPersonen }}" onClick="{{ lehr.zeigPersonen }}">
           <div style="display: flex; align-items: baseline; gap: 8px;">
-            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">4 · Personen</span>
+            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">▾ 4 · Personen</span>
             <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
             <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">2 eingetragen</span>
           </div>
@@ -2011,7 +2010,7 @@
 
         <div data-lehr="etappen" style="{{ lehr.sEtappen }}" onClick="{{ lehr.zeigEtappen }}">
           <div style="display: flex; align-items: baseline; gap: 8px;">
-            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">5 · Etappen</span>
+            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">▾ 5 · Etappen</span>
             <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
             <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">3 Stationen</span>
           </div>
@@ -2025,7 +2024,7 @@
 
         <div data-lehr="bilder" style="{{ lehr.sBilder }}" onClick="{{ lehr.zeigBilder }}">
           <div style="display: flex; align-items: baseline; gap: 8px;">
-            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">6 · Bilder</span>
+            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">▾ 6 · Bilder</span>
             <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
             <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">2 hochgeladen</span>
           </div>
@@ -2048,7 +2047,7 @@
 
         <div data-lehr="alben" style="{{ lehr.sAlben }}" onClick="{{ lehr.zeigAlben }}">
           <div style="display: flex; align-items: baseline; gap: 8px;">
-            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">7 · Alben</span>
+            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">▾ 7 · Alben</span>
             <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
             <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">1 angelegt</span>
           </div>
@@ -2062,7 +2061,7 @@
 
         <div data-lehr="wahl" style="{{ lehr.sWahl }}" onClick="{{ lehr.zeigWahl }}">
           <div style="display: flex; align-items: baseline; gap: 8px;">
-            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">8 · Abstimmungen</span>
+            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">▾ 8 · Abstimmungen</span>
             <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
             <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">3 Arten</span>
           </div>
@@ -2084,7 +2083,7 @@
 
         <div data-lehr="deko" style="{{ lehr.sDeko }}" onClick="{{ lehr.zeigDeko }}">
           <div style="display: flex; align-items: baseline; gap: 8px;">
-            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">9 · Deko und Design</span>
+            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">▾ 9 · Deko und Design</span>
             <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
             <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">nur dieses Ereignis</span>
           </div>
@@ -2102,7 +2101,7 @@
 
         <div data-lehr="speichern" style="{{ lehr.sSpeichern }}" onClick="{{ lehr.zeigSpeichern }}">
           <div style="display: flex; align-items: baseline; gap: 8px;">
-            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">10 · Speichern</span>
+            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">▾ 10 · Speichern</span>
             <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
             <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">oben und unten</span>
           </div>
@@ -2132,6 +2131,7 @@
         </div>
         <div style="font-size: 11.5px; line-height: 1.5; color: var(--color-neutral-700); margin-top: var(--space-2);">Dies ist eine Nachbildung zum Anschauen — nichts davon wird gespeichert.</div>
       </div>
+    </div>
     </div>
   </div>
 </sc-if>
@@ -3413,6 +3413,7 @@ class Component extends DCLogic {
       }
     }
     if (this.syncLook()) return;
+    this.avatarHolen();
     this.persist();
     if (this.audio) this.audio.volume = this.state.show.volume;
   }
@@ -3931,6 +3932,17 @@ class Component extends DCLogic {
     catch (e) { return ""; }
   }
 
+  /* Das eigene Bild aus der Ablage in den Zustand holen. Nötig, weil der
+     Zustand leer startet: bis das Profil aus der Datenbank eintrifft,
+     schriebe der laufende Speichervorgang sonst ein leeres Bild über den
+     gemerkten Wert — genau dadurch verschwand es beim Neuladen. */
+  avatarHolen() {
+    const u = this.me();
+    if (!u || this.state.avatar) return;
+    const bild = this.avatarGemerkt(u.id);
+    if (bild) this.setState({ avatar: bild });
+  }
+
   /* Das Profilbild einer Person — aus dem eigenen Zustand oder aus dem
      Profil, das mit den Kontakten geladen wurde. */
   avatarVon(id) {
@@ -3981,6 +3993,12 @@ class Component extends DCLogic {
     const me = this.me();
     if (!me) return;
     const look = this.lookOf();
+    /* Ein leeres Bild nur schreiben, wenn wirklich keines gemerkt ist —
+       sonst löscht ein früher Durchlauf das Profilbild. */
+    if (!look.avatar) {
+      const bild = this.avatarGemerkt(me.id);
+      if (bild) look.avatar = bild;
+    }
     const json = JSON.stringify(look);
     if (json === this.lastLook) return;
     this.lastLook = json;
@@ -4360,7 +4378,7 @@ class Component extends DCLogic {
         text: "In zehn kurzen Schritten zeige ich dir, was hier geht. Ein leuchtender Punkt führt dich zu jedem Knopf. Du kannst jederzeit abbrechen — und den Leitfaden später über ‚Hilfe‘ neu starten." },
       { ziel: "", titel: "Was ist die Chronik?",
         text: "Du kannst dir hier alle deine Erlebnisse, wie z.B. Festivals, Urlaube, Feiern, ... planen dokumentieren und den Leuten deiner Wahl zur Verfügung stellen. Routen, Bilder, Kommentare, Personen die dabei waren, …. Das alles kannst Du jederzeit wieder erleben und in Erinnerungen und Momenten schwelgen." },
-      { ziel: "neu", titel: "Ein Ereignis anlegen",
+            { ziel: "neu", titel: "Ein Ereignis anlegen",
         text: "Alles beginnt hier: Name, Datum, Ort. Was ein Ereignis alles kann — Personen, Bilder, Etappen, Abstimmungen, Deko —, erklärt der zweite Leitfaden an einem Beispiel." },
       { ziel: "", titel: "Dein Zeitstrahl",
         text: "Alles Eigene und alles, was Kontakte für dich freigeben, steht auf einem Strahl. Die Kacheln stehen unter ihrem Datum; sind es mehr als vier, klappt ein Knopf unten in der Mitte den Rest auf. Jahreszahlen tragen die Achse, beim Scrollen bleiben sie oben stehen." },
@@ -4368,7 +4386,7 @@ class Component extends DCLogic {
         text: "Hinter diesen drei Reitern steckt die Feinarbeit: Zoom und Abspielen, Suche nach Ort, Person oder Zeitraum — jeder Filter hat ein Suchfeld —, Sticker zum Aufkleben und das Sichern deiner Daten." },
       { ziel: "show", titel: "Fotoshow",
         text: "Zeigt alle Bilder deiner Auswahl groß, mit Übergängen und wahlweise Musik. Im Vollbild bleibt nur das Foto; bewegst du die Maus, kommt die Leiste kurz zurück." },
-      { ziel: "design", titel: "Jedes Design kannst Du nach deinem Geschmack ändern",
+      { ziel: "design", titel: "Über dreißig Gesichter",
         text: "Von Zeitungssatz über Emailschild bis zum Regenbogen. Das gewählte Design färbt die ganze Seite, nicht nur den Zeitstrahl. Jedes lässt sich weiter verstellen — Farben, Schrift, Marker, Dichte." },
       { ziel: "kontakte", titel: "Kontakte und Gruppen",
         text: "Suche jemanden nach Name oder E-Mail und schick eine Anfrage. Erst wenn sie bestätigt ist, könnt ihr einander Ereignisse freigeben. Gruppen sind Abkürzungen dafür — sichtbar nur für ihre Mitglieder." },
@@ -4384,26 +4402,31 @@ class Component extends DCLogic {
      Abschnitt wird erklärt, was man darin sieht und tun kann. Nichts
      außerhalb wird angefasst — das Herumzeigen im Zeitstrahl war
      unzuverlässig, weil die Ziele je nach Scrollstand fehlten. */
+  /* Der Leitfaden zeigt ein erfundenes Ereignis im Bearbeitungsmodus
+     und geht dessen Abschnitte der Reihe nach durch — dieselben, die
+     auch im echten Editor stehen. */
   lehrTeile() {
     return [
-      { k: "kopf", titel: "Kopf: Name, Zeit, Ort",
-        text: "Jedes Ereignis beginnt mit Name, Datum und Ort. Ein zweites Datum macht daraus einen Zeitraum — auf dem Zeitstrahl bekommt er dann einen Balken und zählt beim Vergleich mit jedem einzelnen Tag. Die kleine Zeile darüber ist die Kategorie; nach ihr lässt sich filtern." },
-      { k: "rechte", titel: "Wer darf was",
-        text: "Hier steht, wer das Ereignis sieht: nur du, ausgewählte Kontakte oder alle deine Kontakte. Je Person oder Gruppe legst du zusätzlich die Stufe fest — nur ansehen, kommentieren oder Inhalte pflegen. Die Zeile im Kopf der Kachel verrät dir, welche Stufe für dich gilt." },
-      { k: "notiz", titel: "Notiz und Angaben",
-        text: "Die Notiz ist der Fließtext. Darunter stehen freie Angaben als Paare aus Bezeichnung und Wert — Wetter, Kilometer, Eintrittspreis, was du willst. Sie erscheinen als kleine Tabelle in der Kachel." },
-      { k: "personen", titel: "Personen",
-        text: "Wer dabei war. Ist eine Person einem Konto zugewiesen, mit dem du befreundet bist, bekommt sie einen kräftigen Rand — hier Jule. Ohne Rand ist es ein bloßer Name wie Timo.  Personen mit Haken wurden einem Account zugewiesen. Hat das Konto ein Profilbild, wird es statt der Anfangsbuchstaben gezeigt." },
-      { k: "route", titel: "Etappen und Route",
-        text: "War es eine Reise, legst du Etappen an: wo du warst und womit du hinkamst. Auf der Karte werden sie verbunden, die Linienart zeigt das Verkehrsmittel. Ein Tipp auf die Karte setzt den Punkt." },
-      { k: "bilder", titel: "Bilder und Alben",
-        text: "Bilder lassen sich drehen, zuschneiden, filtern und bekleben. Jedes gehört wahlweise zu einer Etappe und steht dann unter deren Überschrift. Ein Album fasst Bilder zusammen und hat eigene Rechte: „Nur für Jule“ sieht sonst niemand, auch wenn das Ereignis weiter freigegeben ist." },
-      { k: "wahl", titel: "Abstimmungen, Ranglisten, Listen",
-        text: "Eine Abstimmung fragt nach einer Antwort; der Haken ✓ steht bei deiner Stimme. Eine Rangliste wird nach dem Anlegen nicht mehr verändert, dort gibt es nur noch Reaktionen. In einer Liste zum Eintragen trägt jeder selbst ein, und eine Zustimmung zählt als +1, +2, …" },
-      { k: "deko", titel: "Deko und eigenes Design",
-        text: "Sticker aufs Bild, dazu ein eigenes Design nur für dieses Ereignis: Schrift, Farben, Bildform, Markierung, Muster und Schatten. Ein Vorschauknopf zeigt das Ergebnis, bevor du speicherst. Kontakte sehen es genauso — sofern sie fremde Designs zulassen." },
-      { k: "kommentare", titel: "Kommentare und Reaktionen",
-        text: "Unter dem Ereignis und unter jedem einzelnen Bild lässt sich schreiben, wenn du mindestens die Stufe „kommentieren“ hast. Auf jeden Beitrag kann man kurz reagieren; Antworten dürfen bis zu drei Ebenen tief gehen." }
+      { k: "grund", titel: "Grunddaten", was: "Name, Datum, Ort, Kategorie",
+        text: "Der Anfang jedes Ereignisses. Nur der Name ist Pflicht. Ein zweites Datum macht aus dem Tag einen Zeitraum — auf dem Zeitstrahl bekommt er dann einen Balken, und beim Vergleich mit Kontakten zählt jeder einzelne Tag. Die Kategorie ist ein freies Wort; nach ihr lässt sich später filtern." },
+      { k: "sicht", titel: "Sichtbarkeit", was: "wer es sieht und was er darf",
+        text: "Drei Stufen: privat, ausgewählte Kontakte oder alle deine Kontakte. Bei „ausgewählte“ hakst du Personen und Gruppen an und stellst je Eintrag ein, wie viel sie dürfen — nur ansehen, kommentieren oder Inhalte pflegen. Wer Inhalte pflegen darf, kann Bilder und Notizen ändern, aber nicht Name, Datum und Ort." },
+      { k: "notiz", titel: "Notiz und Angaben", was: "Fließtext und freie Felder",
+        text: "Die Notiz ist der erzählende Teil. Darunter legst du beliebig viele Angaben als Paar aus Bezeichnung und Wert an — Wetter, Kilometer, Eintritt, was du festhalten willst. In der Kachel erscheinen sie als kleine Tabelle." },
+      { k: "personen", titel: "Personen", was: "wer dabei war",
+        text: "Jede Person bekommt einen Namen und wahlweise eine Rolle. Über die Zuordnung verknüpfst du sie mit einem Konto: Ist das ein Kontakt von dir, wird sie in der Kachel kräftig umrandet und trägt dessen Profilbild. Ohne Zuordnung bleibt es ein bloßer Name." },
+      { k: "etappen", titel: "Etappen", was: "die Stationen einer Reise",
+        text: "Für Reisen: eine Station je Etappe, mit Ort, Tag und dem Verkehrsmittel, mit dem du dort hinkamst. „Auf Karte setzen“ ist beim Anlegen schon aktiv — der nächste Tipp auf die Karte setzt den Punkt. Die Karte verbindet die Stationen, die Linienart zeigt das Verkehrsmittel." },
+      { k: "bilder", titel: "Bilder", was: "hochladen, bearbeiten, zuordnen",
+        text: "Bilder lassen sich drehen, spiegeln, zuschneiden, filtern und bekleben. Jedes bekommt eine Unterschrift und wahlweise eine Etappe — dann steht es unter deren Überschrift. Drehst du ein Bild später in der Fotoshow, wird die neue Lage übernommen." },
+      { k: "alben", titel: "Alben", was: "Bildergruppen mit eigenen Rechten",
+        text: "Ein Album fasst Bilder zusammen und hat eigene Rechte, unabhängig vom Ereignis: „Nur für Oma“ sieht wirklich nur sie, auch wenn alle Kontakte das Ereignis sehen. Ein Album kann ebenfalls an einer Etappe hängen und zieht seine Bilder dorthin mit." },
+      { k: "wahl", titel: "Abstimmungen", was: "Umfrage, Rangliste, Eintragsliste",
+        text: "Eine Umfrage fragt nach einer Antwort; der Haken ✓ steht bei deiner Stimme. Eine Rangliste steht nach dem Anlegen fest, dort gibt es nur noch Reaktionen. In einer Eintragsliste trägt jeder selbst ein, und eine Zustimmung zählt als +1, +2 und so weiter. Wer mitmachen darf, legst du je Abstimmung fest." },
+      { k: "deko", titel: "Deko und Design", was: "Sticker und eigenes Aussehen",
+        text: "Sticker ziehst du auf die Vorschau. Darunter wählst du ein Design nur für dieses Ereignis, dazu Bildform, Markierung, Muster und Schatten. Der Vorschauknopf zeigt das Ergebnis, bevor du speicherst. Kontakte sehen es genauso — sofern sie fremde Designs zulassen." },
+      { k: "speichern", titel: "Speichern", was: "oben und unten im Fenster",
+        text: "Speichern und Abbrechen stehen im Kopf und am Fuß des Fensters. Gespeicherte Ereignisse lassen sich jederzeit wieder öffnen; gelöscht wird nur nach ausdrücklicher Rückfrage, denn das ist endgültig." }
     ];
   }
 
@@ -8933,7 +8956,7 @@ class Component extends DCLogic {
         toggleReset: () => this.setState({ authMode: st.authMode === "reset" ? "login" : "reset", authError: "", authNotice: "" }),
         resetLink: st.authMode === "reset" ? "Zurück zur Anmeldung" : "Passwort vergessen?",
         title: st.authMode === "newpw" ? "Neues Passwort wählen" : st.authMode === "reset" ? (st.cloud ? "Passwort zurücksetzen" : "Neues Passwort setzen") : st.authMode === "register" ? (st.users.length ? "Konto anlegen" : "Chronik einrichten") : "Willkommen zurück",
-        idLabel: st.authMode === "login" ? "Benutzername" : "E-Mail",
+        idLabel: st.authMode === "login" ? "E-Mail" : "E-Mail",
         pwLabel: "Passwort",
         pwAuto: st.authMode === "login" ? "current-password" : "new-password",
         username: st.authForm.username, email: st.authForm.email, pw: st.authForm.pw, pw2: st.authForm.pw2, 
