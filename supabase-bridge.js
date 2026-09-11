@@ -417,7 +417,13 @@
     var id = s && s.data && s.data.user && s.data.user.id;
     if (!id) return;
     var r = await c.from("profiles").update({ look: look || {} }).eq("id", id);
-    if (r.error && !/look/i.test(String(r.error.message || ""))) throw fail(code(r.error));
+    if (r.error) {
+      /* Nur eine fehlende Spalte wird verschwiegen — jeder andere Fehler
+         muss durch, sonst gilt ein nicht gespeichertes Profilbild als
+         gespeichert und ist nach dem Neuladen weg. */
+      var txt = String(r.error.message || "");
+      if (!/column .*look|look.* does not exist|schema cache/i.test(txt)) throw fail(code(r.error));
+    }
   }
 
   async function removeComment(id) {
@@ -523,7 +529,7 @@
       var src = im.src || (im.key ? (urls[im.key] || "") : (im.path ? (urls[im.path] || "") : ""));
       return {
         src: src, key: im.key || "", path: im.path || "", caption: im.caption || "",
-        alb: im.alb || "", et: im.et || "",
+        alb: im.alb || "", et: im.et || "", rot: im.rot || 0,
         comments: comments[row.id + ":" + i] || []
       };
     });
@@ -535,6 +541,7 @@
       alben: Array.isArray(d.alben) ? d.alben : [],
       themeId: d.themeId || "",
       themeSnap: d.themeSnap || null,
+      themeFein: d.themeFein && typeof d.themeFein === "object" ? d.themeFein : {},
       vis: (row.vis === "selected" ? "people" : row.vis) || "private", who: row.who || [], gwho: row.gwho || [], perms: row.perms || {}, polls: row.polls || [], etappen: row.etappen || [], etLayout: row.et_layout === "split" ? "split" : "gesamt", share: row.share || "view",
       changedBy: row.changed_by || ""
     };
@@ -550,8 +557,9 @@
         alben: e.alben || [],
         themeId: e.themeId || "",
         themeSnap: e.themeSnap || null,
+        themeFein: e.themeFein || {},
         images: (e.images || []).map(function (im) {
-          var zu = { caption: im.caption || "", alb: im.alb || "", et: im.et || "" };
+          var zu = { caption: im.caption || "", alb: im.alb || "", et: im.et || "", rot: im.rot || 0 };
           if (im.key) return Object.assign({ key: im.key }, zu);
           if (im.path) return Object.assign({ path: im.path }, zu);
           return Object.assign({ src: im.src || "" }, zu);
