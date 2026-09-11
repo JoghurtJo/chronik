@@ -487,6 +487,16 @@
                       <span style="{{ c.visStyle }}">{{ c.visTag }}</span>
                     </sc-if>
                     <span style="flex: 1;"></span>
+                    <sc-if value="{{ c.isOpen }}" hint-placeholder-val="{{ false }}">
+                      <span onClick="{{ stop }}" style="display: flex; gap: 6px; align-items: center;">
+                        <sc-if value="{{ c.canEdit }}" hint-placeholder-val="{{ true }}">
+                          <button onClick="{{ c.edit }}" title="Ereignis bearbeiten" style="cursor: pointer; font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 10px; border: 1px solid var(--t-border, rgba(32, 30, 29, 0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);" style-hover="background: color-mix(in srgb, var(--t-accent, #0088b0) 12%, transparent);">{{ c.editLabel }}</button>
+                        </sc-if>
+                        <sc-if value="{{ c.canFull }}" hint-placeholder-val="{{ true }}">
+                          <button onClick="{{ c.remove }}" title="Ereignis löschen" style="cursor: pointer; font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 10px; border: 1px solid transparent; border-radius: var(--t-radius, 2px); background: transparent; color: color-mix(in srgb, var(--t-accent2, #d6006c) 90%, var(--t-ink, #201e1d));" style-hover="background: color-mix(in srgb, var(--t-accent2, #d6006c) 12%, transparent);">Löschen</button>
+                        </sc-if>
+                      </span>
+                    </sc-if>
                     <span style="font-size: 15px; opacity: 0.5;">{{ c.sign }}</span>
                   </div>
                   <sc-if value="{{ c.plain }}" hint-placeholder-val="{{ true }}">
@@ -615,6 +625,21 @@
                                   </div>
                                   <sc-if value="{{ rt.hatNote }}" hint-placeholder-val="{{ false }}">
                                     <div style="font-size: 13px; line-height: 1.45; opacity: 0.8;">{{ rt.note }}</div>
+                                  </sc-if>
+                                  <sc-if value="{{ rt.hatBilder }}" hint-placeholder-val="{{ false }}">
+                                    <button onClick="{{ rt.bilderUm }}" style="justify-self: start; margin-top: 4px; font: inherit; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; cursor: pointer; border: 1px solid var(--t-border, rgba(32, 30, 29, 0.16)); border-radius: 999px; background: transparent; color: var(--t-accent, #0088b0);" style-hover="background: color-mix(in srgb, var(--t-accent, #0088b0) 12%, transparent);">{{ rt.bilderLabel }}</button>
+                                  </sc-if>
+                                  <sc-if value="{{ rt.bilderAuf }}" hint-placeholder-val="{{ false }}">
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 8px;">
+                                      <sc-for list="{{ rt.bilder }}" as="rb" hint-placeholder-count="2">
+                                        <div style="display: grid; gap: 4px;">
+                                          <span role="img" aria-label="{{ rb.caption }}" onClick="{{ rb.zoom }}" style="{{ rb.stil }}">{{ rb.leerText }}</span>
+                                          <sc-if value="{{ rb.hatCaption }}" hint-placeholder-val="{{ false }}">
+                                            <div style="font-size: 11.5px; line-height: 1.4; opacity: 0.75;">{{ rb.caption }}</div>
+                                          </sc-if>
+                                        </div>
+                                      </sc-for>
+                                    </div>
                                   </sc-if>
                                 </div>
                               </div>
@@ -750,6 +775,12 @@
                                     <span style="flex: 1; height: 1px; background: color-mix(in srgb, var(--t-accent, #0088b0) 30%, transparent);"></span>
                                   </div>
                                 </sc-if>
+                                <sc-if value="{{ im.hatAlbKopf }}" hint-placeholder-val="{{ false }}">
+                                  <div style="display: flex; align-items: center; gap: 8px; padding-top: 2px;">
+                                    <span style="font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: color-mix(in srgb, var(--t-accent2, #d6006c) 88%, var(--t-ink, #201e1d));">{{ im.albKopf }}</span>
+                                    <span style="flex: 1; height: 1px; background: color-mix(in srgb, var(--t-accent2, #d6006c) 26%, transparent);"></span>
+                                  </div>
+                                </sc-if>
                                 <figure style="margin: 0; width: 100%; background: var(--t-img-bg, transparent); padding: var(--t-img-pad, 0); border-radius: var(--t-img-radius, 0); rotate: var(--t-img-rot, 0deg); box-shadow: var(--t-img-shadow, none);">
                                   <sc-if value="{{ im.src }}" hint-placeholder-val="{{ false }}">
                                     <span role="img" aria-label="{{ im.caption }}" onClick="{{ im.zoom }}" title="größer ansehen" style="{{ im.bildStil }}"></span>
@@ -760,9 +791,6 @@
                                     </div>
                                   </sc-if>
                                 </figure>
-                                <sc-if value="{{ im.albName }}" hint-placeholder-val="{{ false }}">
-                                  <div style="font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: color-mix(in srgb, var(--t-accent2, #d6006c) 88%, var(--t-ink, #201e1d));">Album · {{ im.albName }}</div>
-                                </sc-if>
                                 <div style="display: grid; gap: 4px; width: 100%;">
                                   <sc-for list="{{ im.comments }}" as="cm" hint-placeholder-count="1">
                                     <div style="{{ cm.einzug }}">
@@ -1172,7 +1200,7 @@
         </div>
         <div class="field" style="margin-top: var(--space-2);"><label>Beschreibung</label><textarea class="input" value="{{ form.note }}" onChange="{{ form.onNote }}" placeholder="Ein paar Sätze dazu."></textarea></div>
 
-        <button onClick="{{ form.sec.infos.toggle }}" style="{{ form.sec.head }}">
+        <button data-sec="infos" onClick="{{ form.sec.infos.toggle }}" style="{{ form.sec.head }}">
           <span style="{{ form.sec.infos.sign }}">▸</span>
           <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Infos</span>
           <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
@@ -1191,7 +1219,7 @@
         </div>
         </sc-if>
 
-        <button onClick="{{ form.sec.personen.toggle }}" style="{{ form.sec.head }}">
+        <button data-sec="personen" onClick="{{ form.sec.personen.toggle }}" style="{{ form.sec.head }}">
           <span style="{{ form.sec.personen.sign }}">▸</span>
           <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Personen</span>
           <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
@@ -1225,7 +1253,7 @@
 
         </sc-if>
 
-        <button onClick="{{ form.sec.bilder.toggle }}" style="{{ form.sec.head }}">
+        <button data-sec="bilder" onClick="{{ form.sec.bilder.toggle }}" style="{{ form.sec.head }}">
           <span style="{{ form.sec.bilder.sign }}">▸</span>
           <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Bilder</span>
           <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
@@ -1306,7 +1334,7 @@
         </div>
         </sc-if>
 
-        <button onClick="{{ form.sec.alben.toggle }}" style="{{ form.sec.head }}">
+        <button data-sec="alben" onClick="{{ form.sec.alben.toggle }}" style="{{ form.sec.head }}">
           <span style="{{ form.sec.alben.sign }}">▸</span>
           <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Alben</span>
           <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
@@ -1368,7 +1396,7 @@
           </div>
         </sc-if>
 
-        <button onClick="{{ form.sec.deko.toggle }}" style="{{ form.sec.head }}">
+        <button data-sec="deko" onClick="{{ form.sec.deko.toggle }}" style="{{ form.sec.head }}">
           <span style="{{ form.sec.deko.sign }}">▸</span>
           <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Deko</span>
           <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
@@ -1478,7 +1506,7 @@
         </div>
         </sc-if>
 
-        <button onClick="{{ form.sec.etappen.toggle }}" style="{{ form.sec.head }}">
+        <button data-sec="etappen" onClick="{{ form.sec.etappen.toggle }}" style="{{ form.sec.head }}">
           <span style="{{ form.sec.etappen.sign }}">▸</span>
           <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Etappen &amp; Route</span>
           <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
@@ -1556,7 +1584,7 @@
           </div>
         </sc-if>
 
-        <button onClick="{{ form.sec.polls.toggle }}" style="{{ form.sec.head }}">
+        <button data-sec="polls" onClick="{{ form.sec.polls.toggle }}" style="{{ form.sec.head }}">
           <span style="{{ form.sec.polls.sign }}">▸</span>
           <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Abstimmungen &amp; Ranglisten</span>
           <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
@@ -1650,7 +1678,7 @@
         </sc-if>
 
         <sc-if value="{{ form.vis.mine }}" hint-placeholder-val="{{ true }}">
-          <button onClick="{{ form.sec.sicht.toggle }}" style="{{ form.sec.head }}">
+          <button data-sec="sicht" onClick="{{ form.sec.sicht.toggle }}" style="{{ form.sec.head }}">
             <span style="{{ form.sec.sicht.sign }}">▸</span>
             <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Wer darf dieses Ereignis sehen</span>
             <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
@@ -1920,220 +1948,27 @@
 </sc-if>
 
 <sc-if value="{{ lehr.offen }}" hint-placeholder-val="{{ false }}">
-  <div data-noprint="" data-screen-label="Ereignis-Leitfaden" style="position: fixed; inset: 0; z-index: 260; background: color-mix(in srgb, var(--color-text) 32%, transparent); color: var(--color-text); font-family: var(--font-body); display: grid; grid-template-rows: 1fr; padding: var(--space-4);">
-    <div style="min-height: 0; width: min(1180px, 100%); justify-self: center; display: grid; grid-template-rows: auto 1fr; padding: var(--space-6) var(--space-6) 0; background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);">
-    <div>
-      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap;">
-        <div>
-          <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">Leitfaden · so sieht „Bearbeiten“ aus</div>
-          <h2 style="margin: 3px 0 0; font-size: 29px; line-height: 1.05;">Ereignis</h2>
-        </div>
-        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-          <span class="tag tag-outline">Abbrechen</span>
-          <span class="tag tag-accent">Speichern</span>
-          <button class="btn btn-secondary btn-icon" title="Leitfaden schließen" onClick="{{ lehr.zu }}">✕</button>
-        </div>
-      </div>
-      <div style="height: 3px; background: var(--ui-saum, var(--color-text)); margin: var(--space-3) 0 0;"></div>
+  <aside data-noprint="" data-screen-label="Leitfaden" style="{{ lehr.rahmen }}">
+    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px;">
+      <div style="font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-accent-700);">Leitfaden · Schritt {{ lehr.schritt }}</div>
+      <button class="btn btn-secondary btn-icon" title="Leitfaden schließen" onClick="{{ lehr.zu }}">✕</button>
     </div>
-
-    <div data-lehr-wanne="" style="min-height: 0; overflow-y: auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 340px); gap: var(--space-6); padding: var(--space-4) var(--space-6) var(--space-6);">
-      <div style="display: grid; gap: var(--space-3); align-content: start;">
-
-        <div data-lehr="grund" style="{{ lehr.sGrund }}" onClick="{{ lehr.zeigGrund }}">
-          <div style="display: flex; align-items: baseline; gap: 8px;">
-            <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">▾ 1 · Grunddaten</span>
-            <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
-            <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">Pflicht: nur der Name</span>
-          </div>
-          <div class="field" style="margin: 0;"><label>Name des Ereignisses</label><div style="{{ lehr.feld }}">Wochenende am Meer</div></div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-            <div class="field" style="margin: 0;"><label>Von</label><div style="{{ lehr.feld }}">Freitag</div></div>
-            <div class="field" style="margin: 0;"><label>Bis (wahlweise)</label><div style="{{ lehr.feld }}">Sonntag</div></div>
-          </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-            <div class="field" style="margin: 0;"><label>Ort</label><div style="{{ lehr.feld }}">Sylt</div></div>
-            <div class="field" style="margin: 0;"><label>Kategorie</label><div style="{{ lehr.feld }}">Kurzurlaub</div></div>
-          </div>
-        </div>
-
-        <div data-lehr="sicht" style="{{ lehr.sSicht }}" onClick="{{ lehr.zeigSicht }}">
-          <div style="display: flex; align-items: baseline; gap: 8px;">
-            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">▾ 2 · Sichtbarkeit</span>
-            <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
-            <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">3 Stufen</span>
-          </div>
-          <div class="seg" role="group" style="margin: 0;">
-            <span class="seg-opt" style="white-space: nowrap;">Privat</span><span class="seg-opt" style="white-space: nowrap;">Ausgewählte</span><span class="seg-opt" style="white-space: nowrap; background: var(--color-accent); color: var(--color-bg);">Alle Kontakte</span>
-          </div>
-          <div style="font-size: 12.5px; color: var(--color-neutral-700);">Alle bestätigten Kontakte sehen es — auch die, die später dazukommen.</div>
-          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-            <span class="tag tag-outline">Jule · Inhalte pflegen</span>
-            <span class="tag tag-outline">Timo · nur ansehen</span>
-          </div>
-        </div>
-
-        <div data-lehr="notiz" style="{{ lehr.sNotiz }}" onClick="{{ lehr.zeigNotiz }}">
-          <div style="display: flex; align-items: baseline; gap: 8px;">
-            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">▾ 3 · Notiz und Angaben</span>
-            <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
-            <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">frei</span>
-          </div>
-          <div class="field" style="margin: 0;"><label>Notiz</label><div style="{{ lehr.feld }}">Drei Tage Wind, Sand und viel zu viel Kuchen.</div></div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 6px; align-items: center;">
-            <div style="{{ lehr.feld }}">Wetter</div><div style="{{ lehr.feld }}">windig, 14°</div><span style="font-size: 12px; color: var(--color-neutral-700);">✕</span>
-            <div style="{{ lehr.feld }}">Kilometer</div><div style="{{ lehr.feld }}">38 mit dem Rad</div><span style="font-size: 12px; color: var(--color-neutral-700);">✕</span>
-          </div>
-        </div>
-
-        <div data-lehr="personen" style="{{ lehr.sPersonen }}" onClick="{{ lehr.zeigPersonen }}">
-          <div style="display: flex; align-items: baseline; gap: 8px;">
-            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">▾ 4 · Personen</span>
-            <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
-            <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">2 eingetragen</span>
-          </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;">
-            <div style="{{ lehr.feld }}">Jule</div><div style="{{ lehr.feld }}">war dabei</div><div style="{{ lehr.feld }}">Konto: Jule ✓</div>
-            <div style="{{ lehr.feld }}">Timo</div><div style="{{ lehr.feld }}">hat fotografiert</div><div style="{{ lehr.feld }}">kein Konto</div>
-          </div>
-          <div style="display: flex; gap: 8px; flex-wrap: wrap; padding-top: 2px;">
-            <span style="display: flex; align-items: center; gap: 8px; padding: 3px 11px 3px 3px; border-radius: 99px; background: var(--color-neutral-100); border: 2px solid var(--color-accent);">
-              <span style="width: 26px; height: 26px; border-radius: 99px; display: grid; place-items: center; font-size: 10px; background: var(--color-accent-200); color: var(--color-accent-700);">JU</span>
-              <span style="font-size: 12px;">so erscheint ein Kontakt</span>
-            </span>
-            <span style="display: flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; border-radius: 99px; background: var(--color-neutral-100);">
-              <span style="width: 26px; height: 26px; border-radius: 99px; display: grid; place-items: center; font-size: 10px; background: var(--color-accent-200); color: var(--color-accent-700);">TI</span>
-              <span style="font-size: 12px;">so ein bloßer Name</span>
-            </span>
-          </div>
-        </div>
-
-        <div data-lehr="etappen" style="{{ lehr.sEtappen }}" onClick="{{ lehr.zeigEtappen }}">
-          <div style="display: flex; align-items: baseline; gap: 8px;">
-            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">▾ 5 · Etappen</span>
-            <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
-            <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">3 Stationen</span>
-          </div>
-          <div style="display: grid; grid-template-columns: auto 1fr 1fr auto; gap: 6px; align-items: center; font-size: 12.5px;">
-            <span style="color: var(--color-neutral-700);">1</span><div style="{{ lehr.feld }}">Hamburg</div><div style="{{ lehr.feld }}">Start</div><span class="tag tag-outline">gesetzt</span>
-            <span style="color: var(--color-neutral-700);">2</span><div style="{{ lehr.feld }}">Westerland</div><div style="{{ lehr.feld }}">mit der Bahn</div><span class="tag tag-outline">gesetzt</span>
-            <span style="color: var(--color-neutral-700);">3</span><div style="{{ lehr.feld }}">List</div><div style="{{ lehr.feld }}">mit dem Rad</div><span class="tag tag-accent">auf Karte setzen</span>
-          </div>
-          <div style="height: 86px; border-radius: var(--radius-md); background: var(--color-neutral-200); display: grid; place-items: center; font-size: 11.5px; color: var(--color-neutral-700);">Hier steht die Karte — Tippen setzt den Punkt der aktiven Etappe</div>
-        </div>
-
-        <div data-lehr="bilder" style="{{ lehr.sBilder }}" onClick="{{ lehr.zeigBilder }}">
-          <div style="display: flex; align-items: baseline; gap: 8px;">
-            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">▾ 6 · Bilder</span>
-            <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
-            <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">2 hochgeladen</span>
-          </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
-            <div style="display: grid; gap: 5px;">
-              <div style="aspect-ratio: 4 / 3; border-radius: var(--radius-md); background: var(--color-neutral-200);"></div>
-              <div style="{{ lehr.feld }}">Strandkorb Nr. 41</div>
-              <div style="{{ lehr.feld }}">Etappe: Westerland</div>
-            </div>
-            <div style="display: grid; gap: 5px;">
-              <div style="aspect-ratio: 4 / 3; border-radius: var(--radius-md); background: var(--color-neutral-200);"></div>
-              <div style="{{ lehr.feld }}">Abendessen im Hafen</div>
-              <div style="{{ lehr.feld }}">Album: Nur für Oma</div>
-            </div>
-          </div>
-          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-            <span class="tag tag-outline">↺ drehen</span><span class="tag tag-outline">⇋ spiegeln</span><span class="tag tag-outline">zuschneiden</span><span class="tag tag-outline">filtern</span><span class="tag tag-outline">bekleben</span>
-          </div>
-        </div>
-
-        <div data-lehr="alben" style="{{ lehr.sAlben }}" onClick="{{ lehr.zeigAlben }}">
-          <div style="display: flex; align-items: baseline; gap: 8px;">
-            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">▾ 7 · Alben</span>
-            <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
-            <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">1 angelegt</span>
-          </div>
-          <div class="field" style="margin: 0;"><label>Name des Albums</label><div style="{{ lehr.feld }}">Nur für Oma</div></div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-            <div class="field" style="margin: 0;"><label>Wer sieht es</label><div style="{{ lehr.feld }}">Nur ausgewählte Kontakte</div></div>
-            <div class="field" style="margin: 0;"><label>Was ist erlaubt</label><div style="{{ lehr.feld }}">Ansehen und kommentieren</div></div>
-          </div>
-          <div style="font-size: 11.5px; color: var(--color-neutral-700);">1 Bild zugeordnet · gilt unabhängig von der Sichtbarkeit des Ereignisses</div>
-        </div>
-
-        <div data-lehr="wahl" style="{{ lehr.sWahl }}" onClick="{{ lehr.zeigWahl }}">
-          <div style="display: flex; align-items: baseline; gap: 8px;">
-            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">▾ 8 · Abstimmungen</span>
-            <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
-            <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">3 Arten</span>
-          </div>
-          <div class="field" style="margin: 0;"><label>Frage</label><div style="{{ lehr.feld }}">Nächstes Mal wieder?</div></div>
-          <div style="display: grid; gap: 5px;">
-            <div style="display: flex; align-items: center; gap: 8px; font-size: 12.5px;">
-              <span style="width: 18px; height: 18px; border-radius: 99px; display: grid; place-items: center; font-size: 11px; background: var(--color-accent); color: var(--color-bg); flex: 0 0 auto;">✓</span>
-              <span>Ja, sofort</span><span style="flex: 1; height: 1px; background: var(--color-divider);"></span><span style="color: var(--color-neutral-700);">1 Stimme</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px; font-size: 12.5px;">
-              <span style="width: 18px; height: 18px; border-radius: 99px; border: 1px solid var(--color-divider); flex: 0 0 auto;"></span>
-              <span>Lieber die Berge</span><span style="flex: 1; height: 1px; background: var(--color-divider);"></span><span style="color: var(--color-neutral-700);">keine Stimme</span>
-            </div>
-          </div>
-          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-            <span class="tag tag-accent">Umfrage</span><span class="tag tag-outline">Rangliste</span><span class="tag tag-outline">Eintragsliste · +1</span>
-          </div>
-        </div>
-
-        <div data-lehr="deko" style="{{ lehr.sDeko }}" onClick="{{ lehr.zeigDeko }}">
-          <div style="display: flex; align-items: baseline; gap: 8px;">
-            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">▾ 9 · Deko und Design</span>
-            <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
-            <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">nur dieses Ereignis</span>
-          </div>
-          <div class="field" style="margin: 0;"><label>Design dieses Ereignisses</label><div style="{{ lehr.feld }}">Riso</div></div>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 6px;">
-            <div class="field" style="margin: 0;"><label>Bildform</label><div style="{{ lehr.feld }}">Sofortbild</div></div>
-            <div class="field" style="margin: 0;"><label>Markierung</label><div style="{{ lehr.feld }}">Raute</div></div>
-            <div class="field" style="margin: 0;"><label>Muster</label><div style="{{ lehr.feld }}">Punkte</div></div>
-            <div class="field" style="margin: 0;"><label>Schatten</label><div style="{{ lehr.feld }}">hart</div></div>
-          </div>
-          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-            <span class="tag tag-accent">◱ Vorschau ansehen</span><span class="tag tag-outline">Sticker ★</span>
-          </div>
-        </div>
-
-        <div data-lehr="speichern" style="{{ lehr.sSpeichern }}" onClick="{{ lehr.zeigSpeichern }}">
-          <div style="display: flex; align-items: baseline; gap: 8px;">
-            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">▾ 10 · Speichern</span>
-            <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
-            <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">oben und unten</span>
-          </div>
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <span class="tag tag-outline">Abbrechen</span>
-            <span class="tag tag-accent">Ereignis speichern</span>
-          </div>
-          <div style="font-size: 12px; color: var(--color-neutral-700);">Löschen fragt vorher nach — es ist endgültig.</div>
-        </div>
-      </div>
-
-      <div style="align-content: start; display: grid; gap: var(--space-3); position: sticky; top: 0; height: fit-content;">
-        <div style="font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-accent-700);">Schritt {{ lehr.schritt }}</div>
-        <h3 style="margin: 0; font-size: 21px; line-height: 1.15;">{{ lehr.titel }}</h3>
-        <p style="margin: 0; font-size: 14px; line-height: 1.6;">{{ lehr.text }}</p>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: var(--space-2);">
-          <sc-if value="{{ lehr.nichtErste }}" hint-placeholder-val="{{ false }}">
-            <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ lehr.zurueck }}">Zurück</button>
-          </sc-if>
-          <button class="btn btn-primary" style="white-space: nowrap;" onClick="{{ lehr.weiter }}">{{ lehr.weiterLabel }}</button>
-        </div>
-        <div style="height: 1px; background: var(--color-divider); margin: var(--space-2) 0;"></div>
-        <div style="display: grid; gap: 2px;">
-          <sc-for list="{{ lehr.liste }}" as="t" hint-placeholder-count="10">
-            <button onClick="{{ t.waehle }}" style="{{ t.stil }}">{{ t.nr }} {{ t.titel }}</button>
-          </sc-for>
-        </div>
-        <div style="font-size: 11.5px; line-height: 1.5; color: var(--color-neutral-700); margin-top: var(--space-2);">Dies ist eine Nachbildung zum Anschauen — nichts davon wird gespeichert.</div>
-      </div>
+    <h3 style="margin: 0; font-size: 20px; line-height: 1.15;">{{ lehr.titel }}</h3>
+    <p style="margin: 0; font-size: 13.5px; line-height: 1.6;">{{ lehr.text }}</p>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+      <sc-if value="{{ lehr.nichtErste }}" hint-placeholder-val="{{ false }}">
+        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ lehr.zurueck }}">Zurück</button>
+      </sc-if>
+      <button class="btn btn-primary" style="white-space: nowrap;" onClick="{{ lehr.weiter }}">{{ lehr.weiterLabel }}</button>
     </div>
+    <div style="height: 1px; background: var(--color-divider);"></div>
+    <div style="display: grid; gap: 2px;">
+      <sc-for list="{{ lehr.liste }}" as="t" hint-placeholder-count="10">
+        <button onClick="{{ t.waehle }}" style="{{ t.stil }}">{{ t.nr }} {{ t.titel }}</button>
+      </sc-for>
     </div>
-  </div>
+    <div style="font-size: 11.5px; line-height: 1.5; color: var(--color-neutral-700);">Das gezeigte Ereignis ist erfunden und wird nicht gespeichert.</div>
+  </aside>
 </sc-if>
 
 <sc-if value="{{ tour.wahl }}" hint-placeholder-val="{{ false }}">
@@ -3264,6 +3099,7 @@ class Component extends DCLogic {
     tourWahl: false,
     lehr: null,
     loeschEv: null,
+    etOffen: {},
     feed: { freunde: true, vorschau: false },
     konto: false,
     loeschWort: "",
@@ -3516,10 +3352,7 @@ class Component extends DCLogic {
       try { gs = await CC.groups(); } catch (e) { /* Gruppen sind optional */ }
       let fr = this.state.friends;
       try { if (CC.friends) fr = await CC.friends(); } catch (e) { /* Kontakte sind optional */ }
-      /* Das Beispiel des Leitfadens lebt nur hier und darf beim Laden
-         nicht verloren gehen, wenn die Tour gerade läuft. */
-      const demo = (this.state.events || []).filter((e) => e.id === DEMO_ID);
-      this.setState({ users: users, events: events.concat(demo), groups: gs, friends: fr, cloudBusy: false, cloudErr: "" });
+      this.setState({ users: users, events: events, groups: gs, friends: fr, cloudBusy: false, cloudErr: "" });
       this.designNachtragen(events);
     } catch (e) {
       /* Ohne dieses cloudBusy: false bliebe der Balken für immer stehen. */
@@ -3861,45 +3694,31 @@ class Component extends DCLogic {
      steht nur seine Adresse. Eine eingebettete Datenzeichenkette wäre zu
      groß für die Ablage und ginge beim Neuladen verloren — genau das ist
      vorher passiert. */
+  /* Das Profilbild wird klein gerechnet und als eingebettete Zeichenkette
+     abgelegt — nicht als Adresse aus dem Bildspeicher. Solche Adressen
+     sind signiert und laufen ab; Ereignisbilder holen sich beim Laden
+     jedes Mal eine frische, ein Profilbild könnte das nicht. Bei 160 px
+     sind es wenige Kilobyte, die überall mitreisen. */
   avatarWahl = async (ev) => {
     const datei = ev.target.files && ev.target.files[0];
     ev.target.value = "";
     if (!datei) return;
-    const CC = window.ChronikCloud;
-    const inCloud = !!(this.state.cloud && CC && CC.uploadImage && CC.saveLook);
     this.setState({ avatarBusy: true, avatarFehler: "" });
     try {
-      const prep = await this.shrinkImage(datei, 320, 0.82);
-      if (inCloud) {
-        /* In der Cloud geht das Bild nach Cloudflare; im Profil steht nur
-           seine Adresse. Eine eingebettete Datenzeichenkette wäre zu groß
-           für die Ablage und ginge beim Neuladen verloren. */
-        const r = await CC.uploadImage(prep ? prep.file : datei);
-        const src = (r && r.src) || "";
-        if (!src) throw new Error("keine Adresse");
-        /* Erst schreiben, dann anzeigen — sonst erschiene ein Bild, das
-           den Neustart nicht übersteht. */
-        await CC.saveLook(Object.assign({}, this.lookOf(), { avatar: src }));
-        this.lastLook = null;
-        this.avatarMerken(src);
-        this.setState({ avatar: src, avatarBusy: false }, () => this.saveLook());
-        return;
-      }
-      /* Ohne Cloud bleibt das Bild in diesem Browser. Damit es in die
-         Ablage passt, wird es klein gerechnet. */
-      const klein = await this.shrinkImage(datei, 200, 0.7);
-      const src = (klein ? klein.dataUrl : null) || (prep ? prep.dataUrl : await this.readAsDataUrl(datei));
-      this.lastLook = null;
+      const klein = await this.shrinkImage(datei, 160, 0.72);
+      const src = klein ? klein.dataUrl : await this.readAsDataUrl(datei);
+      if (!src) throw new Error("leer");
+      /* Zuerst merken, dann erst die Runde übers Netz — schlägt die fehl,
+         ist das Bild trotzdem sicher. */
       this.avatarMerken(src);
+      this.lastLook = null;
       this.setState({ avatar: src, avatarBusy: false }, () => this.saveLook());
+      const CC = window.ChronikCloud;
+      if (this.state.cloud && CC && CC.saveLook) {
+        CC.saveLook(Object.assign({}, this.lookOf(), { avatar: src })).catch(() => {});
+      }
     } catch (e) {
-      this.setState({
-        avatarBusy: false,
-    avatarFehler: "",
-        avatarFehler: inCloud
-          ? "Das Profilbild ließ sich nicht speichern. Bitte noch einmal versuchen."
-          : "Dieses Bild ließ sich nicht öffnen. Versuche ein anderes Format."
-      });
+      this.setState({ avatarBusy: false, avatarFehler: "Dieses Bild ließ sich nicht öffnen. Versuche ein anderes Format." });
     }
   };
 
@@ -4378,7 +4197,7 @@ class Component extends DCLogic {
         text: "In zehn kurzen Schritten zeige ich dir, was hier geht. Ein leuchtender Punkt führt dich zu jedem Knopf. Du kannst jederzeit abbrechen — und den Leitfaden später über ‚Hilfe‘ neu starten." },
       { ziel: "", titel: "Was ist die Chronik?",
         text: "Du kannst dir hier alle deine Erlebnisse, wie z.B. Festivals, Urlaube, Feiern, ... planen dokumentieren und den Leuten deiner Wahl zur Verfügung stellen. Routen, Bilder, Kommentare, Personen die dabei waren, …. Das alles kannst Du jederzeit wieder erleben und in Erinnerungen und Momenten schwelgen." },
-            { ziel: "neu", titel: "Ein Ereignis anlegen",
+      { ziel: "neu", titel: "Ein Ereignis anlegen",
         text: "Alles beginnt hier: Name, Datum, Ort. Was ein Ereignis alles kann — Personen, Bilder, Etappen, Abstimmungen, Deko —, erklärt der zweite Leitfaden an einem Beispiel." },
       { ziel: "", titel: "Dein Zeitstrahl",
         text: "Alles Eigene und alles, was Kontakte für dich freigeben, steht auf einem Strahl. Die Kacheln stehen unter ihrem Datum; sind es mehr als vier, klappt ein Knopf unten in der Mitte den Rest auf. Jahreszahlen tragen die Achse, beim Scrollen bleiben sie oben stehen." },
@@ -4386,7 +4205,7 @@ class Component extends DCLogic {
         text: "Hinter diesen drei Reitern steckt die Feinarbeit: Zoom und Abspielen, Suche nach Ort, Person oder Zeitraum — jeder Filter hat ein Suchfeld —, Sticker zum Aufkleben und das Sichern deiner Daten." },
       { ziel: "show", titel: "Fotoshow",
         text: "Zeigt alle Bilder deiner Auswahl groß, mit Übergängen und wahlweise Musik. Im Vollbild bleibt nur das Foto; bewegst du die Maus, kommt die Leiste kurz zurück." },
-      { ziel: "design", titel: "Über dreißig Gesichter",
+      { ziel: "design", titel: "Jedes Design kannst Du nach deinem Geschmack ändern",
         text: "Von Zeitungssatz über Emailschild bis zum Regenbogen. Das gewählte Design färbt die ganze Seite, nicht nur den Zeitstrahl. Jedes lässt sich weiter verstellen — Farben, Schrift, Marker, Dichte." },
       { ziel: "kontakte", titel: "Kontakte und Gruppen",
         text: "Suche jemanden nach Name oder E-Mail und schick eine Anfrage. Erst wenn sie bestätigt ist, könnt ihr einander Ereignisse freigeben. Gruppen sind Abkürzungen dafür — sichtbar nur für ihre Mitglieder." },
@@ -4405,49 +4224,82 @@ class Component extends DCLogic {
   /* Der Leitfaden zeigt ein erfundenes Ereignis im Bearbeitungsmodus
      und geht dessen Abschnitte der Reihe nach durch — dieselben, die
      auch im echten Editor stehen. */
+  /* Die Schritte folgen den Abschnitten des echten Editors; "sec" ist
+     der Schlüssel, unter dem der Abschnitt dort aufklappt. */
   lehrTeile() {
     return [
-      { k: "grund", titel: "Grunddaten", was: "Name, Datum, Ort, Kategorie",
-        text: "Der Anfang jedes Ereignisses. Nur der Name ist Pflicht. Ein zweites Datum macht aus dem Tag einen Zeitraum — auf dem Zeitstrahl bekommt er dann einen Balken, und beim Vergleich mit Kontakten zählt jeder einzelne Tag. Die Kategorie ist ein freies Wort; nach ihr lässt sich später filtern." },
-      { k: "sicht", titel: "Sichtbarkeit", was: "wer es sieht und was er darf",
-        text: "Drei Stufen: privat, ausgewählte Kontakte oder alle deine Kontakte. Bei „ausgewählte“ hakst du Personen und Gruppen an und stellst je Eintrag ein, wie viel sie dürfen — nur ansehen, kommentieren oder Inhalte pflegen. Wer Inhalte pflegen darf, kann Bilder und Notizen ändern, aber nicht Name, Datum und Ort." },
-      { k: "notiz", titel: "Notiz und Angaben", was: "Fließtext und freie Felder",
-        text: "Die Notiz ist der erzählende Teil. Darunter legst du beliebig viele Angaben als Paar aus Bezeichnung und Wert an — Wetter, Kilometer, Eintritt, was du festhalten willst. In der Kachel erscheinen sie als kleine Tabelle." },
-      { k: "personen", titel: "Personen", was: "wer dabei war",
-        text: "Jede Person bekommt einen Namen und wahlweise eine Rolle. Über die Zuordnung verknüpfst du sie mit einem Konto: Ist das ein Kontakt von dir, wird sie in der Kachel kräftig umrandet und trägt dessen Profilbild. Ohne Zuordnung bleibt es ein bloßer Name." },
-      { k: "etappen", titel: "Etappen", was: "die Stationen einer Reise",
-        text: "Für Reisen: eine Station je Etappe, mit Ort, Tag und dem Verkehrsmittel, mit dem du dort hinkamst. „Auf Karte setzen“ ist beim Anlegen schon aktiv — der nächste Tipp auf die Karte setzt den Punkt. Die Karte verbindet die Stationen, die Linienart zeigt das Verkehrsmittel." },
-      { k: "bilder", titel: "Bilder", was: "hochladen, bearbeiten, zuordnen",
-        text: "Bilder lassen sich drehen, spiegeln, zuschneiden, filtern und bekleben. Jedes bekommt eine Unterschrift und wahlweise eine Etappe — dann steht es unter deren Überschrift. Drehst du ein Bild später in der Fotoshow, wird die neue Lage übernommen." },
-      { k: "alben", titel: "Alben", was: "Bildergruppen mit eigenen Rechten",
-        text: "Ein Album fasst Bilder zusammen und hat eigene Rechte, unabhängig vom Ereignis: „Nur für Oma“ sieht wirklich nur sie, auch wenn alle Kontakte das Ereignis sehen. Ein Album kann ebenfalls an einer Etappe hängen und zieht seine Bilder dorthin mit." },
-      { k: "wahl", titel: "Abstimmungen", was: "Umfrage, Rangliste, Eintragsliste",
-        text: "Eine Umfrage fragt nach einer Antwort; der Haken ✓ steht bei deiner Stimme. Eine Rangliste steht nach dem Anlegen fest, dort gibt es nur noch Reaktionen. In einer Eintragsliste trägt jeder selbst ein, und eine Zustimmung zählt als +1, +2 und so weiter. Wer mitmachen darf, legst du je Abstimmung fest." },
-      { k: "deko", titel: "Deko und Design", was: "Sticker und eigenes Aussehen",
+      { k: "grund", sec: "", titel: "Grunddaten",
+        text: "Der Kopf des Fensters: Name, Datum, wahlweise ein Enddatum, Ort und Kategorie, darunter die Beschreibung. Nur der Name ist Pflicht. Ein Enddatum macht aus dem Tag einen Zeitraum — auf dem Zeitstrahl bekommt er einen Balken, und beim Vergleich mit Kontakten zählt jeder einzelne Tag. Nach der Kategorie lässt sich später filtern." },
+      { k: "infos", sec: "infos", titel: "Infos",
+        text: "Freie Angaben als Paar aus Bezeichnung und Wert — Wetter, Kilometer, Eintritt, was du festhalten willst. „＋ Zeile“ legt eine neue an, das ✕ entfernt sie. In der Kachel erscheinen sie als kleine Tabelle unter der Beschreibung." },
+      { k: "personen", sec: "personen", titel: "Personen",
+        text: "Wer dabei war: Name, wahlweise eine Rolle und ein Foto. Über die Auswahl rechts verknüpfst du die Person mit einem Konto. Ist das ein Kontakt von dir, wird sie in der Kachel kräftig umrandet und trägt dessen Profilbild. Ohne Verknüpfung bleibt es ein bloßer Name." },
+      { k: "etappen", sec: "etappen", titel: "Etappen",
+        text: "Für Reisen: eine Station je Etappe mit Ort, Tag und dem Verkehrsmittel, mit dem du dort hinkamst. Beim Anlegen ist „Auf Karte setzen“ schon aktiv — der nächste Tipp auf die Karte setzt den Punkt. Die Karte verbindet die Stationen, die Linienart zeigt das Verkehrsmittel. Unten wählst du, ob alles zusammen oder nach Etappen getrennt erscheint." },
+      { k: "bilder", sec: "bilder", titel: "Bilder",
+        text: "Hochladen, dann drehen, spiegeln, zuschneiden, filtern oder bekleben. Jedes Bild bekommt eine Unterschrift und wahlweise eine Etappe und ein Album. Drehst du ein Bild später in der Fotoshow, wird die neue Lage übernommen." },
+      { k: "alben", sec: "alben", titel: "Alben",
+        text: "Ein Album bündelt Bilder und hat eigene Rechte, unabhängig vom Ereignis: „Nur für Oma“ sieht wirklich nur sie, auch wenn alle Kontakte das Ereignis sehen. In der Kachel steht der Albumname als Überschrift, darunter seine Bilder; alles ohne Album folgt danach." },
+      { k: "polls", sec: "polls", titel: "Abstimmungen",
+        text: "Drei Arten: eine Umfrage fragt nach einer Antwort und zeigt den Haken ✓ bei deiner Stimme; eine Rangliste steht nach dem Anlegen fest und kennt nur noch Reaktionen; in einer Eintragsliste trägt jeder selbst ein, und eine Zustimmung zählt als +1, +2 und so weiter. Wer mitmachen darf, legst du je Abstimmung fest." },
+      { k: "deko", sec: "deko", titel: "Deko und Design",
         text: "Sticker ziehst du auf die Vorschau. Darunter wählst du ein Design nur für dieses Ereignis, dazu Bildform, Markierung, Muster und Schatten. Der Vorschauknopf zeigt das Ergebnis, bevor du speicherst. Kontakte sehen es genauso — sofern sie fremde Designs zulassen." },
-      { k: "speichern", titel: "Speichern", was: "oben und unten im Fenster",
-        text: "Speichern und Abbrechen stehen im Kopf und am Fuß des Fensters. Gespeicherte Ereignisse lassen sich jederzeit wieder öffnen; gelöscht wird nur nach ausdrücklicher Rückfrage, denn das ist endgültig." }
+      { k: "sicht", sec: "sicht", titel: "Sichtbarkeit",
+        text: "Drei Stufen: privat, ausgewählte Kontakte oder alle deine Kontakte. Bei „ausgewählte“ hakst du Personen und Gruppen an und stellst je Eintrag ein, wie viel sie dürfen — nur ansehen, kommentieren oder Inhalte pflegen. Wer Inhalte pflegen darf, ändert Bilder und Notizen, aber nicht Name, Datum und Ort." },
+      { k: "speichern", sec: "", titel: "Speichern",
+        text: "Speichern und Abbrechen stehen oben im Kopf und unten am Fuß des Fensters. Gespeicherte Ereignisse lassen sich jederzeit wieder öffnen; gelöscht wird nur nach ausdrücklicher Rückfrage, denn das ist endgültig. Damit bist du durch — schließe den Leitfaden und leg dein erstes Ereignis an." }
     ];
   }
 
-  lehrAuf = () => this.setState({ lehr: 0, tourWahl: false, tourFrage: false });
-  lehrZu = () => this.setState({ lehr: null });
+  /* Der Leitfaden benutzt den echten Editor: ein Beispielentwurf wird
+     hineingelegt, daneben läuft die Erklärung mit. So sieht man genau
+     die Vorlage, die beim Anlegen erscheint — keine Nachbildung. */
+  lehrAuf = () => {
+    const d = this.demoEvent();
+    this.setState({
+      tourWahl: false, tourFrage: false, lehr: 0,
+      decoSel: null, decoStil: "flach",
+      secOpen: {},
+      draft: {
+        id: DEMO_ID, name: d.name, date: d.date, end: d.end, place: d.place,
+        kicker: d.kicker, note: d.note,
+        infos: (d.infos || []).map((r) => Object.assign({}, r)),
+        people: (d.people || []).map((r) => Object.assign({}, r)),
+        images: (d.images || []).map((r) => Object.assign({}, r)),
+        alben: (d.alben || []).map((r) => Object.assign({}, r)),
+        etappen: (d.etappen || []).map((r) => Object.assign({}, r)),
+        polls: (d.polls || []).map((r) => Object.assign({}, r)),
+        deco: { fx: [], pal: "thema", stickers: ((d.deco || {}).stickers || []).map((r) => Object.assign({}, r)) },
+        etLayout: d.etLayout, themeId: "", themeSnap: null, themeFein: {},
+        by: (this.me() || {}).id || "", vis: "friends", who: [], gwho: [], perms: {},
+        share: "comment", url: "", partial: false
+      }
+    }, () => this.lehrSetzen(0));
+  };
+
+  lehrZu = () => this.setState({ lehr: null, draft: null });
 
   /* Den erklärten Abschnitt ins Sichtfeld holen. Ohne das liest man ab
      dem vierten Schritt eine Erklärung zu etwas, das weit unterhalb des
      Fensters steht. */
   lehrSetzen(n) {
-    this.setState({ lehr: n });
-    /* Nicht im Rückruf von setState — der wird hier nicht aufgerufen.
-       Ein kurzer Aufschub reicht, damit die Hervorhebung schon steht. */
-    const k = this.lehrTeile()[n].k;
+    const t = this.lehrTeile()[n];
+    if (!t) return;
+    /* Den erklärten Abschnitt im Editor aufklappen und hinscrollen. */
+    const sec = Object.assign({}, this.state.secOpen || {});
+    if (t.sec) sec[t.sec] = true;
+    this.setState({ lehr: n, secOpen: sec });
     window.setTimeout(() => {
-      const wanne = document.querySelector("[data-lehr-wanne]");
-      const teil = wanne && wanne.querySelector('[data-lehr="' + k + '"]');
-      if (!wanne || !teil) return;
-      const ziel = wanne.scrollTop + (teil.getBoundingClientRect().top - wanne.getBoundingClientRect().top) - 16;
-      wanne.scrollTop = Math.max(0, ziel);
-    }, 80);
+      const dlg = document.querySelector('[data-screen-label="Ereignis bearbeiten"] > div');
+      if (!dlg) return;
+      /* Ohne Abschnitt: der erste Schritt zeigt den Kopf, der letzte den
+         Fuß mit den Speicherknöpfen. */
+      if (!t.sec) { dlg.scrollTop = t.k === "speichern" ? dlg.scrollHeight : 0; return; }
+      const ziel = dlg.querySelector('[data-sec="' + t.sec + '"]');
+      if (!ziel) return;
+      const y = dlg.scrollTop + (ziel.getBoundingClientRect().top - dlg.getBoundingClientRect().top) - 12;
+      dlg.scrollTop = Math.max(0, y);
+    }, 90);
   }
 
   lehrGeh = (r) => {
@@ -4456,10 +4308,7 @@ class Component extends DCLogic {
     if (n >= this.lehrTeile().length) return this.lehrZu();
     this.lehrSetzen(n);
   };
-  lehrZu2 = (k) => () => {
-    const at = this.lehrTeile().findIndex((t) => t.k === k);
-    if (at >= 0) this.lehrSetzen(at);
-  };
+
 
   /* Der Wahlzettel: welchen der beiden Leitfäden hätten Sie gern? */
   tourWahlAuf = () => this.setState({ tourWahl: true, tourFrage: false });
@@ -4834,9 +4683,6 @@ class Component extends DCLogic {
     const f = this.state.filters;
     const q = String(f.q || "").trim().toLowerCase();
     return this.state.events.filter((e) => {
-      /* Das Beispiel des Leitfadens geht an allen Filtern vorbei — es
-         soll ja gerade gezeigt werden. */
-      if (e.id === DEMO_ID) return this.state.tour != null;
       if (this.levelFor(e) < 1) return false;
       if (!this.imStrahl(e)) return false;
       if (f.by && (e.by || "") !== f.by) return false;
@@ -5399,7 +5245,7 @@ class Component extends DCLogic {
     if (!d) return;
     /* Das Beispiel des Leitfadens wird nie gespeichert — auch nicht,
        wenn es auf einem Umweg doch im Editor landet. */
-    if (d.id === DEMO_ID) { this.setState({ draft: null }); return; }
+    if (d.id === DEMO_ID) { this.setState({ draft: null, lehr: null }); return; }
     const old = d.id ? this.state.events.filter((e) => e.id === d.id)[0] : null;
     const clean = {
       id: d.id || "e" + uid(),
@@ -6109,20 +5955,38 @@ class Component extends DCLogic {
   }
 
   nachEtappen(e) {
-    const roh = (e.images || []).map((r, j) => ({ r: r, j: j, kopf: "", etId: this.bildEtappe(e, r) }));
     const et = e.etappen || [];
-    if (e.etLayout !== "split" || !et.length) return roh;
-    const rang = (id) => {
-      const at = et.findIndex((x) => x.i === id);
-      return at < 0 ? 9999 : at;
+    const alben = e.alben || [];
+    const split = e.etLayout === "split" && et.length > 0;
+    const roh = (e.images || []).map((r, j) => ({
+      r: r, j: j, kopf: "", albKopf: "",
+      etId: this.bildEtappe(e, r),
+      albId: r.alb || ""
+    }));
+    /* Bilder mit Album stehen zuerst, nach Alben gruppiert; alles ohne
+       Album folgt danach. Im Etappenmodus ist die Etappe die äußere
+       Ordnung, das Album die innere. */
+    const etRang = (id) => { const at = et.findIndex((x) => x.i === id); return at < 0 ? 9999 : at; };
+    const albRang = (id) => {
+      if (!id) return 9999;
+      const at = alben.findIndex((x) => x.i === id);
+      return at < 0 ? 9998 : at;
     };
-    const sortiert = roh.slice().sort((a, b) => rang(a.etId) - rang(b.etId) || a.j - b.j);
-    let letzte = "\u0000";
+    const sortiert = roh.slice().sort((a, b) =>
+      (split ? etRang(a.etId) - etRang(b.etId) : 0)
+      || albRang(a.albId) - albRang(b.albId)
+      || a.j - b.j);
+    let letzteEt = "\u0000";
+    let letztesAlb = "\u0000";
     sortiert.forEach((x) => {
-      const id = x.etId;
-      if (id !== letzte) {
-        x.kopf = id ? this.etName(e, id) : "Ohne Etappe";
-        letzte = id;
+      if (split && x.etId !== letzteEt) {
+        x.kopf = x.etId ? this.etName(e, x.etId) : "Ohne Etappe";
+        letzteEt = x.etId;
+        letztesAlb = "\u0000";
+      }
+      if (x.albId !== letztesAlb) {
+        x.albKopf = x.albId ? (this.albumName(e, x.albId) || "Album") : (alben.length ? "Ohne Album" : "");
+        letztesAlb = x.albId;
       }
     });
     return sortiert;
@@ -6748,21 +6612,60 @@ class Component extends DCLogic {
           .concat((e.etappen || []).length ? [plural((e.etappen || []).length, "Etappe", "Etappen")] : []).join(" · ") + (e.by && me && e.by !== me.id ? " · von " + ((st.users.filter((u) => u.id === e.by)[0] || {}).username || "unbekannt") : ""),
         visTag: e.by && (e.vis === "private" ? "Privat" : e.vis === "selected" ? "Ausgewählte" : ""),
         visStyle: { fontSize: "9.5px", letterSpacing: "0.14em", textTransform: "uppercase", padding: "2px 7px", borderRadius: "99px", border: "1px solid color-mix(in srgb, var(--t-ink, #201e1d) 30%, transparent)", color: "color-mix(in srgb, var(--t-ink, #201e1d) 62%, var(--t-card, #eae9e9))" },
-        route: (function () {
+        route: (function (self) {
           const liste = e.etappen || [];
-          return liste.map((x, k) => ({
-            key: x.i, nr: String(k + 1),
-            name: String(x.name || "").trim() || (k + 1) + ". Etappe",
-            ort: x.ort || "", tag: x.tag || "", note: x.note || "",
-            weg: k > 0 && (x.weg || "ohne") !== "ohne" ? wegName(x.weg) : "",
-            hatWeg: k > 0 && (x.weg || "ohne") !== "ohne",
-            hatOrt: !!String(x.ort || "").trim(),
-            hatTag: !!String(x.tag || "").trim(),
-            hatNote: !!String(x.note || "").trim(),
-            letzte: k === liste.length - 1,
-            weiter: k < liste.length - 1
-          }));
-        })(),
+          const offen = (st.etOffen || {})[e.id] || "";
+          return liste.map((x, k) => {
+            /* Die Bilder dieser Etappe — sie klappen unter ihr auf. */
+            const eigene = bilder.filter((row) => self.bildEtappe(e, row.r) === x.i);
+            const auf = offen === x.i;
+            return {
+              key: x.i, nr: String(k + 1),
+              name: String(x.name || "").trim() || (k + 1) + ". Etappe",
+              ort: x.ort || "", tag: x.tag || "", note: x.note || "",
+              weg: k > 0 && (x.weg || "ohne") !== "ohne" ? wegName(x.weg) : "",
+              hatWeg: k > 0 && (x.weg || "ohne") !== "ohne",
+              hatOrt: !!String(x.ort || "").trim(),
+              hatTag: !!String(x.tag || "").trim(),
+              hatNote: !!String(x.note || "").trim(),
+              letzte: k === liste.length - 1,
+              weiter: k < liste.length - 1,
+              hatBilder: eigene.length > 0,
+              bilderLabel: (auf ? "▴ " : "▾ ") + plural(eigene.length, "Bild", "Bilder"),
+              bilderAuf: auf,
+              bilderUm: (ev) => {
+                ev.stopPropagation();
+                const o = Object.assign({}, st.etOffen || {});
+                if (o[e.id] === x.i) delete o[e.id]; else o[e.id] = x.i;
+                self.setState({ etOffen: o });
+              },
+              bilder: auf ? eigene.map(({ r, j }) => ({
+                key: "rb" + j,
+                caption: zeigbareUnterschrift(r.caption),
+                hatCaption: !!zeigbareUnterschrift(r.caption),
+                stil: r.src
+                  ? {
+                      display: "block", width: "100%",
+                      aspectRatio: "var(--t-img-ratio, 4 / 3)",
+                      borderRadius: "var(--t-img-radius, 0)",
+                      backgroundImage: "url(" + r.src + ")",
+                      backgroundSize: "cover", backgroundPosition: "center",
+                      rotate: (r.rot || 0) + "deg", cursor: "zoom-in"
+                    }
+                  : {
+                      display: "grid", placeItems: "center", width: "100%",
+                      aspectRatio: "var(--t-img-ratio, 4 / 3)",
+                      borderRadius: "var(--t-img-radius, 0)",
+                      background: "color-mix(in srgb, var(--t-ink, #201e1d) 8%, transparent)",
+                      fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase",
+                      color: "color-mix(in srgb, var(--t-ink, #201e1d) 45%, transparent)"
+                    },
+                leerText: r.src ? "" : "ohne Bild",
+                zoom: (ev) => { ev.stopPropagation(); if (r.src) self.setState({ zoomImg: { src: r.src, caption: r.caption || "" } }); }
+              })) : []
+            };
+          });
+        })(this),
         hatRoute: (e.etappen || []).length > 0,
         hatKarte: this.kartenStationen(e).length > 0,
         karteRef: this.kartenRef("karte"),
@@ -6773,7 +6676,7 @@ class Component extends DCLogic {
         hasInfos: (e.infos || []).length > 0, hasPeople: (e.people || []).length > 0, hasImages: nImg > 0,
         /* Am Beispiel des Leitfadens gibt es nichts zu bearbeiten oder
            zu löschen — sonst könnte es versehentlich echt angelegt werden. */
-        canEdit: lvl >= 3 && e.id !== DEMO_ID, canFull: lvl >= 4 && e.id !== DEMO_ID,
+        canEdit: lvl >= 3, canFull: lvl >= 4,
         editLabel: lvl >= 4 ? "Bearbeiten" : "Inhalte pflegen",
         rights: lvl >= 4 ? "" : lvl >= 3 ? "Teilrechte" : lvl >= 2 ? "Kommentieren erlaubt" : "Nur ansehen",
         infos: (e.infos || []).map((r, j) => ({ key: "i" + j, label: r.label, value: r.value })),
@@ -6807,14 +6710,19 @@ class Component extends DCLogic {
           keinFoto: !(r.photo || (r.uid ? this.avatarVon(r.uid) : "")) })),
         /* Im Split-Modus nach Etappe sortiert. r und j behalten ihre
            Bedeutung, weil Kommentare am ursprünglichen Index hängen. */
-        images: bilder.map(({ r, j, kopf, albName, recht }) => ({
+        images: bilder.map(({ r, j, kopf, albKopf, albName, recht }) => ({
           etKopf: kopf || "", hatKopf: !!kopf,
+          /* Der Albumname steht als Überschrift über der ersten Kachel
+             seiner Gruppe — nicht mehr klein unter jedem Bild. */
+          albKopf: albKopf || "", hatAlbKopf: !!albKopf,
           albName: albName || "",
           /* Oben ausgerichtet: beim Aufklappen wächst die Kachel nach
              rechts, Bild und Beschriftung bleiben an der oberen linken
              Ecke. Die Breite bleibt voll — sonst schrumpfen die
              Rasterkinder auf Inhaltsbreite und werden unklickbar. */
-          wrap: kopf
+          /* Eine Kachel mit Überschrift nimmt die ganze Breite, damit die
+             Gruppe darunter sauber neu beginnt. */
+          wrap: (kopf || albKopf)
             ? { display: "grid", gap: "6px", gridColumn: "1 / -1", alignContent: "start" }
             : { display: "grid", gap: "6px", alignContent: "start" },
           key: "m" + j, src: r.src || "", empty: !r.src, caption: zeigbareUnterschrift(r.caption), leerText: "ohne Bild",
@@ -8176,8 +8084,19 @@ class Component extends DCLogic {
       },
       stagePad: { padding: phone ? "var(--space-3) var(--space-4) var(--space-6)" : tablet ? "var(--space-4) var(--space-6) var(--space-6)" : "var(--space-4) var(--space-8) var(--space-8)" },
       dialog: {
+        /* Läuft der Leitfaden, rückt der Dialog nach links, damit das
+           Erklärfeld rechts daneben Platz hat. */
+        /* Läuft der Leitfaden, muss das Erklärfeld Platz haben: breite
+           Fenster rücken den Dialog nach links, schmale kürzen ihn oben
+           ein, damit das quer liegende Feld ihn nicht verdeckt. */
+        marginRight: (st.lehr != null && vw >= 1120) ? "352px" : "0",
+        alignSelf: (st.lehr != null && vw < 1120) ? "start" : "center",
+        marginBottom: (st.lehr != null && vw < 1120) ? "calc(46vh + var(--space-4))" : "0",
         width: phone ? "100%" : "min(680px, 100%)",
-        maxHeight: phone ? "94vh" : "92vh", overflowY: "auto",
+        maxHeight: (st.lehr != null && vw < 1120)
+          ? "calc(92vh - 46vh - var(--space-4))"
+          : (phone ? "94vh" : "92vh"),
+        overflowY: "auto",
         background: "var(--color-bg)", borderRadius: "var(--radius-lg)",
         boxShadow: "var(--shadow-lg)", padding: phone ? "var(--space-4)" : "var(--space-6)",
         animationName: "tl-pop", animationDuration: "320ms",
@@ -8261,17 +8180,25 @@ class Component extends DCLogic {
       /* Der Ereignis-Leitfaden: ein eigenes Fenster, das ein erfundenes
          Ereignis im Bearbeitungsmodus zeigt und seine Abschnitte der
          Reihe nach erklärt. */
+      /* Die Erklärung neben dem echten Editor. */
       lehr: (function (self) {
         const teile = self.lehrTeile();
         const n = st.lehr;
         const aktiv = n == null ? null : teile[n];
-        const feld = {
-          font: "inherit", fontSize: "13px", width: "100%", padding: "7px 10px",
-          borderRadius: "var(--radius-md)", border: "1px solid var(--color-divider)",
-          background: "var(--color-bg)", color: "var(--color-text)"
-        };
-        const modell = {
+        const breit = vw >= 1120;
+        return {
           offen: n != null,
+          /* Breite Fenster: rechts neben dem Editor. Schmale: unten quer,
+             damit sich nichts überlagert. */
+          rahmen: breit
+            ? { position: "fixed", right: "var(--space-4)", top: "50%", transform: "translateY(-50%)", zIndex: 110,
+                width: "320px", maxHeight: "86vh", overflowY: "auto",
+                display: "grid", gap: "var(--space-3)", alignContent: "start", padding: "var(--space-4)",
+                background: "var(--color-bg)", borderRadius: "var(--radius-lg)", boxShadow: "var(--shadow-lg)" }
+            : { position: "fixed", left: "var(--space-4)", right: "var(--space-4)", bottom: "var(--space-4)", zIndex: 110,
+                maxHeight: "46vh", overflowY: "auto",
+                display: "grid", gap: "var(--space-2)", alignContent: "start", padding: "var(--space-4)",
+                background: "var(--color-bg)", borderRadius: "var(--radius-lg)", boxShadow: "var(--shadow-lg)" },
           zu: self.lehrZu,
           titel: aktiv ? aktiv.titel : "",
           text: aktiv ? aktiv.text : "",
@@ -8280,36 +8207,18 @@ class Component extends DCLogic {
           zurueck: () => self.lehrGeh(-1),
           nichtErste: n > 0,
           weiterLabel: n != null && n === teile.length - 1 ? "Fertig" : "Weiter",
-          feld: feld,
-          feldHalb: Object.assign({}, feld),
           liste: teile.map((t, k) => ({
             key: t.k, nr: (k + 1) + ".", titel: t.titel,
             waehle: () => self.lehrSetzen(k),
             stil: {
               font: "inherit", fontSize: "12.5px", textAlign: "left", width: "100%",
-              padding: "7px 10px", cursor: "pointer", borderRadius: "var(--radius-md)",
+              padding: "6px 9px", cursor: "pointer", borderRadius: "var(--radius-md)",
               border: "1px solid " + (k === n ? "var(--color-accent)" : "transparent"),
               background: k === n ? "var(--color-accent-100)" : "transparent",
               color: k === n ? "var(--color-accent-700)" : "var(--color-text)"
             }
           }))
         };
-        /* Je Abschnitt ein Stil und ein Sprungziel — beides trägt
-           denselben Schlüssel wie der Schritt. */
-        teile.forEach((t) => {
-          const an = !!aktiv && aktiv.k === t.k;
-          const gross = t.k.charAt(0).toUpperCase() + t.k.slice(1);
-          modell["s" + gross] = {
-            display: "grid", gap: "9px", padding: "14px 16px",
-            borderRadius: "var(--radius-md)",
-            background: an ? "var(--color-accent-100)" : "var(--color-surface)",
-            outline: an ? "2px solid var(--color-accent)" : "1px solid var(--color-divider)",
-            cursor: "pointer",
-            transition: "outline-color 160ms linear, background 160ms linear"
-          };
-          modell["zeig" + gross] = self.lehrZu2(t.k);
-        });
-        return modell;
       })(this),
       tour: (function (self) {
         const i = st.tour;
@@ -9513,7 +9422,7 @@ class Component extends DCLogic {
       deleteTheme: this.deleteTheme, resetTheme: this.resetTheme, saveTheme: this.saveTheme,
       newName: st.newName, setNewName: (ev) => this.setState({ newName: ev.target.value }),
       newEvent: this.newEvent, editing: !!d0, form: form,
-      closeEditor: () => this.setState({ draft: null }), saveEvent: this.saveEvent,
+      closeEditor: () => this.setState({ draft: null, lehr: null }), saveEvent: this.saveEvent,
       exportJSON: this.exportJSON, importJSON: this.importJSON,
       printSmall: () => this.doPrint("small"), printLarge: () => this.doPrint("large"),
       printLabel: big ? "Großer Maßstab · alle Infos" : "Kleiner Maßstab · Name und Datum",
