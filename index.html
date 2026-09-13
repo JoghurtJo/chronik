@@ -92,7 +92,7 @@
         <div style="margin-top: var(--space-6); padding: 12px 15px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700); font-size: 15px; max-width: 40ch;">{{ auth.soloCode }}</div>
       </sc-if>
 
-      <p style="{{ lay.loginClaim }}">Aus vielen Erlebnissen wird eine Geschichte. Du Keck!</p>
+      <p style="{{ lay.loginClaim }}">Aus vielen Abenden wird eine Geschichte.</p>
 
       <div style="{{ lay.loginArt }}">
         <div style="position: absolute; left: 0; right: 0; top: 100px; height: 3px; background: var(--ui-saum, var(--color-text));"></div>
@@ -110,10 +110,9 @@
       </div>
 
       <div style="display: flex; gap: var(--space-6); flex-wrap: wrap; margin-top: var(--space-6); font-size: 13.5px; line-height: 1.4; color: var(--color-neutral-700);">
-        <span>Dein Leben</span>
-        <span>Eure Geschichten</span>
-        <span>Erleben wie damals:)</span>
-        <span>Mit mehr Organgen</span>
+        <span>Alle schreiben mit</span>
+        <span>Du gibst frei, wer was sieht</span>
+        <span>Achtzehn Gesichter zur Wahl</span>
       </div>
     </div>
 
@@ -244,7 +243,7 @@
         <button class="btn btn-secondary" data-tour="kontakte" style="white-space: nowrap;" onClick="{{ toggleAdmin }}">{{ contactsLabel }}</button>
         <button class="btn btn-secondary" data-tour="vergleich" style="white-space: nowrap;" onClick="{{ vgl.toggle }}">Vergleichen</button>
         <button class="btn btn-secondary" data-tour="konto" style="white-space: nowrap;" onClick="{{ konto.toggle }}">Mein Konto</button>
-        <button class="btn btn-secondary" data-tour="hilfe" style="white-space: nowrap;" onClick="{{ tour.start }}">Hilfe</button>
+        <button class="btn btn-secondary" data-tour="hilfe" style="white-space: nowrap;" onClick="{{ tour.start }}">? Hilfe</button>
       </div>
     </div>
     <div style="height: 5px; background: var(--color-text); margin-top: var(--space-3);"></div>
@@ -338,14 +337,11 @@
 
     <sc-if value="{{ tabFilter }}" hint-placeholder-val="{{ false }}">
       <div style="display: grid; gap: var(--space-2); padding-bottom: var(--space-2);">
-        <div style="display: flex; align-items: flex-end; gap: var(--space-3); flex-wrap: wrap;">
-          <div class="field" style="width: 220px;"><label>Suche · Name, Text, Ort</label><input class="input" type="search" value="{{ f.q }}" onChange="{{ f.onQ }}" placeholder="z. B. Lager"></div>
-          <sc-if value="{{ f.aktiv }}" hint-placeholder-val="{{ false }}">
-            <button class="btn btn-secondary" style="white-space: nowrap; align-self: end;" onClick="{{ f.reset }}">Filter zurücksetzen · {{ f.anzahl }}</button>
-          </sc-if>
-          <div class="field" style="width: 148px;"><label>Zeitraum von</label><input class="input" type="date" value="{{ f.from }}" onChange="{{ f.onFrom }}"></div>
-          <div class="field" style="width: 148px;"><label>bis</label><input class="input" type="date" value="{{ f.to }}" onChange="{{ f.onTo }}"></div>
-          <div class="field" style="width: 170px;"><label>Ort</label>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); align-items: end; gap: var(--space-3);">
+          <div class="field" style="margin: 0; grid-column: 1 / -1; max-width: 420px;"><label>Suche · Name, Text, Ort</label><input class="input" type="search" value="{{ f.q }}" onChange="{{ f.onQ }}" placeholder="z. B. Lager"></div>
+          <div class="field" style="margin: 0;"><label>Zeitraum von</label><input class="input" type="date" value="{{ f.from }}" onChange="{{ f.onFrom }}"></div>
+          <div class="field" style="margin: 0;"><label>bis</label><input class="input" type="date" value="{{ f.to }}" onChange="{{ f.onTo }}"></div>
+          <div class="field" style="margin: 0;"><label>Ort</label>
             <sc-if value="{{ f.orteSuchbar }}" hint-placeholder-val="{{ false }}">
               <input class="input" type="search" value="{{ f.suche.ort }}" onChange="{{ f.onSucheOrt }}" placeholder="Ort suchen" style="margin-bottom: 4px; padding: 4px 9px; font-size: 12px;">
             </sc-if>
@@ -358,7 +354,7 @@
               <div style="font-size: 10.5px; color: var(--color-neutral-600); padding-top: 3px;">{{ f.orteRest }}</div>
             </sc-if>
           </div>
-          <div class="field" style="width: 190px;"><label>Angelegt von</label>
+          <div class="field" style="margin: 0;"><label>Angelegt von</label>
             <sc-if value="{{ f.autorenSuchbar }}" hint-placeholder-val="{{ false }}">
               <input class="input" type="search" value="{{ f.suche.wer }}" onChange="{{ f.onSucheWer }}" placeholder="Person suchen" style="margin-bottom: 4px; padding: 4px 9px; font-size: 12px;">
             </sc-if>
@@ -371,6 +367,9 @@
               <div style="font-size: 10.5px; color: var(--color-neutral-600); padding-top: 3px;">{{ f.autorenRest }}</div>
             </sc-if>
           </div>
+          <sc-if value="{{ f.aktiv }}" hint-placeholder-val="{{ false }}">
+            <button class="btn btn-secondary" style="white-space: nowrap; align-self: end;" onClick="{{ f.reset }}">Filter zurücksetzen · {{ f.anzahl }}</button>
+          </sc-if>
         </div>
         <div style="display: flex; gap: var(--space-4); flex-wrap: wrap;">
           <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
@@ -901,7 +900,7 @@
     </div>
     </div>
     <div style="display: flex; justify-content: space-between; gap: var(--space-4); padding-top: var(--space-2); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-600);">
-      <span>Klick auf eine Karte oder einen Marker öffnet das Ereignis</span>
+      <span>Klick auf eine Karte oder einen Marker öffnet das Ereignis · ← → blättert</span>
       <span>{{ stats.hint }}</span>
     </div>
   </div>
@@ -1390,7 +1389,10 @@
                   <div class="field" style="margin: 0; flex: 1;"><label>Name des Albums</label><input class="input" type="text" value="{{ a.name }}" onChange="{{ a.onName }}" placeholder="z. B. Nur für Oma"></div>
                   <button class="btn btn-secondary btn-icon" onClick="{{ a.weg }}">✕</button>
                 </div>
-                <div class="field" style="margin: 0;"><label>Musik</label><input class="input" type="url" value="{{ a.musik }}" onChange="{{ a.onMusik }}" placeholder="Titel, Album oder Interpret — Spotify, Deezer, SoundCloud …"></div>
+                <div style="display: grid; grid-template-columns: 1fr 110px; gap: 6px;">
+                  <div class="field" style="margin: 0;"><label>Musik</label><input class="input" type="url" value="{{ a.musik }}" onChange="{{ a.onMusik }}" placeholder="Titel, Album oder Interpret — Spotify, Deezer, SoundCloud …"></div>
+                  <div class="field" style="margin: 0;"><label>Start</label><input class="input" type="text" value="{{ a.musikAb }}" onChange="{{ a.onMusikAb }}" placeholder="0:00"></div>
+                </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
                   <div class="field" style="margin: 0;"><label>Wer sieht es</label>
                     <select class="input" value="{{ a.vis }}" onChange="{{ a.onVis }}">
@@ -1593,7 +1595,10 @@
                   </sc-if>
                 </div>
                 <div class="field" style="margin: 0;"><label>Notiz</label><input class="input" type="text" value="{{ x.note }}" onChange="{{ x.onNote }}" placeholder="kurz, was dort war"></div>
-                <div class="field" style="margin: 0;"><label>Musik</label><input class="input" type="url" value="{{ x.musik }}" onChange="{{ x.onMusik }}" placeholder="Titel, Album oder Interpret — Spotify, Deezer, SoundCloud …"></div>
+                <div style="display: grid; grid-template-columns: 1fr 110px; gap: 6px;">
+                  <div class="field" style="margin: 0;"><label>Musik</label><input class="input" type="url" value="{{ x.musik }}" onChange="{{ x.onMusik }}" placeholder="Titel, Album oder Interpret — Spotify, Deezer, SoundCloud …"></div>
+                  <div class="field" style="margin: 0;"><label>Start</label><input class="input" type="text" value="{{ x.musikAb }}" onChange="{{ x.onMusikAb }}" placeholder="0:00"></div>
+                </div>
               </div>
             </sc-for>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
@@ -1647,7 +1652,10 @@
                   <button onClick="{{ p.weg }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-accent-2-700); text-decoration: underline; white-space: nowrap;">Entfernen</button>
                 </div>
                 <div class="field" style="margin: 0;"><label>Frage</label><input class="input" type="text" value="{{ p.frage }}" onChange="{{ p.onFrage }}" placeholder="{{ p.platzhalter }}"></div>
-                <div class="field" style="margin: 0;"><label>Musik</label><input class="input" type="url" value="{{ p.musik }}" onChange="{{ p.onMusik }}" placeholder="Titel, Album oder Interpret — Spotify, Deezer, SoundCloud …"></div>
+                <div style="display: grid; grid-template-columns: 1fr 110px; gap: 6px;">
+                  <div class="field" style="margin: 0;"><label>Musik</label><input class="input" type="url" value="{{ p.musik }}" onChange="{{ p.onMusik }}" placeholder="Titel, Album oder Interpret — Spotify, Deezer, SoundCloud …"></div>
+                  <div class="field" style="margin: 0;"><label>Start</label><input class="input" type="text" value="{{ p.musikAb }}" onChange="{{ p.onMusikAb }}" placeholder="0:00"></div>
+                </div>
                 <sc-if value="{{ p.istListe }}" hint-placeholder-val="{{ false }}">
                   <div style="display: grid; gap: 7px;">
                     <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700);">Freie Plätze
@@ -2060,7 +2068,7 @@
         <button class="btn btn-primary" style="white-space: nowrap;" onClick="{{ tour.frageJa }}">Ja, zeig mir das</button>
         <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ tour.frageNein }}">Später — ich schau selbst</button>
       </div>
-      <div style="font-size: 11.5px; color: var(--color-neutral-600);">Du findest den Leitfaden jederzeit oben unter „Hilfe“.</div>
+      <div style="font-size: 11.5px; color: var(--color-neutral-600);">Du findest den Leitfaden jederzeit oben unter „? Hilfe“.</div>
     </div>
   </div>
 </sc-if>
@@ -2829,21 +2837,41 @@ const AUDIO_ENDUNG = /\.(mp3|m4a|aac|ogg|oga|opus|wav|flac|weba)(\?|#|$)/i;
 const musikFuer = function (bilder, idx) {
   const liste = bilder || [];
   for (let k = Math.min(idx, liste.length - 1); k >= 0; k--) {
-    if (liste[k] && liste[k].musik) return liste[k].musik;
+    if (liste[k] && liste[k].musik) return { url: liste[k].musik, ab: liste[k].musikAb || "" };
   }
   for (let k = 0; k < liste.length; k++) {
-    if (liste[k] && liste[k].musik) return liste[k].musik;
+    if (liste[k] && liste[k].musik) return { url: liste[k].musik, ab: liste[k].musikAb || "" };
   }
-  return "";
+  return { url: "", ab: "" };
 };
-const musikSpur = function (roh) {
+/* Startzeit eines Liedes: „1:05“, „65“ oder „1:02:03“ — alles wird zu
+   Sekunden. Unsinn ergibt 0, also den Anfang. */
+const musikSekunden = function (roh) {
+  const t = String(roh == null ? "" : roh).trim();
+  if (!t) return 0;
+  const teile = t.split(":").map((x) => parseInt(x, 10));
+  if (teile.some((x) => isNaN(x) || x < 0)) return 0;
+  let sek = 0;
+  teile.forEach((x) => { sek = sek * 60 + x; });
+  return Math.max(0, Math.min(86400, sek));
+};
+const musikZeit = function (sek) {
+  const s = Math.max(0, Math.round(sek || 0));
+  const m = Math.floor(s / 60);
+  return m + ":" + String(s % 60).padStart(2, "0");
+};
+const musikSpur = function (roh, abSek) {
   const meta = musikMeta(roh);
   const leer = { art: "kein", src: "", dienst: "", name: "", hatEmbed: false, hatDatei: false, spielt: false };
   if (!meta.hat) return leer;
   let u = null;
   try { u = new URL(meta.href); } catch (e) { return leer; }
+  const ab = musikSekunden(abSek);
+  /* Nur diese Dienste nehmen eine Startzeit an — bei den anderen wäre
+     ein Etikett „ab 1:05“ ein leeres Versprechen. */
+  const abKann = /youtube\.com|youtu\.be|soundcloud\.com|snd\.sc/.test(u.hostname) || AUDIO_ENDUNG.test(u.pathname);
   if (AUDIO_ENDUNG.test(u.pathname)) {
-    return { art: "datei", src: u.href, dienst: meta.dienst, name: meta.dienst, hatDatei: true, hatEmbed: false, spielt: true };
+    return { art: "datei", src: u.href, dienst: meta.dienst, name: meta.dienst, ab: ab, abKann: true, hatDatei: true, hatEmbed: false, spielt: true };
   }
   const host = u.hostname.replace(/^www\./, "");
   const teile = u.pathname.split("/").filter(Boolean);
@@ -2853,20 +2881,22 @@ const musikSpur = function (roh) {
   } else if (host.indexOf("deezer.com") >= 0 && teile.length >= 2) {
     src = "https://widget.deezer.com/widget/auto/" + teile[teile.length - 2] + "/" + teile[teile.length - 1] + "?autoplay=true";
   } else if (host.indexOf("soundcloud.com") >= 0) {
-    src = "https://w.soundcloud.com/player/?url=" + encodeURIComponent(u.href) + "&auto_play=true&hide_related=true&show_comments=false&visual=false";
+    /* SoundCloud nimmt die Startzeit als Marke an der Adresse. */
+    const mitZeit = ab ? u.href.split("#")[0] + "#t=" + ab : u.href;
+    src = "https://w.soundcloud.com/player/?url=" + encodeURIComponent(mitZeit) + "&auto_play=true&hide_related=true&show_comments=false&visual=false";
   } else if (host.indexOf("youtube.com") >= 0 || host.indexOf("youtu.be") >= 0) {
     const id = u.searchParams.get("v") || teile[teile.length - 1] || "";
     /* Ohne origin lassen manche Browser die Befehle des übergeordneten
        Fensters nicht durch. */
     if (id) {
       const her = (typeof location !== "undefined" && location.origin) ? "&origin=" + encodeURIComponent(location.origin) : "";
-      src = "https://www.youtube.com/embed/" + id + "?autoplay=1&playsinline=1&enablejsapi=1" + her;
+      src = "https://www.youtube.com/embed/" + id + "?autoplay=1&playsinline=1&enablejsapi=1" + her + (ab ? "&start=" + ab : "");
     }
   } else if (host.indexOf("music.apple.com") >= 0) {
     src = u.href.replace("music.apple.com", "embed.music.apple.com");
   }
-  if (!src) return Object.assign({}, leer, { dienst: meta.dienst, name: meta.dienst });
-  return { art: "embed", src: src, dienst: meta.dienst, name: meta.dienst, hatEmbed: true, hatDatei: false, spielt: true };
+  if (!src) return Object.assign({}, leer, { dienst: meta.dienst, name: meta.dienst, ab: ab, abKann: abKann });
+  return { art: "embed", src: src, dienst: meta.dienst, name: meta.dienst, ab: ab, abKann: abKann, hatEmbed: true, hatDatei: false, spielt: true };
 };
 const MUSIK_CHIP = {
   display: "inline-flex", alignItems: "center", gap: "5px", alignSelf: "start",
@@ -3425,7 +3455,7 @@ class Component extends DCLogic {
     const modus = this.state.show.musikModus || "zugewiesen";
     if (modus === "aus") { el.pause(); return; }
     const bilder = this.showImages(this.state.show.scope, this.state.show.ref);
-    const sp = modus === "zugewiesen" ? musikSpur(musikFuer(bilder, this.state.show.idx)) : musikSpur("");
+    const sp = modus === "zugewiesen" ? musikSpur(musikFuer(bilder, this.state.show.idx).url, musikFuer(bilder, this.state.show.idx).ab) : musikSpur("");
     const quelle = sp.hatDatei ? sp.src : (this.state.show.music || "");
     if (!quelle) {
       /* Läuft ein Dienst-Spieler, wird dieser angestoßen. */
@@ -4485,9 +4515,7 @@ class Component extends DCLogic {
   schritteGrund() {
     return [
       { ziel: "", titel: "Willkommen in deiner Chronik",
-        text: "In neun kurzen Schritten zeige ich dir, wo hier was steckt. Ein leuchtender Punkt führt dich zu jedem Knopf. Abbrechen darfst du jederzeit — über „Hilfe“ kommst du zurück." },
-      { ziel: "", titel: "Was ist die Chronik?",
-        text: "Du kannst dir hier alle deine Erlebnisse, wie z.B. Festivals, Urlaube, Feiern, ... planen dokumentieren und den Leuten deiner Wahl zur Verfügung stellen. Routen, Bilder, Kommentare, Personen die dabei waren, …. Das alles kannst Du jederzeit wieder erleben und in Erinnerungen und Momenten schwelgen." },      
+        text: "In neun kurzen Schritten zeige ich dir, wo hier was steckt. Ein leuchtender Punkt führt dich zu jedem Knopf. Abbrechen darfst du jederzeit — über „? Hilfe“ kommst du zurück." },
       { ziel: "neu", titel: "Ein Ereignis anlegen",
         text: "Alles beginnt hier: Name, Datum, Ort. Was ein Ereignis alles kann — Personen, Bilder, Etappen, Abstimmungen, Deko —, erklärt der zweite Leitfaden an einem Beispiel." },
       { ziel: "", titel: "Dein Zeitstrahl",
@@ -4496,14 +4524,14 @@ class Component extends DCLogic {
         text: "Hinter diesen drei Reitern steckt die Feinarbeit: Zoom und Abspielen, Suche nach Ort, Person oder Zeitraum — jeder Filter hat ein Suchfeld —, Sticker zum Aufkleben und das Sichern deiner Daten." },
       { ziel: "show", titel: "Fotoshow",
         text: "Zeigt alle Bilder deiner Auswahl groß, mit Übergängen und wahlweise Musik. Im Vollbild bleibt nur das Foto; bewegst du die Maus, kommt die Leiste kurz zurück." },
-      { ziel: "design", titel: "Jedes Design kannst Du nach deinem Geschmack ändern",
-        text: "Von Zeitungssatz über Emailschild bis zum Regenbogen. Jedes lässt sich weiter verstellen — Farben, Schrift, Marker, Dichte." },
+      { ziel: "design", titel: "Über dreißig Gesichter",
+        text: "Von Zeitungssatz über Emailschild bis zum Regenbogen. Das gewählte Design färbt die ganze Seite, nicht nur den Zeitstrahl. Jedes lässt sich weiter verstellen — Farben, Schrift, Marker, Dichte." },
       { ziel: "kontakte", titel: "Kontakte und Gruppen",
         text: "Suche jemanden nach Name oder E-Mail und schick eine Anfrage. Erst wenn sie bestätigt ist, könnt ihr einander Ereignisse freigeben. Gruppen sind Abkürzungen dafür — sichtbar nur für ihre Mitglieder." },
       { ziel: "konto", titel: "Mein Konto",
         text: "Profilbild, deine Angaben, was von anderen auf deinem Zeitstrahl erscheinen soll, ob fremde Ereignis-Designs übernommen werden, und wann du eine Mail bekommst." },
       { ziel: "hilfe", titel: "Das war es",
-        text: "Hierüber kommst du jederzeit zurück — und dort wartet auch der zweite Leitfaden, der den Aufbau eines Ereignisses erklärt." }
+        text: "Über diesen Knopf kommst du jederzeit zurück — und dort wartet auch der zweite Leitfaden, der ein Ereignis von innen erklärt." }
     ];
   }
 
@@ -5036,7 +5064,8 @@ class Component extends DCLogic {
         const etId = this.bildEtappe(e, im);
         const et = (e.etappen || []).filter((x) => x.i === etId)[0];
         const musik = (alb && alb.musik) || (et && et.musik) || "";
-        out.push({ key: e.id + ":" + j, src: im.src || "", caption: zeigbareUnterschrift(im.caption), event: e.name, date: fmtDate(e.date), n: (im.comments || []).length, rot: im.rot || 0, musik: musik });
+        const musikAb = (alb && alb.musik) ? (alb.musikAb || "") : ((et && et.musik) ? (et.musikAb || "") : "");
+        out.push({ key: e.id + ":" + j, src: im.src || "", caption: zeigbareUnterschrift(im.caption), event: e.name, date: fmtDate(e.date), n: (im.comments || []).length, rot: im.rot || 0, musik: musik, musikAb: musikAb });
       });
     });
     return out;
@@ -7638,7 +7667,10 @@ class Component extends DCLogic {
         /* Über dem Band, wenn eines offen ist — sonst läge der Knopf
            darunter und wäre nicht mehr erreichbar. */
         halter: {
-          position: "fixed", left: "50%", bottom: (st.ribbon ? 210 : 22) + "px",
+          /* Immer am unteren Bildrand. Das Menüband liegt oben im
+             normalen Fluss und deckt hier nichts zu — darum kein
+             Ausweichen mehr. */
+          position: "fixed", left: "50%", bottom: "22px",
           transform: "translateX(-50%)", zIndex: 90,
           transition: "bottom 220ms cubic-bezier(0.16, 1, 0.3, 1)"
         },
@@ -8169,6 +8201,8 @@ class Component extends DCLogic {
               onName: (ev) => self.albSet(x.i, "name", ev.target.value),
               musik: x.musik || "",
               onMusik: (ev) => self.albSet(x.i, "musik", ev.target.value),
+              musikAb: x.musikAb || "",
+              onMusikAb: (ev) => self.albSet(x.i, "musikAb", ev.target.value),
               vis: x.vis || "alle",
               visWahl: [
                 { key: "alle", value: "alle", label: "Alle, die das Ereignis sehen" },
@@ -8257,6 +8291,8 @@ class Component extends DCLogic {
             }),
             musik: x.musik || "",
             onMusik: (ev) => self.etSet(x.i, "musik", ev.target.value),
+            musikAb: x.musikAb || "",
+            onMusikAb: (ev) => self.etSet(x.i, "musikAb", ev.target.value),
             onName: (ev) => self.etSet(x.i, "name", ev.target.value),
             onOrt: (ev) => self.etSet(x.i, "ort", ev.target.value),
             onTag: (ev) => self.etSet(x.i, "tag", ev.target.value),
@@ -8319,6 +8355,8 @@ class Component extends DCLogic {
             }),
             musik: x.musik || "",
             onMusik: (ev) => self.etSet(x.i, "musik", ev.target.value),
+            musikAb: x.musikAb || "",
+            onMusikAb: (ev) => self.etSet(x.i, "musikAb", ev.target.value),
             onName: (ev) => self.etSet(x.i, "name", ev.target.value),
             onOrt: (ev) => self.etSet(x.i, "ort", ev.target.value),
             onTag: (ev) => self.etSet(x.i, "tag", ev.target.value),
@@ -8374,6 +8412,8 @@ class Component extends DCLogic {
               onFrage: (ev) => self.pollSet(p.id, { frage: ev.target.value }),
               musik: p.musik || "",
               onMusik: (ev) => self.pollSet(p.id, { musik: ev.target.value }),
+              musikAb: p.musikAb || "",
+              onMusikAb: (ev) => self.pollSet(p.id, { musikAb: ev.target.value }),
               optLabel: rang ? "Reihenfolge — Platz 1 zuerst" : "Antworten",
               zeigeOpts: !eintrag,
               opts: (p.opts || []).map((o, i) => ({
@@ -9498,7 +9538,7 @@ class Component extends DCLogic {
         toggleReset: () => this.setState({ authMode: st.authMode === "reset" ? "login" : "reset", authError: "", authNotice: "" }),
         resetLink: st.authMode === "reset" ? "Zurück zur Anmeldung" : "Passwort vergessen?",
         title: st.authMode === "newpw" ? "Neues Passwort wählen" : st.authMode === "reset" ? (st.cloud ? "Passwort zurücksetzen" : "Neues Passwort setzen") : st.authMode === "register" ? (st.users.length ? "Konto anlegen" : "Chronik einrichten") : "Willkommen zurück",
-        idLabel: st.authMode === "login" ? "E-Mail" : "E-Mail",
+        idLabel: st.authMode === "login" ? "E-Mail oder Benutzername" : "E-Mail",
         pwLabel: "Passwort",
         pwAuto: st.authMode === "login" ? "current-password" : "new-password",
         username: st.authForm.username, email: st.authForm.email, pw: st.authForm.pw, pw2: st.authForm.pw2, 
@@ -9637,13 +9677,15 @@ class Component extends DCLogic {
         onSucheOrt: setzeSuche("ort"),
         onSucheWer: setzeSuche("wer"),
         onSucheKat: setzeSuche("kat"),
-        autorenSuchbar: autoren.length > 3,
+        /* Suchfeld immer zeigen — ein Feld, das je nach Datenmenge
+           auftaucht und wieder verschwindet, macht die Leiste unruhig. */
+        autorenSuchbar: true,
         authors: [{ key: "a0", value: "", label: "Alle Personen" }].concat(
           treffer(autoren, fSuche.wer, (u) => u.username, f.by ? [f.by] : [], (u) => u.id)
             .map((u) => ({ key: "a" + u.id, value: u.id, label: u.username + (me && u.id === me.id ? " (du)" : "") }))
         ),
         autorenRest: rest(autoren, fSuche.wer, (u) => u.username),
-        orteSuchbar: places.length > 3,
+        orteSuchbar: true,
         places: [{ key: "p0", value: "", label: "Alle Orte" }].concat(
           treffer(places, fSuche.ort, (p) => p, f.place ? [f.place] : [], (p) => p)
             .map((p) => ({ key: "p" + p, value: p, label: p }))
@@ -10271,26 +10313,28 @@ class Component extends DCLogic {
           const modus = st.show.musikModus || "zugewiesen";
           /* „zugewiesen“ nimmt das Lied von Album oder Etappe, „eigene“
              nur die selbst gewählte Datei, „aus“ lässt es still. */
-          const sp = modus === "zugewiesen" ? musikSpur(musikFuer(simgs, sIdx)) : musikSpur("");
+          const sp = modus === "zugewiesen" ? musikSpur(musikFuer(simgs, sIdx).url, musikFuer(simgs, sIdx).ab) : musikSpur("");
           const eigen = modus !== "aus" && !!st.show.music && !sp.spielt;
           return {
             /* Während des Ausklangs bleibt der Spieler stehen und wird
                nur durchsichtig — abgebaut wird er erst danach. */
             hatEmbed: sp.hatEmbed && modus === "zugewiesen",
             embedKey: "mu" + sp.src,
+            /* In diesem Abschnitt gibt es kein `this` — er läuft als
+               eigene Funktion mit `self`. */
             embedRef: (el) => {
-              this.musikRahmen = el || null;
+              self.musikRahmen = el || null;
               if (el && (el.getAttribute("src") || "") !== sp.src) {
                 el.src = sp.src;
                 /* Die Dienste starten nicht alle von selbst — darum
                    bekommen sie nach dem Laden ausdrücklich den Befehl.
                    Mehrmals, weil manche erst nach ihrem eigenen Aufbau
                    zuhören. */
-                el.onload = () => this.embedAnwerfen(el, sp.dienst);
-                [400, 1200, 2400].forEach((ms) => window.setTimeout(() => this.embedAnwerfen(el, sp.dienst), ms));
+                el.onload = () => self.embedAnwerfen(el, sp.dienst);
+                [400, 1200, 2400].forEach((ms) => window.setTimeout(() => self.embedAnwerfen(el, sp.dienst), ms));
               }
             },
-            name: sp.name,
+            name: sp.name + (sp.ab ? (sp.abKann ? " · ab " + musikZeit(sp.ab) : " · Startzeit kennt dieser Dienst nicht") : ""),
             hatName: !!sp.name,
             zeigeName: !!sp.name && !st.show.voll,
             /* Im Vollbild bleibt nur das Foto zu sehen — der Spieler
@@ -10307,7 +10351,7 @@ class Component extends DCLogic {
         })(this),
         music: st.show.music,
         hasMusic: (st.show.musikModus || "zugewiesen") !== "aus"
-          && (!!st.show.music || ((st.show.musikModus || "zugewiesen") === "zugewiesen" && musikSpur(musikFuer(simgs, sIdx)).hatDatei)),
+          && (!!st.show.music || ((st.show.musikModus || "zugewiesen") === "zugewiesen" && musikSpur(musikFuer(simgs, sIdx).url, musikFuer(simgs, sIdx).ab).hatDatei)),
         musikModus: st.show.musikModus || "zugewiesen",
         musikModi: [
           ["zugewiesen", "Zugewiesene"],
@@ -10367,7 +10411,7 @@ class Component extends DCLogic {
           const modus = this.state.show.musikModus || "zugewiesen";
           if (modus === "aus") { el.pause(); return; }
           const bilder = this.showImages(this.state.show.scope, this.state.show.ref);
-          const sp = modus === "zugewiesen" ? musikSpur(musikFuer(bilder, this.state.show.idx)) : musikSpur("");
+          const sp = modus === "zugewiesen" ? musikSpur(musikFuer(bilder, this.state.show.idx).url, musikFuer(bilder, this.state.show.idx).ab) : musikSpur("");
           const quelle = sp.hatDatei ? sp.src : (this.state.show.music || "");
           /* Nie `el.src = ""` — der leere String wird gegen die Adresse
              des Dokuments aufgelöst und scheitert beim Laden. */
@@ -10376,10 +10420,17 @@ class Component extends DCLogic {
             if (jetzige) { el.pause(); el.removeAttribute("src"); }
             return;
           }
+          const abSek = sp.hatDatei ? (sp.ab || 0) : 0;
           if (jetzige !== quelle) {
             el.src = quelle;
+            /* Erst wenn die Länge bekannt ist, lässt sich springen. */
+            if (abSek) {
+              const spring = () => { try { el.currentTime = abSek; } catch (e) { /* egal */ } };
+              el.addEventListener("loadedmetadata", spring, { once: true });
+            }
             this.musikEinblenden(el);
           } else if (el.paused) {
+            if (abSek && el.currentTime < abSek) { try { el.currentTime = abSek; } catch (e) { /* egal */ } }
             this.musikEinblenden(el);
           }
         }
