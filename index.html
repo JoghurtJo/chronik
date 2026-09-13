@@ -1978,7 +1978,7 @@
         <button onClick="{{ show.musikStarten }}" style="position: absolute; left: 50%; bottom: 92px; transform: translateX(-50%); z-index: 6; font: inherit; font-size: 12.5px; letter-spacing: 0.08em; text-transform: uppercase; padding: 10px 18px; cursor: pointer; white-space: nowrap; border: 0; border-radius: 999px; background: var(--color-accent); color: var(--color-bg); box-shadow: var(--shadow-lg);">♪ Musik starten</button>
       </sc-if>
       <sc-if value="{{ show.spur.hatEmbed }}" hint-placeholder-val="{{ false }}">
-        <iframe key="{{ show.spur.embedKey }}" ref="{{ show.spur.embedRef }}" title="Musik zur Fotoshow" allow="autoplay; encrypted-media" loading="eager" style="{{ show.spur.rahmen }}"></iframe>
+        <iframe key="{{ show.spur.embedKey }}" ref="{{ show.spur.embedRef }}" title="Musik zur Fotoshow" allow="autoplay; encrypted-media; clipboard-write" allowfullscreen="{{ false }}" loading="eager" style="{{ show.spur.rahmen }}"></iframe>
       </sc-if>
       <sc-if value="{{ show.spur.zeigeName }}" hint-placeholder-val="{{ false }}">
         <div style="position: absolute; left: 18px; bottom: 18px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700); z-index: 4;">♪ {{ show.spur.name }}</div>
@@ -2209,6 +2209,9 @@
                 </div>
               </div>
             </sc-for>
+            <sc-if value="{{ vgl.gemeinsamMehr }}" hint-placeholder-val="{{ false }}">
+              <button class="btn btn-ghost" style="justify-self: start; white-space: nowrap;" onClick="{{ vgl.gemeinsamUm }}">{{ vgl.gemeinsamLabel }}</button>
+            </sc-if>
           </div>
         </sc-if>
 
@@ -2222,6 +2225,9 @@
                 <div style="{{ t.urteilStyle }}">{{ t.urteil }}</div>
               </div>
             </sc-for>
+            <sc-if value="{{ vgl.trefferMehr }}" hint-placeholder-val="{{ false }}">
+              <button class="btn btn-ghost" style="justify-self: start; white-space: nowrap;" onClick="{{ vgl.trefferUm }}">{{ vgl.trefferLabel }}</button>
+            </sc-if>
           </div>
         </sc-if>
 
@@ -2816,6 +2822,20 @@ const STILLE = (function () {
   return "data:audio/wav;base64," + btoa(roh);
 })();
 const AUDIO_ENDUNG = /\.(mp3|m4a|aac|ogg|oga|opus|wav|flac|weba)(\?|#|$)/i;
+/* Welches Lied gilt beim Bild an dieser Stelle? Das eigene, sonst das
+   des letzten Bildes davor, das eines hatte — so trägt ein Album seine
+   Musik über alle seine Bilder. Findet sich davor keines, gilt das erste
+   der ganzen Show, damit ein zugewiesenes Lied überhaupt erklingt. */
+const musikFuer = function (bilder, idx) {
+  const liste = bilder || [];
+  for (let k = Math.min(idx, liste.length - 1); k >= 0; k--) {
+    if (liste[k] && liste[k].musik) return liste[k].musik;
+  }
+  for (let k = 0; k < liste.length; k++) {
+    if (liste[k] && liste[k].musik) return liste[k].musik;
+  }
+  return "";
+};
 const musikSpur = function (roh) {
   const meta = musikMeta(roh);
   const leer = { art: "kein", src: "", dienst: "", name: "", hatEmbed: false, hatDatei: false, spielt: false };
@@ -2836,7 +2856,12 @@ const musikSpur = function (roh) {
     src = "https://w.soundcloud.com/player/?url=" + encodeURIComponent(u.href) + "&auto_play=true&hide_related=true&show_comments=false&visual=false";
   } else if (host.indexOf("youtube.com") >= 0 || host.indexOf("youtu.be") >= 0) {
     const id = u.searchParams.get("v") || teile[teile.length - 1] || "";
-    if (id) src = "https://www.youtube.com/embed/" + id + "?autoplay=1&playsinline=1";
+    /* Ohne origin lassen manche Browser die Befehle des übergeordneten
+       Fensters nicht durch. */
+    if (id) {
+      const her = (typeof location !== "undefined" && location.origin) ? "&origin=" + encodeURIComponent(location.origin) : "";
+      src = "https://www.youtube.com/embed/" + id + "?autoplay=1&playsinline=1&enablejsapi=1" + her;
+    }
   } else if (host.indexOf("music.apple.com") >= 0) {
     src = u.href.replace("music.apple.com", "embed.music.apple.com");
   }
@@ -3284,6 +3309,8 @@ class Component extends DCLogic {
     bildAnker: null,
     feed: { freunde: true, vorschau: false },
     konto: false,
+    vglMehrG: false,
+    vglMehrT: false,
     loeschWort: "",
     loeschFehler: "",
     loeschBusy: false,
@@ -3372,6 +3399,25 @@ class Component extends DCLogic {
     else fertig(true);
   };
 
+  /* Ein Dienst-Spieler wird ausdrücklich gestartet: YouTube, SoundCloud
+     und Deezer hören auf Nachrichten ins eingebettete Fenster. Spotify
+     und Apple Music kennen keinen solchen Befehl — dort entscheidet der
+     Dienst, und notfalls hilft der Knopf „Musik starten“. */
+  embedAnwerfen(el, dienst) {
+    if (!el || !el.contentWindow) return;
+    const w = el.contentWindow;
+    /* Jeder Dienst liest anders: YouTube und SoundCloud erwarten einen
+       JSON-Text, Deezer ein Objekt. Beides senden ist billiger als zu
+       raten — wer die Form nicht kennt, verwirft die Nachricht. */
+    const senden = (n) => {
+      try { w.postMessage(n, "*"); } catch (e) { /* falsche Form */ }
+      try { w.postMessage(JSON.stringify(n), "*"); } catch (e) { /* falsche Form */ }
+    };
+    senden({ event: "command", func: "playVideo", args: [] });
+    senden({ method: "play" });
+    senden({ command: "play" });
+  }
+
   /* Die zum gerade gezeigten Bild gehörende Quelle anwerfen. */
   musikAnwerfen() {
     const el = this.audio;
@@ -3379,10 +3425,11 @@ class Component extends DCLogic {
     const modus = this.state.show.musikModus || "zugewiesen";
     if (modus === "aus") { el.pause(); return; }
     const bilder = this.showImages(this.state.show.scope, this.state.show.ref);
-    const jetzt = bilder[bilder.length ? Math.min(this.state.show.idx, bilder.length - 1) : 0];
-    const sp = modus === "zugewiesen" ? musikSpur(jetzt ? jetzt.musik : "") : musikSpur("");
+    const sp = modus === "zugewiesen" ? musikSpur(musikFuer(bilder, this.state.show.idx)) : musikSpur("");
     const quelle = sp.hatDatei ? sp.src : (this.state.show.music || "");
     if (!quelle) {
+      /* Läuft ein Dienst-Spieler, wird dieser angestoßen. */
+      if (this.musikRahmen) this.embedAnwerfen(this.musikRahmen, sp.dienst);
       if (el.getAttribute("src")) { el.pause(); el.removeAttribute("src"); }
       return;
     }
@@ -3446,6 +3493,7 @@ class Component extends DCLogic {
     window.addEventListener("keydown", this.onKey);
     window.addEventListener("resize", this.onResize);
     document.addEventListener("fullscreenchange", this.onVollbildWechsel);
+    document.addEventListener("webkitfullscreenchange", this.onVollbildWechsel);
     this.onResize();
     window.setTimeout(() => this.tourFragen(), 1400);
   }
@@ -4437,7 +4485,7 @@ class Component extends DCLogic {
   schritteGrund() {
     return [
       { ziel: "", titel: "Willkommen in deiner Chronik",
-        text: "Ich zeig dir kurz, wo hier was steckt. Ein leuchtender Punkt führt dich zu jedem Knopf. Abbrechen kannst du jederzeit. Über „Hilfe“ kommst du zurück." },
+        text: "In neun kurzen Schritten zeige ich dir, wo hier was steckt. Ein leuchtender Punkt führt dich zu jedem Knopf. Abbrechen darfst du jederzeit — über „Hilfe“ kommst du zurück." },
       { ziel: "", titel: "Was ist die Chronik?",
         text: "Du kannst dir hier alle deine Erlebnisse, wie z.B. Festivals, Urlaube, Feiern, ... planen dokumentieren und den Leuten deiner Wahl zur Verfügung stellen. Routen, Bilder, Kommentare, Personen die dabei waren, …. Das alles kannst Du jederzeit wieder erleben und in Erinnerungen und Momenten schwelgen." },      
       { ziel: "neu", titel: "Ein Ereignis anlegen",
@@ -5043,7 +5091,8 @@ class Component extends DCLogic {
     const el = this.showRoot;
     const an = !this.state.show.voll;
     this.setShow({ voll: an, ui: true }, false);
-    if (an) this.uiSchlafen(); else if (this.uiTimer) window.clearTimeout(this.uiTimer);
+    if (an) this.uiSchlafen();
+    else { if (this.uiTimer) window.clearTimeout(this.uiTimer); this.grundNeuZeichnen(); }
     try {
       if (an) {
         if (el && el.requestFullscreen) el.requestFullscreen().catch(() => {});
@@ -5061,7 +5110,23 @@ class Component extends DCLogic {
       this.setShow({ voll: false, ui: true }, false);
       if (this.uiTimer) window.clearTimeout(this.uiTimer);
     }
+    if (!document.fullscreenElement) this.grundNeuZeichnen();
   };
+
+  /* Nach dem Vollbild bleibt der feste Hintergrund des Körpers manchmal
+     schwarz stehen — die Browser zeichnen ihn nicht neu. Einmal
+     abräumen, einen Bildschirmaufbau warten und neu setzen. */
+  grundNeuZeichnen() {
+    if (!document.body) return;
+    const b = document.body.style;
+    b.background = "";
+    b.backgroundAttachment = "";
+    window.requestAnimationFrame(() => {
+      this.applyTheme();
+      /* Ein zweiter Durchgang, falls der erste noch im Vollbild lag. */
+      window.setTimeout(() => this.applyTheme(), 120);
+    });
+  }
 
   /* Im Vollbild zählt nur das Foto. Die Leiste kommt bei Mausbewegung
      zurück und verschwindet nach fünf Sekunden Ruhe wieder. */
@@ -5164,6 +5229,7 @@ class Component extends DCLogic {
   closeShow = () => {
     if (this.showTimer) window.clearInterval(this.showTimer);
     if (this.uiTimer) window.clearTimeout(this.uiTimer);
+    if (this.state.show.voll) this.grundNeuZeichnen();
     try { if (document.fullscreenElement) document.exitFullscreen(); } catch (e) { /* egal */ }
     this.musikAusklang(() => {
       this.setState({ show: Object.assign({}, this.state.show, { open: false, playing: true, voll: false, ui: true, ausklang: false }) });
@@ -9240,7 +9306,7 @@ class Component extends DCLogic {
             { key: "z3", wert: String(v.seine.length), label: "davon sichtbar" }
           ] : [],
           /* Begegnungen im Klartext */
-          treffer: v ? v.treffer.slice(0, 40).map((x, k) => ({
+          treffer: v ? v.treffer.slice(0, st.vglMehrT ? 60 : 5).map((x, k) => ({
             key: "t" + k,
             tag: fmtDate(x.tag),
             meins: x.a.name || "ohne Titel",
@@ -9257,7 +9323,20 @@ class Component extends DCLogic {
             }
           })) : [],
           hatTreffer: !!v && v.treffer.length > 0,
-          gemeinsam: v ? v.gemeinsam.slice(0, 30).map((e) => ({
+          trefferMehr: !!v && v.treffer.length > 5,
+          trefferAuf: !!st.vglMehrT,
+          trefferLabel: st.vglMehrT
+            ? "▴ weniger zeigen"
+            : "▾ " + plural(Math.max(0, ((v && v.treffer.length) || 0) - 5), "weiterer Tag", "weitere Tage"),
+          trefferUm: () => self.setState({ vglMehrT: !st.vglMehrT }),
+          /* Höchstens fünf auf einmal — der Rest klappt auf Wunsch auf. */
+          gemeinsamMehr: !!v && v.gemeinsam.length > 5,
+          gemeinsamAuf: !!st.vglMehrG,
+          gemeinsamLabel: st.vglMehrG
+            ? "▴ weniger zeigen"
+            : "▾ " + plural(Math.max(0, ((v && v.gemeinsam.length) || 0) - 5), "weiteres Ereignis", "weitere Ereignisse"),
+          gemeinsamUm: () => self.setState({ vglMehrG: !st.vglMehrG }),
+          gemeinsam: v ? v.gemeinsam.slice(0, st.vglMehrG ? 60 : 5).map((e) => ({
             key: e.id, name: e.name || "ohne Titel", datum: fmtDate(e.date),
             ort: e.place || "", hatOrt: !!String(e.place || "").trim(),
             wer: (e.by || "") === me.id ? "von dir angelegt" : "von " + ((uById[e.by] || {}).username || "jemandem") + " angelegt"
@@ -10192,14 +10271,25 @@ class Component extends DCLogic {
           const modus = st.show.musikModus || "zugewiesen";
           /* „zugewiesen“ nimmt das Lied von Album oder Etappe, „eigene“
              nur die selbst gewählte Datei, „aus“ lässt es still. */
-          const sp = modus === "zugewiesen" ? musikSpur(cur ? cur.musik : "") : musikSpur("");
+          const sp = modus === "zugewiesen" ? musikSpur(musikFuer(simgs, sIdx)) : musikSpur("");
           const eigen = modus !== "aus" && !!st.show.music && !sp.spielt;
           return {
             /* Während des Ausklangs bleibt der Spieler stehen und wird
                nur durchsichtig — abgebaut wird er erst danach. */
             hatEmbed: sp.hatEmbed && modus === "zugewiesen",
             embedKey: "mu" + sp.src,
-            embedRef: (el) => { if (el && el.getAttribute("src") !== sp.src) el.src = sp.src; },
+            embedRef: (el) => {
+              this.musikRahmen = el || null;
+              if (el && (el.getAttribute("src") || "") !== sp.src) {
+                el.src = sp.src;
+                /* Die Dienste starten nicht alle von selbst — darum
+                   bekommen sie nach dem Laden ausdrücklich den Befehl.
+                   Mehrmals, weil manche erst nach ihrem eigenen Aufbau
+                   zuhören. */
+                el.onload = () => this.embedAnwerfen(el, sp.dienst);
+                [400, 1200, 2400].forEach((ms) => window.setTimeout(() => this.embedAnwerfen(el, sp.dienst), ms));
+              }
+            },
             name: sp.name,
             hatName: !!sp.name,
             zeigeName: !!sp.name && !st.show.voll,
@@ -10217,7 +10307,7 @@ class Component extends DCLogic {
         })(this),
         music: st.show.music,
         hasMusic: (st.show.musikModus || "zugewiesen") !== "aus"
-          && (!!st.show.music || !!(cur && (st.show.musikModus || "zugewiesen") === "zugewiesen" && musikSpur(cur.musik).hatDatei)),
+          && (!!st.show.music || ((st.show.musikModus || "zugewiesen") === "zugewiesen" && musikSpur(musikFuer(simgs, sIdx)).hatDatei)),
         musikModus: st.show.musikModus || "zugewiesen",
         musikModi: [
           ["zugewiesen", "Zugewiesene"],
@@ -10235,6 +10325,7 @@ class Component extends DCLogic {
           if (ev && ev.stopPropagation) ev.stopPropagation();
           this.audioFrei = true;
           this.setShow({ musikBlockiert: false }, false);
+          if (this.musikRahmen) this.embedAnwerfen(this.musikRahmen, "");
           window.requestAnimationFrame(() => this.musikAnwerfen());
         },
         fade: st.show.fade !== false,
@@ -10264,6 +10355,9 @@ class Component extends DCLogic {
         audioRef: (el) => {
           this.audio = el;
           if (!el) return;
+          /* Bei geschlossener Show nichts weiter tun — der Abgleich läuft
+             sonst bei jedem Neuzeichnen über alle Bilder. */
+          if (!this.state.show.open) return;
           el.volume = this.state.show.volume;
           /* Quelle erst hier setzen — im Markup wäre sie beim Aufbau der
              Seite noch ein roher Platzhalter und schlüge fehl. */
@@ -10273,8 +10367,7 @@ class Component extends DCLogic {
           const modus = this.state.show.musikModus || "zugewiesen";
           if (modus === "aus") { el.pause(); return; }
           const bilder = this.showImages(this.state.show.scope, this.state.show.ref);
-          const jetzt = bilder[bilder.length ? Math.min(this.state.show.idx, bilder.length - 1) : 0];
-          const sp = modus === "zugewiesen" ? musikSpur(jetzt ? jetzt.musik : "") : musikSpur("");
+          const sp = modus === "zugewiesen" ? musikSpur(musikFuer(bilder, this.state.show.idx)) : musikSpur("");
           const quelle = sp.hatDatei ? sp.src : (this.state.show.music || "");
           /* Nie `el.src = ""` — der leere String wird gegen die Adresse
              des Dokuments aufgelöst und scheitert beim Laden. */
