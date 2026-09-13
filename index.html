@@ -337,46 +337,38 @@
 
     <sc-if value="{{ tabFilter }}" hint-placeholder-val="{{ false }}">
       <div style="display: grid; gap: var(--space-2); padding-bottom: var(--space-2);">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); align-items: end; gap: var(--space-3);">
-          <div class="field" style="margin: 0; grid-column: 1 / -1; max-width: 420px;"><label>Suche · Name, Text, Ort</label><input class="input" type="search" value="{{ f.q }}" onChange="{{ f.onQ }}" placeholder="z. B. Lager"></div>
-          <div class="field" style="margin: 0;"><label>Zeitraum von</label><input class="input" type="date" value="{{ f.from }}" onChange="{{ f.onFrom }}"></div>
-          <div class="field" style="margin: 0;"><label>bis</label><input class="input" type="date" value="{{ f.to }}" onChange="{{ f.onTo }}"></div>
-          <div class="field" style="margin: 0;"><label>Ort</label>
-            <sc-if value="{{ f.orteSuchbar }}" hint-placeholder-val="{{ false }}">
-              <input class="input" type="search" value="{{ f.suche.ort }}" onChange="{{ f.onSucheOrt }}" placeholder="Ort suchen" style="margin-bottom: 4px; padding: 4px 9px; font-size: 12px;">
-            </sc-if>
-            <select class="input" value="{{ f.place }}" onChange="{{ f.onPlace }}">
-              <sc-for list="{{ f.places }}" as="o" hint-placeholder-count="3">
-                <option value="{{ o.value }}">{{ o.label }}</option>
-              </sc-for>
-            </select>
-            <sc-if value="{{ f.orteRest }}" hint-placeholder-val="{{ false }}">
-              <div style="font-size: 10.5px; color: var(--color-neutral-600); padding-top: 3px;">{{ f.orteRest }}</div>
-            </sc-if>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); align-items: start; gap: var(--space-2) var(--space-3);">
+          <div class="field" style="margin: 0; grid-column: span 2; min-width: 0;"><label style="font-size: 10px; margin-bottom: 2px;">Suche</label><input class="input" type="search" value="{{ f.q }}" onChange="{{ f.onQ }}" placeholder="Name, Text, Ort" style="min-height: 28px; height: 28px; padding: 2px 8px; font-size: 12px;"></div>
+          <div class="field" style="margin: 0; min-width: 0;"><label style="font-size: 10px; margin-bottom: 2px;">von</label><input class="input" type="date" value="{{ f.from }}" onChange="{{ f.onFrom }}" style="min-height: 28px; height: 28px; padding: 2px 8px; font-size: 12px;"></div>
+          <div class="field" style="margin: 0; min-width: 0;"><label style="font-size: 10px; margin-bottom: 2px;">bis</label><input class="input" type="date" value="{{ f.to }}" onChange="{{ f.onTo }}" style="min-height: 28px; height: 28px; padding: 2px 8px; font-size: 12px;"></div>
+          <div class="field" style="margin: 0; grid-column: span 2; min-width: 0;"><label style="font-size: 10px; margin-bottom: 2px;">Ort · {{ f.orteZahl }}</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+              <input class="input" type="search" value="{{ f.suche.ort }}" onChange="{{ f.onSucheOrt }}" placeholder="suchen" style="min-height: 26px; height: 26px; padding: 2px 7px; font-size: 11.5px;">
+              <select class="input" value="{{ f.place }}" onChange="{{ f.onPlace }}" style="min-height: 28px; height: 28px; padding: 2px 8px; font-size: 12px;">
+                <sc-for list="{{ f.places }}" as="o" hint-placeholder-count="3">
+                  <option value="{{ o.value }}">{{ o.label }}</option>
+                </sc-for>
+              </select>
+            </div>
           </div>
-          <div class="field" style="margin: 0;"><label>Angelegt von</label>
-            <sc-if value="{{ f.autorenSuchbar }}" hint-placeholder-val="{{ false }}">
-              <input class="input" type="search" value="{{ f.suche.wer }}" onChange="{{ f.onSucheWer }}" placeholder="Person suchen" style="margin-bottom: 4px; padding: 4px 9px; font-size: 12px;">
-            </sc-if>
-            <select class="input" value="{{ f.by }}" onChange="{{ f.onBy }}">
-              <sc-for list="{{ f.authors }}" as="o" hint-placeholder-count="3">
-                <option value="{{ o.value }}">{{ o.label }}</option>
-              </sc-for>
-            </select>
-            <sc-if value="{{ f.autorenRest }}" hint-placeholder-val="{{ false }}">
-              <div style="font-size: 10.5px; color: var(--color-neutral-600); padding-top: 3px;">{{ f.autorenRest }}</div>
-            </sc-if>
+          <div class="field" style="margin: 0; grid-column: span 2; min-width: 0;"><label style="font-size: 10px; margin-bottom: 2px;">Angelegt von · {{ f.autorenZahl }}</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+              <input class="input" type="search" value="{{ f.suche.wer }}" onChange="{{ f.onSucheWer }}" placeholder="suchen" style="min-height: 26px; height: 26px; padding: 2px 7px; font-size: 11.5px;">
+              <select class="input" value="{{ f.by }}" onChange="{{ f.onBy }}" style="min-height: 28px; height: 28px; padding: 2px 8px; font-size: 12px;">
+                <sc-for list="{{ f.authors }}" as="o" hint-placeholder-count="3">
+                  <option value="{{ o.value }}">{{ o.label }}</option>
+                </sc-for>
+              </select>
+            </div>
           </div>
           <sc-if value="{{ f.aktiv }}" hint-placeholder-val="{{ false }}">
-            <button class="btn btn-secondary" style="white-space: nowrap; align-self: end;" onClick="{{ f.reset }}">Filter zurücksetzen · {{ f.anzahl }}</button>
+            <button class="btn btn-ghost" style="white-space: nowrap; align-self: end; min-height: 28px; height: 28px; padding: 2px 10px; font-size: 12px;" onClick="{{ f.reset }}">Zurücksetzen · {{ f.anzahl }}</button>
           </sc-if>
         </div>
-        <div style="display: flex; gap: var(--space-4); flex-wrap: wrap;">
-          <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">Kategorie</span>
-            <sc-if value="{{ f.katSuchbar }}" hint-placeholder-val="{{ false }}">
-              <input class="input" type="search" value="{{ f.suche.kat }}" onChange="{{ f.onSucheKat }}" placeholder="Kategorie suchen" style="width: 150px; padding: 4px 9px; font-size: 12px;">
-            </sc-if>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-2) var(--space-3);">
+          <div style="display: flex; align-items: center; gap: 5px; flex-wrap: wrap;">
+            <span style="font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-700);">Kategorie</span>
+            <input class="input" type="search" value="{{ f.suche.kat }}" onChange="{{ f.onSucheKat }}" placeholder="suchen" style="width: 106px; min-height: 26px; height: 26px; padding: 2px 7px; font-size: 11.5px;">
             <sc-for list="{{ f.cats }}" as="c" hint-placeholder-count="4">
               <button onClick="{{ c.toggle }}" style="{{ c.style }}">{{ c.label }}</button>
             </sc-for>
@@ -384,11 +376,9 @@
               <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">{{ f.katRest }}</span>
             </sc-if>
           </div>
-          <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">Personen</span>
-            <sc-if value="{{ f.personSuchbar }}" hint-placeholder-val="{{ false }}">
-              <input class="input" type="search" value="{{ f.personSuche }}" onChange="{{ f.onPersonSuche }}" placeholder="Person suchen" style="width: 150px; padding: 4px 9px; font-size: 12px;">
-            </sc-if>
+          <div style="display: flex; align-items: center; gap: 5px; flex-wrap: wrap;">
+            <span style="font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-700);">Personen</span>
+            <input class="input" type="search" value="{{ f.personSuche }}" onChange="{{ f.onPersonSuche }}" placeholder="suchen" style="width: 106px; min-height: 26px; height: 26px; padding: 2px 7px; font-size: 11.5px;">
             <sc-for list="{{ f.persons }}" as="c" hint-placeholder-count="4">
               <button onClick="{{ c.toggle }}" style="{{ c.style }}">{{ c.label }}</button>
             </sc-for>
@@ -1970,6 +1960,9 @@
                 <input class="input" type="text" value="{{ show.musicUrl }}" onChange="{{ show.onMusicUrl }}" placeholder="oder Musik-URL">
               </div>
               <button onClick="{{ show.fadeUm }}" style="{{ show.fadeStil }}">{{ show.fadeLabel }}</button>
+              <sc-if value="{{ show.kontoModus }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size: 10.5px; line-height: 1.45; color: var(--color-neutral-700);">{{ show.kontoHinweis }}</span>
+              </sc-if>
             </div>
           </div>
           <div class="field" style="width: 130px;"><label>Lautstärke</label>
@@ -2835,14 +2828,12 @@ const AUDIO_ENDUNG = /\.(mp3|m4a|aac|ogg|oga|opus|wav|flac|weba)(\?|#|$)/i;
    Musik über alle seine Bilder. Findet sich davor keines, gilt das erste
    der ganzen Show, damit ein zugewiesenes Lied überhaupt erklingt. */
 const musikFuer = function (bilder, idx) {
-  const liste = bilder || [];
-  for (let k = Math.min(idx, liste.length - 1); k >= 0; k--) {
-    if (liste[k] && liste[k].musik) return { url: liste[k].musik, ab: liste[k].musikAb || "" };
-  }
-  for (let k = 0; k < liste.length; k++) {
-    if (liste[k] && liste[k].musik) return { url: liste[k].musik, ab: liste[k].musikAb || "" };
-  }
-  return { url: "", ab: "" };
+  /* Nur das Lied des gezeigten Bildes. Ein Album gibt seine Musik jedem
+     seiner Bilder mit, darum trägt sie durch das ganze Album — und
+     verstummt beim ersten Bild danach, das keine hat. Kein Rückgriff auf
+     frühere Bilder: sonst liefe die Albummusik weiter. */
+  const b = (bilder || [])[idx];
+  return b && b.musik ? { url: b.musik, ab: b.musikAb || "" } : { url: "", ab: "" };
 };
 /* Startzeit eines Liedes: „1:05“, „65“ oder „1:02:03“ — alles wird zu
    Sekunden. Unsinn ergibt 0, also den Anfang. */
@@ -3429,6 +3420,41 @@ class Component extends DCLogic {
     else fertig(true);
   };
 
+  /* Eigenes Konto: statt der Vorschau im eingebetteten Spieler öffnet
+     der Dienst in einem eigenen kleinen Fenster. Dort gilt die Anmeldung
+     des Nutzers, also läuft das ganze Stück. Ob eine Anmeldung besteht,
+     kann diese Seite nicht prüfen — fremde Fenster sind für sie
+     verschlossen; das ist keine Lücke, sondern Absicht der Browser. Das
+     Fenster wird beim Liedwechsel umgelenkt und am Ende geschlossen. */
+  kontoAnwerfen() {
+    if ((this.state.show.musikModus || "zugewiesen") !== "konto") return;
+    const bilder = this.showImages(this.state.show.scope, this.state.show.ref);
+    const wahl = musikFuer(bilder, this.state.show.idx);
+    const meta = musikMeta(wahl.url);
+    if (!meta.hat) { this.kontoSchliessen(); return; }
+    /* Startzeit mitgeben, soweit der Dienst sie in der Adresse liest. */
+    const sek = musikSekunden(wahl.ab);
+    let ziel = meta.href;
+    if (sek && /youtube\.com|youtu\.be/.test(ziel)) ziel += (ziel.indexOf("?") < 0 ? "?" : "&") + "t=" + sek;
+    else if (sek && /soundcloud\.com/.test(ziel)) ziel = ziel.split("#")[0] + "#t=" + sek;
+    if (this.kontoZiel === ziel && this.kontoWin && !this.kontoWin.closed) return;
+    try {
+      if (this.kontoWin && !this.kontoWin.closed) this.kontoWin.location.replace(ziel);
+      else this.kontoWin = window.open(ziel, "chronikMusik", "width=460,height=700,noopener=no");
+      this.kontoZiel = ziel;
+      const blockiert = !this.kontoWin;
+      if (!!this.state.show.kontoBlock !== blockiert) this.setShow({ kontoBlock: blockiert }, false);
+    } catch (e) {
+      this.setShow({ kontoBlock: true }, false);
+    }
+  }
+
+  kontoSchliessen() {
+    this.kontoZiel = "";
+    try { if (this.kontoWin && !this.kontoWin.closed) this.kontoWin.close(); } catch (e) { /* schon zu */ }
+    this.kontoWin = null;
+  }
+
   /* Ein Dienst-Spieler wird ausdrücklich gestartet: YouTube, SoundCloud
      und Deezer hören auf Nachrichten ins eingebettete Fenster. Spotify
      und Apple Music kennen keinen solchen Befehl — dort entscheidet der
@@ -3450,10 +3476,13 @@ class Component extends DCLogic {
 
   /* Die zum gerade gezeigten Bild gehörende Quelle anwerfen. */
   musikAnwerfen() {
+    /* Der Modus „Eigenes Konto“ wird im gleichen Takt nachgezogen — das
+       Fenster ist schon offen, ein Ortswechsel braucht keine Geste. */
+    if ((this.state.show.musikModus || "zugewiesen") === "konto") this.kontoAnwerfen();
     const el = this.audio;
     if (!el) return;
     const modus = this.state.show.musikModus || "zugewiesen";
-    if (modus === "aus") { el.pause(); return; }
+    if (modus === "aus" || modus === "konto") { el.pause(); return; }
     const bilder = this.showImages(this.state.show.scope, this.state.show.ref);
     const sp = modus === "zugewiesen" ? musikSpur(musikFuer(bilder, this.state.show.idx).url, musikFuer(bilder, this.state.show.idx).ab) : musikSpur("");
     const quelle = sp.hatDatei ? sp.src : (this.state.show.music || "");
@@ -5080,6 +5109,9 @@ class Component extends DCLogic {
          will — also gleich hier anwerfen, nicht erst später. */
       this.audioFreischalten();
       window.requestAnimationFrame(() => this.musikAnwerfen());
+      /* Ein Fenster darf nur in der Geste selbst geöffnet werden — also
+         jetzt, beim Klick auf „Fotoshow“. */
+      this.kontoAnwerfen();
     });
   }
 
@@ -5256,6 +5288,7 @@ class Component extends DCLogic {
   }
 
   closeShow = () => {
+    this.kontoSchliessen();
     if (this.showTimer) window.clearInterval(this.showTimer);
     if (this.uiTimer) window.clearTimeout(this.uiTimer);
     if (this.state.show.voll) this.grundNeuZeichnen();
@@ -9685,12 +9718,16 @@ class Component extends DCLogic {
             .map((u) => ({ key: "a" + u.id, value: u.id, label: u.username + (me && u.id === me.id ? " (du)" : "") }))
         ),
         autorenRest: rest(autoren, fSuche.wer, (u) => u.username),
+        /* Die Zahl steht in der Beschriftung — das ersetzt die eigene
+           Hinweiszeile „… weitere“ und spart eine Reihe. */
+        autorenZahl: autoren.length,
         orteSuchbar: true,
         places: [{ key: "p0", value: "", label: "Alle Orte" }].concat(
           treffer(places, fSuche.ort, (p) => p, f.place ? [f.place] : [], (p) => p)
             .map((p) => ({ key: "p" + p, value: p, label: p }))
         ),
         orteRest: rest(places, fSuche.ort, (p) => p),
+        orteZahl: places.length,
         katSuchbar: cats.length > 3,
         cats: treffer(cats, fSuche.kat, (c) => c, f.cats || [], (c) => c)
           .map((c) => ({ key: "c" + c, label: c, style: chip((f.cats || []).indexOf(c) >= 0), toggle: this.toggleChip("cats", c) })),
@@ -10311,6 +10348,9 @@ class Component extends DCLogic {
            und die neue beginnt — darum steckt der Schlüssel im key. */
         spur: (function (self) {
           const modus = st.show.musikModus || "zugewiesen";
+          /* Im Konto-Modus spielt das Fenster des Dienstes — hier bleibt
+             alles still. */
+          if (modus === "konto") return { hatEmbed: false, hatDatei: false, name: "", hatName: false, eigeneDatei: false, embedKey: "konto", embedRef: () => {}, rahmen: { display: "none" }, src: "" };
           /* „zugewiesen“ nimmt das Lied von Album oder Etappe, „eigene“
              nur die selbst gewählte Datei, „aus“ lässt es still. */
           const sp = modus === "zugewiesen" ? musikSpur(musikFuer(simgs, sIdx).url, musikFuer(simgs, sIdx).ab) : musikSpur("");
@@ -10356,14 +10396,21 @@ class Component extends DCLogic {
         musikModi: [
           ["zugewiesen", "Zugewiesene"],
           ["eigene", "Eigene"],
+          ["konto", "Eigenes Konto"],
           ["aus", "Keine"]
         ].map((o) => ({
           key: o[0], label: o[1], on: (st.show.musikModus || "zugewiesen") === o[0],
           pick: () => {
+            if (o[0] !== "konto") this.kontoSchliessen();
             if (o[0] === "aus" && this.audio) this.audio.pause();
             this.setShow({ musikModus: o[0] }, false);
+            if (o[0] === "konto") window.requestAnimationFrame(() => this.kontoAnwerfen());
           }
         })),
+        kontoModus: (st.show.musikModus || "zugewiesen") === "konto",
+        kontoHinweis: st.show.kontoBlock
+          ? "Das Fenster wurde blockiert — Fenster für diese Seite erlauben, dann erneut wählen."
+          : "Öffnet das Lied in einem kleinen Fenster des Dienstes. Bist du dort angemeldet, läuft das ganze Stück statt der Vorschau. Ob du angemeldet bist, kann diese Seite nicht sehen — das entscheidet der Dienst.",
         musikBlockiert: !!st.show.musikBlockiert && st.show.open,
         musikStarten: (ev) => {
           if (ev && ev.stopPropagation) ev.stopPropagation();
@@ -10409,7 +10456,7 @@ class Component extends DCLogic {
              sonst die Hintergrundmusik der Show. Gestartet wird von
              selbst, sobald eine Quelle steht. */
           const modus = this.state.show.musikModus || "zugewiesen";
-          if (modus === "aus") { el.pause(); return; }
+          if (modus === "aus" || modus === "konto") { el.pause(); return; }
           const bilder = this.showImages(this.state.show.scope, this.state.show.ref);
           const sp = modus === "zugewiesen" ? musikSpur(musikFuer(bilder, this.state.show.idx).url, musikFuer(bilder, this.state.show.idx).ab) : musikSpur("");
           const quelle = sp.hatDatei ? sp.src : (this.state.show.music || "");
