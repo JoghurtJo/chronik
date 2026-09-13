@@ -1969,6 +1969,12 @@
       <sc-if value="{{ show.hasMusic }}" hint-placeholder-val="{{ false }}">
         <audio ref="{{ show.audioRef }}" loop="{{ true }}"></audio>
       </sc-if>
+      <sc-if value="{{ show.spur.hatEmbed }}" hint-placeholder-val="{{ false }}">
+        <iframe key="{{ show.spur.embedKey }}" ref="{{ show.spur.embedRef }}" title="Musik zur Fotoshow" allow="autoplay; encrypted-media" loading="eager" style="{{ show.spur.rahmen }}"></iframe>
+      </sc-if>
+      <sc-if value="{{ show.spur.zeigeName }}" hint-placeholder-val="{{ false }}">
+        <div style="position: absolute; left: 18px; bottom: 18px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700); z-index: 4;">♪ {{ show.spur.name }}</div>
+      </sc-if>
     </div>
   </sc-if>
 </div>
@@ -2236,6 +2242,7 @@
                 <div style="display: flex; align-items: baseline; gap: 8px;">
                   <span style="font-family: var(--font-heading); font-size: 19px; line-height: 1;">{{ j.jahr }}</span>
                   <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
+                  <span style="font-size: 11px; letter-spacing: 0.06em; white-space: nowrap; color: var(--color-accent-700);">{{ j.bilanz }}</span>
                 </div>
                 <sc-if value="{{ vgl.kompakt }}" hint-placeholder-val="{{ true }}">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); align-items: start;">
@@ -2275,17 +2282,29 @@
                     <sc-for list="{{ j.paare }}" as="p" hint-placeholder-count="2">
                       <div style="display: grid; gap: 2px;">
                         <sc-if value="{{ p.zeigeTag }}" hint-placeholder-val="{{ true }}">
-                          <div style="font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-600); padding: 3px 6px 0;">{{ p.tag }}</div>
+                          <div style="font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent-700); padding: 4px 6px 0;">{{ p.tag }}</div>
                         </sc-if>
                         <div style="{{ p.zeilenStil }}">
                           <div style="{{ p.links.style }}">
-                            <div style="font-size: 13px; line-height: 1.3;">{{ p.links.name }}</div>
+                            <div style="display: flex; align-items: baseline; gap: 6px;">
+                              <sc-if value="{{ p.links.hatNr }}" hint-placeholder-val="{{ false }}">
+                                <span style="{{ p.links.nrStil }}">{{ p.links.nr }}</span>
+                              </sc-if>
+                              <span style="font-size: 13px; line-height: 1.3;">{{ p.links.name }}</span>
+                            </div>
+                            <div style="font-size: 11px; letter-spacing: 0.04em; color: var(--color-neutral-700);">{{ p.links.spanne }}</div>
                             <sc-if value="{{ p.links.hatOrt }}" hint-placeholder-val="{{ false }}">
                               <div style="font-size: 11px; color: var(--color-neutral-700);">{{ p.links.ort }}</div>
                             </sc-if>
                           </div>
                           <div style="{{ p.rechts.style }}">
-                            <div style="font-size: 13px; line-height: 1.3;">{{ p.rechts.name }}</div>
+                            <div style="display: flex; align-items: baseline; gap: 6px;">
+                              <sc-if value="{{ p.rechts.hatNr }}" hint-placeholder-val="{{ false }}">
+                                <span style="{{ p.rechts.nrStil }}">{{ p.rechts.nr }}</span>
+                              </sc-if>
+                              <span style="font-size: 13px; line-height: 1.3;">{{ p.rechts.name }}</span>
+                            </div>
+                            <div style="font-size: 11px; letter-spacing: 0.04em; color: var(--color-neutral-700);">{{ p.rechts.spanne }}</div>
                             <sc-if value="{{ p.rechts.hatOrt }}" hint-placeholder-val="{{ false }}">
                               <div style="font-size: 11px; color: var(--color-neutral-700);">{{ p.rechts.ort }}</div>
                             </sc-if>
@@ -2756,6 +2775,39 @@ const musikMeta = function (roh) {
   const treffer = MUSIK_DIENSTE.filter((d) => host.indexOf(d[0]) >= 0)[0];
   const dienst = treffer ? treffer[1] : host;
   return { hat: true, href: u.href, dienst: dienst, label: "♪ " + dienst };
+};
+/* Was sich im Browser abspielen lässt: eine echte Audiodatei direkt,
+   ein Dienst nur über dessen Einbettung. Bandcamp, Tidal und andere
+   bieten keine verlässliche Einbettung — dort bleibt der Verweis ein
+   Verweis. Die Dienste selbst entscheiden, ob das Stück ganz oder nur
+   als Ausschnitt läuft; ein Konto dort kann nötig sein. */
+const AUDIO_ENDUNG = /\.(mp3|m4a|aac|ogg|oga|opus|wav|flac|weba)(\?|#|$)/i;
+const musikSpur = function (roh) {
+  const meta = musikMeta(roh);
+  const leer = { art: "kein", src: "", dienst: "", name: "", hatEmbed: false, hatDatei: false, spielt: false };
+  if (!meta.hat) return leer;
+  let u = null;
+  try { u = new URL(meta.href); } catch (e) { return leer; }
+  if (AUDIO_ENDUNG.test(u.pathname)) {
+    return { art: "datei", src: u.href, dienst: meta.dienst, name: meta.dienst, hatDatei: true, hatEmbed: false, spielt: true };
+  }
+  const host = u.hostname.replace(/^www\./, "");
+  const teile = u.pathname.split("/").filter(Boolean);
+  let src = "";
+  if (host.indexOf("spotify.com") >= 0 && teile.length >= 2) {
+    src = "https://open.spotify.com/embed/" + teile[teile.length - 2] + "/" + teile[teile.length - 1] + "?utm_source=chronik";
+  } else if (host.indexOf("deezer.com") >= 0 && teile.length >= 2) {
+    src = "https://widget.deezer.com/widget/auto/" + teile[teile.length - 2] + "/" + teile[teile.length - 1] + "?autoplay=true";
+  } else if (host.indexOf("soundcloud.com") >= 0) {
+    src = "https://w.soundcloud.com/player/?url=" + encodeURIComponent(u.href) + "&auto_play=true&hide_related=true&show_comments=false&visual=false";
+  } else if (host.indexOf("youtube.com") >= 0 || host.indexOf("youtu.be") >= 0) {
+    const id = u.searchParams.get("v") || teile[teile.length - 1] || "";
+    if (id) src = "https://www.youtube.com/embed/" + id + "?autoplay=1&playsinline=1";
+  } else if (host.indexOf("music.apple.com") >= 0) {
+    src = u.href.replace("music.apple.com", "embed.music.apple.com");
+  }
+  if (!src) return Object.assign({}, leer, { dienst: meta.dienst, name: meta.dienst });
+  return { art: "embed", src: src, dienst: meta.dienst, name: meta.dienst, hatEmbed: true, hatDatei: false, spielt: true };
 };
 const MUSIK_CHIP = {
   display: "inline-flex", alignItems: "center", gap: "5px", alignSelf: "start",
@@ -3244,7 +3296,7 @@ class Component extends DCLogic {
     stickPick: "stern",
     stickStil: "flach",
     freeSel: null,
-    show: { open: false, idx: 0, playing: true, speed: 5, transition: "fade", scope: "all", ref: "", music: "", musicUrl: "", musicName: "keine", volume: 0.7, rot: {}, voll: false, ui: true }
+    show: { open: false, idx: 0, playing: true, speed: 5, transition: "fade", scope: "all", ref: "", music: "", musicUrl: "", musicName: "keine", volume: 0.7, rot: {}, voll: false, ui: true, ausklang: false }
   };
 
   componentDidMount() {
@@ -4290,8 +4342,7 @@ class Component extends DCLogic {
   schritteGrund() {
     return [
       { ziel: "", titel: "Willkommen in deiner Chronik",
-        text: "In neun kurzen Schritten zeige ich dir, wo hier was steckt. Ein leuchtender Punkt führt dich zu jedem Knopf. Abbrechen darfst du jederzeit — über „Hilfe“ kommst du zurück." },
-{ ziel: "", titel: "Was ist die Chronik?",
+        text: "In neun kurzen Schritten zeige ich dir, wo hier was steckt. Ein leuchtender Punkt führt dich zu jedem Knopf. Abbrechen darfst du jederzeit — über „Hilfe“ kommst du zurück." },{ ziel: "", titel: "Was ist die Chronik?",
         text: "Du kannst dir hier alle deine Erlebnisse, wie z.B. Festivals, Urlaube, Feiern, ... planen dokumentieren und den Leuten deiner Wahl zur Verfügung stellen. Routen, Bilder, Kommentare, Personen die dabei waren, …. Das alles kannst Du jederzeit wieder erleben und in Erinnerungen und Momenten schwelgen." },      
       { ziel: "neu", titel: "Ein Ereignis anlegen",
         text: "Alles beginnt hier: Name, Datum, Ort. Was ein Ereignis alles kann — Personen, Bilder, Etappen, Abstimmungen, Deko —, erklärt der zweite Leitfaden an einem Beispiel." },
@@ -4835,7 +4886,13 @@ class Component extends DCLogic {
       (e.images || []).forEach((im, j) => {
         /* Bilder aus einem Album, das mir nicht offensteht, bleiben draußen. */
         if (this.albumRecht(e, im.alb || "") < 1) return;
-        out.push({ key: e.id + ":" + j, src: im.src || "", caption: zeigbareUnterschrift(im.caption), event: e.name, date: fmtDate(e.date), n: (im.comments || []).length, rot: im.rot || 0 });
+        /* Die Musik des Albums gilt für seine Bilder, sonst die der
+           Etappe — so klingt jede Gruppe nach ihrem eigenen Lied. */
+        const alb = (e.alben || []).filter((x) => x.i === (im.alb || ""))[0];
+        const etId = this.bildEtappe(e, im);
+        const et = (e.etappen || []).filter((x) => x.i === etId)[0];
+        const musik = (alb && alb.musik) || (et && et.musik) || "";
+        out.push({ key: e.id + ":" + j, src: im.src || "", caption: zeigbareUnterschrift(im.caption), event: e.name, date: fmtDate(e.date), n: (im.comments || []).length, rot: im.rot || 0, musik: musik });
       });
     });
     return out;
@@ -4943,12 +5000,43 @@ class Component extends DCLogic {
     });
   }
 
+  /* Am Ende der Show klingt die Musik aus, statt abzubrechen: eine
+     eigene Datei wird leiser geregelt, eine Einbettung blendet weg —
+     deren Lautstärke lässt sich von außen nicht steuern. */
+  musikAusklang(fertig) {
+    const el = this.audio;
+    this.setShow({ ausklang: true }, false);
+    const dauer = 1400;
+    if (!el || !el.src) {
+      /* Kein eigenes Audio, also läuft ein Dienst-Spieler: der wird über
+         seine Deckkraft weggeblendet — die Zeit dafür muss auch
+         wirklich ablaufen, sonst reißt das Lied ab. */
+      window.setTimeout(() => fertig(), dauer);
+      return;
+    }
+    const start = el.volume;
+    const t0 = Date.now();
+    if (this.fadeTimer) window.clearInterval(this.fadeTimer);
+    this.fadeTimer = window.setInterval(() => {
+      const p = Math.min(1, (Date.now() - t0) / dauer);
+      el.volume = Math.max(0, start * (1 - p));
+      if (p >= 1) {
+        window.clearInterval(this.fadeTimer);
+        this.fadeTimer = null;
+        el.pause();
+        el.volume = start;
+        fertig();
+      }
+    }, 60);
+  }
+
   closeShow = () => {
     if (this.showTimer) window.clearInterval(this.showTimer);
     if (this.uiTimer) window.clearTimeout(this.uiTimer);
-    if (this.audio) this.audio.pause();
     try { if (document.fullscreenElement) document.exitFullscreen(); } catch (e) { /* egal */ }
-    this.setState({ show: Object.assign({}, this.state.show, { open: false, playing: true, voll: false, ui: true }) });
+    this.musikAusklang(() => {
+      this.setState({ show: Object.assign({}, this.state.show, { open: false, playing: true, voll: false, ui: true, ausklang: false }) });
+    });
   };
 
   /* ---------- theme ---------- */
@@ -8792,69 +8880,99 @@ class Component extends DCLogic {
               }));
             const a = zeile(v.meine), b = zeile(v.seine);
 
-            /* Gegenüberstellung: gleiche Tage in einer Zeile. Dazu beide
-               Seiten nach Tag gruppieren und paarweise auffüllen. */
-            const nachTag = (liste) => {
-              const m = {};
-              /* Mehrtägiges steht an jedem seiner Tage dieses Jahres —
-                 nur so trifft es auf das, was am mittleren Tag lief. */
-              liste.filter(imJahr).forEach((e) => {
-                self.tageVon(e).forEach((t) => {
-                  if (String(t).slice(0, 4) !== j) return;
-                  (m[t] = m[t] || []).push(e);
-                });
-              });
-              return m;
-            };
-            const tagA = nachTag(v.meine), tagB = nachTag(v.seine);
-            const tagSet = {};
-            Object.keys(tagA).concat(Object.keys(tagB)).forEach((t) => { tagSet[t] = true; });
-            const alleTage = Object.keys(tagSet).sort();
-            const kachel = (e, spalte) => e ? {
-              name: e.name || "ohne Titel", datum: fmtDate(e.date), ort: e.place || "",
+            /* Gegenüberstellung ganzer Ereignisse, nicht einzelner Tage:
+               jedes zusammenpassende Paar steht in einer Zeile und trägt
+               auf beiden Seiten dieselbe Nummer, alles Übrige steht
+               allein auf seiner Seite. Die Tage stecken weiter in den
+               Zahlen. */
+            const kachel = (e, spalte, nr) => e ? {
+              name: e.name || "ohne Titel", datum: fmtDate(e.date),
+              spanne: e.end && e.end !== e.date ? fmtDate(e.date) + " – " + fmtDate(e.end) : fmtDate(e.date),
+              ort: e.place || "",
               hatOrt: !!String(e.place || "").trim(),
+              nr: nr ? String(nr) : "", hatNr: !!nr,
+              nrStil: {
+                display: "inline-grid", placeItems: "center", width: "17px", height: "17px",
+                borderRadius: "99px", fontSize: "10.5px", fontVariantNumeric: "tabular-nums",
+                background: "var(--color-accent)", color: "var(--color-bg)"
+              },
               style: {
-                gridColumn: String(spalte), display: "grid", gap: "1px", padding: "6px 9px",
+                gridColumn: String(spalte), display: "grid", gap: "2px", padding: "7px 9px",
                 borderRadius: "var(--radius-md)",
-                background: trefferIds[e.id] ? "color-mix(in srgb, var(--color-accent) 12%, transparent)" : "var(--color-surface)",
-                boxShadow: trefferIds[e.id] ? "inset 0 0 0 1px var(--color-accent-300)" : "none"
+                background: nr ? "color-mix(in srgb, var(--color-accent) 12%, transparent)" : "var(--color-surface)",
+                boxShadow: nr ? "inset 0 0 0 1.5px var(--color-accent)" : "none"
               }
             } : {
-              name: "", datum: "", ort: "", hatOrt: false,
+              name: "", datum: "", spanne: "", ort: "", hatOrt: false, nr: "", hatNr: false, nrStil: {},
               style: {
-                gridColumn: String(spalte), display: "grid", padding: "6px 9px",
+                gridColumn: String(spalte), display: "grid", padding: "7px 9px",
                 borderRadius: "var(--radius-md)", minHeight: "1px",
                 background: "color-mix(in srgb, var(--color-text) 3%, transparent)"
               }
             };
-            const paare = [];
-            alleTage.forEach((t) => {
-              const la = tagA[t] || [], lb = tagB[t] || [];
-              const n = Math.max(la.length, lb.length);
-              for (let k = 0; k < n; k++) {
-                const ea = la[k], eb = lb[k];
-                paare.push({
-                  key: t + "-" + k,
-                  tag: k === 0 ? fmtDate(t) : "",
-                  zeigeTag: k === 0,
-                  beide: !!(ea && eb),
-                  links: kachel(ea, 1), rechts: kachel(eb, 2),
-                  zeilenStil: {
-                    display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)",
-                    alignItems: "start", padding: (ea && eb) ? "5px 6px" : "5px 6px",
-                    borderRadius: "var(--radius-md)",
-                    background: (ea && eb) ? "color-mix(in srgb, var(--color-accent) 7%, transparent)" : "transparent"
-                  }
-                });
-              }
+            const zeilenStil = (paar) => ({
+              display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)",
+              alignItems: "start", padding: "5px 6px", borderRadius: "var(--radius-md)",
+              background: paar ? "color-mix(in srgb, var(--color-accent) 7%, transparent)" : "transparent"
             });
+            const paare = [];
+            const schonA = {}, schonB = {};
+            let nr = 0;
+            (v.treffer || [])
+              .filter((x) => imJahr(x.a) || imJahr(x.b))
+              .sort((x, y) => dp(x.a.date) - dp(y.a.date))
+              .forEach((x) => {
+                if (schonA[x.a.id] || schonB[x.b.id]) return;
+                nr += 1;
+                schonA[x.a.id] = true;
+                schonB[x.b.id] = true;
+                paare.push({
+                  key: "t" + x.a.id + x.b.id, sort: dp(x.a.date) || 0,
+                  tag: "Nr. " + nr + " · passt zusammen",
+                  zeigeTag: true, beide: true,
+                  links: kachel(x.a, 1, nr), rechts: kachel(x.b, 2, nr),
+                  zeilenStil: zeilenStil(true)
+                });
+              });
+            v.meine.filter(imJahr).filter((e) => !schonA[e.id]).forEach((e) => {
+              paare.push({
+                key: "a" + e.id, sort: dp(e.date) || 0, tag: "", zeigeTag: false, beide: false,
+                links: kachel(e, 1, 0), rechts: kachel(null, 2, 0), zeilenStil: zeilenStil(false)
+              });
+            });
+            v.seine.filter(imJahr).filter((e) => !schonB[e.id]).forEach((e) => {
+              paare.push({
+                key: "b" + e.id, sort: dp(e.date) || 0, tag: "", zeigeTag: false, beide: false,
+                links: kachel(null, 1, 0), rechts: kachel(e, 2, 0), zeilenStil: zeilenStil(false)
+              });
+            });
+            paare.sort((x, y) => x.sort - y.sort);
+
+            /* Gleiche Kalendertage — nur noch als Zahl, nicht mehr als
+               Zeilenraster. Mehrtägiges zählt an jedem seiner Tage. */
+            const tageJ = (liste) => {
+              const m = {};
+              liste.filter(imJahr).forEach((e) => self.tageVon(e).forEach((t) => {
+                if (String(t).slice(0, 4) === j) m[t] = true;
+              }));
+              return m;
+            };
+            const tJA = tageJ(v.meine), tJB = tageJ(v.seine);
+            const gleicheTage = Object.keys(tJA).filter((t) => tJB[t]).length;
 
             jahre.push({
               key: j, jahr: j,
               meine: a, seine: b,
               keineA: a.length === 0, keineB: b.length === 0,
               paare: paare,
-              gleicheTage: paare.filter((p) => p.beide).length
+              gleicheTage: gleicheTage,
+              gleicheEreignisse: paare.filter((p) => p.beide).length,
+              /* Die Tage stecken weiter in den Zahlen — gezeigt werden
+                 aber ganze Ereignisse. */
+              bilanz: [
+                plural(paare.filter((p) => p.beide).length, "gemeinsames Ereignis", "gemeinsame Ereignisse"),
+                plural(gleicheTage, "gleicher Tag", "gleiche Tage")
+              ].join(" · ")
             });
           });
         }
@@ -8987,7 +9105,7 @@ class Component extends DCLogic {
           neben: !!st.vglNeben,
           ansichten: [
             { key: "k", label: "Untereinander", on: !st.vglNeben, pick: () => self.setState({ vglNeben: false }) },
-            { key: "n", label: "Gleiche Tage nebeneinander", on: !!st.vglNeben, pick: () => self.setState({ vglNeben: true }) }
+            { key: "n", label: "Ereignisse nebeneinander", on: !!st.vglNeben, pick: () => self.setState({ vglNeben: true }) }
           ],
           hinweis: v && !v.tageBeide.length && !v.orteBeide.length && !v.gemeinsam.length
             ? (self.state.vglFilter && (self.state.vglFilter.q || self.state.vglFilter.ort || self.state.vglFilter.kat || self.state.vglFilter.jahr)
@@ -9901,7 +10019,34 @@ class Component extends DCLogic {
         transition: st.show.transition,
         transitions: TRANSITIONS.map((o) => ({ key: o[0], value: o[0], label: o[1] })),
         onTransition: (ev) => this.setShow({ transition: ev.target.value }, false),
-        music: st.show.music, hasMusic: !!st.show.music, musicUrl: st.show.musicUrl, musicName: st.show.musicName,
+        /* Die Spur des gerade gezeigten Bildes hat Vorrang vor der
+           Hintergrundmusik der Show. Wechselt sie, hört die vorige auf
+           und die neue beginnt — darum steckt der Schlüssel im key. */
+        spur: (function (self) {
+          const sp = musikSpur(cur ? cur.musik : "");
+          const eigen = !!st.show.music && !sp.spielt;
+          return {
+            /* Während des Ausklangs bleibt der Spieler stehen und wird
+               nur durchsichtig — abgebaut wird er erst danach. */
+            hatEmbed: sp.hatEmbed,
+            embedKey: "mu" + sp.src,
+            embedRef: (el) => { if (el && el.getAttribute("src") !== sp.src) el.src = sp.src; },
+            name: sp.name,
+            hatName: !!sp.name,
+            zeigeName: !!sp.name && !st.show.voll,
+            /* Im Vollbild bleibt nur das Foto zu sehen — der Spieler
+               läuft unsichtbar weiter. */
+            rahmen: {
+              position: "absolute", right: "14px", bottom: "14px", width: st.show.voll ? "1px" : "300px",
+              height: st.show.voll ? "1px" : "82px", opacity: st.show.voll ? 0 : (st.show.ausklang ? 0 : 1),
+              overflow: "hidden", border: 0, borderRadius: "var(--radius-md)", zIndex: 4,
+              pointerEvents: st.show.voll ? "none" : "auto",
+              transition: "opacity 1400ms linear"
+            },
+            eigeneDatei: eigen
+          };
+        })(this),
+        music: st.show.music, hasMusic: !!st.show.music || !!(cur && musikSpur(cur.musik).hatDatei), musicUrl: st.show.musicUrl, musicName: st.show.musicName,
         onMusicFile: (ev) => {
           const file = ev.target.files && ev.target.files[0];
           if (!file) return;
@@ -9922,8 +10067,16 @@ class Component extends DCLogic {
           el.volume = this.state.show.volume;
           /* Quelle erst hier setzen — im Markup wäre sie beim Aufbau der
              Seite noch ein roher Platzhalter und schlüge fehl. */
-          const quelle = this.state.show.music || "";
-          if (el.getAttribute("src") !== quelle) el.src = quelle;
+          /* Hat das gezeigte Bild eine eigene Audiodatei, läuft sie —
+             sonst die Hintergrundmusik der Show. */
+          const bilder = this.showImages(this.state.show.scope, this.state.show.ref);
+          const jetzt = bilder[bilder.length ? Math.min(this.state.show.idx, bilder.length - 1) : 0];
+          const sp = musikSpur(jetzt ? jetzt.musik : "");
+          const quelle = sp.hatDatei ? sp.src : (this.state.show.music || "");
+          if (el.getAttribute("src") !== quelle) {
+            el.src = quelle;
+            if (quelle) el.play().catch(() => {});
+          }
         }
       }
     };
