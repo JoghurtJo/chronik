@@ -551,12 +551,7 @@
                               <div style="display: flex; align-items: baseline; gap: 8px; font-size: 13.5px;">
                                 <span style="color: color-mix(in srgb, var(--t-ink, #201e1d) 60%, var(--t-card, #eae9e9));">{{ k.label }}</span>
                                 <span style="flex: 1; height: 1px; background: color-mix(in srgb, var(--t-ink, #201e1d) 20%, transparent);"></span>
-                                <sc-if value="{{ k.istLink }}" hint-placeholder-val="{{ false }}">
-                                  <a href="{{ k.musik.href }}" target="_blank" rel="noreferrer noopener" onClick="{{ stop }}" style="{{ musikChip }}">{{ k.musik.label }}</a>
-                                </sc-if>
-                                <sc-if value="{{ k.glatt }}" hint-placeholder-val="{{ true }}">
-                                  <span>{{ k.value }}</span>
-                                </sc-if>
+                                <span>{{ k.value }}</span>
                               </div>
                             </sc-for>
                           </div>
@@ -1337,7 +1332,7 @@
           <sc-for list="{{ form.images }}" as="r" hint-placeholder-count="0">
             <div style="display: grid; gap: 4px;">
             <div style="{{ lay.rowImg }}">
-              <input type="checkbox" checked="{{ r.markiert }}" onChange="{{ r.markUm }}" title="Bild markieren" style="width: 17px; height: 17px; align-self: center; accent-color: var(--color-accent); cursor: pointer;">
+              <input type="checkbox" checked="{{ r.markiert }}" onClick="{{ r.markKlick }}" onChange="{{ r.markUm }}" title="Bild markieren · Shift wählt eine Strecke" style="width: 17px; height: 17px; align-self: center; accent-color: var(--color-accent); cursor: pointer;">
               <sc-if value="{{ r.src }}" hint-placeholder-val="{{ false }}">
                 <span onClick="{{ r.klick }}" title="Anklicken markiert · Shift wählt eine Strecke" style="{{ r.vorschauStil }}"></span>
               </sc-if>
@@ -4291,7 +4286,9 @@ class Component extends DCLogic {
   schritteGrund() {
     return [
       { ziel: "", titel: "Willkommen in deiner Chronik",
-        text: "In neun kurzen Schritten zeige ich dir, wo hier was steckt. Ein leuchtender Punkt führt dich zu jedem Knopf. Abbrechen darfst du jederzeit — über „Hilfe“ kommst du zurück." },
+        text: "In neun kurzen Schritten zeige ich dir, wo hier was steckt. Ein leuchtender Punkt führt dich zu jedem Knopf. Abbrechen darfst du jederzeit — über „Hilfe“ kommst du zurück." },      
+{ ziel: "", titel: "Was ist die Chronik?",
+        text: "Du kannst dir hier alle deine Erlebnisse, wie z.B. Festivals, Urlaube, Feiern, ... planen dokumentieren und den Leuten deiner Wahl zur Verfügung stellen. Routen, Bilder, Kommentare, Personen die dabei waren, …. Das alles kannst Du jederzeit wieder erleben und in Erinnerungen und Momenten schwelgen." },      
       { ziel: "neu", titel: "Ein Ereignis anlegen",
         text: "Alles beginnt hier: Name, Datum, Ort. Was ein Ereignis alles kann — Personen, Bilder, Etappen, Abstimmungen, Deko —, erklärt der zweite Leitfaden an einem Beispiel." },
       { ziel: "", titel: "Dein Zeitstrahl",
@@ -4301,9 +4298,9 @@ class Component extends DCLogic {
       { ziel: "show", titel: "Fotoshow",
         text: "Zeigt alle Bilder deiner Auswahl groß, mit Übergängen und wahlweise Musik. Im Vollbild bleibt nur das Foto; bewegst du die Maus, kommt die Leiste kurz zurück." },
       { ziel: "design", titel: "Jedes Design kannst Du nach deinem Geschmack ändern",
-        text: "Von Zeitungssatz über Emailschild bis zum Regenbogen. Gestalte deine Chronik nach deinen Wünschen. Jedes lässt sich weiter verstellen — Farben, Schrift, Marker, Dichte." },
+        text: "Von Zeitungssatz über Emailschild bis zum Regenbogen. Jedes lässt sich weiter verstellen — Farben, Schrift, Marker, Dichte." },
       { ziel: "kontakte", titel: "Kontakte und Gruppen",
-        text: "Suche jemanden nach Name oder E-Mail und schick eine Anfrage. Erst wenn sie bestätigt ist, könnt ihr einander Ereignisse freigeben. Mit Gruppen kannst du die Ereignisse nur mit bestimmten Personen teilen." },
+        text: "Suche jemanden nach Name oder E-Mail und schick eine Anfrage. Erst wenn sie bestätigt ist, könnt ihr einander Ereignisse freigeben. Gruppen sind Abkürzungen dafür — sichtbar nur für ihre Mitglieder." },
       { ziel: "konto", titel: "Mein Konto",
         text: "Profilbild, deine Angaben, was von anderen auf deinem Zeitstrahl erscheinen soll, ob fremde Ereignis-Designs übernommen werden, und wann du eine Mail bekommst." },
       { ziel: "hilfe", titel: "Das war es",
@@ -5755,13 +5752,14 @@ class Component extends DCLogic {
   /* Bilder in Anzeigereihenfolge, ohne die, die in einem Album liegen,
      das mir nicht offensteht. */
   bilderSichtbar(e) {
-    return this.nachEtappen(e).map((row) => {
+    const sichtbar = this.nachEtappen(e).map((row) => {
       const albId = (row.r || {}).alb || "";
       return Object.assign({}, row, {
         recht: this.albumRecht(e, albId),
         albName: this.albumName(e, albId)
       });
     }).filter((row) => row.recht >= 1);
+    return this.gruppenKoepfe(e, sichtbar);
   }
 
   albNeu = () => {
@@ -6134,23 +6132,33 @@ class Component extends DCLogic {
       (split ? etRang(a.etId) - etRang(b.etId) : 0)
       || albRang(a.albId) - albRang(b.albId)
       || a.j - b.j);
+    /* Die Überschriften setzt erst `gruppenKoepfe` — und zwar nach dem
+       Rechtefilter. Würden sie hier schon am ersten Bild einer Gruppe
+       hängen und dieses Bild fiele später weg, verlöre die ganze Gruppe
+       ihre Überschrift. */
+    return sortiert.map((x) => Object.assign({}, x, { split: split }));
+  }
+
+  /* Überschrift beim jeweils ersten sichtbaren Bild einer Gruppe. */
+  gruppenKoepfe(e, reihen) {
+    const alben = e.alben || [];
     let letzteEt = "\u0000";
     let letztesAlb = "\u0000";
-    sortiert.forEach((x) => {
-      if (split && x.etId !== letzteEt) {
+    return reihen.map((roh) => {
+      const x = Object.assign({}, roh, { kopf: "", albKopf: "", albMusik: "" });
+      if (x.split && x.etId !== letzteEt) {
         x.kopf = x.etId ? this.etName(e, x.etId) : "Ohne Etappe";
         letzteEt = x.etId;
         letztesAlb = "\u0000";
       }
       if (x.albId !== letztesAlb) {
         x.albKopf = x.albId ? (this.albumName(e, x.albId) || "Album") : (alben.length ? "Ohne Album" : "");
-        /* Die Musik des Albums steht neben seiner Überschrift. */
         const alb = x.albId ? (alben.filter((y) => y.i === x.albId)[0] || null) : null;
         x.albMusik = alb ? alb.musik || "" : "";
         letztesAlb = x.albId;
       }
+      return x;
     });
-    return sortiert;
   }
 
   /* Name einer Etappe, mit Rückfall auf ihre Nummer. */
@@ -6864,12 +6872,7 @@ class Component extends DCLogic {
         canEdit: lvl >= 3, canFull: lvl >= 4,
         editLabel: lvl >= 4 ? "Bearbeiten" : "Inhalte pflegen",
         rights: lvl >= 4 ? "" : lvl >= 3 ? "Teilrechte" : lvl >= 2 ? "Kommentieren erlaubt" : "Nur ansehen",
-        /* Steht im Wert der Verweis auf einen Musikdienst, wird daraus ein
-         anklickbarer Verweis statt roher Adresstext. */
-      infos: (e.infos || []).map((r, j) => {
-          const mu = musikMeta(r.value);
-          return { key: "i" + j, label: r.label, value: r.value, musik: mu, istLink: mu.hat, glatt: !mu.hat };
-        }),
+        infos: (e.infos || []).map((r, j) => ({ key: "i" + j, label: r.label, value: r.value })),
         people: (e.people || []).map((r, j) => ({ key: "p" + j, name: r.name, role: r.role || "", photo: r.photo || "", noPhoto: !r.photo,
           /* Als Hintergrund statt <img>: so fragt der Browser während des
              Aufbaus nie eine noch unaufgelöste Adresse ab. */
@@ -7636,6 +7639,14 @@ class Component extends DCLogic {
           if (ev && ev.stopPropagation) ev.stopPropagation();
         },
         klick: (ev) => this.bildKlick(i, ev),
+        /* Das Häkchen selbst hört auf Shift und Strg/Cmd — dort klickt man
+           am ehesten hin, wenn man eine Strecke markieren will. */
+        markKlick: (ev) => {
+          if (ev && (ev.shiftKey || ev.metaKey || ev.ctrlKey)) {
+            if (ev.preventDefault) ev.preventDefault();
+            this.bildKlick(i, ev);
+          }
+        },
         alb: r.alb || "",
         onAlb: (ev) => this.bildZuweisen("alb", ev.target.value, this.bildZiel(i)),
         et: r.et || "",
