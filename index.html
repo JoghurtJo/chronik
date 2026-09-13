@@ -113,7 +113,7 @@
         <span>Dein Leben</span>
         <span>Eure Geschichten</span>
         <span>Erleben wie damals:)</span>
-        <span>Mit mehr Organgen!</span>
+        <span>Mit mehr Organgen</span>
       </div>
     </div>
 
@@ -774,24 +774,26 @@
                             <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t-accent, #0088b0);">Bilder</span>
                             <button onClick="{{ c.show }}" title="Alle Bilder dieses Ereignisses groß zeigen" style="font: inherit; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 13px; cursor: pointer; white-space: nowrap; border: 0; borderRadius: 99px; border-radius: 999px; background: var(--t-accent, #0088b0); color: var(--t-card, #eae9e9); box-shadow: var(--shadow-sm);">▦ Fotoshow</button>
                           </div>
+                          <sc-for list="{{ c.bildGruppen }}" as="g" hint-placeholder-count="1">
+                          <div style="display: grid; gap: 6px; margin-bottom: 10px;">
+                            <sc-if value="{{ g.hatEtKopf }}" hint-placeholder-val="{{ false }}">
+                              <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-family: var(--t-font-head, var(--font-heading)); font-size: 14px; letter-spacing: 0.04em; color: var(--t-accent, #0088b0);">{{ g.etKopf }}</span>
+                                <span style="flex: 1; height: 1px; background: color-mix(in srgb, var(--t-accent, #0088b0) 30%, transparent);"></span>
+                              </div>
+                            </sc-if>
+                            <sc-if value="{{ g.hatAlbKopf }}" hint-placeholder-val="{{ false }}">
+                              <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: color-mix(in srgb, var(--t-accent2, #d6006c) 88%, var(--t-ink, #201e1d));">{{ g.albKopf }}</span>
+                                <span style="flex: 1; height: 1px; background: color-mix(in srgb, var(--t-accent2, #d6006c) 26%, transparent);"></span>
+                                <sc-if value="{{ g.albMusik.hat }}" hint-placeholder-val="{{ false }}">
+                                  <a href="{{ g.albMusik.href }}" target="_blank" rel="noreferrer noopener" onClick="{{ stop }}" style="{{ musikChip }}">{{ g.albMusik.label }}</a>
+                                </sc-if>
+                              </div>
+                            </sc-if>
                           <div style="{{ lay.pairGrid }}">
-                            <sc-for list="{{ c.images }}" as="im" hint-placeholder-count="0">
+                            <sc-for list="{{ g.bilder }}" as="im" hint-placeholder-count="0">
                               <div style="{{ im.wrap }}">
-                                <sc-if value="{{ im.hatKopf }}" hint-placeholder-val="{{ false }}">
-                                  <div style="display: flex; align-items: center; gap: 8px; padding-top: 2px;">
-                                    <span style="font-family: var(--t-font-head, var(--font-heading)); font-size: 14px; letter-spacing: 0.04em; color: var(--t-accent, #0088b0);">{{ im.etKopf }}</span>
-                                    <span style="flex: 1; height: 1px; background: color-mix(in srgb, var(--t-accent, #0088b0) 30%, transparent);"></span>
-                                  </div>
-                                </sc-if>
-                                <sc-if value="{{ im.hatAlbKopf }}" hint-placeholder-val="{{ false }}">
-                                  <div style="display: flex; align-items: center; gap: 8px; padding-top: 2px;">
-                                    <span style="font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: color-mix(in srgb, var(--t-accent2, #d6006c) 88%, var(--t-ink, #201e1d));">{{ im.albKopf }}</span>
-                                    <span style="flex: 1; height: 1px; background: color-mix(in srgb, var(--t-accent2, #d6006c) 26%, transparent);"></span>
-                                    <sc-if value="{{ im.albMusik.hat }}" hint-placeholder-val="{{ false }}">
-                                      <a href="{{ im.albMusik.href }}" target="_blank" rel="noreferrer noopener" onClick="{{ stop }}" style="{{ musikChip }}">{{ im.albMusik.label }}</a>
-                                    </sc-if>
-                                  </div>
-                                </sc-if>
                                 <figure style="margin: 0; width: 100%; overflow: hidden; background: var(--t-img-bg, transparent); padding: var(--t-img-pad, 0); border-radius: var(--t-img-radius, 0); rotate: var(--t-img-rot, 0deg); box-shadow: var(--t-img-shadow, none);">
                                   <sc-if value="{{ im.src }}" hint-placeholder-val="{{ false }}">
                                     <span role="img" aria-label="{{ im.caption }}" onClick="{{ im.zoom }}" title="größer ansehen" style="{{ im.bildStil }}"></span>
@@ -846,6 +848,8 @@
                               </div>
                             </sc-for>
                           </div>
+                          </div>
+                          </sc-for>
                         </div>
                       </sc-if>
 
@@ -4286,7 +4290,7 @@ class Component extends DCLogic {
   schritteGrund() {
     return [
       { ziel: "", titel: "Willkommen in deiner Chronik",
-        text: "In neun kurzen Schritten zeige ich dir, wo hier was steckt. Ein leuchtender Punkt führt dich zu jedem Knopf. Abbrechen darfst du jederzeit — über „Hilfe“ kommst du zurück." },      
+        text: "In neun kurzen Schritten zeige ich dir, wo hier was steckt. Ein leuchtender Punkt führt dich zu jedem Knopf. Abbrechen darfst du jederzeit — über „Hilfe“ kommst du zurück." },
 { ziel: "", titel: "Was ist die Chronik?",
         text: "Du kannst dir hier alle deine Erlebnisse, wie z.B. Festivals, Urlaube, Feiern, ... planen dokumentieren und den Leuten deiner Wahl zur Verfügung stellen. Routen, Bilder, Kommentare, Personen die dabei waren, …. Das alles kannst Du jederzeit wieder erleben und in Erinnerungen und Momenten schwelgen." },      
       { ziel: "neu", titel: "Ein Ereignis anlegen",
@@ -6774,6 +6778,103 @@ class Component extends DCLogic {
         openBottom = top + est;
         offenesStapelEnde[it.stapel] = Math.max(offenesStapelEnde[it.stapel] || 0, openBottom);
       }
+      const bildListe = bilder.map(({ r, j, kopf, albKopf, albMusik, albName, recht }) => ({
+          etKopf: kopf || "", hatKopf: !!kopf,
+          albMusik: musikMeta(albMusik),
+          /* Der Albumname steht als Überschrift über der ersten Kachel
+             seiner Gruppe — nicht mehr klein unter jedem Bild. */
+          albKopf: albKopf || "", hatAlbKopf: !!albKopf,
+          albName: albName || "",
+          /* Oben ausgerichtet: beim Aufklappen wächst die Kachel nach
+             rechts, Bild und Beschriftung bleiben an der oberen linken
+             Ecke. Die Breite bleibt voll — sonst schrumpfen die
+             Rasterkinder auf Inhaltsbreite und werden unklickbar. */
+          /* Eine Kachel mit Überschrift nimmt die ganze Breite, damit die
+             Gruppe darunter sauber neu beginnt. */
+          wrap: { display: "grid", gap: "6px", alignContent: "start" },
+          key: "m" + j, src: r.src || "", empty: !r.src, caption: zeigbareUnterschrift(r.caption), leerText: "ohne Bild",
+          /* Als Hintergrund statt <img>: so fragt der Browser während des
+             Aufbaus nie eine noch unaufgelöste Adresse ab. Form und
+             Zoom-Zeiger bleiben, damit die Bildform des Ereignisses gilt. */
+          bildStil: r.src
+            ? Object.assign({
+                display: "block", width: "100%",
+                aspectRatio: "var(--t-img-ratio, 4 / 3)",
+                borderRadius: "var(--t-img-radius, 0)",
+                backgroundImage: "url(" + r.src + ")",
+                backgroundSize: "cover", backgroundPosition: "center",
+                cursor: "zoom-in"
+              }, drehStil(r.rot, eT))
+            : { display: "none" },
+          comments: (function (self) {
+            const alleC = (r.comments || []).map((cm, k) => Object.assign({}, cm, { _k: k }));
+            const oben = alleC.filter((cm) => !cm.parent);
+            const auf = !!(st.mehrOffen || {})["img" + e.id + j];
+            const zeigen = auf ? oben : oben.slice(0, 3);
+            const bauen = (cm, tief) => {
+              const kinder = alleC.filter((x) => x.parent && x.parent === cm.id);
+              const rSchluessel = "ant" + e.id + j + cm.id;
+              const antwortOffen = !!(st.mehrOffen || {})[rSchluessel];
+              const dKey = e.id + ":" + j + ":" + cm.id;
+              const meinZeichen = me ? ((cm.reax || {})[me.id] || "") : "";
+              const zeichenZahl = {};
+              Object.keys(cm.reax || {}).forEach((u2) => { const em = cm.reax[u2]; zeichenZahl[em] = (zeichenZahl[em] || 0) + 1; });
+              return {
+                key: "c" + cm._k, who: cm.who, text: cm.text,
+                alive: !cm.deleted, gone: !!cm.deleted,
+                goneText: cm.who + " hat den Kommentar gelöscht",
+                row: cm.deleted
+                  ? { fontSize: "11px", lineHeight: 1.4, color: "color-mix(in srgb, var(--t-ink, #201e1d) 45%, var(--t-card, #eae9e9))" }
+                  : { fontSize: "11.5px", lineHeight: 1.4 },
+                einzug: { paddingLeft: (tief * 14) + "px" },
+                canDelete: !cm.deleted && !!me && (cm.userId === me.id),
+                remove: () => self.removeComment(e.id, j, cm._k),
+                zeichen: (recht >= 2 && !cm.deleted) ? ECHO_EMOJI.map((em) => ({
+                  key: em, em: em, n: zeichenZahl[em] ? String(zeichenZahl[em]) : "",
+                  style: {
+                    font: "inherit", fontSize: "12px", lineHeight: 1, padding: "2px 6px", cursor: "pointer",
+                    borderRadius: "99px",
+                    background: meinZeichen === em ? "color-mix(in srgb, var(--t-accent, #0088b0) 20%, transparent)" : "transparent",
+                    border: "1px solid " + (meinZeichen === em ? "var(--t-accent, #0088b0)" : "transparent"),
+                    color: "var(--t-ink, #201e1d)", opacity: zeichenZahl[em] || meinZeichen === em ? 1 : 0.45
+                  },
+                  pick: () => self.reagieren(e.id, j, cm.id, em)
+                })) : [],
+                kannAntworten: recht >= 2 && !cm.deleted && tief < 3,
+                antwortOffen: antwortOffen,
+                antwortLabel: antwortOffen ? "Abbrechen" : "Antworten",
+                antwortToggle: () => self.antwortAuf(rSchluessel),
+                antwortText: (st.cdraft || {})[dKey] || "",
+                onAntwort: (ev) => { const cd = Object.assign({}, st.cdraft); cd[dKey] = ev.target.value; self.setState({ cdraft: cd }); },
+                antwortSenden: () => self.addComment(e.id, j, cm.id),
+                _kinder: kinder, _tief: tief
+              };
+            };
+            /* Flach mit Einzug — Vorlagen können sich nicht selbst aufrufen. */
+            const flach = [];
+            const rein = (cm, tief) => {
+              const z = bauen(cm, tief);
+              const kinder = z._kinder;
+              delete z._kinder;
+              delete z._tief;
+              flach.push(z);
+              kinder.forEach((x) => rein(x, tief + 1));
+            };
+            zeigen.forEach((cm) => rein(cm, 0));
+            return flach;
+          })(this),
+          mehrC: (r.comments || []).filter((cm) => !cm.parent).length > 3,
+          mehrCLabel: (st.mehrOffen || {})["img" + e.id + j]
+            ? "weniger anzeigen"
+            : "… " + ((r.comments || []).filter((cm) => !cm.parent).length - 3) + " weitere",
+          mehrCToggle: () => this.antwortAuf("img" + e.id + j),
+          canComment: recht >= 2,
+          draft: (st.cdraft || {})[e.id + ":" + j] || "",
+          onDraft: (ev) => { const cd = Object.assign({}, st.cdraft); cd[e.id + ":" + j] = ev.target.value; this.setState({ cdraft: cd }); },
+          onKey: (ev) => { if (ev.key === "Enter") this.addComment(e.id, j); },
+          send: () => this.addComment(e.id, j),
+          zoom: (ev) => { ev.stopPropagation(); this.setState({ zoomImg: { src: r.src, caption: zeigbareUnterschrift(r.caption), event: e.name, rot: r.rot || 0 } }); }
+        }));
       return {
         key: e.id, id: e.id,
         /* Klick auf den Schleier verlässt das Vollbild; Klicks in der
@@ -6903,105 +7004,27 @@ class Component extends DCLogic {
           keinFoto: !(r.photo || (r.uid ? this.avatarVon(r.uid) : "")) })),
         /* Im Split-Modus nach Etappe sortiert. r und j behalten ihre
            Bedeutung, weil Kommentare am ursprünglichen Index hängen. */
-        images: bilder.map(({ r, j, kopf, albKopf, albMusik, albName, recht }) => ({
-          etKopf: kopf || "", hatKopf: !!kopf,
-          albMusik: musikMeta(albMusik),
-          /* Der Albumname steht als Überschrift über der ersten Kachel
-             seiner Gruppe — nicht mehr klein unter jedem Bild. */
-          albKopf: albKopf || "", hatAlbKopf: !!albKopf,
-          albName: albName || "",
-          /* Oben ausgerichtet: beim Aufklappen wächst die Kachel nach
-             rechts, Bild und Beschriftung bleiben an der oberen linken
-             Ecke. Die Breite bleibt voll — sonst schrumpfen die
-             Rasterkinder auf Inhaltsbreite und werden unklickbar. */
-          /* Eine Kachel mit Überschrift nimmt die ganze Breite, damit die
-             Gruppe darunter sauber neu beginnt. */
-          wrap: (kopf || albKopf)
-            ? { display: "grid", gap: "6px", gridColumn: "1 / -1", alignContent: "start" }
-            : { display: "grid", gap: "6px", alignContent: "start" },
-          key: "m" + j, src: r.src || "", empty: !r.src, caption: zeigbareUnterschrift(r.caption), leerText: "ohne Bild",
-          /* Als Hintergrund statt <img>: so fragt der Browser während des
-             Aufbaus nie eine noch unaufgelöste Adresse ab. Form und
-             Zoom-Zeiger bleiben, damit die Bildform des Ereignisses gilt. */
-          bildStil: r.src
-            ? Object.assign({
-                display: "block", width: "100%",
-                aspectRatio: "var(--t-img-ratio, 4 / 3)",
-                borderRadius: "var(--t-img-radius, 0)",
-                backgroundImage: "url(" + r.src + ")",
-                backgroundSize: "cover", backgroundPosition: "center",
-                cursor: "zoom-in"
-              }, drehStil(r.rot, eT))
-            : { display: "none" },
-          comments: (function (self) {
-            const alleC = (r.comments || []).map((cm, k) => Object.assign({}, cm, { _k: k }));
-            const oben = alleC.filter((cm) => !cm.parent);
-            const auf = !!(st.mehrOffen || {})["img" + e.id + j];
-            const zeigen = auf ? oben : oben.slice(0, 3);
-            const bauen = (cm, tief) => {
-              const kinder = alleC.filter((x) => x.parent && x.parent === cm.id);
-              const rSchluessel = "ant" + e.id + j + cm.id;
-              const antwortOffen = !!(st.mehrOffen || {})[rSchluessel];
-              const dKey = e.id + ":" + j + ":" + cm.id;
-              const meinZeichen = me ? ((cm.reax || {})[me.id] || "") : "";
-              const zeichenZahl = {};
-              Object.keys(cm.reax || {}).forEach((u2) => { const em = cm.reax[u2]; zeichenZahl[em] = (zeichenZahl[em] || 0) + 1; });
-              return {
-                key: "c" + cm._k, who: cm.who, text: cm.text,
-                alive: !cm.deleted, gone: !!cm.deleted,
-                goneText: cm.who + " hat den Kommentar gelöscht",
-                row: cm.deleted
-                  ? { fontSize: "11px", lineHeight: 1.4, color: "color-mix(in srgb, var(--t-ink, #201e1d) 45%, var(--t-card, #eae9e9))" }
-                  : { fontSize: "11.5px", lineHeight: 1.4 },
-                einzug: { paddingLeft: (tief * 14) + "px" },
-                canDelete: !cm.deleted && !!me && (cm.userId === me.id),
-                remove: () => self.removeComment(e.id, j, cm._k),
-                zeichen: (recht >= 2 && !cm.deleted) ? ECHO_EMOJI.map((em) => ({
-                  key: em, em: em, n: zeichenZahl[em] ? String(zeichenZahl[em]) : "",
-                  style: {
-                    font: "inherit", fontSize: "12px", lineHeight: 1, padding: "2px 6px", cursor: "pointer",
-                    borderRadius: "99px",
-                    background: meinZeichen === em ? "color-mix(in srgb, var(--t-accent, #0088b0) 20%, transparent)" : "transparent",
-                    border: "1px solid " + (meinZeichen === em ? "var(--t-accent, #0088b0)" : "transparent"),
-                    color: "var(--t-ink, #201e1d)", opacity: zeichenZahl[em] || meinZeichen === em ? 1 : 0.45
-                  },
-                  pick: () => self.reagieren(e.id, j, cm.id, em)
-                })) : [],
-                kannAntworten: recht >= 2 && !cm.deleted && tief < 3,
-                antwortOffen: antwortOffen,
-                antwortLabel: antwortOffen ? "Abbrechen" : "Antworten",
-                antwortToggle: () => self.antwortAuf(rSchluessel),
-                antwortText: (st.cdraft || {})[dKey] || "",
-                onAntwort: (ev) => { const cd = Object.assign({}, st.cdraft); cd[dKey] = ev.target.value; self.setState({ cdraft: cd }); },
-                antwortSenden: () => self.addComment(e.id, j, cm.id),
-                _kinder: kinder, _tief: tief
-              };
-            };
-            /* Flach mit Einzug — Vorlagen können sich nicht selbst aufrufen. */
-            const flach = [];
-            const rein = (cm, tief) => {
-              const z = bauen(cm, tief);
-              const kinder = z._kinder;
-              delete z._kinder;
-              delete z._tief;
-              flach.push(z);
-              kinder.forEach((x) => rein(x, tief + 1));
-            };
-            zeigen.forEach((cm) => rein(cm, 0));
-            return flach;
-          })(this),
-          mehrC: (r.comments || []).filter((cm) => !cm.parent).length > 3,
-          mehrCLabel: (st.mehrOffen || {})["img" + e.id + j]
-            ? "weniger anzeigen"
-            : "… " + ((r.comments || []).filter((cm) => !cm.parent).length - 3) + " weitere",
-          mehrCToggle: () => this.antwortAuf("img" + e.id + j),
-          canComment: recht >= 2,
-          draft: (st.cdraft || {})[e.id + ":" + j] || "",
-          onDraft: (ev) => { const cd = Object.assign({}, st.cdraft); cd[e.id + ":" + j] = ev.target.value; this.setState({ cdraft: cd }); },
-          onKey: (ev) => { if (ev.key === "Enter") this.addComment(e.id, j); },
-          send: () => this.addComment(e.id, j),
-          zoom: (ev) => { ev.stopPropagation(); this.setState({ zoomImg: { src: r.src, caption: zeigbareUnterschrift(r.caption), event: e.name, rot: r.rot || 0 } }); }
-        })),
+        images: bildListe,
+        /* Alben und Etappen als eigene, beschriftete Blöcke: die
+           Überschrift steht über ihrer Gruppe, die Bilder darunter im
+           Raster. So hängt keine Überschrift mehr an einer einzelnen
+           Kachel. */
+        bildGruppen: (function () {
+          const gruppen = [];
+          bildListe.forEach((im) => {
+            if (!gruppen.length || im.hatKopf || im.hatAlbKopf) {
+              gruppen.push({
+                key: "gr" + im.key,
+                etKopf: im.etKopf, hatEtKopf: im.hatKopf,
+                albKopf: im.albKopf, hatAlbKopf: im.hatAlbKopf,
+                albMusik: im.albMusik,
+                bilder: []
+              });
+            }
+            gruppen[gruppen.length - 1].bilder.push(im);
+          });
+          return gruppen;
+        })(),
         polls: (function (self) {
           let liste = (e.polls || []).filter((p) => p && p.frage !== undefined);
           const etL = e.etappen || [];
