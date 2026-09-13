@@ -475,7 +475,7 @@
             </sc-for>
 
             <sc-for list="{{ cards }}" as="c" hint-placeholder-count="4">
-              <div data-ev="{{ c.id }}" style="{{ c.pos }}">
+              <div data-ev="{{ c.id }}" onClick="{{ c.vollWeg }}" style="{{ c.pos }}">
                 <div style="{{ c.body }}">
                 <div onClick="{{ c.toggle }}" style="position: relative; cursor: pointer; background: var(--t-card, #eae9e9); border: 1px solid var(--t-border, rgba(32, 30, 29, 0.16)); border-radius: var(--t-radius, 2px); box-shadow: var(--t-shadow, none); padding: var(--t-pad, 16px); transition: transform 220ms ease;" style-hover="transform: translateY(-3px);">
                   <div style="display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;">
@@ -486,9 +486,9 @@
                     <sc-if value="{{ c.visTag }}" hint-placeholder-val="{{ false }}">
                       <span style="{{ c.visStyle }}">{{ c.visTag }}</span>
                     </sc-if>
-                    <span style="flex: 1;"></span>
                     <sc-if value="{{ c.isOpen }}" hint-placeholder-val="{{ false }}">
                       <span onClick="{{ stop }}" style="display: flex; gap: 6px; align-items: center;">
+                        <button onClick="{{ c.vollUm }}" title="{{ c.vollTitel }}" style="cursor: pointer; font: inherit; font-size: 13px; line-height: 1; padding: 5px 9px; border: 1px solid var(--t-border, rgba(32, 30, 29, 0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);" style-hover="background: color-mix(in srgb, var(--t-accent, #0088b0) 12%, transparent);">{{ c.vollZeichen }}</button>
                         <sc-if value="{{ c.canEdit }}" hint-placeholder-val="{{ true }}">
                           <button onClick="{{ c.edit }}" title="Ereignis bearbeiten" style="cursor: pointer; font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 10px; border: 1px solid var(--t-border, rgba(32, 30, 29, 0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);" style-hover="background: color-mix(in srgb, var(--t-accent, #0088b0) 12%, transparent);">{{ c.editLabel }}</button>
                         </sc-if>
@@ -497,6 +497,7 @@
                         </sc-if>
                       </span>
                     </sc-if>
+                    <span style="flex: 1;"></span>
                     <span style="font-size: 15px; opacity: 0.5;">{{ c.sign }}</span>
                   </div>
                   <sc-if value="{{ c.plain }}" hint-placeholder-val="{{ true }}">
@@ -1293,10 +1294,34 @@
         <sc-if value="{{ form.storeCheck }}" hint-placeholder-val="{{ false }}">
           <div style="margin-top: 6px; font-size: 12px; padding: 7px 10px; border-radius: var(--radius-md); background: var(--color-surface); color: var(--color-text); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; overflow-wrap: anywhere;">{{ form.storeCheck }}</div>
         </sc-if>
+        <sc-if value="{{ form.bildWahl.zeigen }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px;">
+          <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ form.bildWahl.alle }}">{{ form.bildWahl.alleLabel }}</button>
+          <sc-if value="{{ form.bildWahl.hat }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size: 11.5px; letter-spacing: 0.06em; color: var(--color-accent-700); white-space: nowrap;">{{ form.bildWahl.label }}</span>
+            <sc-if value="{{ form.bildWahl.hatAlben }}" hint-placeholder-val="{{ false }}">
+              <select class="input" onChange="{{ form.bildWahl.onAlb }}" style="width: auto; font-size: 12px; padding-top: 4px; padding-bottom: 4px;">
+                <sc-for list="{{ form.bildWahl.albWahl }}" as="o" hint-placeholder-count="2">
+                  <option value="{{ o.value }}">{{ o.label }}</option>
+                </sc-for>
+              </select>
+            </sc-if>
+            <sc-if value="{{ form.bildWahl.hatEtappen }}" hint-placeholder-val="{{ false }}">
+              <select class="input" onChange="{{ form.bildWahl.onEt }}" style="width: auto; font-size: 12px; padding-top: 4px; padding-bottom: 4px;">
+                <sc-for list="{{ form.bildWahl.etWahl }}" as="o" hint-placeholder-count="2">
+                  <option value="{{ o.value }}">{{ o.label }}</option>
+                </sc-for>
+              </select>
+            </sc-if>
+            <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ form.bildWahl.keine }}">Auswahl aufheben</button>
+          </sc-if>
+        </div>
+        </sc-if>
         <div style="display: grid; gap: 6px; margin-top: 8px;">
           <sc-for list="{{ form.images }}" as="r" hint-placeholder-count="0">
             <div style="display: grid; gap: 4px;">
             <div style="{{ lay.rowImg }}">
+              <input type="checkbox" checked="{{ r.markiert }}" onChange="{{ r.markUm }}" title="Bild markieren" style="width: 17px; height: 17px; align-self: center; accent-color: var(--color-accent); cursor: pointer;">
               <sc-if value="{{ r.src }}" hint-placeholder-val="{{ false }}">
                 <span style="{{ r.vorschauStil }}"></span>
               </sc-if>
@@ -3100,6 +3125,8 @@ class Component extends DCLogic {
     lehr: null,
     loeschEv: null,
     etOffen: {},
+    openVoll: false,
+    bildSel: [],
     feed: { freunde: true, vorschau: false },
     konto: false,
     loeschWort: "",
@@ -3628,7 +3655,7 @@ class Component extends DCLogic {
     const ziel = ev.target;
     const host = ev.currentTarget;
     const daneben = ziel === host || (ziel.dataset && ziel.dataset.bg !== undefined);
-    if (daneben) this.setState({ openId: null });
+    if (daneben) this.setState({ openId: null, openVoll: false });
   };
 
   placeFree = (ev) => {
@@ -4258,7 +4285,7 @@ class Component extends DCLogic {
     const d = this.demoEvent();
     this.setState({
       tourWahl: false, tourFrage: false, lehr: 0,
-      decoSel: null, decoStil: "flach",
+      decoSel: null, decoStil: "flach", bildSel: [],
       secOpen: {},
       draft: {
         id: DEMO_ID, name: d.name, date: d.date, end: d.end, place: d.place,
@@ -4277,7 +4304,7 @@ class Component extends DCLogic {
     }, () => this.lehrSetzen(0));
   };
 
-  lehrZu = () => this.setState({ lehr: null, draft: null });
+  lehrZu = () => this.setState({ lehr: null, draft: null, bildSel: [] });
 
   /* Den erklärten Abschnitt ins Sichtfeld holen. Ohne das liest man ab
      dem vierten Schritt eine Erklärung zu etwas, das weit unterhalb des
@@ -5132,7 +5159,12 @@ class Component extends DCLogic {
       if (e.key === "ArrowLeft") this.showStep(-1);
       return;
     }
-    if (e.key === "Escape") { this.setState({ drawer: false, admin: false, draft: null }); return; }
+    if (e.key === "Escape") {
+      /* Erst das Vollbild des Ereignisses verlassen, dann Fenster zu. */
+      if (this.state.openVoll) { this.setState({ openVoll: false }); return; }
+      this.setState({ drawer: false, admin: false, draft: null, lehr: null, bildSel: [] });
+      return;
+    }
     if (this.state.draft) return;
     const tag = (e.target && e.target.tagName) || "";
     if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
@@ -5146,7 +5178,8 @@ class Component extends DCLogic {
 
   open(id) {
     const wirdOffen = this.state.openId !== id;
-    this.setState({ openId: wirdOffen ? id : null }, () => {
+    /* Vollbild gilt immer nur für das gerade offene Ereignis. */
+    this.setState({ openId: wirdOffen ? id : null, openVoll: false }, () => {
       const box = this.stage;
       if (!box) return;
       const it = this.geoItems && this.geoItems.filter((x) => x.id === id)[0];
@@ -5206,7 +5239,7 @@ class Component extends DCLogic {
 
   newEvent = () => {
     const today = new Date().toISOString().slice(0, 10);
-    this.setState({ draft: { id: null, name: "", date: today, end: "", place: "", kicker: "", note: "", infos: [{ label: "", value: "" }], people: [], images: [], deco: { fx: [], pal: "thema", stickers: [] }, vis: "private", who: [], gwho: [], perms: {}, polls: [], etappen: [], etLayout: "gesamt", alben: [], themeId: "", themeSnap: null, themeFein: {}, share: "view", by: (this.me() || {}).id || "", url: "", partial: false }, decoSel: null, pickQ: "", drawer: false, admin: false, secOpen: {} });
+    this.setState({ bildSel: [], draft: { id: null, name: "", date: today, end: "", place: "", kicker: "", note: "", infos: [{ label: "", value: "" }], people: [], images: [], deco: { fx: [], pal: "thema", stickers: [] }, vis: "private", who: [], gwho: [], perms: {}, polls: [], etappen: [], etLayout: "gesamt", alben: [], themeId: "", themeSnap: null, themeFein: {}, share: "view", by: (this.me() || {}).id || "", url: "", partial: false }, decoSel: null, pickQ: "", drawer: false, admin: false, secOpen: {} });
   };
 
   editEvent(id) {
@@ -5215,7 +5248,7 @@ class Component extends DCLogic {
     const lvl = this.levelFor(e);
     if (lvl < 3) return;
     this.setState({
-      decoSel: null,
+      decoSel: null, bildSel: [],
     decoStil: "flach", secOpen: {},
       draft: {
         id: e.id, name: e.name || "", date: e.date || "", end: e.end || "", place: e.place || "",
@@ -5243,9 +5276,12 @@ class Component extends DCLogic {
   saveEvent = () => {
     const d = this.state.draft;
     if (!d) return;
+    /* Die Bildmarkierung gehört zum Entwurf und endet mit ihm — sonst
+       stünde sie beim nächsten Ereignis unsichtbar weiter. */
+    this.setState({ bildSel: [] });
     /* Das Beispiel des Leitfadens wird nie gespeichert — auch nicht,
        wenn es auf einem Umweg doch im Editor landet. */
-    if (d.id === DEMO_ID) { this.setState({ draft: null, lehr: null }); return; }
+    if (d.id === DEMO_ID) { this.setState({ draft: null, lehr: null, bildSel: [] }); return; }
     const old = d.id ? this.state.events.filter((e) => e.id === d.id)[0] : null;
     const clean = {
       id: d.id || "e" + uid(),
@@ -5384,6 +5420,14 @@ class Component extends DCLogic {
         if (weg && weg.key) d._geloescht = (d._geloescht || []).concat([weg.key]);
       }
       d[kind] = d[kind].filter((_, j) => j !== i);
+      /* Die Markierung hängt an Indizes — beim Löschen rutscht alles
+         dahinter eine Stelle vor, sonst säßen die Häkchen auf den
+         falschen Bildern und eine Sammelzuweisung träfe die falschen. */
+      if (kind === "images") {
+        const sel = (this.state.bildSel || []).filter((k) => k !== i).map((k) => (k > i ? k - 1 : k));
+        this.setState({ draft: d, bildSel: sel });
+        return;
+      }
       this.setState({ draft: d });
     };
   }
@@ -6541,7 +6585,10 @@ class Component extends DCLogic {
     const showRuler = this.props.showRuler !== false;
     const canCreate = this.canCreate();
 
-    const openW = Math.round(cardW * 2.2);
+    /* Aufgeklappt deutlich breiter — Bilder, Route und Kommentare
+       brauchen Platz. Nie breiter als das Fenster selbst. */
+    const fensterB = (typeof window !== "undefined" && window.innerWidth) || 1280;
+    const openW = Math.min(Math.round(cardW * 2.9), Math.max(cardW, fensterB - 2 * padL));
     this.geoItems = L.items.map((it) => ({ id: it.e.id, x: it.x + padL }));
     this.geoOpenW = openW;
     /* Das aufgeklappte Fenster ist breiter als die Spur. Beim letzten
@@ -6566,6 +6613,9 @@ class Component extends DCLogic {
     const offenesItem = L.items.filter((it) => it.e.id === st.openId)[0];
     if (offenesItem) offenAuch[offenesItem.stapel] = true;
     const sichtbareItems = L.items.filter((it) => it.lane < STAPEL_SICHTBAR || !!offenAuch[it.stapel]);
+    /* Im Vollbild füllt das offene Ereignis die Seite — für lange
+       Routen und viele Bilder ist die Spur sonst zu eng. */
+    const vollOffen = !!st.openVoll && !!st.openId;
     let openBottom = 0;
     const offenesStapelEnde = {};
     const cards = sichtbareItems.map((it) => {
@@ -6591,7 +6641,7 @@ class Component extends DCLogic {
         this.themeVars(eT), this.uiVars(eT)
       );
       if (isOpen) {
-        const w2 = Math.round(cardW * 2.2);
+        const w2 = openW;
         const nKom = (e.images || []).reduce((n, im) => n + ((im.comments || []).length), 0);
         const est = 300 + Math.ceil(String(e.note || "").length / 64) * 23 + (e.infos || []).length * 24
           + ((e.people || []).length ? 84 : 0) + Math.ceil(nImg / 2) * ((w2 - 40) / 2 * 0.8 + 96)
@@ -6601,8 +6651,23 @@ class Component extends DCLogic {
       }
       return {
         key: e.id, id: e.id,
-        pos: Object.assign({ position: "absolute", left: (it.x + padL) + "px", top: top + "px", width: (isOpen ? openW : cardW) + "px", zIndex: isOpen ? 60 : Math.min(50, 10 + it.lane), transition: "width 380ms cubic-bezier(0.16, 1, 0.3, 1)" }, eVars || {}),
-        body: { maxHeight: isOpen ? "min(78vh, " + Math.max(520, Math.round(laneH * 4.2)) + "px)" : (laneH - 12) + "px", overflow: isOpen ? "auto" : "hidden", overscrollBehavior: "contain", borderRadius: "var(--t-radius, 2px)", transition: "max-height 420ms cubic-bezier(0.16, 1, 0.3, 1)", animationName: "var(--t-anim, tl-glide)", animationDuration: "var(--t-anim-dur, 620ms)", animationTimingFunction: "var(--t-anim-ease, ease-out)", animationFillMode: "both", animationDelay: (60 + it.i * 55) + "ms" },
+        /* Klick auf den Schleier verlässt das Vollbild; Klicks in der
+           Kachel selbst nicht. */
+        vollWeg: (ev) => { if (ev.target === ev.currentTarget) this.setState({ openVoll: false }); },
+        vollUm: (ev) => { ev.stopPropagation(); this.setState({ openVoll: !this.state.openVoll }); },
+        vollZeichen: vollOffen ? "⤡" : "⤢",
+        vollTitel: vollOffen ? "Vollbild verlassen" : "Auf volle Größe",
+        pos: Object.assign(
+          (isOpen && vollOffen)
+            /* Unter den Fenstern bleiben, die sich aus dem Ereignis
+               heraus öffnen lassen — Editor (100), Fotoshow (110),
+               Bildbearbeitung (125) und Lupe (130) müssen obenauf
+               erscheinen. Über der Bahn (60) und dem Stapelknopf (90). */
+            ? { position: "fixed", inset: "0", width: "auto", zIndex: 95, padding: "var(--space-4)", background: "color-mix(in srgb, var(--color-text) 46%, transparent)", display: "grid", placeItems: "start center", overflow: "auto" }
+            : { position: "absolute", left: (it.x + padL) + "px", top: top + "px", width: (isOpen ? openW : cardW) + "px", zIndex: isOpen ? 60 : Math.min(50, 10 + it.lane), transition: "width 380ms cubic-bezier(0.16, 1, 0.3, 1)" },
+          eVars || {}),
+        body: { width: (isOpen && vollOffen) ? "min(1100px, 100%)" : "auto",
+          maxHeight: (isOpen && vollOffen) ? "96vh" : (isOpen ? "min(86vh, " + Math.max(680, Math.round(laneH * 5.4)) + "px)" : (laneH - 12) + "px"), overflow: isOpen ? "auto" : "hidden", overscrollBehavior: "contain", borderRadius: "var(--t-radius, 2px)", transition: "max-height 420ms cubic-bezier(0.16, 1, 0.3, 1)", animationName: "var(--t-anim, tl-glide)", animationDuration: "var(--t-anim-dur, 620ms)", animationTimingFunction: "var(--t-anim-ease, ease-out)", animationFillMode: "both", animationDelay: (60 + it.i * 55) + "ms" },
         noteClip: { maxHeight: isOpen ? "none" : "51px", overflow: "hidden" },
         name: e.name, dateLabel: fmtDate(e.date), kicker: e.kicker || "", place: e.place || "", note: e.note || "",
         sign: isOpen ? "－" : "＋",
@@ -7090,7 +7155,7 @@ class Component extends DCLogic {
     /* Nur echte Fenster verdecken den Knopf. Das Band gehört nicht dazu
        — dort stellt man Maßstab und Verteilung ein, und gerade dann wird
        der Knopf gebraucht. Er weicht dem Band stattdessen nach oben aus. */
-    const etwasOffen = !!(st.drawer || st.admin || st.konto || st.vgl
+    const etwasOffen = !!(st.openVoll || st.drawer || st.admin || st.konto || st.vgl
       || st.draft || st.show.open || st.zoomImg || st.imgEdit || st.lehr != null || st.tour !== null);
     const stapelKnopf = (function (self) {
       if (!ziel || etwasOffen) return { zeigen: false };
@@ -7402,7 +7467,47 @@ class Component extends DCLogic {
           }
         };
       }),
+      /* Mehrere Bilder markieren und gemeinsam zuordnen — sonst müsste
+         man dieselbe Etappe an dreißig Zeilen einzeln einstellen. */
+      bildWahl: (function (self) {
+        const markiert = st.bildSel || [];
+        const gesamt = (d0.images || []).length;
+        const zuweisen = (feld) => (ev) => {
+          const wert = ev.target.value;
+          if (wert === "__k") return;
+          const rows = (self.state.draft.images || []).map((r, k) =>
+            (markiert.indexOf(k) >= 0 ? Object.assign({}, r, { [feld]: wert === "__leer" ? "" : wert }) : r));
+          self.setState({ draft: Object.assign({}, self.state.draft, { images: rows }) });
+          ev.target.value = "__k";
+        };
+        return {
+          anzahl: markiert.length,
+          hat: markiert.length > 0,
+          zeigen: gesamt > 0,
+          label: plural(markiert.length, "Bild markiert", "Bilder markiert"),
+          alleAn: gesamt > 0 && markiert.length === gesamt,
+          alleLabel: (gesamt > 0 && markiert.length === gesamt) ? "Alle abwählen" : "Alle markieren",
+          alle: () => self.setState({ bildSel: markiert.length === gesamt ? [] : (d0.images || []).map((x, k) => k) }),
+          keine: () => self.setState({ bildSel: [] }),
+          albWahl: [{ key: "k", value: "__k", label: "Album zuweisen …" }, { key: "l", value: "__leer", label: "— kein Album —" }]
+            .concat((d0.alben || []).map((x, k) => ({ key: x.i, value: x.i, label: String(x.name || "").trim() || (k + 1) + ". Album" }))),
+          onAlb: zuweisen("alb"),
+          hatAlben: (d0.alben || []).length > 0,
+          etWahl: [{ key: "k", value: "__k", label: "Etappe zuweisen …" }, { key: "l", value: "__leer", label: "— keine Etappe —" }]
+            .concat((d0.etappen || []).map((x, k) => ({ key: x.i, value: x.i, label: String(x.name || "").trim() || (k + 1) + ". Etappe" }))),
+          onEt: zuweisen("et"),
+          hatEtappen: (d0.etappen || []).length > 0
+        };
+      })(this),
       images: (d0.images || []).map((r, i) => ({
+        markiert: (st.bildSel || []).indexOf(i) >= 0,
+        markUm: (ev) => {
+          const l = (this.state.bildSel || []).slice();
+          const at = l.indexOf(i);
+          if (at >= 0) l.splice(at, 1); else l.push(i);
+          this.setState({ bildSel: l });
+          if (ev && ev.stopPropagation) ev.stopPropagation();
+        },
         alb: r.alb || "",
         onAlb: (ev) => {
           const rows = (this.state.draft.images || []).slice();
@@ -8129,7 +8234,8 @@ class Component extends DCLogic {
       },
       rowImg: {
         display: "grid",
-        gridTemplateColumns: phone ? "48px 1fr auto" : "56px 1fr auto",
+        /* Erste Spalte: das Kästchen zum Markieren. */
+        gridTemplateColumns: phone ? "20px 48px 1fr auto" : "20px 56px 1fr auto",
         gap: "6px", alignItems: "center"
       },
       pairGrid: {
@@ -9422,7 +9528,7 @@ class Component extends DCLogic {
       deleteTheme: this.deleteTheme, resetTheme: this.resetTheme, saveTheme: this.saveTheme,
       newName: st.newName, setNewName: (ev) => this.setState({ newName: ev.target.value }),
       newEvent: this.newEvent, editing: !!d0, form: form,
-      closeEditor: () => this.setState({ draft: null, lehr: null }), saveEvent: this.saveEvent,
+      closeEditor: () => this.setState({ draft: null, lehr: null, bildSel: [] }), saveEvent: this.saveEvent,
       exportJSON: this.exportJSON, importJSON: this.importJSON,
       printSmall: () => this.doPrint("small"), printLarge: () => this.doPrint("large"),
       printLabel: big ? "Großer Maßstab · alle Infos" : "Kleiner Maßstab · Name und Datum",
