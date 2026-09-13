@@ -1950,10 +1950,18 @@
               </sc-for>
             </select>
           </div>
-          <div class="field" style="width: 190px;"><label>Musik · {{ show.musicName }}</label>
-            <div style="display: flex; gap: 6px;">
-              <label class="btn btn-secondary" style="cursor: pointer; white-space: nowrap;">Datei<input type="file" accept="audio/*" onChange="{{ show.onMusicFile }}" style="display: none;"></label>
-              <input class="input" type="text" value="{{ show.musicUrl }}" onChange="{{ show.onMusicUrl }}" placeholder="oder Musik-URL">
+          <div class="field" style="width: 240px;"><label>Musik · {{ show.musicName }}</label>
+            <div style="display: grid; gap: 6px;">
+              <div class="seg" role="group" style="margin: 0;">
+                <sc-for list="{{ show.musikModi }}" as="o" hint-placeholder-count="3">
+                  <label class="seg-opt"><input type="radio" name="showmusik" checked="{{ o.on }}" onChange="{{ o.pick }}" style="position: absolute; opacity: 0; pointer-events: none;">{{ o.label }}</label>
+                </sc-for>
+              </div>
+              <div style="display: flex; gap: 6px;">
+                <label class="btn btn-secondary" style="cursor: pointer; white-space: nowrap;">Datei<input type="file" accept="audio/*" onChange="{{ show.onMusicFile }}" style="display: none;"></label>
+                <input class="input" type="text" value="{{ show.musicUrl }}" onChange="{{ show.onMusicUrl }}" placeholder="oder Musik-URL">
+              </div>
+              <button onClick="{{ show.fadeUm }}" style="{{ show.fadeStil }}">{{ show.fadeLabel }}</button>
             </div>
           </div>
           <div class="field" style="width: 130px;"><label>Lautstärke</label>
@@ -3296,7 +3304,7 @@ class Component extends DCLogic {
     stickPick: "stern",
     stickStil: "flach",
     freeSel: null,
-    show: { open: false, idx: 0, playing: true, speed: 5, transition: "fade", scope: "all", ref: "", music: "", musicUrl: "", musicName: "keine", volume: 0.7, rot: {}, voll: false, ui: true, ausklang: false }
+    show: { open: false, idx: 0, playing: true, speed: 5, transition: "fade", scope: "all", ref: "", music: "", musicUrl: "", musicName: "keine", volume: 0.7, rot: {}, voll: false, ui: true, ausklang: false, musikModus: "zugewiesen", fade: true }
   };
 
   componentDidMount() {
@@ -4342,7 +4350,8 @@ class Component extends DCLogic {
   schritteGrund() {
     return [
       { ziel: "", titel: "Willkommen in deiner Chronik",
-        text: "In neun kurzen Schritten zeige ich dir, wo hier was steckt. Ein leuchtender Punkt führt dich zu jedem Knopf. Abbrechen darfst du jederzeit — über „Hilfe“ kommst du zurück." },{ ziel: "", titel: "Was ist die Chronik?",
+        text: "In neun kurzen Schritten zeige ich dir, wo hier was steckt. Ein leuchtender Punkt führt dich zu jedem Knopf. Abbrechen darfst du jederzeit — über „Hilfe“ kommst du zurück." },
+      { ziel: "", titel: "Was ist die Chronik?",
         text: "Du kannst dir hier alle deine Erlebnisse, wie z.B. Festivals, Urlaube, Feiern, ... planen dokumentieren und den Leuten deiner Wahl zur Verfügung stellen. Routen, Bilder, Kommentare, Personen die dabei waren, …. Das alles kannst Du jederzeit wieder erleben und in Erinnerungen und Momenten schwelgen." },      
       { ziel: "neu", titel: "Ein Ereignis anlegen",
         text: "Alles beginnt hier: Name, Datum, Ort. Was ein Ereignis alles kann — Personen, Bilder, Etappen, Abstimmungen, Deko —, erklärt der zweite Leitfaden an einem Beispiel." },
@@ -4353,13 +4362,13 @@ class Component extends DCLogic {
       { ziel: "show", titel: "Fotoshow",
         text: "Zeigt alle Bilder deiner Auswahl groß, mit Übergängen und wahlweise Musik. Im Vollbild bleibt nur das Foto; bewegst du die Maus, kommt die Leiste kurz zurück." },
       { ziel: "design", titel: "Jedes Design kannst Du nach deinem Geschmack ändern",
-        text: "Von Zeitungssatz über Emailschild bis zum Regenbogen. Jedes lässt sich weiter verstellen — Farben, Schrift, Marker, Dichte." },
+        text: "Von Zeitungssatz über Emailschild bis zum Regenbogen.Jedes lässt sich weiter verstellen — Farben, Schrift, Marker, Dichte." },
       { ziel: "kontakte", titel: "Kontakte und Gruppen",
-        text: "Suche jemanden nach Name oder E-Mail und schick eine Anfrage. Erst wenn sie bestätigt ist, könnt ihr einander Ereignisse freigeben. Gruppen sind Abkürzungen dafür — sichtbar nur für ihre Mitglieder." },
+        text: "Suche jemanden nach Name oder E-Mail und schick eine Anfrage. Erst wenn sie bestätigt ist, könnt ihr einander Ereignisse freigeben. Mit Gruppen kannst du leichter Ereignisse einem bestimmten Personenkreis freigeben" },
       { ziel: "konto", titel: "Mein Konto",
         text: "Profilbild, deine Angaben, was von anderen auf deinem Zeitstrahl erscheinen soll, ob fremde Ereignis-Designs übernommen werden, und wann du eine Mail bekommst." },
       { ziel: "hilfe", titel: "Das war es",
-        text: "Über diesen Knopf kommst du jederzeit zurück — und dort wartet auch der zweite Leitfaden, der ein Ereignis von innen erklärt." }
+        text: "Hierüber kommst du jederzeit zurück — und dort wartet auch der zweite Leitfaden, der den Aufbau eines Ereignisses erklärt." }
     ];
   }
 
@@ -5003,9 +5012,35 @@ class Component extends DCLogic {
   /* Am Ende der Show klingt die Musik aus, statt abzubrechen: eine
      eigene Datei wird leiser geregelt, eine Einbettung blendet weg —
      deren Lautstärke lässt sich von außen nicht steuern. */
+  /* Anfang eines Liedes: mit Einblenden sanft auf die eingestellte
+     Lautstärke, ohne gleich in voller Stärke. */
+  musikEinblenden(el) {
+    const ziel = this.state.show.volume;
+    if (this.state.show.fade === false) {
+      el.volume = ziel;
+      el.play().catch(() => {});
+      return;
+    }
+    el.volume = 0;
+    el.play().catch(() => {});
+    const t0 = Date.now();
+    if (this.einTimer) window.clearInterval(this.einTimer);
+    this.einTimer = window.setInterval(() => {
+      const p = Math.min(1, (Date.now() - t0) / 1200);
+      el.volume = Math.min(1, ziel * p);
+      if (p >= 1) { window.clearInterval(this.einTimer); this.einTimer = null; }
+    }, 60);
+  }
+
   musikAusklang(fertig) {
     const el = this.audio;
     this.setShow({ ausklang: true }, false);
+    /* Ohne Blende hört es sofort auf. */
+    if (this.state.show.fade === false) {
+      if (el) el.pause();
+      fertig();
+      return;
+    }
     const dauer = 1400;
     if (!el || !el.src) {
       /* Kein eigenes Audio, also läuft ein Dienst-Spieler: der wird über
@@ -6088,34 +6123,67 @@ class Component extends DCLogic {
       tagKarte[t].b.push(e);
     }));
 
-    const treffer = [];
+    /* Was als „dasselbe Ereignis“ gilt: nur ein gemeinsamer Kalendertag
+       reicht nicht — zwei Leute können am selben Tag völlig
+       Verschiedenes erlebt haben. Es braucht einen zweiten Beleg:
+       denselben Namen, denselben Ort oder Etappenpunkte nah beieinander.
+       Dasselbe Ereignis (gleiche Kennung) zählt immer. */
+    const rohTreffer = [];
     Object.keys(tagKarte).sort().forEach((t) => {
       const z = tagKarte[t];
       if (!z.a.length || !z.b.length) return;
       z.a.forEach((ea) => z.b.forEach((eb) => {
-        if (ea.id === eb.id) return;
         const ortA = normName(ea.place || "");
         const ortB = normName(eb.place || "");
         const gleicherOrt = !!ortA && ortA === ortB;
+        const nameA = normName(ea.name || "");
+        const nameB = normName(eb.name || "");
+        const gleicherName = !!nameA && nameA === nameB;
         const pa = this.punkteVon(ea);
         const pb = this.punkteVon(eb);
         let km = null;
         if (pa.length && pb.length) {
           km = Math.min.apply(null, pa.map((x) => Math.min.apply(null, pb.map((y) => this.kmZwischen(x, y)))));
         }
-        treffer.push({ tag: t, a: ea, b: eb, gleicherOrt: gleicherOrt, km: km });
+        let punkte = 0;
+        let grund = "";
+        if (ea.id === eb.id) { punkte = 100; grund = "dasselbe Ereignis"; }
+        else {
+          if (gleicherName) { punkte += 45; grund = "gleicher Name"; }
+          if (gleicherOrt) { punkte += 35; grund = grund || "gleicher Ort"; }
+          /* Nahe Etappenpunkte sind ein Beleg für sich: zwei Leute am
+             selben Ort am selben Tag, auch wenn beide den Titel anders
+             geschrieben und das Ortsfeld leer gelassen haben. */
+          if (km != null && km <= 15) { punkte += 35; grund = grund || "dicht beieinander"; }
+          else if (km != null && km <= 60) { punkte += 12; grund = grund || "in der Nähe"; }
+        }
+        /* Unter 35 Punkten bleibt es Zufall am selben Tag. */
+        if (punkte < 35) return;
+        rohTreffer.push({
+          tag: t, a: ea, b: eb, gleicherOrt: gleicherOrt, gleicherName: gleicherName,
+          km: km, punkte: punkte, grund: grund || "am selben Tag"
+        });
       }));
     });
 
-    /* Je Paar nur den engsten Treffer behalten. */
-    const gesehen = {};
-    const knapp = [];
-    treffer.forEach((x) => {
+    /* Je Paar den besten Beleg, dann jedes Ereignis nur einmal
+       zuordnen — der stärkste Treffer gewinnt. */
+    const bestes = {};
+    rohTreffer.forEach((x) => {
       const k = x.a.id + "|" + x.b.id;
-      if (gesehen[k]) return;
-      gesehen[k] = true;
-      knapp.push(x);
+      if (!bestes[k] || x.punkte > bestes[k].punkte) bestes[k] = x;
     });
+    const belegtA = {}, belegtB = {};
+    const knapp = [];
+    Object.keys(bestes).map((k) => bestes[k])
+      .sort((x, y) => y.punkte - x.punkte || (dp(x.a.date) - dp(y.a.date)))
+      .forEach((x) => {
+        if (belegtA[x.a.id] || belegtB[x.b.id]) return;
+        belegtA[x.a.id] = true;
+        belegtB[x.b.id] = true;
+        knapp.push(x);
+      });
+    knapp.sort((x, y) => (dp(x.a.date) || 0) - (dp(y.a.date) || 0));
 
     /* Orte, an denen beide waren — auch zu verschiedenen Zeiten. */
     const orteA = {};
@@ -8928,7 +8996,9 @@ class Component extends DCLogic {
                 schonB[x.b.id] = true;
                 paare.push({
                   key: "t" + x.a.id + x.b.id, sort: dp(x.a.date) || 0,
-                  tag: "Nr. " + nr + " · passt zusammen",
+                  /* Der Grund steht dabei — so ist nachvollziehbar, warum
+                     diese zwei Ereignisse als dasselbe gelten. */
+                  tag: "Nr. " + nr + " · " + (x.grund || "passt zusammen"),
                   zeigeTag: true, beide: true,
                   links: kachel(x.a, 1, nr), rechts: kachel(x.b, 2, nr),
                   zeilenStil: zeilenStil(true)
@@ -10023,12 +10093,15 @@ class Component extends DCLogic {
            Hintergrundmusik der Show. Wechselt sie, hört die vorige auf
            und die neue beginnt — darum steckt der Schlüssel im key. */
         spur: (function (self) {
-          const sp = musikSpur(cur ? cur.musik : "");
-          const eigen = !!st.show.music && !sp.spielt;
+          const modus = st.show.musikModus || "zugewiesen";
+          /* „zugewiesen“ nimmt das Lied von Album oder Etappe, „eigene“
+             nur die selbst gewählte Datei, „aus“ lässt es still. */
+          const sp = modus === "zugewiesen" ? musikSpur(cur ? cur.musik : "") : musikSpur("");
+          const eigen = modus !== "aus" && !!st.show.music && !sp.spielt;
           return {
             /* Während des Ausklangs bleibt der Spieler stehen und wird
                nur durchsichtig — abgebaut wird er erst danach. */
-            hatEmbed: sp.hatEmbed,
+            hatEmbed: sp.hatEmbed && modus === "zugewiesen",
             embedKey: "mu" + sp.src,
             embedRef: (el) => { if (el && el.getAttribute("src") !== sp.src) el.src = sp.src; },
             name: sp.name,
@@ -10041,12 +10114,36 @@ class Component extends DCLogic {
               height: st.show.voll ? "1px" : "82px", opacity: st.show.voll ? 0 : (st.show.ausklang ? 0 : 1),
               overflow: "hidden", border: 0, borderRadius: "var(--radius-md)", zIndex: 4,
               pointerEvents: st.show.voll ? "none" : "auto",
-              transition: "opacity 1400ms linear"
+              transition: st.show.fade === false ? "none" : "opacity 1400ms linear"
             },
             eigeneDatei: eigen
           };
         })(this),
-        music: st.show.music, hasMusic: !!st.show.music || !!(cur && musikSpur(cur.musik).hatDatei), musicUrl: st.show.musicUrl, musicName: st.show.musicName,
+        music: st.show.music,
+        hasMusic: (st.show.musikModus || "zugewiesen") !== "aus"
+          && (!!st.show.music || !!(cur && (st.show.musikModus || "zugewiesen") === "zugewiesen" && musikSpur(cur.musik).hatDatei)),
+        musikModus: st.show.musikModus || "zugewiesen",
+        musikModi: [
+          ["zugewiesen", "Zugewiesene"],
+          ["eigene", "Eigene"],
+          ["aus", "Keine"]
+        ].map((o) => ({
+          key: o[0], label: o[1], on: (st.show.musikModus || "zugewiesen") === o[0],
+          pick: () => {
+            if (o[0] === "aus" && this.audio) this.audio.pause();
+            this.setShow({ musikModus: o[0] }, false);
+          }
+        })),
+        fade: st.show.fade !== false,
+        fadeLabel: st.show.fade !== false ? "Ein- und Ausblenden: an" : "Ein- und Ausblenden: aus",
+        fadeUm: () => this.setShow({ fade: st.show.fade === false }, false),
+        fadeStil: {
+          font: "inherit", fontSize: "11.5px", letterSpacing: "0.04em", padding: "6px 12px", cursor: "pointer",
+          whiteSpace: "nowrap", borderRadius: "99px",
+          border: "1px solid " + (st.show.fade !== false ? "var(--color-accent)" : "var(--color-divider)"),
+          background: st.show.fade !== false ? "var(--color-accent)" : "transparent",
+          color: st.show.fade !== false ? "var(--color-bg)" : "var(--color-text)"
+        }, musicUrl: st.show.musicUrl, musicName: st.show.musicName,
         onMusicFile: (ev) => {
           const file = ev.target.files && ev.target.files[0];
           if (!file) return;
@@ -10068,14 +10165,19 @@ class Component extends DCLogic {
           /* Quelle erst hier setzen — im Markup wäre sie beim Aufbau der
              Seite noch ein roher Platzhalter und schlüge fehl. */
           /* Hat das gezeigte Bild eine eigene Audiodatei, läuft sie —
-             sonst die Hintergrundmusik der Show. */
+             sonst die Hintergrundmusik der Show. Gestartet wird von
+             selbst, sobald eine Quelle steht. */
+          const modus = this.state.show.musikModus || "zugewiesen";
+          if (modus === "aus") { el.pause(); return; }
           const bilder = this.showImages(this.state.show.scope, this.state.show.ref);
           const jetzt = bilder[bilder.length ? Math.min(this.state.show.idx, bilder.length - 1) : 0];
-          const sp = musikSpur(jetzt ? jetzt.musik : "");
+          const sp = modus === "zugewiesen" ? musikSpur(jetzt ? jetzt.musik : "") : musikSpur("");
           const quelle = sp.hatDatei ? sp.src : (this.state.show.music || "");
           if (el.getAttribute("src") !== quelle) {
             el.src = quelle;
-            if (quelle) el.play().catch(() => {});
+            if (quelle) this.musikEinblenden(el);
+          } else if (quelle && el.paused) {
+            this.musikEinblenden(el);
           }
         }
       }
