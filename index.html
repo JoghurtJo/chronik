@@ -761,15 +761,7 @@
                         <div data-tour="k-bilder">
                           <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 6px;">
                             <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t-accent, #0088b0);">Bilder</span>
-                            <span style="display: flex; gap: 5px; align-items: center; flex-wrap: wrap;">
-                                                          <button onClick="{{ c.show }}" title="Alle Bilder dieses Ereignisses groß zeigen" style="font: inherit; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 13px; cursor: pointer; white-space: nowrap; border: 0; borderRadius: 99px; border-radius: 999px; background: var(--t-accent, #0088b0); color: var(--t-card, #eae9e9); box-shadow: var(--shadow-sm);">▦ Fotoshow</button>
-                              <sc-if value="{{ c.hatAlbenShow }}" hint-placeholder-val="{{ false }}">
-                                <button onClick="{{ c.showAlb }}" title="Alle Bilder, nach Album geordnet" style="font: inherit; font-size: 11px; padding: 4px 10px; cursor: pointer; white-space: nowrap; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--t-accent, #0088b0) 45%, transparent); background: transparent; color: var(--t-accent, #0088b0);">nach Album</button>
-                              </sc-if>
-                              <sc-if value="{{ c.hatEtappenShow }}" hint-placeholder-val="{{ false }}">
-                                <button onClick="{{ c.showEt }}" title="Alle Bilder, nach Etappe geordnet" style="font: inherit; font-size: 11px; padding: 4px 10px; cursor: pointer; white-space: nowrap; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--t-accent, #0088b0) 45%, transparent); background: transparent; color: var(--t-accent, #0088b0);">nach Etappe</button>
-                              </sc-if>
-                            </span>
+                            <button onClick="{{ c.show }}" title="Alle Bilder dieses Ereignisses groß zeigen" style="font: inherit; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 13px; cursor: pointer; white-space: nowrap; border: 0; borderRadius: 99px; border-radius: 999px; background: var(--t-accent, #0088b0); color: var(--t-card, #eae9e9); box-shadow: var(--shadow-sm);">▦ Fotoshow</button>
                           </div>
                           <sc-for list="{{ c.bildGruppen }}" as="g" hint-placeholder-count="1">
                           <div style="display: grid; gap: 6px; margin-bottom: 10px;">
@@ -777,9 +769,6 @@
                               <div style="display: flex; align-items: center; gap: 8px;">
                                 <span style="font-family: var(--t-font-head, var(--font-heading)); font-size: 14px; letter-spacing: 0.04em; color: var(--t-accent, #0088b0);">{{ g.etKopf }}</span>
                                 <span style="flex: 1; height: 1px; background: color-mix(in srgb, var(--t-accent, #0088b0) 30%, transparent);"></span>
-                                <sc-if value="{{ g.zeigeShow }}" hint-placeholder-val="{{ false }}">
-                                  <button onClick="{{ g.starteShow }}" title="Nur diese Bilder als Fotoshow" style="font: inherit; font-size: 11px; padding: 2px 9px; cursor: pointer; white-space: nowrap; border-radius: 99px; border: 1px solid color-mix(in srgb, var(--t-accent, #0088b0) 45%, transparent); background: transparent; color: var(--t-accent, #0088b0);">▦ Show</button>
-                                </sc-if>
                               </div>
                             </sc-if>
                             <sc-if value="{{ g.hatAlbKopf }}" hint-placeholder-val="{{ false }}">
@@ -788,9 +777,6 @@
                                 <span style="flex: 1; height: 1px; background: color-mix(in srgb, var(--t-accent2, #d6006c) 26%, transparent);"></span>
                                 <sc-if value="{{ g.albMusik.hat }}" hint-placeholder-val="{{ false }}">
                                   <a href="{{ g.albMusik.href }}" target="_blank" rel="noreferrer noopener" onClick="{{ stop }}" style="{{ musikChip }}">{{ g.albMusik.label }}</a>
-                                </sc-if>
-                                <sc-if value="{{ g.zeigeShow }}" hint-placeholder-val="{{ false }}">
-                                  <button onClick="{{ g.starteShow }}" title="Nur diese Bilder als Fotoshow" style="font: inherit; font-size: 11px; padding: 2px 9px; cursor: pointer; white-space: nowrap; border-radius: 99px; border: 1px solid color-mix(in srgb, var(--t-accent2, #d6006c) 45%, transparent); background: transparent; color: color-mix(in srgb, var(--t-accent2, #d6006c) 88%, var(--t-ink, #201e1d));">▦ Show</button>
                                 </sc-if>
                               </div>
                             </sc-if>
@@ -1941,43 +1927,47 @@
           <span style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ show.meta }}</span>
         </div>
         <div style="height: 1px; background: var(--color-text); margin-bottom: var(--space-3);"></div>
-        <div style="display: flex; align-items: end; gap: var(--space-3); flex-wrap: wrap;">
-          <div style="display: flex; gap: 4px; align-items: center;">
-            <button style="font: inherit; font-size: 12px; min-height: 26px; padding: 2px 9px; cursor: pointer; white-space: nowrap; border: 1px solid var(--color-divider); border-radius: var(--radius-md); background: transparent; color: var(--color-text);" onClick="{{ show.prev }}">◀</button>
-            <button style="font: inherit; font-size: 12px; min-height: 26px; padding: 2px 9px; cursor: pointer; white-space: nowrap; border: 1px solid var(--color-divider); border-radius: var(--radius-md); background: transparent; color: var(--color-text); background: var(--color-accent); border-color: var(--color-accent); color: var(--color-bg);" onClick="{{ show.toggle }}">{{ show.playLabel }}</button>
-            <button style="font: inherit; font-size: 12px; min-height: 26px; padding: 2px 9px; cursor: pointer; white-space: nowrap; border: 1px solid var(--color-divider); border-radius: var(--radius-md); background: transparent; color: var(--color-text);" onClick="{{ show.next }}">▶</button>
-            <button title="nach links drehen" style="font: inherit; font-size: 12px; min-height: 26px; padding: 2px 9px; cursor: pointer; white-space: nowrap; border: 1px solid var(--color-divider); border-radius: var(--radius-md); background: transparent; color: var(--color-text);" onClick="{{ show.linksDrehen }}">↺</button>
-            <button title="nach rechts drehen" style="font: inherit; font-size: 12px; min-height: 26px; padding: 2px 9px; cursor: pointer; white-space: nowrap; border: 1px solid var(--color-divider); border-radius: var(--radius-md); background: transparent; color: var(--color-text);" onClick="{{ show.rechtsDrehen }}">↻</button>
-            <button style="font: inherit; font-size: 12px; min-height: 26px; padding: 2px 9px; cursor: pointer; white-space: nowrap; border: 1px solid var(--color-divider); border-radius: var(--radius-md); background: transparent; color: var(--color-text);" onClick="{{ show.vollbild }}">{{ show.vollLabel }}</button>
+        <div style="display: flex; align-items: flex-end; gap: var(--space-4); flex-wrap: wrap;">
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ show.prev }}">◀</button>
+            <button class="btn btn-primary" style="white-space: nowrap;" onClick="{{ show.toggle }}">{{ show.playLabel }}</button>
+            <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ show.next }}">▶</button>
           </div>
-          <div class="field" style="margin: 0; width: 124px;"><label style="font-size: 10px; margin-bottom: 2px;">Dauer · {{ show.speedLabel }}</label>
-            <input type="range" min="0.2" max="14" step="0.1" value="{{ show.speed }}" onChange="{{ show.onSpeed }}" style="width: 100%; height: 26px; accent-color: var(--color-accent);">
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <button class="btn btn-secondary" title="nach links drehen" style="white-space: nowrap;" onClick="{{ show.linksDrehen }}">↺</button>
+            <button class="btn btn-secondary" title="nach rechts drehen" style="white-space: nowrap;" onClick="{{ show.rechtsDrehen }}">↻</button>
+            <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ show.vollbild }}">{{ show.vollLabel }}</button>
           </div>
-          <div class="field" style="margin: 0; width: 104px;"><label style="font-size: 10px; margin-bottom: 2px;">Lautstärke</label>
-            <input type="range" min="0" max="1" step="0.05" value="{{ show.volume }}" onChange="{{ show.onVolume }}" style="width: 100%; height: 26px; accent-color: var(--color-accent);">
+          <div class="field" style="width: 190px;"><label>Bilddauer · {{ show.speedLabel }}</label>
+            <input type="range" min="0.2" max="14" step="0.1" value="{{ show.speed }}" onChange="{{ show.onSpeed }}" style="width: 100%; accent-color: var(--color-accent);">
           </div>
-          <div class="field" style="margin: 0; width: 128px;"><label style="font-size: 10px; margin-bottom: 2px;">Übergang</label>
-            <select class="input" value="{{ show.transition }}" onChange="{{ show.onTransition }}" style="min-height: 26px; height: 26px; padding: 2px 8px; font-size: 12px;">
+          <div class="field" style="width: 170px;"><label>Übergang</label>
+            <select class="input" value="{{ show.transition }}" onChange="{{ show.onTransition }}">
               <sc-for list="{{ show.transitions }}" as="o" hint-placeholder-count="6">
                 <option value="{{ o.value }}">{{ o.label }}</option>
               </sc-for>
             </select>
           </div>
-          <div class="field" style="margin: 0; width: 136px;"><label style="font-size: 10px; margin-bottom: 2px;">Musik</label>
-            <select class="input" value="{{ show.musikModus }}" onChange="{{ show.onMusikModus }}" style="min-height: 26px; height: 26px; padding: 2px 8px; font-size: 12px;">
-              <sc-for list="{{ show.musikModi }}" as="o" hint-placeholder-count="4">
-                <option value="{{ o.key }}">{{ o.label }}</option>
-              </sc-for>
-            </select>
-          </div>
-          <div class="field" style="margin: 0; width: 150px;"><label style="font-size: 10px; margin-bottom: 2px;">Eigene Datei</label>
-            <div style="display: grid; grid-template-columns: auto 1fr; gap: 4px;">
-              <label style="font: inherit; font-size: 12px; min-height: 26px; padding: 2px 9px; cursor: pointer; white-space: nowrap; border: 1px solid var(--color-divider); border-radius: var(--radius-md); background: transparent; color: var(--color-text); display: inline-flex; align-items: center;">Datei<input type="file" accept="audio/*" onChange="{{ show.onMusicFile }}" style="display: none;"></label>
-              <input class="input" type="text" value="{{ show.musicUrl }}" onChange="{{ show.onMusicUrl }}" placeholder="URL" style="min-height: 26px; height: 26px; padding: 2px 8px; font-size: 12px;">
+          <div class="field" style="width: 240px;"><label>Musik · {{ show.musicName }}</label>
+            <div style="display: grid; gap: 6px;">
+              <div class="seg" role="group" style="margin: 0;">
+                <sc-for list="{{ show.musikModi }}" as="o" hint-placeholder-count="3">
+                  <label class="seg-opt"><input type="radio" name="showmusik" checked="{{ o.on }}" onChange="{{ o.pick }}" style="position: absolute; opacity: 0; pointer-events: none;">{{ o.label }}</label>
+                </sc-for>
+              </div>
+              <div style="display: flex; gap: 6px;">
+                <label class="btn btn-secondary" style="cursor: pointer; white-space: nowrap;">Datei<input type="file" accept="audio/*" onChange="{{ show.onMusicFile }}" style="display: none;"></label>
+                <input class="input" type="text" value="{{ show.musicUrl }}" onChange="{{ show.onMusicUrl }}" placeholder="oder Musik-URL">
+              </div>
+              <button onClick="{{ show.fadeUm }}" style="{{ show.fadeStil }}">{{ show.fadeLabel }}</button>
+              <sc-if value="{{ show.kontoModus }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size: 10.5px; line-height: 1.45; color: var(--color-neutral-700);">{{ show.kontoHinweis }}</span>
+              </sc-if>
             </div>
           </div>
-          <button onClick="{{ show.fadeUm }}" style="{{ show.fadeStil }}">{{ show.fadeLabel }}</button>
-          <span style="flex: 1 1 120px; font-size: 10.5px; line-height: 1.35; color: var(--color-neutral-700);">{{ show.musikZeile }}</span>
+          <div class="field" style="width: 130px;"><label>Lautstärke</label>
+            <input type="range" min="0" max="1" step="0.05" value="{{ show.volume }}" onChange="{{ show.onVolume }}" style="width: 100%; accent-color: var(--color-accent);">
+          </div>
         </div>
         <div style="display: flex; gap: 3px; margin-top: var(--space-3);">
           <sc-for list="{{ show.dots }}" as="d" hint-placeholder-count="6">
@@ -1987,12 +1977,6 @@
       </div>
       <sc-if value="{{ show.musikBlockiert }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ show.musikStarten }}" style="position: absolute; left: 50%; bottom: 92px; transform: translateX(-50%); z-index: 6; font: inherit; font-size: 12.5px; letter-spacing: 0.08em; text-transform: uppercase; padding: 10px 18px; cursor: pointer; white-space: nowrap; border: 0; border-radius: 999px; background: var(--color-accent); color: var(--color-bg); box-shadow: var(--shadow-lg);">♪ Musik starten</button>
-      </sc-if>
-      <sc-if value="{{ show.spur.zeigeStartHinweis }}" hint-placeholder-val="{{ false }}">
-        <div style="position: absolute; right: 14px; bottom: 182px; z-index: 6; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; max-width: 340px;">
-          <span style="font-size: 10.5px; line-height: 1.4; text-align: right; padding: 4px 8px; border-radius: var(--radius-md); background: color-mix(in srgb, var(--color-bg) 88%, transparent); color: var(--color-text);">{{ show.spur.startHinweis }}</span>
-          <button onClick="{{ show.kontoWechsel }}" style="font: inherit; font-size: 11px; padding: 4px 10px; cursor: pointer; white-space: nowrap; border-radius: 99px; border: 0; background: var(--color-accent); color: var(--color-bg);">Eigenes Konto</button>
-        </div>
       </sc-if>
       <sc-if value="{{ show.spur.hatEmbed }}" hint-placeholder-val="{{ false }}">
         <iframe key="{{ show.spur.embedKey }}" ref="{{ show.spur.embedRef }}" title="Musik zur Fotoshow" allow="autoplay; encrypted-media; clipboard-write" allowfullscreen="{{ false }}" loading="eager" style="{{ show.spur.rahmen }}"></iframe>
@@ -2867,13 +2851,6 @@ const musikZeit = function (sek) {
   const m = Math.floor(s / 60);
   return m + ":" + String(s % 60).padStart(2, "0");
 };
-/* Welche Dienste dürfen im eingebetteten Spieler von selbst anspielen?
-   YouTube, SoundCloud und eigene Dateien tun es (mit autoplay=1 und der
-   Geste, die den Start der Show ausgelöst hat). Spotify, Deezer und
-   Apple Music starten grundsätzlich nicht von selbst — dort entscheidet
-   der Dienst, und kein Befehl von außen ändert das. Statt still zu
-   bleiben, zeigen wir deren Spieler groß und sagen, was zu tun ist. */
-const MUSIK_AUTOSTART = /youtube\.com|youtu\.be|soundcloud\.com|snd\.sc/;
 const musikSpur = function (roh, abSek) {
   const meta = musikMeta(roh);
   const leer = { art: "kein", src: "", dienst: "", name: "", hatEmbed: false, hatDatei: false, spielt: false };
@@ -2885,7 +2862,7 @@ const musikSpur = function (roh, abSek) {
      ein Etikett „ab 1:05“ ein leeres Versprechen. */
   const abKann = /youtube\.com|youtu\.be|soundcloud\.com|snd\.sc/.test(u.hostname) || AUDIO_ENDUNG.test(u.pathname);
   if (AUDIO_ENDUNG.test(u.pathname)) {
-    return { art: "datei", src: u.href, dienst: meta.dienst, name: meta.dienst, ab: ab, abKann: true, autoStart: true, hatDatei: true, hatEmbed: false, spielt: true };
+    return { art: "datei", src: u.href, dienst: meta.dienst, name: meta.dienst, ab: ab, abKann: true, hatDatei: true, hatEmbed: false, spielt: true };
   }
   const host = u.hostname.replace(/^www\./, "");
   const teile = u.pathname.split("/").filter(Boolean);
@@ -2910,7 +2887,7 @@ const musikSpur = function (roh, abSek) {
     src = u.href.replace("music.apple.com", "embed.music.apple.com");
   }
   if (!src) return Object.assign({}, leer, { dienst: meta.dienst, name: meta.dienst, ab: ab, abKann: abKann });
-  return { art: "embed", src: src, dienst: meta.dienst, name: meta.dienst, ab: ab, abKann: abKann, autoStart: MUSIK_AUTOSTART.test(host), hatEmbed: true, hatDatei: false, spielt: true };
+  return { art: "embed", src: src, dienst: meta.dienst, name: meta.dienst, ab: ab, abKann: abKann, hatEmbed: true, hatDatei: false, spielt: true };
 };
 const MUSIK_CHIP = {
   display: "inline-flex", alignItems: "center", gap: "5px", alignSelf: "start",
@@ -3449,35 +3426,12 @@ class Component extends DCLogic {
      kann diese Seite nicht prüfen — fremde Fenster sind für sie
      verschlossen; das ist keine Lücke, sondern Absicht der Browser. Das
      Fenster wird beim Liedwechsel umgelenkt und am Ende geschlossen. */
-  /* SoundCloud und eigene Audiodateien spielen im eingebetteten
-     Spieler ohnehin das ganze Stück — dort wäre ein zweites Fenster
-     nur lästig. Es öffnet sich nur für die Dienste, die im Rahmen
-     bloß eine Vorschau geben. */
-  kontoBrauchtFenster(url) {
-    const m = musikMeta(url);
-    if (!m.hat) return false;
-    return !/soundcloud\.com|snd\.sc|youtube\.com|youtu\.be/.test(m.href) && !AUDIO_ENDUNG.test(m.href.split("?")[0]);
-  }
-
   kontoAnwerfen() {
     if ((this.state.show.musikModus || "zugewiesen") !== "konto") return;
     const bilder = this.showImages(this.state.show.scope, this.state.show.ref);
     const wahl = musikFuer(bilder, this.state.show.idx);
     const meta = musikMeta(wahl.url);
-    /* Drei Fälle, jeder mit eigener Meldung: kein Lied, ein Lied das im
-       eingebetteten Spieler ohnehin ganz läuft, oder ein Vorschau-Dienst,
-       für den sich das Fenster lohnt. */
-    if (!meta.hat) {
-      this.kontoSchliessen();
-      this.kontoLage("leer");
-      return;
-    }
-    if (!this.kontoBrauchtFenster(wahl.url)) {
-      this.kontoSchliessen();
-      this.kontoLage("rahmen");
-      return;
-    }
-    this.kontoLage("fenster");
+    if (!meta.hat) { this.kontoSchliessen(); return; }
     /* Startzeit mitgeben, soweit der Dienst sie in der Adresse liest. */
     const sek = musikSekunden(wahl.ab);
     let ziel = meta.href;
@@ -3486,26 +3440,13 @@ class Component extends DCLogic {
     if (this.kontoZiel === ziel && this.kontoWin && !this.kontoWin.closed) return;
     try {
       if (this.kontoWin && !this.kontoWin.closed) this.kontoWin.location.replace(ziel);
-      else this.kontoWin = window.open(ziel, "chronikMusik", "width=460,height=700,left=60,top=60");
+      else this.kontoWin = window.open(ziel, "chronikMusik", "width=460,height=700,noopener=no");
       this.kontoZiel = ziel;
-      /* Das neue Fenster nimmt den Vordergrund — die Bilder sollen aber
-         sichtbar bleiben, also gleich zurückholen. */
-      if (this.kontoWin) {
-        try { window.focus(); } catch (e) { /* darf verweigert werden */ }
-        window.setTimeout(() => { try { window.focus(); } catch (e) { /* egal */ } }, 350);
-      }
       const blockiert = !this.kontoWin;
       if (!!this.state.show.kontoBlock !== blockiert) this.setShow({ kontoBlock: blockiert }, false);
     } catch (e) {
       this.setShow({ kontoBlock: true }, false);
     }
-  }
-
-  /* Eine Stelle für den Zustand des Kontofensters — sonst bleibt eine
-     alte Meldung stehen, die nicht mehr stimmt. */
-  kontoLage(lage) {
-    if ((this.state.show.kontoLage || "") === lage) return;
-    this.setShow({ kontoLage: lage, kontoBlock: lage === "fenster" ? this.state.show.kontoBlock : false }, false);
   }
 
   kontoSchliessen() {
@@ -3541,11 +3482,9 @@ class Component extends DCLogic {
     const el = this.audio;
     if (!el) return;
     const modus = this.state.show.musikModus || "zugewiesen";
-    if (modus === "aus") { el.pause(); return; }
+    if (modus === "aus" || modus === "konto") { el.pause(); return; }
     const bilder = this.showImages(this.state.show.scope, this.state.show.ref);
-    /* Spielt ein eigenes Fenster, bleibt der eingebaute Ton still. */
-    if (modus === "konto" && this.kontoBrauchtFenster(musikFuer(bilder, this.state.show.idx).url)) { el.pause(); return; }
-    const sp = (modus === "zugewiesen" || modus === "konto") ? musikSpur(musikFuer(bilder, this.state.show.idx).url, musikFuer(bilder, this.state.show.idx).ab) : musikSpur("");
+    const sp = modus === "zugewiesen" ? musikSpur(musikFuer(bilder, this.state.show.idx).url, musikFuer(bilder, this.state.show.idx).ab) : musikSpur("");
     const quelle = sp.hatDatei ? sp.src : (this.state.show.music || "");
     if (!quelle) {
       /* Läuft ein Dienst-Spieler, wird dieser angestoßen. */
@@ -5142,28 +5081,12 @@ class Component extends DCLogic {
     let evs = this.filtered();
     if (scope === "ev") evs = this.state.events.filter((e) => e.id === ref);
     if (scope === "cat") evs = this.state.events.filter((e) => (e.kicker || "") === ref);
-    /* „alb:<ereignis>:<album>“ und „et:<ereignis>:<etappe>“ zeigen nur
-       die Bilder einer Gruppe — die Kennungen gelten je Ereignis. */
-    /* Das ganze Ereignis, aber nach Gruppen geordnet. */
-    let ordne = "";
-    if (scope === "evAlb" || scope === "evEt") {
-      evs = this.state.events.filter((e) => e.id === ref);
-      ordne = scope === "evAlb" ? "alb" : "et";
-    }
-    let nurAlb = "", nurEt = "", teil = String(ref || "").split(":");
-    if (scope === "alb" || scope === "et") {
-      evs = this.state.events.filter((e) => e.id === teil[0]);
-      if (scope === "alb") nurAlb = teil[1] || "";
-      else nurEt = teil[1] || "";
-    }
     evs = evs.slice().sort((a, b) => dp(a.date) - dp(b.date));
     const out = [];
     evs.forEach((e) => {
       (e.images || []).forEach((im, j) => {
         /* Bilder aus einem Album, das mir nicht offensteht, bleiben draußen. */
         if (this.albumRecht(e, im.alb || "") < 1) return;
-        if (nurAlb && (im.alb || "") !== nurAlb) return;
-        if (nurEt && this.bildEtappe(e, im) !== nurEt) return;
         /* Die Musik des Albums gilt für seine Bilder, sonst die der
            Etappe — so klingt jede Gruppe nach ihrem eigenen Lied. */
         const alb = (e.alben || []).filter((x) => x.i === (im.alb || ""))[0];
@@ -5171,17 +5094,9 @@ class Component extends DCLogic {
         const et = (e.etappen || []).filter((x) => x.i === etId)[0];
         const musik = (alb && alb.musik) || (et && et.musik) || "";
         const musikAb = (alb && alb.musik) ? (alb.musikAb || "") : ((et && et.musik) ? (et.musikAb || "") : "");
-        out.push({ ordAlb: (e.alben || []).findIndex((x) => x.i === (im.alb || "")), ordEt: (e.etappen || []).findIndex((x) => x.i === etId), key: e.id + ":" + j, src: im.src || "", caption: zeigbareUnterschrift(im.caption), event: e.name, date: fmtDate(e.date), n: (im.comments || []).length, rot: im.rot || 0, musik: musik, musikAb: musikAb });
+        out.push({ key: e.id + ":" + j, src: im.src || "", caption: zeigbareUnterschrift(im.caption), event: e.name, date: fmtDate(e.date), n: (im.comments || []).length, rot: im.rot || 0, musik: musik, musikAb: musikAb });
       });
     });
-    /* Ohne Gruppe zuletzt — sonst stünden die losen Bilder vorn. */
-    if (ordne) {
-      const rang = (x) => {
-        const at = ordne === "alb" ? x.ordAlb : x.ordEt;
-        return at < 0 ? 9999 : at;
-      };
-      out.sort((a, b) => rang(a) - rang(b));
-    }
     return out;
   }
 
@@ -7243,9 +7158,8 @@ class Component extends DCLogic {
         openBottom = top + est;
         offenesStapelEnde[it.stapel] = Math.max(offenesStapelEnde[it.stapel] || 0, openBottom);
       }
-      const bildListe = bilder.map(({ r, j, kopf, albKopf, albMusik, albName, recht, etId, albId }) => ({
+      const bildListe = bilder.map(({ r, j, kopf, albKopf, albMusik, albName, recht }) => ({
           etKopf: kopf || "", hatKopf: !!kopf,
-          etId: etId || "", albId: albId || "",
           albMusik: musikMeta(albMusik),
           /* Der Albumname steht als Überschrift über der ersten Kachel
              seiner Gruppe — nicht mehr klein unter jedem Bild. */
@@ -7471,13 +7385,11 @@ class Component extends DCLogic {
         /* Im Split-Modus nach Etappe sortiert. r und j behalten ihre
            Bedeutung, weil Kommentare am ursprünglichen Index hängen. */
         images: bildListe,
-        /* Jede Gruppe kann als eigene Fotoshow laufen. */
-        gruppeShow: (art, id) => this.openShow(art, e.id + ":" + id),
         /* Alben und Etappen als eigene, beschriftete Blöcke: die
            Überschrift steht über ihrer Gruppe, die Bilder darunter im
            Raster. So hängt keine Überschrift mehr an einer einzelnen
            Kachel. */
-        bildGruppen: (function (self) {
+        bildGruppen: (function () {
           const gruppen = [];
           bildListe.forEach((im) => {
             if (!gruppen.length || im.hatKopf || im.hatAlbKopf) {
@@ -7486,21 +7398,13 @@ class Component extends DCLogic {
                 etKopf: im.etKopf, hatEtKopf: im.hatKopf,
                 albKopf: im.albKopf, hatAlbKopf: im.hatAlbKopf,
                 albMusik: im.albMusik,
-                /* Eine Show je Gruppe — nur wenn die Gruppe eine echte
-                   Kennung hat; „Ohne Album“ ist keine. */
-                zeigeShow: !!(im.etId || im.albId),
-                starteShow: (ev) => {
-                  if (ev && ev.stopPropagation) ev.stopPropagation();
-                  if (im.albId) self.openShow("alb", e.id + ":" + im.albId);
-                  else if (im.etId) self.openShow("et", e.id + ":" + im.etId);
-                },
                 bilder: []
               });
             }
             gruppen[gruppen.length - 1].bilder.push(im);
           });
           return gruppen;
-        })(this),
+        })(),
         polls: (function (self) {
           let liste = (e.polls || []).filter((p) => p && p.frage !== undefined);
           const etL = e.etappen || [];
@@ -7749,11 +7653,6 @@ class Component extends DCLogic {
         deco: this.decoParts(e.deco, eT, e.id + (isOpen ? "-o" : "-c"), "view"),
         toggle: () => this.open(e.id),
         show: () => this.openShow("ev", e.id),
-        /* Dieselben Bilder, nur nach Gruppen sortiert. */
-        showAlb: (ev) => { ev.stopPropagation(); this.openShow("evAlb", e.id); },
-        showEt: (ev) => { ev.stopPropagation(); this.openShow("evEt", e.id); },
-        hatAlbenShow: (e.alben || []).length > 0,
-        hatEtappenShow: (e.etappen || []).length > 0,
         edit: (ev) => { ev.stopPropagation(); this.editEvent(e.id); },
         remove: (ev) => { ev.stopPropagation(); this.removeFragen(e.id); }
       };
@@ -10451,24 +10350,15 @@ class Component extends DCLogic {
           const modus = st.show.musikModus || "zugewiesen";
           /* Im Konto-Modus spielt das Fenster des Dienstes — hier bleibt
              alles still. */
-          /* SoundCloud und Dateien laufen auch im Konto-Modus im
-             eingebetteten Spieler — nur die Vorschau-Dienste wandern in
-             ein eigenes Fenster. */
-          if (modus === "konto" && self.kontoBrauchtFenster(musikFuer(simgs, sIdx).url)) {
-            return { hatEmbed: false, hatDatei: false, name: "", hatName: false, eigeneDatei: false, embedKey: "konto", embedRef: () => {}, rahmen: { display: "none" }, src: "" };
-          }
+          if (modus === "konto") return { hatEmbed: false, hatDatei: false, name: "", hatName: false, eigeneDatei: false, embedKey: "konto", embedRef: () => {}, rahmen: { display: "none" }, src: "" };
           /* „zugewiesen“ nimmt das Lied von Album oder Etappe, „eigene“
              nur die selbst gewählte Datei, „aus“ lässt es still. */
-          /* Auch im Konto-Modus zählt das zugewiesene Lied: für
-             SoundCloud, YouTube und Dateien spielt der eingebettete
-             Spieler: der Fenster-Fall ist oben schon abgefangen. */
-          const wahl = musikFuer(simgs, sIdx);
-          const sp = (modus === "zugewiesen" || modus === "konto") ? musikSpur(wahl.url, wahl.ab) : musikSpur("");
+          const sp = modus === "zugewiesen" ? musikSpur(musikFuer(simgs, sIdx).url, musikFuer(simgs, sIdx).ab) : musikSpur("");
           const eigen = modus !== "aus" && !!st.show.music && !sp.spielt;
           return {
             /* Während des Ausklangs bleibt der Spieler stehen und wird
                nur durchsichtig — abgebaut wird er erst danach. */
-            hatEmbed: sp.hatEmbed && (modus === "zugewiesen" || modus === "konto"),
+            hatEmbed: sp.hatEmbed && modus === "zugewiesen",
             embedKey: "mu" + sp.src,
             /* In diesem Abschnitt gibt es kein `this` — er läuft als
                eigene Funktion mit `self`. */
@@ -10484,23 +10374,14 @@ class Component extends DCLogic {
                 [400, 1200, 2400].forEach((ms) => window.setTimeout(() => self.embedAnwerfen(el, sp.dienst), ms));
               }
             },
-            name: sp.name + (sp.ab ? (sp.abKann ? " · ab " + musikZeit(sp.ab) : "") : ""),
+            name: sp.name + (sp.ab ? (sp.abKann ? " · ab " + musikZeit(sp.ab) : " · Startzeit kennt dieser Dienst nicht") : ""),
             hatName: !!sp.name,
-            autoStart: sp.autoStart !== false,
-            /* Steht der Spieler da und spielt nicht, sagen wir warum. */
-            startHinweis: (sp.hatEmbed && sp.autoStart === false && !st.show.voll)
-              ? sp.dienst + " startet nur auf Tippen — im Spieler auf ▶ · für ganze Stücke „Eigenes Konto“ wählen"
-              : "",
-            zeigeStartHinweis: !!(sp.hatEmbed && sp.autoStart === false && !st.show.voll),
             zeigeName: !!sp.name && !st.show.voll,
             /* Im Vollbild bleibt nur das Foto zu sehen — der Spieler
                läuft unsichtbar weiter. */
-            /* Ein Spieler, der nicht von selbst anspielt, muss zu
-               treffen sein — darum in seiner vollen Größe. */
             rahmen: {
-              position: "absolute", right: "14px", bottom: "14px",
-              width: st.show.voll ? "1px" : (sp.autoStart ? "300px" : "340px"),
-              height: st.show.voll ? "1px" : (sp.autoStart ? "82px" : "162px"), opacity: st.show.voll ? 0 : (st.show.ausklang ? 0 : 1),
+              position: "absolute", right: "14px", bottom: "14px", width: st.show.voll ? "1px" : "300px",
+              height: st.show.voll ? "1px" : "82px", opacity: st.show.voll ? 0 : (st.show.ausklang ? 0 : 1),
               overflow: "hidden", border: 0, borderRadius: "var(--radius-md)", zIndex: 4,
               pointerEvents: st.show.voll ? "none" : "auto",
               transition: st.show.fade === false ? "none" : "opacity 1400ms linear"
@@ -10527,23 +10408,9 @@ class Component extends DCLogic {
           }
         })),
         kontoModus: (st.show.musikModus || "zugewiesen") === "konto",
-        /* Ein Auswahlfeld statt einer Radiogruppe: vier Möglichkeiten
-           passen dort auf eine Zeile, und keine fällt aus der Leiste. */
-        /* Ein Klick, der aus dem Vorschau-Spieler in das eigene Konto
-           wechselt — die Geste dafür ist genau dieser Klick. */
-        kontoWechsel: (ev) => {
-          if (ev && ev.stopPropagation) ev.stopPropagation();
-          this.setShow({ musikModus: "konto" }, false);
-          this.kontoAnwerfen();
-        },
-        onMusikModus: (ev) => {
-          const m = ev.target.value;
-          if (m !== "konto") this.kontoSchliessen();
-          if (m === "aus" && this.audio) this.audio.pause();
-          this.setShow({ musikModus: m }, false);
-          if (m === "konto") window.requestAnimationFrame(() => this.kontoAnwerfen());
-        },
-        kontoHinweis: "",
+        kontoHinweis: st.show.kontoBlock
+          ? "Das Fenster wurde blockiert — Fenster für diese Seite erlauben, dann erneut wählen."
+          : "Öffnet das Lied in einem kleinen Fenster des Dienstes. Bist du dort angemeldet, läuft das ganze Stück statt der Vorschau. Ob du angemeldet bist, kann diese Seite nicht sehen — das entscheidet der Dienst.",
         musikBlockiert: !!st.show.musikBlockiert && st.show.open,
         musikStarten: (ev) => {
           if (ev && ev.stopPropagation) ev.stopPropagation();
@@ -10553,30 +10420,10 @@ class Component extends DCLogic {
           window.requestAnimationFrame(() => this.musikAnwerfen());
         },
         fade: st.show.fade !== false,
-        /* Eine Zeile für alles, was zur Musik zu sagen ist. */
-        musikZeile: (function (m) {
-          if (m === "aus") return "Musik ist aus.";
-          /* Der Startwert von musicName ist das Wort „keine“ — als Name
-             wäre er eine Falschaussage. */
-          const datei = (st.show.musicName && st.show.musicName !== "keine") ? st.show.musicName : "";
-          const zugewiesen = musikSpur(musikFuer(simgs, sIdx).url, musikFuer(simgs, sIdx).ab);
-          if (m === "konto") {
-            const lage = st.show.kontoLage || "";
-            if (st.show.kontoBlock && lage === "fenster") return "Fenster blockiert — für diese Seite erlauben, dann erneut wählen.";
-            if (lage === "leer") return "Kein Lied zugewiesen — im Ereignis bei Album oder Etappe eines eintragen.";
-            if (lage === "rahmen") return (zugewiesen.autoStart === false ? "Bereit im Spieler — dort starten." : "Läuft im eingebetteten Spieler — kein Extrafenster nötig.");
-            return zugewiesen.name ? "Fenster: " + zugewiesen.name : "Öffnet das Lied beim Dienst. Dort angemeldet? Dann läuft das ganze Stück.";
-          }
-          if (m === "eigene") return datei ? "Läuft: " + datei : "Keine eigene Datei gewählt.";
-          /* „Läuft“ nur, wenn es auch von selbst läuft. */
-          if (zugewiesen.name) return (zugewiesen.autoStart === false ? "Bereit: " : "Läuft: ") + zugewiesen.name
-            + (zugewiesen.autoStart === false ? " — im Spieler starten" : "");
-          return datei ? "Läuft: " + datei : "Diesen Bildern ist kein Lied zugewiesen.";
-        })(st.show.musikModus || "zugewiesen"),
-        fadeLabel: st.show.fade !== false ? "Blende an" : "Blende aus",
+        fadeLabel: st.show.fade !== false ? "Ein- und Ausblenden: an" : "Ein- und Ausblenden: aus",
         fadeUm: () => this.setShow({ fade: st.show.fade === false }, false),
         fadeStil: {
-          font: "inherit", fontSize: "12px", minHeight: "26px", padding: "2px 10px", cursor: "pointer", alignSelf: "end",
+          font: "inherit", fontSize: "11.5px", letterSpacing: "0.04em", padding: "6px 12px", cursor: "pointer",
           whiteSpace: "nowrap", borderRadius: "99px",
           border: "1px solid " + (st.show.fade !== false ? "var(--color-accent)" : "var(--color-divider)"),
           background: st.show.fade !== false ? "var(--color-accent)" : "transparent",
@@ -10609,8 +10456,7 @@ class Component extends DCLogic {
              sonst die Hintergrundmusik der Show. Gestartet wird von
              selbst, sobald eine Quelle steht. */
           const modus = this.state.show.musikModus || "zugewiesen";
-          if (modus === "aus") { el.pause(); return; }
-          if (modus === "konto" && this.kontoBrauchtFenster(musikFuer(this.showImages(this.state.show.scope, this.state.show.ref), this.state.show.idx).url)) { el.pause(); return; }
+          if (modus === "aus" || modus === "konto") { el.pause(); return; }
           const bilder = this.showImages(this.state.show.scope, this.state.show.ref);
           const sp = modus === "zugewiesen" ? musikSpur(musikFuer(bilder, this.state.show.idx).url, musikFuer(bilder, this.state.show.idx).ab) : musikSpur("");
           const quelle = sp.hatDatei ? sp.src : (this.state.show.music || "");
