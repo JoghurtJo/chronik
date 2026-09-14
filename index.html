@@ -2894,7 +2894,9 @@ const musikSpur = function (roh, abSek) {
   const teile = u.pathname.split("/").filter(Boolean);
   let src = "";
   if (host.indexOf("spotify.com") >= 0 && teile.length >= 2) {
-    src = "https://open.spotify.com/embed/" + teile[teile.length - 2] + "/" + teile[teile.length - 1] + "?utm_source=chronik";
+    /* autoplay gehört in die Adresse — im eigenen Fenster, das aus einem
+       Klick heraus aufgeht, spielt der Spieler damit von selbst an. */
+    src = "https://open.spotify.com/embed/" + teile[teile.length - 2] + "/" + teile[teile.length - 1] + "?utm_source=chronik&autoplay=1";
   } else if (host.indexOf("deezer.com") >= 0 && teile.length >= 2) {
     src = "https://widget.deezer.com/widget/auto/" + teile[teile.length - 2] + "/" + teile[teile.length - 1] + "?autoplay=true";
   } else if (host.indexOf("soundcloud.com") >= 0) {
@@ -3467,7 +3469,8 @@ class Component extends DCLogic {
      Fenster des Dienstes, in dem die Anmeldung des Nutzers gilt — und die
      Bilder holen sich den Vordergrund gleich zurück. */
   vorschauFenster() {
-    if ((this.state.show.musikModus || "zugewiesen") !== "zugewiesen") return;
+    const m = this.state.show.musikModus || "zugewiesen";
+    if (m === "aus" || m === "eigene") return;
     const bilder = this.showImages(this.state.show.scope, this.state.show.ref);
     const wahl = musikFuer(bilder, this.state.show.idx);
     if (!wahl.url || !this.kontoBrauchtFenster(wahl.url)) { this.kontoSchliessen(); return; }
@@ -5249,6 +5252,15 @@ class Component extends DCLogic {
 
   openShow(scope, ref) {
     const s = Object.assign({}, this.state.show, { open: true, idx: 0, playing: true, scope: scope, ref: ref || "", ui: true });
+    /* Das Fenster muss im Klick selbst aufgehen: ein Rückruf von
+       setState läuft später, und dann gilt die Geste dem Browser als
+       verbraucht — er weist das Fenster ab. Also hier, noch synchron,
+       mit den Bildern der gerade gewählten Auswahl. */
+    if ((s.musikModus || "zugewiesen") !== "aus") {
+      const vor = musikFuer(this.showImages(scope, ref || ""), 0);
+      if (vor.url && this.kontoBrauchtFenster(vor.url)) this.kontoOeffnen(vor);
+      else this.kontoSchliessen();
+    }
     this.setState({ show: s, playing: false }, () => {
       if (this.timer) window.clearInterval(this.timer);
       this.startShowTimer();
@@ -7225,6 +7237,7 @@ class Component extends DCLogic {
   /* ---------- render values ---------- */
 
   renderVals() {
+    const self0 = this;
     const st = this.state;
     const t = this.theme();
     const me = this.me();
@@ -10629,7 +10642,12 @@ class Component extends DCLogic {
         /* Ein echter Verweis statt window.open: den lässt der Browser
            auch dort zu, wo er Popups abweist — etwa wenn die Seite in
            einem Rahmen läuft. Der Name hält alles im selben Tab. */
-        fensterHref: this.kontoAdresse(musikFuer(simgs, sIdx)),
+        /* Der Spieler des Dienstes, nicht seine Startseite: nur der
+           trägt autoplay in der Adresse. */
+        fensterHref: (function (w) {
+          const sp = musikSpur(w.url, w.ab);
+          return sp.src || self0.kontoAdresse(w);
+        })(musikFuer(simgs, sIdx)),
         fensterOeffnen: (ev) => {
           /* In der Geste dieses Klicks darf ein echtes Fenster
              aufgehen — das ist der verlässliche Weg. Gelingt es, bleibt
