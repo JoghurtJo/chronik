@@ -2371,6 +2371,12 @@
       </div>
       <div style="height: 3px; background: var(--ui-saum, var(--color-text)); margin: var(--space-4) 0 var(--space-4);"></div>
 
+      <div style="display: grid; gap: 5px; justify-items: start; margin-bottom: var(--space-4);">
+        <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">Fotoshow · Musik</div>
+        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ konto.autoFensterUm }}">{{ konto.autoFensterLabel }}</button>
+        <div style="font-size: 12px; line-height: 1.45; color: var(--color-neutral-700); max-width: 46ch;">{{ konto.autoFensterHinweis }}</div>
+      </div>
+
       <div style="display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4);">
         <div style="{{ konto.bildStil }}">{{ konto.initialen }}</div>
         <div style="display: grid; gap: 6px; justify-items: start;">
@@ -2816,7 +2822,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 48 · 2026-09-14";
+const BAU_STAND = "Bau 51 · 2026-09-14";
 /* Musikdienste: aus der Adresse lesen wir, um welchen Dienst es geht,
    und zeigen einen kleinen Verweis. Verlinkt wird nur, was auch wirklich
    ein Verweis ist — http(s) und ein Gastgeber, den wir benennen können. */
@@ -3384,6 +3390,7 @@ class Component extends DCLogic {
     bildAnker: null,
     feed: { freunde: true, vorschau: false },
     konto: false,
+    autoFenster: true,
     pruefZu: false,
     pruefPos: { x: 8, y: 8 },
     vglMehrG: false,
@@ -3562,30 +3569,39 @@ class Component extends DCLogic {
     return ziel;
   }
 
+  /* Kurzes Protokoll der letzten Versuche — ohne das bleibt im Dunkeln,
+     ob der Browser abgewiesen hat oder gar nichts versucht wurde. */
+  kontoNotiz(text) {
+    this.kontoSpur = (this.kontoSpur || []);
+    this.kontoSpur.unshift(new Date().toLocaleTimeString("de-DE") + " " + text);
+    this.kontoSpur = this.kontoSpur.slice(0, 4);
+  }
+
   kontoOeffnen(wahl) {
     const meta = musikMeta(wahl.url);
-    if (!meta.hat) return;
+    if (!meta.hat) { this.kontoNotiz("kein Lied"); return; }
+    if (this.state.autoFenster === false) { this.kontoNotiz("Erlaubnis steht aus"); return; }
     /* Nicht die Startseite des Dienstes, sondern seinen Spieler: der
        trägt autoplay in der Adresse und beginnt nach der Geste von
        selbst — die große Web-Anwendung tut das nie. */
     const sp = musikSpur(wahl.url, wahl.ab);
     const ziel = sp.src || this.kontoAdresse(wahl);
-    if (this.kontoZiel === ziel && this.kontoWin && !this.kontoWin.closed) return;
+    /* Auch der Weg über den erzeugten Verweis lässt keinen Griff zurück
+       — ohne diesen Merker würde bei jedem Bildwechsel ein neues Fenster
+       aufgehen und das Lied immer wieder von vorn beginnen. */
+    if (this.kontoZiel === ziel && (this.kontoTabOffen || (this.kontoWin && !this.kontoWin.closed))) return;
     /* Beim Wechsel auf einen anderen Dienst hört die alte Seite nicht von
        selbst auf — das Fenster muss weg, bevor das neue kommt. */
     const altDienst = musikMeta(this.kontoZiel || "").dienst;
     if (altDienst && altDienst !== meta.dienst) this.kontoSchliessen();
     try {
-      /* Ein benannter Tab statt eines Popups: Popups mit Größenangabe
-         weisen die Browser fast immer ab, ein Tab mit Namen dagegen wird
-         zugelassen und beim Liedwechsel wiederverwendet. Der Dienst
-         entscheidet dort selbst über den Start — angemeldet läuft das
-         ganze Stück. */
-      /* Ein eigenes, kleines Fenster — kein Tab: es lässt sich hinter
-         die Bilder legen und wieder schließen. */
+      /* Ein eigenes, kleines Fenster: es lässt sich hinter die Bilder
+         legen und wieder schließen. Weist der Browser es ab, folgt unten
+         der Weg über einen erzeugten Verweis. */
       if (this.kontoWin && !this.kontoWin.closed) this.kontoWin.location.replace(ziel);
       else {
         this.kontoWin = window.open(ziel, "chronikMusik", "popup=yes,width=420,height=560,left=40,top=40");
+        this.kontoNotiz(this.kontoWin ? "Fenster geöffnet" : "Skriptfenster abgewiesen");
         /* Weist der Browser das Skript-Fenster ab, hilft ein erzeugter
            Verweis: sein Klick gilt als Verweisklick, und den lassen die
            Sperren durch, wo sie window.open verbieten. */
@@ -3596,16 +3612,18 @@ class Component extends DCLogic {
           a.style.display = "none";
           document.body.appendChild(a);
           a.click();
+          this.kontoNotiz("Verweis angeklickt");
           window.setTimeout(() => { try { a.remove(); } catch (e) { /* egal */ } }, 0);
-          /* Ob es geklappt hat, verrät der Griff nicht — wir merken uns
-             nur, dass ein Fenster unterwegs ist, damit es später wieder
-             geschlossen werden kann. */
+          /* Kein window.open("", …) hinterher: das würde das gerade
+             geöffnete Fenster auf eine leere Seite lenken und die Musik
+             sofort beenden. Wir merken uns nur, dass eines unterwegs
+             ist — geschlossen wird es später über denselben Namen. */
           this.kontoTabOffen = true;
-          try { this.kontoWin = window.open("", "chronikMusik"); } catch (e) { /* bleibt ohne Griff */ }
         }
       }
       this.kontoZiel = ziel;
       this.kontoTabOffen = true;
+      if (this.kontoWin) this.kontoNotiz("Griff vorhanden");
       /* Das neue Fenster nimmt den Vordergrund — die Bilder sollen aber
          sichtbar bleiben, also gleich zurückholen. */
       if (this.kontoWin) {
@@ -3640,7 +3658,12 @@ class Component extends DCLogic {
        darauf — dann wird er wenigstens auf eine leere Seite gelenkt, und
        die Musik hört auf. */
     if (this.kontoTabOffen) {
-      try { const w = window.open("about:blank", "chronikMusik"); if (w) { w.close(); } } catch (e) { /* darf misslingen */ }
+      /* Ohne Griff bleibt nur der Weg über den Namen: erst auf eine leere
+         Seite lenken — damit hört die Musik auf — dann schließen. */
+      try {
+        const w = window.open("about:blank", "chronikMusik");
+        if (w) window.setTimeout(() => { try { w.close(); } catch (e) { /* egal */ } }, 60);
+      } catch (e) { /* darf misslingen */ }
       this.kontoTabOffen = false;
     }
     this.kontoWin = null;
@@ -9736,6 +9759,17 @@ class Component extends DCLogic {
            diesem Fenster. */
         bildFehler: st.avatarFehler || "",
         bildCta: st.avatarBusy ? "Wird geladen …" : (st.avatar ? "Anderes Bild" : "Bild wählen"),
+        /* Erlaubnis für das Musikfenster: steht sie aus, versucht die
+           Fotoshow gar nicht erst, eines zu öffnen. */
+        autoFenster: st.autoFenster !== false,
+        autoFensterLabel: st.autoFenster !== false
+          ? "Musikfenster automatisch öffnen: erlaubt"
+          : "Musikfenster automatisch öffnen: aus",
+        autoFensterHinweis: "Für Spotify, Deezer und Apple Music. Weist der Browser das Fenster ab, erscheint in der Fotoshow ein Verweis zum Öffnen von Hand — den lassen alle Sperren durch.",
+        autoFensterUm: () => {
+          const an = st.autoFenster === false;
+          this.setState({ autoFenster: an }, () => this.persist());
+        },
         toggle: () => this.setState({ konto: !st.konto, drawer: false, admin: false, loeschWort: "", loeschFehler: "" }),
         zu: () => this.setState({ konto: false, loeschWort: "", loeschFehler: "" }),
         eigene: me ? st.events.filter((e) => (e.by || "") === me.id).length : 0,
@@ -10468,9 +10502,13 @@ class Component extends DCLogic {
             { key: "e", k: "Dienst", v: (sp.dienst || "—") + " · " + (sp.hatEmbed ? "Spieler" : sp.hatDatei ? "Datei" : "keiner") },
             { key: "f", k: "Fenster?", v: self.kontoBrauchtFenster(wahl.url) ? "ja — eigenes Fenster" : "nein — Miniplayer" },
             { key: "g", k: "Verweis", v: href || "— leer —" },
-            { key: "h", k: "Fenster", v: (win && !win.closed) ? "offen" : (st.show.kontoBlock ? "abgewiesen" : "zu") },
+            { key: "h", k: "Fenster", v: (win && !win.closed)
+                ? "offen"
+                : (self.kontoTabOffen ? "offen (ohne Griff)" : (st.show.kontoBlock ? "abgewiesen" : "zu")) },
             { key: "i", k: "Rahmen", v: sp.hatEmbed ? (sp.src || "—") : "—" },
-            { key: "j", k: "Ton frei", v: self.audioFrei ? "ja" : "nein" }
+            { key: "j", k: "Ton frei", v: self.audioFrei ? "ja" : "nein" },
+            { key: "k", k: "Erlaubnis", v: st.autoFenster === false ? "aus" : "erlaubt" },
+            { key: "l", k: "Versuche", v: (self.kontoSpur || []).join(" · ") || "— noch keine —" }
           ]
         };
       })(this),
