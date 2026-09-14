@@ -238,7 +238,7 @@
         <sc-if value="{{ canCreate }}" hint-placeholder-val="{{ true }}">
           <button class="btn btn-primary" data-tour="neu" style="white-space: nowrap;" onClick="{{ guardedNew }}">＋ Ereignis</button>
         </sc-if>
-        <button class="btn btn-secondary" data-tour="show" style="white-space: nowrap;" onClick="{{ openShowAll }}">▦ Fotoshow</button>
+        <a class="btn btn-secondary" data-tour="show" href="{{ openShowAllHref }}" target="chronikMusik" style="white-space: nowrap; text-decoration: none;" onClick="{{ openShowAllStart }}">▦ Fotoshow</a>
         <button class="btn btn-secondary" data-tour="design" style="white-space: nowrap;" onClick="{{ toggleDrawer }}">Design · {{ themeName }}</button>
         <button class="btn btn-secondary" data-tour="kontakte" style="white-space: nowrap;" onClick="{{ toggleAdmin }}">{{ contactsLabel }}</button>
         <button class="btn btn-secondary" data-tour="vergleich" style="white-space: nowrap;" onClick="{{ vgl.toggle }}">Vergleichen</button>
@@ -762,12 +762,12 @@
                           <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 6px;">
                             <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t-accent, #0088b0);">Bilder</span>
                             <span style="display: flex; gap: 5px; align-items: center; flex-wrap: wrap;">
-                                                          <button onClick="{{ c.show }}" title="Alle Bilder dieses Ereignisses groß zeigen" style="font: inherit; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 13px; cursor: pointer; white-space: nowrap; border: 0; borderRadius: 99px; border-radius: 999px; background: var(--t-accent, #0088b0); color: var(--t-card, #eae9e9); box-shadow: var(--shadow-sm);">▦ Fotoshow</button>
+                                                          <a href="{{ c.showHref }}" target="chronikMusik" onClick="{{ c.showStart }}" title="Alle Bilder dieses Ereignisses groß zeigen" style="font: inherit; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 13px; cursor: pointer; white-space: nowrap; text-decoration: none; border: 0; border-radius: 999px; background: var(--t-accent, #0088b0); color: var(--t-card, #eae9e9); box-shadow: var(--shadow-sm);">▦ Fotoshow</a>
                               <sc-if value="{{ c.hatAlbenShow }}" hint-placeholder-val="{{ false }}">
-                                <button onClick="{{ c.showAlb }}" title="Alle Bilder, nach Album geordnet" style="font: inherit; font-size: 11px; padding: 4px 10px; cursor: pointer; white-space: nowrap; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--t-accent, #0088b0) 45%, transparent); background: transparent; color: var(--t-accent, #0088b0);">nach Album</button>
+                                <a href="{{ c.showAlbHref }}" target="chronikMusik" onClick="{{ c.showAlb }}" title="Alle Bilder, nach Album geordnet" style="font: inherit; font-size: 11px; padding: 4px 10px; cursor: pointer; white-space: nowrap; text-decoration: none; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--t-accent, #0088b0) 45%, transparent); background: transparent; color: var(--t-accent, #0088b0);">nach Album</a>
                               </sc-if>
                               <sc-if value="{{ c.hatEtappenShow }}" hint-placeholder-val="{{ false }}">
-                                <button onClick="{{ c.showEt }}" title="Alle Bilder, nach Etappe geordnet" style="font: inherit; font-size: 11px; padding: 4px 10px; cursor: pointer; white-space: nowrap; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--t-accent, #0088b0) 45%, transparent); background: transparent; color: var(--t-accent, #0088b0);">nach Etappe</button>
+                                <a href="{{ c.showEtHref }}" target="chronikMusik" onClick="{{ c.showEt }}" title="Alle Bilder, nach Etappe geordnet" style="font: inherit; font-size: 11px; padding: 4px 10px; cursor: pointer; white-space: nowrap; text-decoration: none; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--t-accent, #0088b0) 45%, transparent); background: transparent; color: var(--t-accent, #0088b0);">nach Etappe</a>
                               </sc-if>
                             </span>
                           </div>
@@ -3468,6 +3468,29 @@ class Component extends DCLogic {
      und nur angerissen. Ist ihnen ein Lied zugewiesen, öffnet dafür das
      Fenster des Dienstes, in dem die Anmeldung des Nutzers gilt — und die
      Bilder holen sich den Vordergrund gleich zurück. */
+  /* Für die Auslöser der Fotoshow: die Adresse, die das Fenster des
+     Dienstes zeigen soll — leer, wenn die Auswahl kein Lied hat, das ein
+     eigenes Fenster braucht. Ein echter Verweis mit Ziel öffnet dieses
+     Fenster verlässlich, auch wo der Browser Skript-Fenster abweist. */
+  musikHrefFuer(scope, ref) {
+    if ((this.state.show.musikModus || "zugewiesen") === "aus") return "";
+    let w = { url: "", ab: "" };
+    try { w = musikFuer(this.showImages(scope, ref || ""), 0); } catch (e) { return ""; }
+    if (!w.url || !this.kontoBrauchtFenster(w.url)) return "";
+    const sp = musikSpur(w.url, w.ab);
+    return sp.src || this.kontoAdresse(w);
+  }
+
+  /* Nach dem Verweisklick: Zustand merken und den Vordergrund zurück. */
+  musikFensterNotiert(scope, ref) {
+    let w = { url: "", ab: "" };
+    try { w = musikFuer(this.showImages(scope, ref || ""), 0); } catch (e) { /* egal */ }
+    this.kontoZiel = this.kontoAdresse(w);
+    this.kontoTabOffen = true;
+    const zurueck = () => { try { window.focus(); } catch (e) { /* darf verweigert werden */ } };
+    [60, 250, 700].forEach((ms) => window.setTimeout(zurueck, ms));
+  }
+
   vorschauFenster() {
     const m = this.state.show.musikModus || "zugewiesen";
     if (m === "aus" || m === "eigene") return;
@@ -7835,9 +7858,28 @@ class Component extends DCLogic {
         deco: this.decoParts(e.deco, eT, e.id + (isOpen ? "-o" : "-c"), "view"),
         toggle: () => this.open(e.id),
         show: () => this.openShow("ev", e.id),
+        showHref: this.musikHrefFuer("ev", e.id) || "#",
+        showStart: (ev) => {
+          if (ev && ev.stopPropagation) ev.stopPropagation();
+          if (!this.musikHrefFuer("ev", e.id) && ev && ev.preventDefault) ev.preventDefault();
+          else this.musikFensterNotiert("ev", e.id);
+          this.openShow("ev", e.id);
+        },
         /* Dieselben Bilder, nur nach Gruppen sortiert. */
-        showAlb: (ev) => { ev.stopPropagation(); this.openShow("evAlb", e.id); },
-        showEt: (ev) => { ev.stopPropagation(); this.openShow("evEt", e.id); },
+        showAlb: (ev) => {
+          ev.stopPropagation();
+          if (!this.musikHrefFuer("evAlb", e.id) && ev.preventDefault) ev.preventDefault();
+          else this.musikFensterNotiert("evAlb", e.id);
+          this.openShow("evAlb", e.id);
+        },
+        showAlbHref: this.musikHrefFuer("evAlb", e.id) || "#",
+        showEt: (ev) => {
+          ev.stopPropagation();
+          if (!this.musikHrefFuer("evEt", e.id) && ev.preventDefault) ev.preventDefault();
+          else this.musikFensterNotiert("evEt", e.id);
+          this.openShow("evEt", e.id);
+        },
+        showEtHref: this.musikHrefFuer("evEt", e.id) || "#",
         hatAlbenShow: (e.alben || []).length > 0,
         hatEtappenShow: (e.etappen || []).length > 0,
         edit: (ev) => { ev.stopPropagation(); this.editEvent(e.id); },
@@ -10330,6 +10372,14 @@ class Component extends DCLogic {
       printGeo: { position: "relative", width: (PL.width + 90) + "px", height: (60 + PL.lanes * pLaneH + 40) + "px", padding: "0" },
       printAxis: { position: "absolute", left: "44px", top: "46px", width: (PL.width) + "px" },
       openShowAll: () => this.openShow("all", ""),
+      /* Ohne Fenster-Lied bleibt die Adresse leer — dann darf der
+         Verweis nicht folgen, sonst lädt die Seite neu. */
+      openShowAllHref: this.musikHrefFuer("all", "") || "#",
+      openShowAllStart: (ev) => {
+        if (!this.musikHrefFuer("all", "") && ev && ev.preventDefault) ev.preventDefault();
+        else this.musikFensterNotiert("all", "");
+        this.openShow("all", "");
+      },
       bild: (function (self) {
         const e = st.imgEdit;
         if (!e) return { open: false, stickers: [], filter: [], bogen: [] };
