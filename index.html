@@ -1907,6 +1907,9 @@
           <div style="font-family: var(--font-heading); font-weight: 600; font-size: 25px; line-height: 1.1;">{{ show.title }}</div>
         </div>
         <div style="display: flex; align-items: baseline; gap: var(--space-3);">
+          <sc-if value="{{ show.spur.zeigeName }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">♪ {{ show.spur.name }}</span>
+          </sc-if>
           <span style="font-size: 11.5px; letter-spacing: 0.13em; text-transform: uppercase;">{{ show.counter }}</span>
           <button class="btn btn-secondary btn-icon" title="Fotoshow schließen" onClick="{{ show.close }}" style="color: #d81f2a; border-color: #d81f2a;" style-hover="background: color-mix(in srgb, #d81f2a 14%, transparent); color: #d81f2a;">✕</button>
         </div>
@@ -1999,9 +2002,6 @@
       </sc-if>
       <sc-if value="{{ show.spur.hatEmbed }}" hint-placeholder-val="{{ false }}">
         <iframe key="{{ show.spur.embedKey }}" ref="{{ show.spur.embedRef }}" title="Musik zur Fotoshow" allow="autoplay; encrypted-media; clipboard-write" allowfullscreen="{{ false }}" loading="eager" style="{{ show.spur.rahmen }}"></iframe>
-      </sc-if>
-      <sc-if value="{{ show.spur.zeigeName }}" hint-placeholder-val="{{ false }}">
-        <div style="position: absolute; left: 18px; bottom: 18px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700); z-index: 4;">♪ {{ show.spur.name }}</div>
       </sc-if>
     </div>
   </sc-if>
@@ -3511,7 +3511,11 @@ class Component extends DCLogic {
   kontoOeffnen(wahl) {
     const meta = musikMeta(wahl.url);
     if (!meta.hat) return;
-    const ziel = this.kontoAdresse(wahl);
+    /* Nicht die Startseite des Dienstes, sondern seinen Spieler: der
+       trägt autoplay in der Adresse und beginnt nach der Geste von
+       selbst — die große Web-Anwendung tut das nie. */
+    const sp = musikSpur(wahl.url, wahl.ab);
+    const ziel = sp.src || this.kontoAdresse(wahl);
     if (this.kontoZiel === ziel && this.kontoWin && !this.kontoWin.closed) return;
     /* Beim Wechsel auf einen anderen Dienst hört die alte Seite nicht von
        selbst auf — das Fenster muss weg, bevor das neue kommt. */
@@ -3523,15 +3527,24 @@ class Component extends DCLogic {
          zugelassen und beim Liedwechsel wiederverwendet. Der Dienst
          entscheidet dort selbst über den Start — angemeldet läuft das
          ganze Stück. */
+      /* Ein eigenes, kleines Fenster — kein Tab: es lässt sich hinter
+         die Bilder legen und wieder schließen. */
       if (this.kontoWin && !this.kontoWin.closed) this.kontoWin.location.replace(ziel);
-      else this.kontoWin = window.open(ziel, "chronikMusik");
+      else this.kontoWin = window.open(ziel, "chronikMusik", "popup=yes,width=420,height=560,left=40,top=40");
       this.kontoZiel = ziel;
       this.kontoTabOffen = true;
       /* Das neue Fenster nimmt den Vordergrund — die Bilder sollen aber
          sichtbar bleiben, also gleich zurückholen. */
       if (this.kontoWin) {
-        try { window.focus(); } catch (e) { /* darf verweigert werden */ }
-        window.setTimeout(() => { try { window.focus(); } catch (e) { /* egal */ } }, 350);
+        /* Das Fenster des Dienstes nimmt den Vordergrund — die Bilder
+           holen ihn zurück: erst über das fremde Fenster selbst, dann
+           über das eigene. */
+        const zurueck = () => {
+          try { if (this.kontoWin && !this.kontoWin.closed && this.kontoWin.blur) this.kontoWin.blur(); } catch (e) { /* darf verweigert werden */ }
+          try { window.focus(); } catch (e) { /* darf verweigert werden */ }
+        };
+        zurueck();
+        [120, 400, 900].forEach((ms) => window.setTimeout(zurueck, ms));
       }
       const blockiert = !this.kontoWin;
       if (!!this.state.show.kontoBlock !== blockiert) this.setShow({ kontoBlock: blockiert }, false);
@@ -10618,11 +10631,13 @@ class Component extends DCLogic {
            einem Rahmen läuft. Der Name hält alles im selben Tab. */
         fensterHref: this.kontoAdresse(musikFuer(simgs, sIdx)),
         fensterOeffnen: (ev) => {
+          /* In der Geste dieses Klicks darf ein echtes Fenster
+             aufgehen — das ist der verlässliche Weg. Gelingt es, bleibt
+             der Verweis ungenutzt. */
           this.setShow({ kontoBlock: false }, false);
-          this.kontoZiel = this.kontoAdresse(musikFuer(simgs, sIdx));
-          this.kontoTabOffen = true;
-          /* Die Bilder holen sich den Vordergrund gleich zurück. */
-          [80, 400].forEach((ms) => window.setTimeout(() => { try { window.focus(); } catch (e) { /* darf verweigert werden */ } }, ms));
+          this.kontoZiel = "";
+          this.kontoOeffnen(musikFuer(simgs, sIdx));
+          if (this.kontoWin && ev && ev.preventDefault) ev.preventDefault();
         },
         musikStarten: (ev) => {
           if (ev && ev.stopPropagation) ev.stopPropagation();
