@@ -1,27 +1,3 @@
-/* ============================================================
-   CHRONIK — Cloudflare Worker für die Bilder (R2)
-   ============================================================
-   Aufgabe: Bilder annehmen und ausliefern, aber nur für
-   angemeldete Personen — und nur solange die Gratis-Grenzen
-   nicht erreicht sind.
-
-   Der Worker ist die Tür zum Bildspeicher. Ohne ihn müsste der
-   R2-Schlüssel in der Webseite stehen, und den könnte jeder lesen.
-
-   Einrichten (steht ausführlich in der Anleitung):
-     1. Cloudflare → R2 → Bucket "chronik-bilder" anlegen
-     2. Workers & Pages → Create Worker → diesen Code einfügen
-     3. Settings → Bindings → R2 bucket:  Variable BUCKET  →  chronik-bilder
-     4. Settings → Variables:
-          SUPABASE_URL      = https://xxxx.supabase.co
-          SUPABASE_ANON_KEY = eyJ… (anon public)
-          ALLOWED_ORIGIN    = https://deinname.github.io
-          MAX_BYTES         = 8000000000     (8 GB von 10 GB)
-          MAX_UPLOADS_DAY   = 2000
-          MAX_GETS_DAY      = 60000
-     5. Adresse des Workers in chronik-config.js als r2Worker eintragen
-   ============================================================ */
-
 const KEY_RE = /^[0-9a-f-]{36}\/[0-9a-z._-]{1,80}$/i;
 
 export default {
