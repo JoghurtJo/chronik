@@ -23,6 +23,6 @@ window.CHRONIK_CONFIG = {
   },
 
   /* --- 5. Heimnetz-Modus (Testbetrieb ohne HTTPS) -------- */
-   debug: true,
+   debug: false,
    homeNetwork: false
 };
