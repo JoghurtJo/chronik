@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="lang/de.js?v=b63"></script>
-<script src="lang/en.js?v=b63"></script>
-<script src="lang/sprache.js?v=b63"></script>
-<script src="./support.js?v=b63"></script>
+<script src="lang/de.js?v=b64"></script>
+<script src="lang/en.js?v=b64"></script>
+<script src="lang/sprache.js?v=b64"></script>
+<script src="./support.js?v=b64"></script>
 </head>
 <body>
 <x-dc>
@@ -14,7 +14,7 @@
 <meta name="omelette-owns-print" content="1">
 <link rel="stylesheet" href="broadsheet.css">
 <script src="chronik-config.js"></script>
-<script src="supabase-bridge.js?v=b63"></script>
+<script src="supabase-bridge.js?v=b64"></script>
 <script src="_ds/broadsheet-2c390965-89c1-429e-af6f-993fdd49e5b3/_ds_bundle.js"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
@@ -2951,6 +2951,65 @@
 
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;startTheme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;zeitung&quot;,&quot;notizbuch&quot;,&quot;mitternacht&quot;,&quot;riso&quot;,&quot;botanik&quot;,&quot;bauhaus&quot;,&quot;terminal&quot;,&quot;pastell&quot;,&quot;museum&quot;,&quot;neon&quot;,&quot;sepia&quot;,&quot;schiefer&quot;],&quot;default&quot;:&quot;zeitung&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Start&quot;},&quot;lanes&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:3,&quot;min&quot;:1,&quot;max&quot;:4,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Zeitstrahl&quot;},&quot;showRuler&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Zeitstrahl&quot;}}">
+/* Fehlerkasten ohne React: fängt jede Fehlermeldung ab — auch solche,
+   die beim Zeichnen der Seite selbst entstehen und sie leer stehen
+   lassen — und zeigt sie unten auf der Seite zum Kopieren an. */
+(function () {
+  if (window.__chronikFehlerBox) return;
+  window.__chronikFehlerBox = true;
+  var gesehen = {};
+  var zeigen = function (text) {
+    try {
+      text = String(text || "").slice(0, 1800);
+      if (!text || gesehen[text]) return;
+      gesehen[text] = true;
+      var box = document.getElementById("chronik-fehlerbox");
+      if (!box) {
+        box = document.createElement("div");
+        box.id = "chronik-fehlerbox";
+        box.setAttribute("style", "position:fixed;left:12px;right:12px;bottom:12px;z-index:2147483647;max-height:45vh;overflow:auto;padding:12px 14px;border-radius:4px;background:#fde8f1;color:#8a0045;font:12px/1.45 ui-monospace,Menlo,monospace;white-space:pre-wrap;box-shadow:0 8px 30px rgba(0,0,0,.25);user-select:text");
+        var zu = document.createElement("button");
+        zu.textContent = "✕";
+        zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
+        zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
+        var kopf = document.createElement("div");
+        kopf.textContent = "Fehler gefunden (Bau 64) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
+        var p = document.createElement("div");
+        p.id = "chronik-fehlertext";
+        box.appendChild(zu); box.appendChild(kopf); box.appendChild(p);
+        (document.body || document.documentElement).appendChild(box);
+      }
+      var el = document.getElementById("chronik-fehlertext");
+      if (el.textContent.length < 8000) el.textContent += (el.textContent ? "\n— — —\n" : "") + text;
+    } catch (e) { /* nie selbst stören */ }
+  };
+  var fmt = function (a) {
+    if (a && a.stack) return a.stack;
+    if (a && typeof a === "object") { try { return JSON.stringify(a); } catch (x) { return String(a); } }
+    return String(a);
+  };
+  var oe = console.error;
+  console.error = function () {
+    try {
+      var s = Array.prototype.map.call(arguments, fmt).join(" ");
+      if (!/ResizeObserver|React DevTools/.test(s)) zeigen(s);
+    } catch (e) { /* egal */ }
+    return oe.apply(console, arguments);
+  };
+  window.addEventListener("error", function (ev) {
+    var z = ev && ev.target;
+    if (z && z !== window && (z.src || z.href)) { if (/\.(js|css)(\?|$)/.test(z.src || z.href)) zeigen("Datei nicht geladen: " + (z.src || z.href)); return; }
+    zeigen(fmt((ev && ev.error) || (ev && ev.message) || "Fehler") + (ev && ev.filename ? "\n@ " + ev.filename + ":" + ev.lineno + ":" + ev.colno : ""));
+  }, true);
+  window.addEventListener("unhandledrejection", function (ev) {
+    var r = ev && ev.reason;
+    var s = fmt(r);
+    if (/NotAllowedError|AbortError|play\(\)/.test(s)) return;
+    zeigen("Promise: " + s);
+  });
+})();
+
 /* Fehlen die Sprachdateien (lang/de.js, lang/en.js, lang/sprache.js)
    auf dem Server, darf die Seite nicht still zerfallen: dann läuft sie
    mit den Schlüsseln weiter und sagt oben deutlich, was fehlt. */
@@ -3190,7 +3249,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 63 · 2026-09-28";
+const BAU_STAND = "Bau 64 · 2026-09-28";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
