@@ -240,11 +240,12 @@
           <button class="btn btn-primary" data-tour="neu" style="white-space: nowrap;" onClick="{{ guardedNew }}">＋ Ereignis</button>
         </sc-if>
         <a class="btn btn-secondary" data-tour="show" href="{{ openShowAllHref }}" target="chronikMusik" style="white-space: nowrap; text-decoration: none;" onClick="{{ openShowAllStart }}">▦ Fotoshow</a>
+        <button class="btn btn-secondary" data-tour="bilder" style="white-space: nowrap;" onClick="{{ eing.auf }}">{{ eing.knopf }}</button>
         <button class="btn btn-secondary" data-tour="design" style="white-space: nowrap;" onClick="{{ toggleDrawer }}">Design · {{ themeName }}</button>
         <button class="btn btn-secondary" data-tour="kontakte" style="white-space: nowrap;" onClick="{{ toggleAdmin }}">{{ contactsLabel }}</button>
         <button class="btn btn-secondary" data-tour="vergleich" style="white-space: nowrap;" onClick="{{ vgl.toggle }}">Vergleichen</button>
         <button class="btn btn-secondary" data-tour="konto" style="white-space: nowrap;" onClick="{{ konto.toggle }}">Mein Konto</button>
-        <button class="btn btn-secondary" data-tour="hilfe" style="white-space: nowrap;" onClick="{{ tour.start }}">Hilfe</button>
+        <button class="btn btn-secondary" data-tour="hilfe" style="white-space: nowrap;" onClick="{{ tour.start }}">? Hilfe</button>
       </div>
     </div>
     <div style="height: 5px; background: var(--color-text); margin-top: var(--space-3);"></div>
@@ -450,6 +451,10 @@
                 <div style="height: 100%; background: color-mix(in srgb, var(--t-accent2, #d6006c) 32%, transparent); border-radius: 99px; box-shadow: inset 0 0 0 1px var(--t-accent2, #d6006c);"></div>
                 <div style="{{ b.labelStil }}">{{ b.label }}</div>
               </div>
+            </sc-for>
+
+            <sc-for list="{{ loseMarken }}" as="lm" hint-placeholder-count="0">
+              <button onClick="{{ lm.klick }}" title="{{ lm.title }}" aria-label="{{ lm.title }}" style="{{ lm.pos }}"><span style="display: block; width: 2px; height: 100%; margin: 0 auto; border-radius: 1px; background: var(--t-accent, #0088b0);"></span></button>
             </sc-for>
 
             <sc-for list="{{ markers }}" as="m" hint-placeholder-count="4">
@@ -905,7 +910,7 @@
     </div>
     </div>
     <div style="display: flex; justify-content: space-between; gap: var(--space-4); padding-top: var(--space-2); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-600);">
-      <span>Klick auf eine Karte oder einen Marker öffnet das Ereignis</span>
+      <span>Klick auf eine Karte oder einen Marker öffnet das Ereignis · ← → blättert</span>
       <span>{{ stats.hint }}</span>
     </div>
   </div>
@@ -2081,7 +2086,7 @@
         <button class="btn btn-primary" style="white-space: nowrap;" onClick="{{ tour.frageJa }}">Ja, zeig mir das</button>
         <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ tour.frageNein }}">Später — ich schau selbst</button>
       </div>
-      <div style="font-size: 11.5px; color: var(--color-neutral-600);">Du findest den Leitfaden jederzeit oben unter „Hilfe“.</div>
+      <div style="font-size: 11.5px; color: var(--color-neutral-600);">Du findest den Leitfaden jederzeit oben unter „? Hilfe“.</div>
     </div>
   </div>
 </sc-if>
@@ -2360,6 +2365,177 @@
   </div>
 </sc-if>
 
+<sc-if value="{{ eing.open }}" hint-placeholder-val="{{ false }}">
+  <div data-noprint="" data-screen-label="Lose Bilder" onClick="{{ eing.zu }}" onDragOver="{{ eing.dragOver }}" onDrop="{{ eing.drop }}" style="position: fixed; inset: 0; z-index: 137; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 42%, transparent);">
+    <div onClick="{{ stop }}" style="width: min(1040px, 100%); max-height: 90vh; overflow-y: auto; background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: var(--space-6); display: grid; gap: var(--space-4); align-content: start; box-sizing: border-box;">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4);">
+        <div>
+          <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">Bildeingang</div>
+          <h2 style="margin: 3px 0 0; font-size: 28px; line-height: 1.05;">Lose Bilder</h2>
+        </div>
+        <button class="btn btn-secondary btn-icon" onClick="{{ eing.zu }}">✕</button>
+      </div>
+      <div style="height: 3px; background: var(--ui-saum, var(--color-text));"></div>
+      <div class="seg" role="group" style="margin: 0; justify-self: start;">
+        <sc-for list="{{ eing.tabs }}" as="tb" hint-placeholder-count="2">
+          <label class="seg-opt"><input type="radio" name="eingtab" checked="{{ tb.on }}" onChange="{{ tb.pick }}" style="position: absolute; opacity: 0; pointer-events: none;">{{ tb.label }}</label>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ eing.tabEingang }}" hint-placeholder-val="{{ true }}">
+        <div style="display: grid; gap: var(--space-4);">
+          <div style="display: flex; align-items: flex-end; gap: var(--space-3); flex-wrap: wrap;">
+            <div class="field" style="margin: 0; width: 210px;"><label>Wer sieht die neuen Bilder?</label>
+              <select class="input" value="{{ eing.vis }}" onChange="{{ eing.onVis }}">
+                <sc-for list="{{ eing.visOpts }}" as="o" hint-placeholder-count="2">
+                  <option value="{{ o.value }}">{{ o.label }}</option>
+                </sc-for>
+              </select>
+            </div>
+            <label class="btn btn-primary" style="position: relative; cursor: pointer; white-space: nowrap;">Bilder hochladen
+              <input type="file" accept="image/*" multiple="{{ true }}" onChange="{{ eing.dateien }}" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none;">
+            </label>
+            <span style="font-size: 12px; line-height: 1.45; color: var(--color-neutral-700); max-width: 46ch;">Datum und Ort kommen aus den Bilddaten. Fehlen sie, wird das Datum aus dem Dateinamen gelesen. Bilder lassen sich auch hierher ziehen.</span>
+          </div>
+          <sc-if value="{{ eing.hatBusy }}" hint-placeholder-val="{{ false }}">
+            <div style="display: grid; gap: 5px;">
+              <div style="height: 4px; border-radius: 99px; overflow: hidden; background: var(--color-neutral-200);"><div style="{{ eing.pctStil }}"></div></div>
+              <div style="font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">{{ eing.busy }}</div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ eing.fehler }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size: 13px; line-height: 1.45; padding: 9px 11px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700);">{{ eing.fehler }}</div>
+          </sc-if>
+          <sc-if value="{{ eing.hinweis }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size: 13px; line-height: 1.45; padding: 9px 11px; border-radius: var(--radius-md); background: var(--color-accent-100); color: var(--color-accent-700);">{{ eing.hinweis }}</div>
+          </sc-if>
+
+          <div style="display: grid; gap: var(--space-2);">
+            <div style="display: flex; align-items: flex-end; gap: var(--space-3); flex-wrap: wrap;">
+              <div class="seg" role="group" style="margin: 0;">
+                <sc-for list="{{ eing.modi }}" as="m" hint-placeholder-count="2">
+                  <label class="seg-opt"><input type="radio" name="eingmodus" checked="{{ m.on }}" onChange="{{ m.pick }}" style="position: absolute; opacity: 0; pointer-events: none;">{{ m.label }}</label>
+                </sc-for>
+              </div>
+              <div class="field" style="margin: 0; width: 150px;"><label>von</label><input class="input" type="date" value="{{ eing.von }}" onChange="{{ eing.onVon }}"></div>
+              <div class="field" style="margin: 0; width: 150px;"><label>bis</label><input class="input" type="date" value="{{ eing.bis }}" onChange="{{ eing.onBis }}"></div>
+              <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ eing.zeitraum }}">Zeitraum wählen</button>
+              <span style="flex: 1;"></span>
+              <span style="font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700); white-space: nowrap;">{{ eing.selText }}</span>
+              <sc-if value="{{ eing.hatSel }}" hint-placeholder-val="{{ false }}">
+                <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ eing.selWeg }}">Auswahl aufheben</button>
+              </sc-if>
+            </div>
+            <div style="font-size: 12px; line-height: 1.45; color: var(--color-neutral-700);">{{ eing.modusHinweis }}</div>
+          </div>
+
+          <sc-if value="{{ eing.hatSel }}" hint-placeholder-val="{{ false }}">
+            <div style="display: grid; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); background: var(--color-accent-100);">
+              <div style="display: flex; align-items: flex-end; gap: var(--space-3); flex-wrap: wrap;">
+                <div class="field" style="margin: 0; flex: 1; min-width: 240px;"><label>Zu Ereignis hinzufügen</label>
+                  <select class="input" value="{{ eing.ziel }}" onChange="{{ eing.onZiel }}">
+                    <sc-for list="{{ eing.ziele }}" as="o" hint-placeholder-count="3">
+                      <option value="{{ o.value }}">{{ o.label }}</option>
+                    </sc-for>
+                  </select>
+                </div>
+                <button class="btn btn-primary" style="white-space: nowrap;" disabled="{{ eing.keinZiel }}" onClick="{{ eing.zuEreignis }}">Hinzufügen</button>
+                <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ eing.neuesEreignis }}">＋ Neues Ereignis daraus</button>
+                <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ eing.ausUm }}">{{ eing.ausLabel }}</button>
+                <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ eing.loeschen }}">Löschen</button>
+              </div>
+              <div style="font-size: 12px; line-height: 1.45; color: var(--color-accent-700);">{{ eing.zielHinweis }}</div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ eing.fremde }}" hint-placeholder-val="{{ false }}">
+            <button class="btn btn-ghost" style="justify-self: start; white-space: nowrap;" onClick="{{ eing.nurMeineUm }}">{{ eing.nurMeineLabel }}</button>
+          </sc-if>
+
+          <sc-if value="{{ eing.leer }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size: 14px; line-height: 1.55; color: var(--color-neutral-700); max-width: 52ch; padding: var(--space-6) 0;">Noch keine losen Bilder. Lade Bilder ohne Ereignis hoch — sie erscheinen hier nach Aufnahmetag und als dünne Striche unter der Zeitachse. Später wählst du einen Zeitraum und ordnest sie einem Ereignis zu.</div>
+          </sc-if>
+
+          <div style="display: grid; gap: var(--space-6);">
+            <sc-for list="{{ eing.tage }}" as="d" hint-placeholder-count="1">
+              <div style="display: grid; gap: var(--space-2);">
+                <div style="display: flex; align-items: baseline; gap: var(--space-3); flex-wrap: wrap;">
+                  <span style="font-family: var(--font-heading); font-size: 19px; line-height: 1.1;">{{ d.titel }}</span>
+                  <span style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ d.anzahl }}</span>
+                  <sc-if value="{{ d.hatOrt }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size: 12.5px; color: var(--color-accent-700);">{{ d.ortText }}</span>
+                  </sc-if>
+                  <span style="flex: 1;"></span>
+                  <sc-if value="{{ d.hatEigene }}" hint-placeholder-val="{{ true }}">
+                    <button class="btn btn-ghost" style="white-space: nowrap; min-height: 28px; padding: 2px 10px; font-size: 12px;" onClick="{{ d.alle }}">{{ d.tagLabel }}</button>
+                  </sc-if>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: var(--space-3) var(--space-2);">
+                  <sc-for list="{{ d.bilder }}" as="b" hint-placeholder-count="4">
+                    <div style="display: grid; gap: 3px; align-content: start; min-width: 0;">
+                      <button onClick="{{ b.klick }}" title="{{ b.title }}" style="{{ b.kachel }}">
+                        <img src="{{ b.src }}" alt="" loading="lazy" style="{{ b.bildStil }}">
+                        <span style="{{ b.markStil }}">{{ b.mark }}</span>
+                        <sc-if value="{{ b.aus }}" hint-placeholder-val="{{ false }}">
+                          <span style="position: absolute; left: 6px; bottom: 6px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 6px; border-radius: 99px; background: var(--color-bg); color: var(--color-text);">ausgeblendet</span>
+                        </sc-if>
+                      </button>
+                      <div style="display: flex; align-items: baseline; gap: 6px; font-size: 11.5px; line-height: 1.3; min-width: 0;">
+                        <span style="color: var(--color-text);">{{ b.zeit }}</span>
+                        <span style="color: var(--color-neutral-700); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ b.quelle }}</span>
+                      </div>
+                      <sc-if value="{{ b.hatOrt }}" hint-placeholder-val="{{ false }}">
+                        <div style="font-size: 11px; line-height: 1.3; color: var(--color-neutral-700); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ b.ort }}</div>
+                      </sc-if>
+                      <sc-if value="{{ b.fremd }}" hint-placeholder-val="{{ false }}">
+                        <div style="font-size: 11px; line-height: 1.3; color: var(--color-accent-700);">{{ b.von }}</div>
+                      </sc-if>
+                      <sc-if value="{{ b.datumFrei }}" hint-placeholder-val="{{ false }}">
+                        <input class="input" type="date" aria-label="Aufnahmedatum setzen" onChange="{{ b.datumSetzen }}" style="min-height: 26px; height: 26px; padding: 2px 6px; font-size: 11.5px;">
+                      </sc-if>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ eing.tabAus }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; gap: var(--space-4);">
+          <sc-if value="{{ eing.keinSetEv }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size: 14px; line-height: 1.55; color: var(--color-neutral-700);">Noch kein Ereignis mit Bildern.</div>
+          </sc-if>
+          <sc-if value="{{ eing.hatSetEv }}" hint-placeholder-val="{{ true }}">
+            <div style="display: grid; gap: var(--space-3);">
+              <div style="display: flex; align-items: flex-end; gap: var(--space-3); flex-wrap: wrap;">
+                <div class="field" style="margin: 0; flex: 1; min-width: 260px;"><label>Ereignis</label>
+                  <select class="input" value="{{ eing.setEv }}" onChange="{{ eing.onSetEv }}">
+                    <sc-for list="{{ eing.setOpts }}" as="o" hint-placeholder-count="3">
+                      <option value="{{ o.value }}">{{ o.label }}</option>
+                    </sc-for>
+                  </select>
+                </div>
+                <span style="font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700); white-space: nowrap;">{{ eing.setZahl }}</span>
+              </div>
+              <div style="font-size: 12px; line-height: 1.45; color: var(--color-neutral-700);">{{ eing.setWirkung }}</div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: var(--space-3) var(--space-2);">
+                <sc-for list="{{ eing.setBilder }}" as="b" hint-placeholder-count="4">
+                  <div style="display: grid; gap: 4px; align-content: start; min-width: 0;">
+                    <div style="{{ b.kachel }}"><img src="{{ b.src }}" alt="" loading="lazy" style="{{ b.bildStil }}"></div>
+                    <button class="{{ b.klasse }}" style="white-space: nowrap; min-height: 28px; padding: 2px 8px; font-size: 12px;" onClick="{{ b.um }}">{{ b.label }}</button>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+
 <sc-if value="{{ konto.open }}" hint-placeholder-val="{{ false }}">
   <div data-noprint="" data-screen-label="Mein Konto" onClick="{{ konto.zu }}" style="position: fixed; inset: 0; z-index: 138; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 42%, transparent);">
     <div onClick="{{ stop }}" style="width: min(500px, 100%); max-height: 88vh; overflow-y: auto; background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: var(--space-6);">
@@ -2376,6 +2552,14 @@
         <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">Fotoshow · Musik</div>
         <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ konto.autoFensterUm }}">{{ konto.autoFensterLabel }}</button>
         <div style="font-size: 12px; line-height: 1.45; color: var(--color-neutral-700); max-width: 46ch;">{{ konto.autoFensterHinweis }}</div>
+        <button class="btn btn-secondary" style="white-space: nowrap; margin-top: 4px;" onClick="{{ konto.spotifyUm }}">{{ konto.spotifyLabel }}</button>
+        <div style="font-size: 12px; line-height: 1.45; color: var(--color-neutral-700); max-width: 46ch;">{{ konto.spotifyHinweis }}</div>
+      </div>
+
+      <div style="display: grid; gap: 5px; justify-items: start; margin-bottom: var(--space-4);">
+        <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">Bilder</div>
+        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ konto.bilderEinAus }}">Bilder ein- und ausblenden</button>
+        <div style="font-size: 12px; line-height: 1.45; color: var(--color-neutral-700); max-width: 46ch;">Einzelne Bilder aus Ereignis, Fotoshow und Zeitstrahl nehmen — und wieder zurückholen.</div>
       </div>
 
       <div style="display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4);">
@@ -2823,7 +3007,105 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 56 · 2026-09-14";
+const BAU_STAND = "Bau 57 · 2026-09-27";
+/* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
+   Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
+   sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
+const exifLesen = function (buf) {
+  const out = { zeit: "", lat: null, lon: null };
+  try {
+    const u8 = new Uint8Array(buf);
+    const tiff = (i) => (u8[i] === 0x49 && u8[i + 1] === 0x49) || (u8[i] === 0x4d && u8[i + 1] === 0x4d);
+    let start = -1;
+    for (let i = 0; i < u8.length - 10; i++) {
+      if (u8[i] === 0x45 && u8[i + 1] === 0x78 && u8[i + 2] === 0x69 && u8[i + 3] === 0x66 && u8[i + 4] === 0 && u8[i + 5] === 0 && tiff(i + 6)) { start = i + 6; break; }
+    }
+    if (start < 0) {
+      for (let i = 0; i < u8.length - 10; i++) {
+        if (u8[i] === 0x65 && u8[i + 1] === 0x58 && u8[i + 2] === 0x49 && u8[i + 3] === 0x66 && tiff(i + 4)) { start = i + 4; break; }
+      }
+    }
+    if (start < 0) return out;
+    const dv = new DataView(buf);
+    const le = u8[start] === 0x49;
+    const u16 = (o) => dv.getUint16(start + o, le);
+    const u32 = (o) => dv.getUint32(start + o, le);
+    const ifd = (o) => {
+      const tags = {};
+      if (!o || start + o + 2 > u8.length) return tags;
+      const n = u16(o);
+      for (let k = 0; k < n; k++) {
+        const e = o + 2 + k * 12;
+        if (start + e + 12 > u8.length) break;
+        tags[u16(e)] = { n: u32(e + 4), wert: e + 8 };
+      }
+      return tags;
+    };
+    const ascii = (tg) => {
+      const off = tg.n > 4 ? u32(tg.wert) : tg.wert;
+      let s = "";
+      for (let k = 0; k < tg.n - 1 && start + off + k < u8.length; k++) s += String.fromCharCode(u8[start + off + k]);
+      return s;
+    };
+    const bruch = (tg) => {
+      const off = u32(tg.wert);
+      const r = [];
+      for (let k = 0; k < tg.n; k++) { const z = u32(off + k * 8), nn = u32(off + k * 8 + 4); r.push(nn ? z / nn : 0); }
+      return r;
+    };
+    const i0 = ifd(u32(4));
+    let zeit = "";
+    if (i0[0x8769]) {
+      const ex = ifd(u32(i0[0x8769].wert));
+      if (ex[0x9003]) zeit = ascii(ex[0x9003]);
+      else if (ex[0x9004]) zeit = ascii(ex[0x9004]);
+    }
+    if (!zeit && i0[0x0132]) zeit = ascii(i0[0x0132]);
+    const m = /^(\d{4}):(\d{2}):(\d{2})[ T](\d{2}):(\d{2}):?(\d{2})?/.exec(zeit);
+    if (m && m[1] !== "0000" && +m[1] > 1970) out.zeit = m[1] + "-" + m[2] + "-" + m[3] + "T" + m[4] + ":" + m[5] + ":" + (m[6] || "00");
+    if (i0[0x8825]) {
+      const gp = ifd(u32(i0[0x8825].wert));
+      if (gp[2] && gp[4]) {
+        const grad = (r) => (r[0] || 0) + (r[1] || 0) / 60 + (r[2] || 0) / 3600;
+        let lat = grad(bruch(gp[2])), lon = grad(bruch(gp[4]));
+        if (gp[1] && String.fromCharCode(u8[start + gp[1].wert]) === "S") lat = -lat;
+        if (gp[3] && String.fromCharCode(u8[start + gp[3].wert]) === "W") lon = -lon;
+        if (isFinite(lat) && isFinite(lon) && (lat || lon) && Math.abs(lat) <= 90 && Math.abs(lon) <= 180) {
+          out.lat = +lat.toFixed(5); out.lon = +lon.toFixed(5);
+        }
+      }
+    }
+  } catch (e) { /* unlesbar: dann eben ohne */ }
+  return out;
+};
+/* Ohne Bilddaten bleibt der Dateiname: IMG_20230815_142233, PXL_…,
+   IMG-20230815-WA0001, 2023-08-15 14.22.33, 15.08.2023, 1692108153000. */
+const datumAusName = function (name) {
+  const s = String(name || "");
+  const p = (x) => String(x).padStart(2, "0");
+  const gut = (y, mo, d, h, mi, se) => {
+    y = +y; mo = +mo; d = +d;
+    if (y < 1970 || y > new Date().getFullYear() + 1 || mo < 1 || mo > 12 || d < 1 || d > 31) return "";
+    const hh = h != null && h !== "" && +h < 24 ? p(+h) : "12";
+    const mm = mi != null && mi !== "" && +mi < 60 ? p(+mi) : "00";
+    const ss = se != null && se !== "" && +se < 60 ? p(+se) : "00";
+    return y + "-" + p(mo) + "-" + p(d) + "T" + hh + ":" + mm + ":" + ss;
+  };
+  let m = /(?:^|[^0-9])((?:19|20)\d{2})[-_.]?(0[1-9]|1[0-2])[-_.]?(0[1-9]|[12]\d|3[01])(?:[-_ T.]{0,3}([01]\d|2[0-3])[-_.:h]?([0-5]\d)(?:[-_.:m]?([0-5]\d))?)?/.exec(s);
+  if (m) return gut(m[1], m[2], m[3], m[4], m[5], m[6]);
+  m = /(?:^|[^0-9])(0[1-9]|[12]\d|3[01])[.\-_](0[1-9]|1[0-2])[.\-_]((?:19|20)\d{2})(?![0-9])/.exec(s);
+  if (m) return gut(m[3], m[2], m[1]);
+  m = /(?:^|[^0-9])(1[3-9]\d{11})(?![0-9])/.exec(s);
+  if (m) {
+    const d = new Date(+m[1]);
+    if (!isNaN(d.getTime())) return gut(d.getFullYear(), d.getMonth() + 1, d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
+  }
+  return "";
+};
+const tagTitel = function (tag) {
+  return new Intl.DateTimeFormat("de-DE", { weekday: "short", day: "numeric", month: "long", year: "numeric" }).format(new Date(dp(tag) + 12 * 3600000));
+};
+const LEER_GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 /* Musikdienste: aus der Adresse lesen wir, um welchen Dienst es geht,
    und zeigen einen kleinen Verweis. Verlinkt wird nur, was auch wirklich
    ein Verweis ist — http(s) und ein Gastgeber, den wir benennen können. */
@@ -3392,6 +3674,8 @@ class Component extends DCLogic {
     feed: { freunde: true, vorschau: false },
     konto: false,
     autoFenster: true,
+    eingang: [],
+    eing: { open: false, tab: "eingang", sel: [], anker: null, modus: "einzeln", von: "", bis: "", vis: "private", ziel: "", busy: "", pct: 0, fehler: "", hinweis: "", nurMeine: true, setEv: "" },
     pruefZu: false,
     pruefPos: { x: 8, y: 8 },
     vglMehrG: false,
@@ -3497,6 +3781,8 @@ class Component extends DCLogic {
   kontoBrauchtFenster(url) {
     const m = musikMeta(url);
     if (!m.hat) return false;
+    /* Spotify in der Seite: dort lässt sich der Spieler vorspulen. */
+    if (/spotify\.com|spotify\.link/.test(m.href) && this.feedPrefs().spotifySeite) return false;
     return !/soundcloud\.com|snd\.sc|youtube\.com|youtu\.be/.test(m.href) && !AUDIO_ENDUNG.test(m.href.split("?")[0]);
   }
 
@@ -3809,6 +4095,7 @@ class Component extends DCLogic {
         const s = JSON.parse(raw);
         this.setState({
           events: Array.isArray(s.events) ? s.events : this.state.events,
+          eingang: Array.isArray(s.eingang) ? s.eingang : [],
           groups: Array.isArray(s.groups) ? s.groups : [],
           friends: Array.isArray(s.friends) ? s.friends : [],
           feed: s.feed || this.state.feed
@@ -3931,6 +4218,7 @@ class Component extends DCLogic {
     window.removeEventListener("resize", this.onResize);
     if (this.timer) window.clearInterval(this.timer);
     if (this.showTimer) window.clearInterval(this.showTimer);
+    if (this.spotifyHorcher) window.removeEventListener("message", this.spotifyHorcher);
   }
 
   /* ---------- Cloud (Supabase) ---------- */
@@ -3957,7 +4245,7 @@ class Component extends DCLogic {
           return;
         }
         if (evt === "SIGNED_IN" && sess && !this.state.session) await this.cloudSignedIn(sess);
-        if (evt === "SIGNED_OUT") this.setState({ session: null, events: [], users: [] });
+        if (evt === "SIGNED_OUT") this.setState({ session: null, events: [], eingang: [], users: [] });
       });
     } catch (e) {
       this.setState({ booting: false, cloudErr: String(e.message || e) });
@@ -3985,8 +4273,12 @@ class Component extends DCLogic {
       try { gs = await CC.groups(); } catch (e) { /* Gruppen sind optional */ }
       let fr = this.state.friends;
       try { if (CC.friends) fr = await CC.friends(); } catch (e) { /* Kontakte sind optional */ }
-      this.setState({ users: users, events: events, groups: gs, friends: fr, cloudBusy: false, cloudErr: "" });
-      this.designNachtragen(events);
+      /* Lose Bilder liegen in eigenen Sammel-Ereignissen — die gehören
+         nicht in den Zeitstrahl, sondern in den Bildeingang. */
+      const lose = events.filter((e) => e.lose);
+      const echte = events.filter((e) => !e.lose);
+      this.setState({ users: users, events: echte, eingang: lose, groups: gs, friends: fr, cloudBusy: false, cloudErr: "" });
+      this.designNachtragen(echte);
     } catch (e) {
       /* Ohne dieses cloudBusy: false bliebe der Balken für immer stehen. */
       this.setState({ cloudBusy: false, cloudErr: String(e.message || e) });
@@ -4478,6 +4770,7 @@ class Component extends DCLogic {
         meta: this.state.meta,
         /* Das Beispiel des Leitfadens wird nie gespeichert. */
         events: (this.state.events || []).filter((e) => e.id !== DEMO_ID),
+        eingang: this.state.eingang || [],
         groups: this.state.groups, friends: this.state.friends, feed: this.state.feed
       }));
       window.localStorage.setItem("chronik.auth.v1", JSON.stringify({ users: this.state.users }));
@@ -5247,7 +5540,10 @@ class Component extends DCLogic {
       nurOrt: Array.isArray(f.nurOrt) ? f.nurOrt : [],
       ohneOrt: Array.isArray(f.ohneOrt) ? f.ohneOrt : [],
       /* 2) Einzeln blockierte Ereignisse. */
-      ohneEvent: Array.isArray(f.ohneEvent) ? f.ohneEvent : []
+      ohneEvent: Array.isArray(f.ohneEvent) ? f.ohneEvent : [],
+      /* 3) Einzelne Bilder fremder Ereignisse, nur für mich ausgeblendet. */
+      ohneBild: Array.isArray(f.ohneBild) ? f.ohneBild : [],
+      spotifySeite: !!f.spotifySeite
     };
   }
 
@@ -5388,6 +5684,7 @@ class Component extends DCLogic {
         if (this.albumRecht(e, im.alb || "") < 1) return;
         if (nurAlb && (im.alb || "") !== nurAlb) return;
         if (nurEt && this.bildEtappe(e, im) !== nurEt) return;
+        if (this.bildAus(e, im, j)) return;
         /* Die Musik des Albums gilt für seine Bilder, sonst die der
            Etappe — so klingt jede Gruppe nach ihrem eigenen Lied. */
         const alb = (e.alben || []).filter((x) => x.i === (im.alb || ""))[0];
@@ -6077,6 +6374,9 @@ class Component extends DCLogic {
       share: d.share || (old && old.share) || "view"
     };
     /* Beim Abbrechen bleibt diese Liste unbenutzt — die Dateien überleben. */
+    /* Aus dem Bildeingang übernommene Bilder verlassen ihn erst, wenn sie
+       wirklich im Ereignis gespeichert sind. */
+    const ausEingang = (d._ausEingang || []).filter((x) => (clean.images || []).some((im) => (im.key || im.path || im.src) === x.k));
     const vorgemerkt = ((d._geloescht || []).filter((k) => !(clean.images || []).some((im) => im.key === k)));
     if (this.state.cloud) {
       const payload = Object.assign({}, clean, { id: d.id || null, resolvedWho: this.resolveWho(clean.who, clean.gwho) });
@@ -6092,7 +6392,7 @@ class Component extends DCLogic {
             this.melden(fremd, "bearbeitet", "Dein Ereignis wurde geändert",
               ich.username + " hat „" + (clean.name || "ein Ereignis") + "“ bearbeitet. Schau in der Chronik nach.");
           }
-          return this.cloudSync();
+          return (ausEingang.length ? this.eingangAbziehen(ausEingang) : Promise.resolve()).then(() => this.cloudSync());
         })
         .catch((e) => this.handleCloudError(e));
       return;
@@ -6100,6 +6400,7 @@ class Component extends DCLogic {
     const evs = d.id ? this.state.events.map((e) => (e.id === d.id ? clean : e)) : this.state.events.concat([clean]);
     this.setState({ events: evs, draft: null, openId: clean.id });
     if (vorgemerkt.length) this.bilderWeg(vorgemerkt);
+    if (ausEingang.length) this.eingangAbziehen(ausEingang);
   };
 
   /* Löschen ist endgültig — erst fragen, dann handeln. */
@@ -6210,6 +6511,544 @@ class Component extends DCLogic {
       this.setState({ storeCheck: "grund=" + String((e && e.message) || e).slice(0, 90) });
     }
   };
+
+  /* ---------- Bildeingang: lose Bilder ---------- */
+
+  setEing(patch) {
+    this.setState((s) => ({ eing: Object.assign({}, s.eing, patch) }));
+  }
+
+  eingOeffnen(patch) {
+    this.setState((s) => ({
+      eing: Object.assign({}, s.eing, { open: true, tab: "eingang", sel: [], anker: null, fehler: "", hinweis: "" }, patch || {}),
+      konto: false, drawer: false, admin: false
+    }), () => { if (patch && (patch.von || patch.bis)) this.eingZeitraum(); });
+  }
+
+  bildKennung(e, im, j) { return (e.id || "") + ":" + ((im && (im.key || im.path)) || j); }
+
+  /* Ausgeblendet ist ein Bild, wenn es am Bild selbst steht (gilt für
+     alle) oder ich es mir persönlich ausgeblendet habe. */
+  bildAus(e, im, j) {
+    if (!im) return false;
+    if (im.aus) return true;
+    return (this.feedPrefs().ohneBild || []).indexOf(this.bildKennung(e, im, j)) >= 0;
+  }
+
+  /* Wer das Ereignis bearbeiten darf, blendet für alle aus; sonst nur
+     für sich selbst. */
+  bildAusUm(evId, j) {
+    const inEing = (this.state.eingang || []).some((x) => x.id === evId);
+    const feld = inEing ? "eingang" : "events";
+    const e = (this.state[feld] || []).filter((x) => x.id === evId)[0];
+    const im = e && (e.images || [])[j];
+    if (!im) return;
+    const k = this.bildKennung(e, im, j);
+    const f = Object.assign({}, this.feedPrefs());
+    const persoenlich = (f.ohneBild || []).slice();
+    if (this.levelFor(e) >= 3) {
+      const neuAus = !this.bildAus(e, im, j);
+      const evNeu = Object.assign({}, e, { images: e.images.map((x, n) => (n === j ? Object.assign({}, x, { aus: neuAus }) : x)) });
+      f.ohneBild = persoenlich.filter((x) => x !== k);
+      this.setState({ [feld]: (this.state[feld] || []).map((x) => (x.id === evId ? evNeu : x)), feed: f }, () => this.persist());
+      if (this.state.cloud && window.ChronikCloud && window.ChronikCloud.saveEvent) {
+        window.ChronikCloud.saveEvent(Object.assign({}, evNeu, { resolvedWho: this.resolveWho(evNeu.who, evNeu.gwho) })).catch((err) => this.handleCloudError(err));
+      }
+      return;
+    }
+    const at = persoenlich.indexOf(k);
+    if (at >= 0) persoenlich.splice(at, 1); else persoenlich.push(k);
+    f.ohneBild = persoenlich;
+    this.setState({ feed: f }, () => this.persist());
+  }
+
+  loseBilder(nurMeine) {
+    const me = this.me();
+    if (!me) return [];
+    const out = [];
+    (this.state.eingang || []).forEach((e) => {
+      if (this.levelFor(e) < 1) return;
+      const meins = (e.by || "") === me.id;
+      if (nurMeine && !meins) return;
+      (e.images || []).forEach((im, j) => {
+        const zeit = String(im.zeit || "");
+        out.push({ id: e.id + ":" + j, e: e, im: im, j: j, meins: meins, zeit: zeit, tag: zeit.slice(0, 10), aus: this.bildAus(e, im, j) });
+      });
+    });
+    out.sort((a, b) => (a.zeit ? 0 : 1) - (b.zeit ? 0 : 1) || (a.zeit < b.zeit ? -1 : a.zeit > b.zeit ? 1 : 0) || a.j - b.j);
+    return out;
+  }
+
+  eingAuswahl() {
+    const sel = (this.state.eing || {}).sel || [];
+    return this.loseBilder(true).filter((b) => sel.indexOf(b.id) >= 0);
+  }
+
+  eingKlick(id, ev) {
+    const g = this.state.eing || {};
+    const liste = this.loseBilder(g.nurMeine !== false);
+    const b = liste.filter((x) => x.id === id)[0];
+    if (!b || !b.meins) return;
+    const sel = (g.sel || []).slice();
+    const bereich = g.modus === "bereich" || !!(ev && ev.shiftKey);
+    if (bereich && g.anker && g.anker !== id) {
+      const a = liste.findIndex((x) => x.id === g.anker), z = liste.findIndex((x) => x.id === id);
+      if (a >= 0) {
+        const von = Math.min(a, z), bis = Math.max(a, z);
+        for (let k = von; k <= bis; k++) if (liste[k].meins && sel.indexOf(liste[k].id) < 0) sel.push(liste[k].id);
+        this.setEing({ sel: sel, anker: null });
+        return;
+      }
+    }
+    if (g.modus === "bereich") {
+      this.setEing({ anker: id, sel: sel.indexOf(id) < 0 ? sel.concat([id]) : sel });
+      return;
+    }
+    const at = sel.indexOf(id);
+    if (at >= 0) sel.splice(at, 1); else sel.push(id);
+    this.setEing({ sel: sel, anker: id });
+  }
+
+  eingZeitraum = () => {
+    const g = this.state.eing || {};
+    const von = g.von || g.bis, bis = g.bis || g.von;
+    if (!von) return;
+    const a = von < bis ? von : bis, z = von < bis ? bis : von;
+    const ids = this.loseBilder(true).filter((b) => b.tag && b.tag >= a && b.tag <= z).map((b) => b.id);
+    const sel = (g.sel || []).slice();
+    ids.forEach((id) => { if (sel.indexOf(id) < 0) sel.push(id); });
+    this.setEing({ sel: sel, anker: null, hinweis: ids.length ? "" : "In diesem Zeitraum liegt kein eigenes Bild." });
+  };
+
+  bildKopie(im) {
+    const x = Object.assign({}, im);
+    x.comments = [];
+    return x;
+  }
+
+  eingZuEreignis = () => {
+    const g = this.state.eing || {};
+    const bilder = this.eingAuswahl();
+    const zielId = g.zielAktiv || "";
+    if (!bilder.length || !zielId) return;
+    this.editEvent(zielId);
+    this.setState((s) => (s.draft ? {
+      draft: Object.assign({}, s.draft, {
+        images: (s.draft.images || []).concat(bilder.map((b) => this.bildKopie(b.im))),
+        _ausEingang: bilder.map((b) => ({ ev: b.e.id, k: b.im.key || b.im.path || b.im.src }))
+      }),
+      eing: Object.assign({}, s.eing, { open: false, sel: [], anker: null })
+    } : null));
+  };
+
+  eingNeuesEreignis = () => {
+    const bilder = this.eingAuswahl();
+    if (!bilder.length) return;
+    const tage = bilder.map((b) => b.tag).filter(Boolean).sort();
+    const zaehl = {};
+    bilder.forEach((b) => { if (b.im.ort) zaehl[b.im.ort] = (zaehl[b.im.ort] || 0) + 1; });
+    const ort = Object.keys(zaehl).sort((a, b) => zaehl[b] - zaehl[a])[0] || "";
+    this.newEvent();
+    this.setState((s) => (s.draft ? {
+      draft: Object.assign({}, s.draft, {
+        date: tage[0] || s.draft.date,
+        end: tage.length && tage[tage.length - 1] !== tage[0] ? tage[tage.length - 1] : "",
+        place: ort,
+        images: bilder.map((b) => this.bildKopie(b.im)),
+        _ausEingang: bilder.map((b) => ({ ev: b.e.id, k: b.im.key || b.im.path || b.im.src }))
+      }),
+      eing: Object.assign({}, s.eing, { open: false, sel: [], anker: null })
+    } : null));
+  };
+
+  /* Bilder aus ihren Sammel-Ereignissen nehmen. Ein leeres Sammel-
+     Ereignis verschwindet — die Dateien bleiben, sie gehören jetzt
+     dem Zielereignis. */
+  async eingangAbziehen(liste) {
+    const weg = {};
+    (liste || []).forEach((x) => { (weg[x.ev] = weg[x.ev] || []).push(x.k); });
+    const CC = window.ChronikCloud;
+    const neu = [];
+    const alle = this.state.eingang || [];
+    for (let i = 0; i < alle.length; i++) {
+      const e = alle[i];
+      if (!weg[e.id]) { neu.push(e); continue; }
+      const rest = (e.images || []).filter((im) => weg[e.id].indexOf(im.key || im.path || im.src) < 0);
+      if (this.state.cloud && CC) {
+        try {
+          if (!rest.length) await CC.removeEvent(e.id);
+          else await CC.saveEvent(Object.assign({}, e, { images: rest, resolvedWho: this.resolveWho(e.who, e.gwho) }));
+        } catch (err) { this.handleCloudError(err); }
+      }
+      if (rest.length) neu.push(Object.assign({}, e, { images: rest }));
+    }
+    this.setState({ eingang: neu }, () => this.persist());
+  }
+
+  eingBilderSetzen(auswahl, fn) {
+    const proEv = {};
+    (auswahl || []).forEach((b) => { (proEv[b.e.id] = proEv[b.e.id] || []).push(b.j); });
+    const geaendert = [];
+    const neu = (this.state.eingang || []).map((e) => {
+      const js = proEv[e.id];
+      if (!js) return e;
+      const n = Object.assign({}, e, { images: (e.images || []).map((im, j) => (js.indexOf(j) >= 0 ? fn(Object.assign({}, im)) : im)) });
+      geaendert.push(n);
+      return n;
+    });
+    this.setState({ eingang: neu }, () => this.persist());
+    const CC = window.ChronikCloud;
+    if (this.state.cloud && CC) {
+      geaendert.forEach((e) => CC.saveEvent(Object.assign({}, e, { resolvedWho: this.resolveWho(e.who, e.gwho) })).catch((err) => this.handleCloudError(err)));
+    }
+  }
+
+  eingAusUm = () => {
+    const a = this.eingAuswahl();
+    if (!a.length) return;
+    const alleAus = a.every((b) => b.aus);
+    this.eingBilderSetzen(a, (im) => Object.assign(im, { aus: !alleAus }));
+  };
+
+  eingLoeschen = () => {
+    const a = this.eingAuswahl();
+    if (!a.length) return;
+    if (!window.confirm(plural(a.length, "Bild", "Bilder") + " endgültig löschen?")) return;
+    const keys = a.map((b) => b.im.key).filter(Boolean);
+    this.setEing({ sel: [], anker: null });
+    this.eingangAbziehen(a.map((b) => ({ ev: b.e.id, k: b.im.key || b.im.path || b.im.src })))
+      .then(() => { if (this.state.cloud && keys.length) this.bilderWeg(keys); });
+  };
+
+  /* Ortsname aus den Koordinaten (OpenStreetMap). Höchstens eine
+     Anfrage pro Sekunde; gleiche Gegend wird aus dem Speicher genommen. */
+  async ortSuchen(lat, lon) {
+    const k = lat.toFixed(2) + "," + lon.toFixed(2);
+    if (!this.ortCache) {
+      try { this.ortCache = JSON.parse(window.localStorage.getItem("chronik.orte.v1") || "{}"); } catch (e) { this.ortCache = {}; }
+    }
+    if (this.ortCache[k] != null) return this.ortCache[k];
+    const warte = Math.max(0, (this.ortZuletzt || 0) + 1100 - Date.now());
+    if (warte) await new Promise((r) => window.setTimeout(r, warte));
+    this.ortZuletzt = Date.now();
+    try {
+      const r = await fetch("https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=10&accept-language=de&lat=" + lat + "&lon=" + lon);
+      if (!r.ok) return "";
+      const j = await r.json();
+      const a = j.address || {};
+      const ort = a.city || a.town || a.village || a.municipality || a.hamlet || a.suburb || a.county || a.state || "";
+      const name = [ort, a.country].filter(Boolean).join(", ");
+      this.ortCache[k] = name;
+      try { window.localStorage.setItem("chronik.orte.v1", JSON.stringify(this.ortCache)); } catch (e) { /* voll */ }
+      return name;
+    } catch (e) { return ""; }
+  }
+
+  async bildUebertragen(raw) {
+    const cloud = this.state.cloud;
+    let prep = null;
+    try {
+      prep = await this.shrinkImage(raw, cloud ? 1600 : 1100, cloud ? 0.82 : 0.72);
+    } catch (e) {
+      const typ = String(raw.type || "").toLowerCase();
+      const endung = /\.(heic|heif|avif|tiff?)$/i.test(String(raw.name || ""));
+      const unbekannt = !typ || /heic|heif|avif|tiff/.test(typ) || endung;
+      if (!unbekannt || Number(raw.size || 0) < 4096) throw e;
+      prep = null;
+    }
+    if (cloud) {
+      const r = await window.ChronikCloud.uploadImage(prep ? prep.file : raw);
+      return { src: r.src || "", key: r.key || "", path: r.path || "", caption: "", comments: [] };
+    }
+    const dataUrl = prep ? prep.dataUrl : await this.readAsDataUrl(raw);
+    return { src: dataUrl, caption: "", comments: [] };
+  }
+
+  eingDateien = (ev) => {
+    const files = ev && ev.target ? Array.prototype.slice.call(ev.target.files || []) : ev;
+    if (ev && ev.target) { try { ev.target.value = ""; } catch (e) { /* egal */ } }
+    this.eingangHochladen(files);
+  };
+
+  async eingangHochladen(files) {
+    const list = Array.prototype.slice.call(files || []).filter((f) => this.looksLikeImage(f)).slice(0, 60);
+    if (!list.length) { this.setEing({ fehler: errLabel("D-08") }); return; }
+    const me = this.me();
+    if (!me) return;
+    this.setEing({ fehler: "", hinweis: "" });
+    const rows = [];
+    let failed = 0, ausExif = 0, ausName = 0;
+    for (let i = 0; i < list.length; i++) {
+      const raw = list[i];
+      this.setEing({ busy: "Bild " + (i + 1) + " von " + list.length + " wird übertragen", pct: Math.round((i / list.length) * 90) });
+      let meta = { zeit: "", lat: null, lon: null };
+      try { meta = exifLesen(await raw.slice(0, 524288).arrayBuffer()); } catch (e) { /* ohne Bilddaten */ }
+      let zeit = meta.zeit, zq = zeit ? "exif" : "";
+      if (!zeit) { zeit = datumAusName(raw.name); if (zeit) zq = "name"; }
+      if (zq === "exif") ausExif++; else if (zq === "name") ausName++;
+      try {
+        const row = await this.bildUebertragen(raw);
+        if (zeit) { row.zeit = zeit; row.zq = zq; }
+        if (meta.lat != null) { row.lat = meta.lat; row.lon = meta.lon; }
+        rows.push(row);
+      } catch (e) {
+        failed++;
+        if (e && e.block) { this.setEing({ busy: "" }); this.noteLimit(e.block); return; }
+        this.lastImgError = e;
+      }
+    }
+    const mitGps = rows.filter((r) => r.lat != null);
+    for (let i = 0; i < mitGps.length; i++) {
+      this.setEing({ busy: "Orte bestimmen · " + (i + 1) + " von " + mitGps.length, pct: 90 + Math.round((i / mitGps.length) * 10) });
+      mitGps[i].ort = await this.ortSuchen(mitGps[i].lat, mitGps[i].lon);
+    }
+    if (!rows.length) { this.setEing({ busy: "", pct: 0, fehler: failed + "/" + list.length + " nicht übertragen" }); return; }
+    const g = this.state.eing || {};
+    const v = String(g.vis || "private");
+    const gwho = v.indexOf("g:") === 0 ? [v.slice(2)] : [];
+    const vis = gwho.length ? "people" : (v === "friends" ? "friends" : "private");
+    const zeiten = rows.map((r) => r.zeit).filter(Boolean).sort();
+    const ev = {
+      id: null, lose: true, name: "Bildeingang", date: (zeiten[0] || new Date().toISOString()).slice(0, 10), end: "",
+      place: "", kicker: "", note: "", infos: [], people: [], images: rows,
+      deco: { fx: [], pal: "thema", stickers: [] }, alben: [], etappen: [], polls: [], perms: {}, share: "view",
+      vis: vis, who: [], gwho: gwho, by: me.id, themeId: "", themeSnap: null, themeFein: {}, etLayout: "gesamt"
+    };
+    const bericht = rows.length + " Bilder im Eingang · Datum aus Bilddaten: " + ausExif + ", aus Dateiname: " + ausName + (rows.length - ausExif - ausName ? ", ohne Datum: " + (rows.length - ausExif - ausName) : "") + (mitGps.length ? " · mit Ort: " + mitGps.length : "");
+    if (this.state.cloud) {
+      try {
+        await window.ChronikCloud.saveEvent(Object.assign({}, ev, { resolvedWho: this.resolveWho([], gwho) }));
+        await this.cloudSync();
+      } catch (e) { this.setEing({ busy: "", pct: 0 }); this.handleCloudError(e); return; }
+    } else {
+      ev.id = "l" + uid();
+      this.setState({ eingang: (this.state.eingang || []).concat([ev]) }, () => this.persist());
+    }
+    this.setEing({ busy: "", pct: 0, hinweis: bericht, fehler: failed ? failed + "/" + list.length + " nicht übertragen" : "" });
+  }
+
+  /* Dünne Striche unter der Achse: an diesen Tagen liegen lose Bilder. */
+  loseMarkenFuer(L, padL, axisY, pxPerDay) {
+    const me = this.me();
+    if (!me || !L.items.length) return [];
+    const proTag = {};
+    (this.state.eingang || []).forEach((e) => {
+      if (this.levelFor(e) < 1) return;
+      if ((e.by || "") !== me.id && !this.imStrahl(e)) return;
+      (e.images || []).forEach((im, j) => {
+        if (!im.zeit || this.bildAus(e, im, j)) return;
+        const tag = String(im.zeit).slice(0, 10);
+        proTag[tag] = (proTag[tag] || 0) + 1;
+      });
+    });
+    const its = L.items;
+    const xVon = (t) => {
+      if (this.state.mode !== "even") return ((t - L.min) / DAY) * pxPerDay;
+      const d0 = dp(its[0].e.date);
+      if (t <= d0) return its[0].x;
+      for (let i = 0; i < its.length - 1; i++) {
+        const a = dp(its[i].e.date), b = dp(its[i + 1].e.date);
+        if (t >= a && t <= b) return b > a ? its[i].x + ((t - a) / (b - a)) * (its[i + 1].x - its[i].x) : its[i].x;
+      }
+      return its[its.length - 1].x;
+    };
+    return Object.keys(proTag).sort().filter((tag) => {
+      const t = dp(tag);
+      return t >= L.min - 20 * DAY && t <= L.max + 20 * DAY;
+    }).map((tag) => {
+      const x = Math.max(-8, Math.min(L.width, xVon(dp(tag))));
+      return {
+        key: "lm" + tag,
+        title: plural(proTag[tag], "loses Bild", "lose Bilder") + " · " + fmtDate(tag),
+        pos: { position: "absolute", left: (x + padL + 14 - 6) + "px", top: (axisY + 8) + "px", width: "12px", height: "20px", padding: 0, border: 0, background: "transparent", cursor: "pointer", zIndex: 6 },
+        klick: () => this.eingOeffnen({ von: tag, bis: tag })
+      };
+    });
+  }
+
+  eingangVals() {
+    const st = this.state;
+    const g = st.eing || {};
+    const me = this.me() || {};
+    const nurMeine = g.nurMeine !== false;
+    const alle = this.loseBilder(false);
+    const meine = alle.filter((b) => b.meins);
+    const liste = nurMeine ? meine : alle;
+    const sel = g.sel || [];
+    const gewaehlt = meine.filter((b) => sel.indexOf(b.id) >= 0);
+    const nameVon = (id) => ((st.users || []).filter((u) => u.id === id)[0] || {}).username || "jemand";
+    const tage = [];
+    let cur = null;
+    liste.forEach((b) => {
+      const tag = b.tag || "ohne";
+      if (!cur || cur.tag !== tag) {
+        cur = { key: "d" + tag, tag: tag, titel: tag === "ohne" ? "Ohne Datum" : tagTitel(tag), orte: [], ids: [], bilder: [] };
+        tage.push(cur);
+      }
+      if (b.im.ort && cur.orte.indexOf(b.im.ort) < 0) cur.orte.push(b.im.ort);
+      if (b.meins) cur.ids.push(b.id);
+      const an = sel.indexOf(b.id) >= 0;
+      const anker = g.anker === b.id && g.modus === "bereich";
+      const rot = b.im.rot || 0;
+      cur.bilder.push({
+        key: b.id, src: b.im.src || LEER_GIF, mark: an ? "✓" : "",
+        zeit: b.zeit ? b.zeit.slice(11, 16) : "",
+        quelle: ({ exif: "Bilddaten", name: "Dateiname", hand: "von Hand" })[b.im.zq] || "",
+        ort: b.im.ort || "", hatOrt: !!b.im.ort, aus: b.aus,
+        datumFrei: !b.zeit && b.meins,
+        fremd: !b.meins, von: b.meins ? "" : "von " + nameVon(b.e.by),
+        title: (b.zeit ? b.zeit.replace("T", " ").slice(0, 16) : "ohne Datum") + (b.im.ort ? " · " + b.im.ort : ""),
+        klick: (ev) => this.eingKlick(b.id, ev),
+        datumSetzen: (ev) => {
+          const v = ev.target.value;
+          if (v) this.eingBilderSetzen([b], (im) => Object.assign(im, { zeit: v + "T12:00:00", zq: "hand" }));
+        },
+        kachel: {
+          position: "relative", display: "block", width: "100%", aspectRatio: "1 / 1", padding: 0, border: 0,
+          borderRadius: "var(--radius-md)", overflow: "hidden", cursor: b.meins ? "pointer" : "default",
+          background: "var(--color-neutral-200)", opacity: b.aus ? 0.45 : 1,
+          outline: an ? "3px solid var(--color-accent)" : (anker ? "2px dashed var(--color-accent)" : "none"),
+          outlineOffset: (an || anker) ? "2px" : "0"
+        },
+        bildStil: { width: "100%", height: "100%", objectFit: "cover", display: "block", transform: rot ? "rotate(" + rot + "deg)" : "none" },
+        markStil: {
+          position: "absolute", left: "6px", top: "6px", width: "22px", height: "22px", borderRadius: "50%",
+          display: b.meins ? "grid" : "none", placeItems: "center", fontSize: "13px", lineHeight: 1,
+          background: an ? "var(--color-accent)" : "color-mix(in srgb, var(--color-bg) 82%, transparent)",
+          color: "var(--color-bg)", boxShadow: "0 0 0 1px color-mix(in srgb, var(--color-text) 28%, transparent)"
+        }
+      });
+    });
+    tage.forEach((d) => {
+      d.ortText = d.orte.slice(0, 3).join(" · ") + (d.orte.length > 3 ? " …" : "");
+      d.hatOrt = !!d.ortText;
+      d.anzahl = plural(d.bilder.length, "Bild", "Bilder");
+      d.hatEigene = d.ids.length > 0;
+      const alleDrin = d.ids.length && d.ids.every((id) => sel.indexOf(id) >= 0);
+      d.tagLabel = alleDrin ? "Tag abwählen" : "Ganzen Tag wählen";
+      d.alle = () => {
+        const s2 = sel.filter((id) => d.ids.indexOf(id) < 0);
+        this.setEing({ sel: alleDrin ? s2 : s2.concat(d.ids), anker: null });
+      };
+    });
+
+    const zeitenSel = gewaehlt.map((b) => b.tag).filter(Boolean).sort();
+    const mitte = zeitenSel.length ? (dp(zeitenSel[0]) + dp(zeitenSel[zeitenSel.length - 1])) / 2 : Date.now();
+    const abstand = (e) => {
+      const a = dp(e.date), z = dp(e.end || e.date);
+      return mitte < a ? a - mitte : (mitte > z + DAY ? mitte - z : 0);
+    };
+    const kand = (st.events || []).filter((e) => e.id !== DEMO_ID && this.levelFor(e) >= 3).sort((a, b) => abstand(a) - abstand(b)).slice(0, 80);
+    const zielAktiv = kand.some((e) => e.id === g.ziel) ? g.ziel : ((kand[0] || {}).id || "");
+    if (g.zielAktiv !== zielAktiv) this.state.eing.zielAktiv = zielAktiv;
+
+    const visOpts = [["private", "Nur ich"], ["friends", "Alle Kontakte"]]
+      .concat(this.gruppenEigene().map((gr) => ["g:" + gr.id, "Gruppe · " + (gr.name || "ohne Namen")]))
+      .map((o) => ({ value: o[0], label: o[1] }));
+
+    /* Zweite Seite: Bilder der Ereignisse ein- und ausblenden. */
+    const evOpts = (st.events || []).filter((e) => e.id !== DEMO_ID && this.levelFor(e) >= 1 && (e.images || []).length)
+      .sort((a, b) => dp(b.date) - dp(a.date));
+    const setEv = evOpts.filter((e) => e.id === g.setEv)[0] || evOpts[0] || null;
+    const setBilder = setEv ? (setEv.images || []).map((im, j) => {
+      if (this.albumRecht(setEv, im.alb || "") < 1) return null;
+      const aus = this.bildAus(setEv, im, j);
+      return {
+        key: setEv.id + ":" + j, src: im.src || LEER_GIF, aus: aus,
+        label: aus ? "Ausgeblendet" : "Sichtbar",
+        klasse: aus ? "btn btn-ghost" : "btn btn-secondary",
+        um: () => this.bildAusUm(setEv.id, j),
+        kachel: { position: "relative", width: "100%", aspectRatio: "1 / 1", borderRadius: "var(--radius-md)", overflow: "hidden", background: "var(--color-neutral-200)", opacity: aus ? 0.4 : 1 },
+        bildStil: { width: "100%", height: "100%", objectFit: "cover", display: "block", transform: im.rot ? "rotate(" + im.rot + "deg)" : "none" }
+      };
+    }).filter(Boolean) : [];
+    const nAus = setBilder.filter((b) => b.aus).length;
+
+    const alleAus = gewaehlt.length && gewaehlt.every((b) => b.aus);
+    return {
+      open: !!g.open,
+      knopf: "Lose Bilder" + (meine.length ? " · " + meine.length : ""),
+      auf: () => this.eingOeffnen({}),
+      zu: () => this.setEing({ open: false, sel: [], anker: null }),
+      dragOver: (ev) => { if (ev && ev.preventDefault) ev.preventDefault(); },
+      drop: (ev) => {
+        if (ev && ev.preventDefault) ev.preventDefault();
+        if (ev && ev.stopPropagation) ev.stopPropagation();
+        this.eingangHochladen(ev && ev.dataTransfer ? Array.prototype.slice.call(ev.dataTransfer.files || []) : []);
+      },
+      tabs: [["eingang", "Eingang"], ["aus", "Ein- und ausblenden"]].map((o) => ({
+        key: o[0], label: o[1], on: (g.tab || "eingang") === o[0],
+        pick: () => this.setEing({ tab: o[0] })
+      })),
+      tabEingang: (g.tab || "eingang") === "eingang",
+      tabAus: g.tab === "aus",
+      vis: g.vis || "private", visOpts: visOpts,
+      onVis: (ev) => this.setEing({ vis: ev.target.value }),
+      dateien: this.eingDateien,
+      busy: g.busy || "", hatBusy: !!g.busy,
+      pctStil: { height: "100%", width: Math.max(4, g.pct || 0) + "%", background: "var(--color-accent)", transition: "width 240ms ease" },
+      fehler: g.fehler || "", hinweis: g.hinweis || "",
+      modi: [["einzeln", "Einzeln antippen"], ["bereich", "Erstes + letztes Bild"]].map((o) => ({
+        key: o[0], label: o[1], on: (g.modus || "einzeln") === o[0],
+        pick: () => this.setEing({ modus: o[0], anker: null })
+      })),
+      modusHinweis: g.modus === "bereich"
+        ? (g.anker ? "Jetzt das letzte Bild antippen — alles dazwischen wird gewählt." : "Erstes Bild antippen, dann das letzte.")
+        : "Bilder einzeln antippen. Mit Umschalt-Taste wird die Strecke bis zum zuletzt angetippten gewählt.",
+      von: g.von || "", bis: g.bis || "",
+      onVon: (ev) => this.setEing({ von: ev.target.value }),
+      onBis: (ev) => this.setEing({ bis: ev.target.value }),
+      zeitraum: this.eingZeitraum,
+      hatSel: gewaehlt.length > 0,
+      selText: gewaehlt.length ? plural(gewaehlt.length, "Bild", "Bilder") + " gewählt" : "Nichts gewählt",
+      selWeg: () => this.setEing({ sel: [], anker: null }),
+      ziele: kand.map((e) => ({ value: e.id, label: (zeitenSel.length && abstand(e) === 0 ? "✓ " : "") + fmtDate(e.date) + " · " + (e.name || "Ohne Titel") })),
+      ziel: zielAktiv, keinZiel: !zielAktiv,
+      onZiel: (ev) => this.setEing({ ziel: ev.target.value }),
+      zielHinweis: kand.length ? "✓ = Zeitraum passt zum Ereignis. Die Bilder landen im Editor; erst Speichern nimmt sie aus dem Eingang." : "Noch kein Ereignis, das du bearbeiten darfst.",
+      zuEreignis: this.eingZuEreignis,
+      neuesEreignis: this.eingNeuesEreignis,
+      ausUm: this.eingAusUm, ausLabel: alleAus ? "Einblenden" : "Ausblenden",
+      loeschen: this.eingLoeschen,
+      fremde: alle.some((b) => !b.meins),
+      nurMeineLabel: nurMeine ? "Auch lose Bilder von Kontakten zeigen" : "Nur meine zeigen",
+      nurMeineUm: () => this.setEing({ nurMeine: !nurMeine, sel: [], anker: null }),
+      tage: tage, leer: !liste.length,
+      setOpts: evOpts.map((e) => ({ value: e.id, label: fmtDate(e.date) + " · " + (e.name || "Ohne Titel") + " · " + plural((e.images || []).length, "Bild", "Bilder") })),
+      setEv: setEv ? setEv.id : "", hatSetEv: !!setEv, keinSetEv: !setEv,
+      onSetEv: (ev) => this.setEing({ setEv: ev.target.value }),
+      setBilder: setBilder,
+      setZahl: setBilder.length ? nAus + " von " + setBilder.length + " ausgeblendet" : "",
+      setWirkung: setEv ? (this.levelFor(setEv) >= 3
+        ? "Gilt für alle, die dieses Ereignis sehen — in Ereignis, Fotoshow und Zeitstrahl."
+        : "Das Ereignis gehört " + nameVon(setEv.by) + ". Ausblenden gilt nur für dich.") : ""
+    };
+  }
+
+  /* Spotify in der Seite: der Spieler meldet seinen Stand ans Elternfenster.
+     Sobald er spielt, springt er auf die Startzeit. */
+  spotifyVorspulen(el, ab) {
+    if (this.spotifyHorcher) window.removeEventListener("message", this.spotifyHorcher);
+    this.spotifyHorcher = null;
+    if (!el || !ab) return;
+    let fertig = false;
+    this.spotifyHorcher = (ev) => {
+      if (fertig || !el.contentWindow || ev.source !== el.contentWindow) return;
+      let d = ev.data;
+      if (typeof d === "string") { try { d = JSON.parse(d); } catch (e) { return; } }
+      if (!d || !d.type) return;
+      if (d.type === "ready") { this.kontoNotiz("Spotify bereit"); return; }
+      if (d.type !== "playback_update") return;
+      const p = d.payload || {};
+      const pausiert = p.isPaused === true || p.paused === true;
+      if (!pausiert && (p.position || 0) < (ab - 2) * 1000) {
+        fertig = true;
+        try { el.contentWindow.postMessage({ command: "seek", timestamp: ab }, "https://open.spotify.com"); } catch (e) { /* weg */ }
+        this.kontoNotiz("Spotify auf " + musikZeit(ab) + " gespult");
+      }
+    };
+    window.addEventListener("message", this.spotifyHorcher);
+  }
 
   looksLikeImage(f) {
     if (!f) return false;
@@ -6441,7 +7280,7 @@ class Component extends DCLogic {
         recht: this.albumRecht(e, albId),
         albName: this.albumName(e, albId)
       });
-    }).filter((row) => row.recht >= 1);
+    }).filter((row) => row.recht >= 1 && !this.bildAus(e, row.r, row.j));
     return this.gruppenKoepfe(e, sichtbar);
   }
 
@@ -9841,6 +10680,17 @@ class Component extends DCLogic {
           ? "Musikfenster automatisch öffnen: erlaubt"
           : "Musikfenster automatisch öffnen: aus",
         autoFensterHinweis: "Für Spotify, Deezer und Apple Music. Weist der Browser das Fenster ab, erscheint in der Fotoshow ein Verweis zum Öffnen von Hand — den lassen alle Sperren durch.",
+        spotifyLabel: this.feedPrefs().spotifySeite ? "Spotify: in der Seite · mit Startzeit" : "Spotify: im eigenen Fenster",
+        spotifyHinweis: this.feedPrefs().spotifySeite
+          ? "Der Spotify-Spieler steht in der Fotoshow. Nach ▶ springt er zur eingestellten Startzeit. Ohne Spotify-Anmeldung in diesem Browser spielt er nur 30-Sekunden-Ausschnitte."
+          : "Ganze Stücke mit deiner Anmeldung — aber ohne Startzeit, das Fenster nimmt keine an.",
+        spotifyUm: () => {
+          const f = Object.assign({}, this.feedPrefs());
+          f.spotifySeite = !f.spotifySeite;
+          this.kontoSchliessen();
+          this.setState({ feed: f }, () => this.persist());
+        },
+        bilderEinAus: () => this.eingOeffnen({ tab: "aus" }),
         autoFensterUm: () => {
           const an = st.autoFenster === false;
           this.setState({ autoFenster: an }, () => this.persist());
@@ -9959,7 +10809,7 @@ class Component extends DCLogic {
         toggleReset: () => this.setState({ authMode: st.authMode === "reset" ? "login" : "reset", authError: "", authNotice: "" }),
         resetLink: st.authMode === "reset" ? "Zurück zur Anmeldung" : "Passwort vergessen?",
         title: st.authMode === "newpw" ? "Neues Passwort wählen" : st.authMode === "reset" ? (st.cloud ? "Passwort zurücksetzen" : "Neues Passwort setzen") : st.authMode === "register" ? (st.users.length ? "Konto anlegen" : "Chronik einrichten") : "Willkommen zurück",
-        idLabel: st.authMode === "login" ? "E-Mail" : "E-Mail",
+        idLabel: st.authMode === "login" ? "E-Mail oder Benutzername" : "E-Mail",
         pwLabel: "Passwort",
         pwAuto: st.authMode === "login" ? "current-password" : "new-password",
         username: st.authForm.username, email: st.authForm.email, pw: st.authForm.pw, pw2: st.authForm.pw2, 
@@ -10484,6 +11334,8 @@ class Component extends DCLogic {
       /* Immer im Fluss lassen und nur ein- und ausblenden. Wurde das
          Band beim Scrollen ein- und ausgehängt, sprang die ganze Bahn. */
       hatStickyAchse: ticks.length > 0,
+      loseMarken: this.loseMarkenFuer(L, padL, axisY, pxPerDay),
+      eing: this.eingangVals(),
       cards: cards, markers: markers, bars: bars, ticks: ticks, stapelKnopf: stapelKnopf,
       drawer: st.drawer,
       toggleDrawer: () => this.setState({ drawer: !st.drawer, admin: false }),
@@ -10587,6 +11439,7 @@ class Component extends DCLogic {
             { key: "i", k: "Spieler", v: sp.hatEmbed ? (sp.src || "—") : "—" },
             { key: "j", k: "Ton frei", v: self.audioFrei ? "ja" : "nein" },
             { key: "k", k: "Erlaubnis", v: st.autoFenster === false ? "aus" : "erlaubt" },
+            { key: "k1", k: "Spotify", v: self.feedPrefs().spotifySeite ? "in der Seite (Startzeit)" : "Fenster" },
             { key: "k2", k: "Eingebettet", v: self.imRahmen() ? "ja — Fenster gesperrt" : "nein" },
             { key: "l", k: "Versuche", v: (self.kontoSpur || []).join(" · ") || "— noch keine —" }
           ]
@@ -10840,6 +11693,7 @@ class Component extends DCLogic {
               self.musikRahmen = el || null;
               if (el && (el.getAttribute("src") || "") !== sp.src) {
                 el.src = sp.src;
+                self.spotifyVorspulen(/open\.spotify\.com/.test(sp.src) ? el : null, sp.ab || 0);
                 /* Die Dienste starten nicht alle von selbst — darum
                    bekommen sie nach dem Laden ausdrücklich den Befehl.
                    Mehrmals, weil manche erst nach ihrem eigenen Aufbau
@@ -10848,7 +11702,7 @@ class Component extends DCLogic {
                 [400, 1200, 2400].forEach((ms) => window.setTimeout(() => self.embedAnwerfen(el, sp.dienst), ms));
               }
             },
-            name: sp.name + (sp.ab ? (sp.abKann ? " · ab " + musikZeit(sp.ab) : "") : ""),
+            name: sp.name + (sp.ab ? ((sp.abKann || /open\.spotify\.com/.test(sp.src)) ? " · ab " + musikZeit(sp.ab) : "") : ""),
             hatName: !!sp.name,
             autoStart: sp.autoStart !== false,
             /* Steht der Spieler da und spielt nicht, sagen wir warum. */
