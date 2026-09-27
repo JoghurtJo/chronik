@@ -63,6 +63,16 @@
   }
 </style>
 </helmet>
+<sc-if value="{{ renderFehler }}" hint-placeholder-val="{{ false }}">
+  <div data-noprint="" style="position: fixed; left: 12px; right: 12px; top: 12px; z-index: 400; display: grid; gap: 8px; padding: 12px 14px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700); box-shadow: var(--shadow-lg);">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+      <strong style="font-weight: 600;">{{ L.fehler_gefunden }}</strong>
+      <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ fehlerZu }}">{{ L.schliessen }}</button>
+    </div>
+    <pre style="margin: 0; max-height: 40vh; overflow: auto; white-space: pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; line-height: 1.45; user-select: all;">{{ renderFehler }}</pre>
+  </div>
+</sc-if>
+
 
 <sc-if value="{{ booting }}" hint-placeholder-val="{{ false }}">
   <div style="min-height: 100vh; display: grid; place-items: center; background: var(--color-bg);">
@@ -3170,7 +3180,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 61 · 2026-09-27";
+const BAU_STAND = "Bau 62 · 2026-09-27";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -4238,6 +4248,15 @@ class Component extends DCLogic {
   }
 
   componentDidMount() {
+    this.fehlerHorcher = (ev) => {
+      const er = ev && (ev.error || ev.reason);
+      const text = String((er && (er.stack || er.message)) || (ev && ev.message) || "").slice(0, 900);
+      if (!text || /ResizeObserver|Script error/.test(text)) return;
+      window.__chronikFehler = BAU_STAND + " · " + text;
+      this.forceUpdate();
+    };
+    window.addEventListener("error", this.fehlerHorcher);
+    window.addEventListener("unhandledrejection", this.fehlerHorcher);
     window.addEventListener("message", this.kartenKlick);
     window.addEventListener("pointerdown", this.audioFreischalten, true);
     window.addEventListener("keydown", this.audioFreischalten, true);
@@ -8655,10 +8674,23 @@ class Component extends DCLogic {
 
   /* ---------- render values ---------- */
 
+  /* Scheitert der Aufbau, bleibt der letzte gute Stand stehen und oben
+     erscheint die Fehlermeldung — so lässt sich der Fehler melden, statt
+     vor einer leeren Seite zu stehen. */
   renderVals() {
-    const v = this.renderWerte();
-    v.L = window.CHRONIK_T || {};
-    return v;
+    try {
+      const v = this.renderWerte();
+      v.L = window.CHRONIK_T || {};
+      v.renderFehler = window.__chronikFehler || "";
+      v.fehlerZu = () => { window.__chronikFehler = ""; this.forceUpdate(); };
+      this._letzteWerte = v;
+      return v;
+    } catch (err) {
+      const text = String((err && (err.stack || err.message)) || err).slice(0, 900);
+      try { console.error("Chronik:", err); } catch (x) { /* egal */ }
+      const alt = this._letzteWerte || { L: window.CHRONIK_T || {}, locked: false, unlocked: false };
+      return Object.assign({}, alt, { renderFehler: BAU_STAND + " · " + text, fehlerZu: () => { window.__chronikFehler = ""; this.forceUpdate(); } });
+    }
   }
 
   renderWerte() {

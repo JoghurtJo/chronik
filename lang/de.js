@@ -1033,6 +1033,7 @@ window.CHRONIK_SPRACHEN.de = {
     e_info: "Über die Chronik",
     e_info_text: "Geladener Stand der Seite",
     e_info_hinweis: "Steht hier nicht die neueste Nummer, lädt der Browser noch eine alte Fassung — Seite neu laden oder den Zwischenspeicher leeren.",
-    noch_keine_losen_bilder_mit_datum: "Noch keine losen Bilder mit Datum"
+    noch_keine_losen_bilder_mit_datum: "Noch keine losen Bilder mit Datum",
+    fehler_gefunden: "Fehler gefunden — bitte diesen Text kopieren und schicken"
   }
 };

@@ -1033,6 +1033,7 @@ window.CHRONIK_SPRACHEN.en = {
     e_info: "About the chronicle",
     e_info_text: "Loaded version of the page",
     e_info_hinweis: "If this isn't the newest number, the browser is still loading an old version — reload the page or clear the cache.",
-    noch_keine_losen_bilder_mit_datum: "No dated loose pictures yet"
+    noch_keine_losen_bilder_mit_datum: "No dated loose pictures yet",
+    fehler_gefunden: "Error found — please copy and send this text"
   }
 };
