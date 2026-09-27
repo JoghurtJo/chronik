@@ -232,114 +232,79 @@
 <sc-if value="{{ unlocked }}" hint-placeholder-val="{{ false }}">
 <div data-noprint="" style="min-height: 100vh; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body);">
   <header style="{{ lay.headerPad }}">
-    <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-6); flex-wrap: wrap;">
-      <div>
+    <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap;">
+      <div style="min-width: 0;">
         <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">{{ meta.kicker }}</div>
         <h1 style="{{ lay.appTitle }}" contentEditable="{{ titleEditable }}" suppressContentEditableWarning="{{ true }}" onBlur="{{ onTitleBlur }}" title="{{ titleHint }}">{{ meta.title }}</h1>
       </div>
-      <div style="display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; padding-bottom: 4px;">
-        <sc-if value="{{ canCreate }}" hint-placeholder-val="{{ true }}">
-          <button class="btn btn-primary" data-tour="neu" style="white-space: nowrap;" onClick="{{ guardedNew }}">＋ {{ L.ereignis }}</button>
-        </sc-if>
-        <a class="btn btn-secondary" data-tour="show" href="{{ openShowAllHref }}" target="chronikMusik" style="white-space: nowrap; text-decoration: none;" onClick="{{ openShowAllStart }}">▦ {{ L.fotoshow }}</a>
-        <button class="btn btn-secondary" data-tour="bilder" style="white-space: nowrap;" onClick="{{ eing.auf }}">{{ eing.knopf }}</button>
-        <button class="btn btn-secondary" data-tour="design" style="white-space: nowrap;" onClick="{{ toggleDrawer }}">{{ L.design }} · {{ themeName }}</button>
-        <button class="btn btn-secondary" data-tour="kontakte" style="white-space: nowrap;" onClick="{{ toggleAdmin }}">{{ contactsLabel }}</button>
-        <button class="btn btn-secondary" data-tour="vergleich" style="white-space: nowrap;" onClick="{{ vgl.toggle }}">{{ L.vergleichen }}</button>
-        <button class="btn btn-secondary" data-tour="konto" style="white-space: nowrap;" onClick="{{ konto.toggle }}">{{ L.mein_konto }}</button>
-        <button class="btn btn-secondary" data-tour="hilfe" style="white-space: nowrap;" onClick="{{ tour.start }}">{{ L.hilfe }}</button>
-      </div>
+      <sc-if value="{{ nav.breit }}" hint-placeholder-val="{{ true }}">
+        <div style="display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; padding-bottom: 4px;">
+          <sc-if value="{{ canCreate }}" hint-placeholder-val="{{ true }}">
+            <button class="btn btn-primary" data-tour="neu" style="white-space: nowrap;" onClick="{{ guardedNew }}">＋ {{ L.ereignis }}</button>
+          </sc-if>
+          <a class="btn btn-secondary" data-tour="show" href="{{ openShowAllHref }}" target="chronikMusik" style="white-space: nowrap; text-decoration: none;" onClick="{{ openShowAllStart }}">▦ {{ L.fotoshow }}</a>
+          <button class="btn btn-secondary" data-tour="bilder" style="white-space: nowrap;" onClick="{{ eing.auf }}">{{ eing.knopf }}</button>
+          <button class="{{ nav.filterKlasse }}" data-tour="band" style="white-space: nowrap;" onClick="{{ nav.filterUm }}">{{ nav.filterLabel }}</button>
+          <button class="btn btn-secondary" data-tour="kontakte" style="white-space: nowrap;" onClick="{{ toggleAdmin }}">{{ contactsLabel }}</button>
+          <button class="btn btn-secondary" data-tour="konto" style="white-space: nowrap;" onClick="{{ nav.einst }}">⚙ {{ L.einstellungen }}</button>
+          <button class="btn btn-secondary" data-tour="hilfe" style="white-space: nowrap;" onClick="{{ tour.start }}">{{ L.hilfe }}</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ nav.schmal }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; gap: var(--space-2); align-items: center; padding-bottom: 4px;">
+          <sc-if value="{{ canCreate }}" hint-placeholder-val="{{ true }}">
+            <button class="btn btn-primary" aria-label="{{ L.ereignis_anlegen }}" style="min-height: 44px; min-width: 44px; padding: 0 14px; font-size: 18px;" onClick="{{ guardedNew }}">＋</button>
+          </sc-if>
+          <button class="btn btn-secondary" style="min-height: 44px; padding: 0 16px; white-space: nowrap;" onClick="{{ nav.menuUm }}">{{ nav.menuLabel }}</button>
+        </div>
+      </sc-if>
     </div>
+    <sc-if value="{{ nav.menuOffen }}" hint-placeholder-val="{{ false }}">
+      <nav data-noprint="" style="display: grid; gap: 6px; padding: var(--space-3) 0 0;">
+        <a class="btn btn-secondary" href="{{ openShowAllHref }}" target="chronikMusik" style="min-height: 48px; width: 100%; justify-content: flex-start; white-space: nowrap; text-decoration: none; display: flex; align-items: center;" onClick="{{ nav.showStart }}">▦ {{ L.fotoshow }}</a>
+        <button class="btn btn-secondary" style="min-height: 48px; width: 100%; justify-content: flex-start; white-space: nowrap; text-decoration: none; display: flex; align-items: center;" onClick="{{ nav.bilder }}">{{ eing.knopf }}</button>
+        <button class="{{ nav.filterKlasse }}" style="min-height: 48px; width: 100%; justify-content: flex-start; white-space: nowrap; text-decoration: none; display: flex; align-items: center;" onClick="{{ nav.filterUm }}">{{ nav.filterLabel }}</button>
+        <button class="btn btn-secondary" style="min-height: 48px; width: 100%; justify-content: flex-start; white-space: nowrap; text-decoration: none; display: flex; align-items: center;" onClick="{{ nav.kontakte }}">{{ contactsLabel }}</button>
+        <button class="btn btn-secondary" style="min-height: 48px; width: 100%; justify-content: flex-start; white-space: nowrap; text-decoration: none; display: flex; align-items: center;" onClick="{{ nav.einst }}">⚙ {{ L.einstellungen }}</button>
+        <button class="btn btn-secondary" style="min-height: 48px; width: 100%; justify-content: flex-start; white-space: nowrap; text-decoration: none; display: flex; align-items: center;" onClick="{{ nav.hilfe }}">{{ L.hilfe }}</button>
+        <button class="btn btn-ghost" style="min-height: 48px; width: 100%; justify-content: flex-start; white-space: nowrap; text-decoration: none; display: flex; align-items: center;" onClick="{{ logout }}">{{ L.abmelden }}</button>
+      </nav>
+    </sc-if>
     <div style="height: 5px; background: var(--color-text); margin-top: var(--space-3);"></div>
-    <div style="display: flex; justify-content: space-between; gap: var(--space-4); padding: 7px 0; font-size: 11.5px; letter-spacing: 0.13em; text-transform: uppercase; flex-wrap: wrap;">
-      <span>{{ meta.subtitle }}</span>
-      <span>{{ stats.span }}</span>
-      <span>{{ stats.shown }} · {{ stats.people }} {{ L.personen }}</span>
-      <span style="display: flex; gap: var(--space-2); align-items: baseline;">
-        <span style="color: var(--color-accent-700);">{{ modeLabel }}</span>
-        <span style="color: var(--color-accent-700);">{{ me.label }}</span>
-        <button onClick="{{ logout }}" style="font: inherit; font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-text); text-decoration: underline;">{{ L.abmelden }}</button>
-      </span>
-    </div>
-    <div style="height: 1px; background: var(--color-text);"></div>
+    <sc-if value="{{ nav.breit }}" hint-placeholder-val="{{ true }}">
+      <div style="display: flex; justify-content: space-between; gap: var(--space-4); padding: 7px 0; font-size: 11.5px; letter-spacing: 0.13em; text-transform: uppercase; flex-wrap: wrap;">
+        <span>{{ meta.subtitle }}</span>
+        <span>{{ stats.span }}</span>
+        <span>{{ stats.shown }} · {{ stats.people }} {{ L.personen }}</span>
+        <span style="display: flex; gap: var(--space-2); align-items: baseline;">
+          <span style="color: var(--color-accent-700);">{{ me.label }}</span>
+          <button onClick="{{ logout }}" style="font: inherit; font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-text); text-decoration: underline;">{{ L.abmelden }}</button>
+        </span>
+      </div>
+      <div style="height: 1px; background: var(--color-text);"></div>
+    </sc-if>
     <sc-if value="{{ cloudErr }}" hint-placeholder-val="{{ false }}">
       <div style="margin-top: var(--space-2); font-size: 12.5px; line-height: 1.45; padding: 8px 11px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700);">{{ L.cloud }}: {{ cloudErr }}</div>
     </sc-if>
   </header>
 
+  <div data-noprint="" style="position: fixed; right: 14px; bottom: 28px; z-index: 60; display: grid; gap: 6px;">
+    <button class="btn btn-secondary btn-icon" title="{{ L.vergroessern }}" aria-label="{{ L.vergroessern }}" onClick="{{ zoomKnopf.plus }}" style="width: 44px; height: 44px; font-size: 20px; background: var(--color-bg); box-shadow: var(--shadow-md);">＋</button>
+    <button class="btn btn-secondary btn-icon" title="{{ L.verkleinern }}" aria-label="{{ L.verkleinern }}" onClick="{{ zoomKnopf.minus }}" style="width: 44px; height: 44px; font-size: 20px; background: var(--color-bg); box-shadow: var(--shadow-md);">−</button>
+  </div>
+
+  <sc-if value="{{ ribbonZeigen }}" hint-placeholder-val="{{ false }}">
   <div data-screen-label="Menüband" style="{{ lay.ribbon }}">
-    <div style="display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap;">
-      <div data-tour="band" style="display: flex; align-items: stretch; gap: var(--space-4);">
-        <sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="3">
-          <button onClick="{{ tb.click }}" style="{{ tb.style }}">{{ tb.label }}</button>
-        </sc-for>
-      </div>
-      <div style="flex: 1;"></div>
-      <span style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">{{ f.summary }}</span>
-      <sc-if value="{{ f.active }}" hint-placeholder-val="{{ false }}">
-        <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ f.reset }}">{{ L.filter_zuruecksetzen }}</button>
-      </sc-if>
-    </div>
-    <div style="height: 1px; background: var(--color-divider);"></div>
-
-    <sc-if value="{{ tabView }}" hint-placeholder-val="{{ false }}">
-      <div style="display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; padding-bottom: var(--space-2);">
-        <div class="seg" role="group">
-          <label class="seg-opt"><input type="radio" name="tlmode" checked="{{ isProp }}" onChange="{{ setProp }}" style="position: absolute; opacity: 0; pointer-events: none;">{{ L.zeitproportional }}</label>
-          <label class="seg-opt"><input type="radio" name="tlmode" checked="{{ isEven }}" onChange="{{ setEven }}" style="position: absolute; opacity: 0; pointer-events: none;">{{ L.gleichmaessig }}</label>
-        </div>
-        <div style="display: flex; align-items: center; gap: var(--space-2); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">
-          <span>{{ L.massstab }}</span>
-          <input type="range" min="0.35" max="3" step="0.05" value="{{ zoomWert }}" onChange="{{ setZoom }}" style="width: 130px; accent-color: var(--color-accent);">
-          <span style="min-width: 42px; color: var(--color-text);">{{ zoomLabel }}</span>
-        </div>
-        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ togglePlay }}">{{ playLabel }}</button>
-        <sc-if value="{{ stick.moeglich }}" hint-placeholder-val="{{ true }}">
-          <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ stick.toggle }}">{{ stick.label }}</button>
+    <sc-if value="{{ filterOffen }}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;">
+        <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.filter }}</span>
+        <span style="flex: 1;"></span>
+        <span style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">{{ f.summary }}</span>
+        <sc-if value="{{ f.active }}" hint-placeholder-val="{{ false }}">
+          <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ f.reset }}">{{ L.filter_zuruecksetzen }}</button>
         </sc-if>
+        <button class="btn btn-ghost" style="white-space: nowrap; min-height: 40px;" onClick="{{ nav.filterUm }}">‹ {{ L.zurueck }}</button>
       </div>
-      <sc-if value="{{ stick.on }}" hint-placeholder-val="{{ false }}">
-        <div style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; padding: var(--space-2) 0 var(--space-3); border-top: 1px solid var(--color-divider);">
-          <div style="display: flex; gap: 5px; flex-wrap: wrap;">
-            <sc-for list="{{ stick.sheet }}" as="sk" hint-placeholder-count="10">
-              <button onClick="{{ sk.pick }}" title="{{ sk.label }}" style="{{ sk.chip }}"><span style="{{ sk.style }}">{{ sk.glyph }}</span></button>
-            </sc-for>
-          </div>
-          <div class="field" style="margin: 0; width: 140px;"><label>{{ L.machart }}</label>
-            <select class="input" value="{{ stick.stil }}" onChange="{{ stick.onStil }}">
-              <sc-for list="{{ stick.stile }}" as="o" hint-placeholder-count="5">
-                <option value="{{ o.value }}">{{ o.label }}</option>
-              </sc-for>
-            </select>
-          </div>
-          <div class="field" style="margin: 0; width: 150px;"><label>{{ L.farbwelt }}</label>
-            <select class="input" value="{{ stick.pal }}" onChange="{{ stick.onPal }}">
-              <sc-for list="{{ stick.pals }}" as="o" hint-placeholder-count="6">
-                <option value="{{ o.value }}">{{ o.label }}</option>
-              </sc-for>
-            </select>
-          </div>
-          <sc-if value="{{ stick.hasSel }}" hint-placeholder-val="{{ false }}">
-            <div style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;">
-              <label style="display: grid; gap: 2px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.groesse }}
-                <input type="range" min="0.6" max="4" step="0.1" value="{{ stick.selScale }}" onChange="{{ stick.onScale }}" style="width: 110px; accent-color: var(--color-accent);">
-              </label>
-              <label style="display: grid; gap: 2px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.drehung }}
-                <input type="range" min="-60" max="60" step="1" value="{{ stick.selRot }}" onChange="{{ stick.onRot }}" style="width: 110px; accent-color: var(--color-accent);">
-              </label>
-              <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ stick.del }}">{{ L.diesen_entfernen }}</button>
-            </div>
-          </sc-if>
-          <span style="flex: 1;"></span>
-          <span style="font-size: 11.5px; color: var(--color-neutral-700); max-width: 34ch; line-height: 1.4;">{{ stick.hint }}</span>
-          <sc-if value="{{ stick.any }}" hint-placeholder-val="{{ false }}">
-            <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ stick.clearAll }}">{{ L.alle_abloesen }}</button>
-          </sc-if>
-        </div>
-      </sc-if>
-    </sc-if>
-
-    <sc-if value="{{ tabFilter }}" hint-placeholder-val="{{ false }}">
       <div style="display: grid; gap: var(--space-2); padding-bottom: var(--space-2);">
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); align-items: start; gap: var(--space-2) var(--space-3);">
           <div class="field" style="margin: 0; grid-column: span 2; min-width: 0;"><label style="font-size: 10px; margin-bottom: 2px;">{{ L.suche }}</label><input class="input" type="search" value="{{ f.q }}" onChange="{{ f.onQ }}" placeholder="{{ L.name_text_ort }}" style="min-height: 28px; height: 28px; padding: 2px 8px; font-size: 12px;"></div>
@@ -393,18 +358,53 @@
         </div>
       </div>
     </sc-if>
-
-    <sc-if value="{{ tabData }}" hint-placeholder-val="{{ false }}">
-      <div style="display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; padding-bottom: var(--space-2);">
-        <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ exportJSON }}">{{ L.daten_sichern }}</button>
-        <label class="btn btn-ghost" style="cursor: pointer; white-space: nowrap;">{{ L.daten_laden }}<input type="file" accept="application/json" onChange="{{ importJSON }}" style="display: none;"></label>
-        <span style="width: 1px; height: 22px; background: var(--color-divider);"></span>
-        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ printSmall }}">{{ L.pdf_klein }}</button>
-        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ printLarge }}">{{ L.pdf_gross }}</button>
-        <span style="font-size: 11.5px; color: var(--color-neutral-700); max-width: 40ch; line-height: 1.45;">{{ dataHint }}</span>
+      <sc-if value="{{ stick.on }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; padding: var(--space-2) 0 var(--space-3); border-top: 1px solid var(--color-divider);">
+          <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+            <sc-for list="{{ stick.sheet }}" as="sk" hint-placeholder-count="10">
+              <button onClick="{{ sk.pick }}" title="{{ sk.label }}" style="{{ sk.chip }}"><span style="{{ sk.style }}">{{ sk.glyph }}</span></button>
+            </sc-for>
+          </div>
+          <div class="field" style="margin: 0; width: 140px;"><label>{{ L.machart }}</label>
+            <select class="input" value="{{ stick.stil }}" onChange="{{ stick.onStil }}">
+              <sc-for list="{{ stick.stile }}" as="o" hint-placeholder-count="5">
+                <option value="{{ o.value }}">{{ o.label }}</option>
+              </sc-for>
+            </select>
+          </div>
+          <div class="field" style="margin: 0; width: 150px;"><label>{{ L.farbwelt }}</label>
+            <select class="input" value="{{ stick.pal }}" onChange="{{ stick.onPal }}">
+              <sc-for list="{{ stick.pals }}" as="o" hint-placeholder-count="6">
+                <option value="{{ o.value }}">{{ o.label }}</option>
+              </sc-for>
+            </select>
+          </div>
+          <sc-if value="{{ stick.hasSel }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;">
+              <label style="display: grid; gap: 2px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.groesse }}
+                <input type="range" min="0.6" max="4" step="0.1" value="{{ stick.selScale }}" onChange="{{ stick.onScale }}" style="width: 110px; accent-color: var(--color-accent);">
+              </label>
+              <label style="display: grid; gap: 2px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.drehung }}
+                <input type="range" min="-60" max="60" step="1" value="{{ stick.selRot }}" onChange="{{ stick.onRot }}" style="width: 110px; accent-color: var(--color-accent);">
+              </label>
+              <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ stick.del }}">{{ L.diesen_entfernen }}</button>
+            </div>
+          </sc-if>
+          <span style="flex: 1;"></span>
+          <span style="font-size: 11.5px; color: var(--color-neutral-700); max-width: 34ch; line-height: 1.4;">{{ stick.hint }}</span>
+          <sc-if value="{{ stick.any }}" hint-placeholder-val="{{ false }}">
+            <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ stick.clearAll }}">{{ L.alle_abloesen }}</button>
+          </sc-if>
+        </div>
+      </sc-if>
+    <sc-if value="{{ nurLoseAktiv }}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;">
+        <span style="font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 11px; border-radius: 99px; background: var(--color-accent-100); color: var(--color-accent-700);">{{ L.lose_nur }}</span>
+        <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ loseAlles }}">{{ L.alle_zeigen }}</button>
       </div>
     </sc-if>
   </div>
+  </sc-if>
 
   <sc-if value="{{ stapelKnopf.zeigen }}" hint-placeholder-val="{{ false }}">
     <div data-noprint="" style="{{ stapelKnopf.halter }}">
@@ -936,7 +936,7 @@
             <h2 style="margin: 3px 0 0; font-size: 27px; line-height: 1.05;">{{ themeName }}</h2>
             <div style="font-size: 12px; color: var(--color-neutral-700);">{{ themeState }}</div>
           </div>
-          <button class="btn btn-secondary btn-icon" onClick="{{ toggleDrawer }}">✕</button>
+          <button class="btn btn-ghost" style="white-space: nowrap; min-height: 40px;" onClick="{{ zur.design }}">‹ {{ L.zurueck }}</button>
         </div>
 
         <div style="height: 3px; background: var(--ui-saum, var(--color-text)); margin: var(--space-4) 0 var(--space-4);"></div>
@@ -1024,7 +1024,7 @@
             <h2 style="margin: 3px 0 0; font-size: 27px; line-height: 1.05;">{{ L.kontakte }}</h2>
             <div style="font-size: 12px; color: var(--color-neutral-700);">{{ L.suche_nach_benutzername_oder_e_mail }}</div>
           </div>
-          <button class="btn btn-secondary btn-icon" onClick="{{ toggleAdmin }}">✕</button>
+          <button class="btn btn-ghost" style="white-space: nowrap; min-height: 40px;" onClick="{{ zur.kontakte }}">‹ {{ L.zurueck }}</button>
         </div>
         <div style="height: 3px; background: var(--ui-saum, var(--color-text)); margin: var(--space-4) 0 var(--space-4);"></div>
 
@@ -1081,17 +1081,6 @@
           </div>
         </sc-if>
 
-        <div style="height: 1px; background: var(--color-divider); margin: var(--space-4) 0;"></div>
-        <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: var(--space-2);">{{ L.benachrichtigungen_per_mail }}</div>
-        <div style="display: grid; gap: 5px; margin-bottom: var(--space-2);">
-          <sc-for list="{{ notify.opts }}" as="o" hint-placeholder-count="4">
-            <button onClick="{{ o.toggle }}" style="{{ o.style }}">
-              <span style="{{ o.box }}">{{ o.mark }}</span>
-              <span style="font-size: 13px;">{{ o.label }}</span>
-            </button>
-          </sc-for>
-        </div>
-        <div style="font-size: 11.5px; line-height: 1.45; color: var(--color-neutral-700); margin-bottom: var(--space-6);">{{ notify.hint }}</div>
 
         <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: var(--space-2);">{{ L.deine_kontakte }} · {{ contacts.count }}</div>
         <div style="display: grid; gap: 6px;">
@@ -1216,7 +1205,7 @@
           <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
             <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ closeEditor }}">{{ L.abbrechen }}</button>
             <button class="btn btn-primary" style="white-space: nowrap;" onClick="{{ saveEvent }}">{{ L.speichern }}</button>
-            <button class="btn btn-secondary btn-icon" title="{{ L.schliessen }}" onClick="{{ closeEditor }}">✕</button>
+            <button class="btn btn-ghost" style="white-space: nowrap; min-height: 40px;" onClick="{{ closeEditor }}">‹ {{ L.zurueck }}</button>
           </div>
         </div>
         <div style="height: 3px; background: var(--ui-saum, var(--color-text)); margin: var(--space-3) 0 var(--space-4);"></div>
@@ -1836,7 +1825,7 @@
             <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.bildwerkstatt }}</div>
             <h2 style="margin: 3px 0 0; font-size: 26px; line-height: 1.05;">{{ bild.titel }}</h2>
           </div>
-          <button class="btn btn-secondary btn-icon" onClick="{{ bild.close }}">✕</button>
+          <button class="btn btn-ghost" style="white-space: nowrap; min-height: 40px;" onClick="{{ bild.close }}">‹ {{ L.zurueck }}</button>
         </div>
         <div style="height: 3px; background: var(--ui-saum, var(--color-text)); margin: var(--space-3) 0 var(--space-4);"></div>
 
@@ -1928,6 +1917,7 @@
             <span style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">♪ {{ show.spur.name }}</span>
           </sc-if>
           <span style="font-size: 11.5px; letter-spacing: 0.13em; text-transform: uppercase;">{{ show.counter }}</span>
+          <button class="btn btn-ghost" style="white-space: nowrap; color: inherit;" onClick="{{ show.close }}">‹ {{ L.zurueck }}</button>
           <button class="btn btn-secondary btn-icon" title="{{ L.fotoshow_schliessen }}" onClick="{{ show.close }}" style="color: #d81f2a; border-color: #d81f2a;" style-hover="background: color-mix(in srgb, #d81f2a 14%, transparent); color: #d81f2a;">✕</button>
         </div>
       </div>
@@ -2045,7 +2035,7 @@
   <aside data-noprint="" data-screen-label="Leitfaden" style="{{ lehr.rahmen }}">
     <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px;">
       <div style="font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.leitfaden_schritt }} {{ lehr.schritt }}</div>
-      <button class="btn btn-secondary btn-icon" title="{{ L.leitfaden_schliessen }}" onClick="{{ lehr.zu }}">✕</button>
+      <button class="btn btn-ghost" style="white-space: nowrap; min-height: 40px;" onClick="{{ lehr.zu }}">‹ {{ L.zurueck }}</button>
     </div>
     <h3 style="margin: 0; font-size: 20px; line-height: 1.15;">{{ lehr.titel }}</h3>
     <p style="margin: 0; font-size: 13.5px; line-height: 1.6;">{{ lehr.text }}</p>
@@ -2070,7 +2060,7 @@
     <div onClick="{{ stop }}" style="width: min(460px, 100%); padding: var(--space-6); background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); display: grid; gap: var(--space-3);">
       <div style="display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4);">
         <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.leitfaden }}</div>
-        <button class="btn btn-secondary btn-icon" onClick="{{ tour.wahlZu }}">✕</button>
+        <button class="btn btn-ghost" style="white-space: nowrap; min-height: 40px;" onClick="{{ tour.wahlZu }}">‹ {{ L.zurueck }}</button>
       </div>
       <h2 style="margin: 0; font-size: 28px; line-height: 1.05;">{{ L.was_soll_ich_zeigen }}</h2>
       <div style="display: grid; gap: var(--space-2); margin-top: var(--space-2);">
@@ -2151,7 +2141,7 @@
           <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.zwei_chroniken }}</div>
           <h2 style="margin: 3px 0 0; font-size: 28px; line-height: 1.05;">{{ L.vergleichen }}</h2>
         </div>
-        <button class="btn btn-secondary btn-icon" onClick="{{ vgl.zu }}">✕</button>
+        <button class="btn btn-ghost" style="white-space: nowrap; min-height: 40px;" onClick="{{ zur.vgl }}">‹ {{ L.zurueck }}</button>
       </div>
       <div style="height: 3px; background: var(--ui-saum, var(--color-text)); margin: var(--space-4) 0 var(--space-4);"></div>
 
@@ -2388,7 +2378,7 @@
             <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.loses_bild }}</div>
             <h3 style="margin: 3px 0 0; font-size: 22px; line-height: 1.15;">{{ lz.titel }}</h3>
           </div>
-          <button class="btn btn-secondary btn-icon" onClick="{{ lz.zu }}">✕</button>
+          <button class="btn btn-ghost" style="white-space: nowrap; min-height: 40px;" onClick="{{ lz.zu }}">‹ {{ L.zurueck }}</button>
         </div>
         <div style="display: grid; gap: 3px; font-size: 13px; line-height: 1.45;">
           <span>{{ lz.zeit }}</span>
@@ -2442,92 +2432,58 @@
 </sc-if>
 
 <sc-if value="{{ eing.open }}" hint-placeholder-val="{{ false }}">
-  <div data-noprint="" data-screen-label="Lose Bilder" onClick="{{ eing.zu }}" onDragOver="{{ eing.dragOver }}" onDrop="{{ eing.drop }}" style="position: fixed; inset: 0; z-index: 137; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 42%, transparent);">
-    <div onClick="{{ stop }}" style="width: min(1040px, 100%); max-height: 90vh; overflow-y: auto; background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: var(--space-6); display: grid; gap: var(--space-4); align-content: start; box-sizing: border-box;">
-      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4);">
-        <div>
+  <div data-noprint="" data-screen-label="Lose Bilder" onClick="{{ eing.zu }}" onDragOver="{{ eing.dragOver }}" onDrop="{{ eing.drop }}" style="{{ lay.ovEing }}">
+    <div onClick="{{ stop }}" style="{{ lay.panelEing }}">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap;">
+        <div style="min-width: 0;">
           <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.bildeingang }}</div>
-          <h2 style="margin: 3px 0 0; font-size: 28px; line-height: 1.05;">{{ L.lose_bilder }}</h2>
+          <h2 style="margin: 3px 0 0; font-size: 26px; line-height: 1.05;">{{ L.lose_bilder }}</h2>
         </div>
-        <button class="btn btn-secondary btn-icon" onClick="{{ eing.zu }}">✕</button>
+        <button class="btn btn-ghost" style="white-space: nowrap; min-height: 40px;" onClick="{{ eing.zu }}">‹ {{ L.zurueck }}</button>
+      </div>
+      <div style="display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap;">
+        <label class="btn btn-primary" style="position: relative; cursor: pointer; white-space: nowrap; min-height: 44px; display: inline-flex; align-items: center;">＋ {{ L.bilder_hochladen }}
+          <input type="file" accept="image/*" multiple="{{ true }}" onChange="{{ eing.dateien }}" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none;">
+        </label>
+        <select class="input" aria-label="{{ L.wer_sieht_die_neuen_bilder }}" title="{{ L.wer_sieht_die_neuen_bilder }}" value="{{ eing.vis }}" onChange="{{ eing.onVis }}" style="width: auto; min-height: 44px;">
+          <sc-for list="{{ eing.visOpts }}" as="o" hint-placeholder-count="2">
+            <option value="{{ o.value }}">{{ o.label }}</option>
+          </sc-for>
+        </select>
+        <span style="font-size: 12px; line-height: 1.4; color: var(--color-neutral-700);">{{ L.lose_kurz }}</span>
       </div>
       <div style="height: 3px; background: var(--ui-saum, var(--color-text));"></div>
-      <div class="seg" role="group" style="margin: 0; justify-self: start;">
-        <sc-for list="{{ eing.tabs }}" as="tb" hint-placeholder-count="2">
-          <label class="seg-opt"><input type="radio" name="eingtab" checked="{{ tb.on }}" onChange="{{ tb.pick }}" style="position: absolute; opacity: 0; pointer-events: none;">{{ tb.label }}</label>
-        </sc-for>
+      <sc-if value="{{ eing.hatBusy }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; gap: 5px;">
+          <div style="height: 4px; border-radius: 99px; overflow: hidden; background: var(--color-neutral-200);"><div style="{{ eing.pctStil }}"></div></div>
+          <div style="font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">{{ eing.busy }}</div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ eing.fehler }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size: 13px; line-height: 1.45; padding: 9px 11px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700);">{{ eing.fehler }}</div>
+      </sc-if>
+      <sc-if value="{{ eing.hinweis }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size: 13px; line-height: 1.45; padding: 9px 11px; border-radius: var(--radius-md); background: var(--color-accent-100); color: var(--color-accent-700);">{{ eing.hinweis }}</div>
+      </sc-if>
+      <div style="display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap;">
+        <button class="{{ eing.bereichKlasse }}" style="white-space: nowrap; min-height: 40px;" onClick="{{ eing.bereichUm }}">{{ L.bereich_waehlen }}</button>
+        <button class="{{ eing.zeitraumKlasse }}" style="white-space: nowrap; min-height: 40px;" onClick="{{ eing.zeitraumUm }}">{{ L.zeitraum_dots }}</button>
+        <sc-if value="{{ eing.fremde }}" hint-placeholder-val="{{ false }}">
+          <button class="btn btn-ghost" style="white-space: nowrap; min-height: 40px;" onClick="{{ eing.nurMeineUm }}">{{ eing.nurMeineLabel }}</button>
+        </sc-if>
+        <span style="flex: 1;"></span>
+        <span style="font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700); white-space: nowrap;">{{ eing.selText }}</span>
       </div>
-
-      <sc-if value="{{ eing.tabEingang }}" hint-placeholder-val="{{ true }}">
-        <div style="display: grid; gap: var(--space-4);">
-          <div style="display: flex; align-items: flex-end; gap: var(--space-3); flex-wrap: wrap;">
-            <div class="field" style="margin: 0; width: 210px;"><label>{{ L.wer_sieht_die_neuen_bilder }}</label>
-              <select class="input" value="{{ eing.vis }}" onChange="{{ eing.onVis }}">
-                <sc-for list="{{ eing.visOpts }}" as="o" hint-placeholder-count="2">
-                  <option value="{{ o.value }}">{{ o.label }}</option>
-                </sc-for>
-              </select>
-            </div>
-            <label class="btn btn-primary" style="position: relative; cursor: pointer; white-space: nowrap;">{{ L.bilder_hochladen }}
-              <input type="file" accept="image/*" multiple="{{ true }}" onChange="{{ eing.dateien }}" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none;">
-            </label>
-            <span style="font-size: 12px; line-height: 1.45; color: var(--color-neutral-700); max-width: 46ch;">{{ L.datum_und_ort_kommen_aus_den }}</span>
-          </div>
-          <sc-if value="{{ eing.hatBusy }}" hint-placeholder-val="{{ false }}">
-            <div style="display: grid; gap: 5px;">
-              <div style="height: 4px; border-radius: 99px; overflow: hidden; background: var(--color-neutral-200);"><div style="{{ eing.pctStil }}"></div></div>
-              <div style="font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">{{ eing.busy }}</div>
-            </div>
-          </sc-if>
-          <sc-if value="{{ eing.fehler }}" hint-placeholder-val="{{ false }}">
-            <div style="font-size: 13px; line-height: 1.45; padding: 9px 11px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700);">{{ eing.fehler }}</div>
-          </sc-if>
-          <sc-if value="{{ eing.hinweis }}" hint-placeholder-val="{{ false }}">
-            <div style="font-size: 13px; line-height: 1.45; padding: 9px 11px; border-radius: var(--radius-md); background: var(--color-accent-100); color: var(--color-accent-700);">{{ eing.hinweis }}</div>
-          </sc-if>
-
-          <div style="display: grid; gap: var(--space-2);">
-            <div style="display: flex; align-items: flex-end; gap: var(--space-3); flex-wrap: wrap;">
-              <div class="seg" role="group" style="margin: 0;">
-                <sc-for list="{{ eing.modi }}" as="m" hint-placeholder-count="2">
-                  <label class="seg-opt"><input type="radio" name="eingmodus" checked="{{ m.on }}" onChange="{{ m.pick }}" style="position: absolute; opacity: 0; pointer-events: none;">{{ m.label }}</label>
-                </sc-for>
-              </div>
-              <div class="field" style="margin: 0; width: 150px;"><label>{{ L.von }}</label><input class="input" type="date" value="{{ eing.von }}" onChange="{{ eing.onVon }}"></div>
-              <div class="field" style="margin: 0; width: 150px;"><label>{{ L.bis }}</label><input class="input" type="date" value="{{ eing.bis }}" onChange="{{ eing.onBis }}"></div>
-              <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ eing.zeitraum }}">{{ L.zeitraum_waehlen }}</button>
-              <span style="flex: 1;"></span>
-              <span style="font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700); white-space: nowrap;">{{ eing.selText }}</span>
-              <sc-if value="{{ eing.hatSel }}" hint-placeholder-val="{{ false }}">
-                <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ eing.selWeg }}">{{ L.auswahl_aufheben }}</button>
-              </sc-if>
-            </div>
-            <div style="font-size: 12px; line-height: 1.45; color: var(--color-neutral-700);">{{ eing.modusHinweis }}</div>
-          </div>
-
-          <sc-if value="{{ eing.hatSel }}" hint-placeholder-val="{{ false }}">
-            <div style="display: grid; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); background: var(--color-accent-100);">
-              <div style="display: flex; align-items: flex-end; gap: var(--space-3); flex-wrap: wrap;">
-                <div class="field" style="margin: 0; flex: 1; min-width: 240px;"><label>{{ L.zu_ereignis_hinzufuegen }}</label>
-                  <select class="input" value="{{ eing.ziel }}" onChange="{{ eing.onZiel }}">
-                    <sc-for list="{{ eing.ziele }}" as="o" hint-placeholder-count="3">
-                      <option value="{{ o.value }}">{{ o.label }}</option>
-                    </sc-for>
-                  </select>
-                </div>
-                <button class="btn btn-primary" style="white-space: nowrap;" disabled="{{ eing.keinZiel }}" onClick="{{ eing.zuEreignis }}">{{ L.hinzufuegen }}</button>
-                <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ eing.neuesEreignis }}">＋ {{ L.neues_ereignis_daraus }}</button>
-                <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ eing.ausUm }}">{{ eing.ausLabel }}</button>
-                <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ eing.loeschen }}">{{ L.loeschen }}</button>
-              </div>
-              <div style="font-size: 12px; line-height: 1.45; color: var(--color-accent-700);">{{ eing.zielHinweis }}</div>
-            </div>
-          </sc-if>
-
-          <sc-if value="{{ eing.fremde }}" hint-placeholder-val="{{ false }}">
-            <button class="btn btn-ghost" style="justify-self: start; white-space: nowrap;" onClick="{{ eing.nurMeineUm }}">{{ eing.nurMeineLabel }}</button>
-          </sc-if>
-
+      <sc-if value="{{ eing.zeitraumOffen }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; align-items: flex-end; gap: var(--space-2); flex-wrap: wrap;">
+          <div class="field" style="margin: 0; width: 150px;"><label>{{ L.von }}</label><input class="input" type="date" value="{{ eing.von }}" onChange="{{ eing.onVon }}"></div>
+          <div class="field" style="margin: 0; width: 150px;"><label>{{ L.bis }}</label><input class="input" type="date" value="{{ eing.bis }}" onChange="{{ eing.onBis }}"></div>
+          <button class="btn btn-secondary" style="white-space: nowrap; min-height: 40px;" onClick="{{ eing.zeitraum }}">{{ L.zeitraum_waehlen }}</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ eing.zeigeModusHinweis }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size: 12px; line-height: 1.45; color: var(--color-neutral-700);">{{ eing.modusHinweis }}</div>
+      </sc-if>
           <sc-if value="{{ eing.leer }}" hint-placeholder-val="{{ false }}">
             <div style="font-size: 14px; line-height: 1.55; color: var(--color-neutral-700); max-width: 52ch; padding: var(--space-6) 0;">{{ L.noch_keine_losen_bilder_lade_bilder }}</div>
           </sc-if>
@@ -2575,10 +2531,153 @@
               </div>
             </sc-for>
           </div>
+      <sc-if value="{{ eing.hatSel }}" hint-placeholder-val="{{ false }}">
+        <div style="position: sticky; bottom: calc(-1 * var(--space-4)); z-index: 3; display: grid; gap: var(--space-2); padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-accent-100); box-shadow: var(--shadow-md);">
+          <div style="display: flex; align-items: flex-end; gap: var(--space-2); flex-wrap: wrap;">
+            <div class="field" style="margin: 0; flex: 1; min-width: 200px;"><label>{{ L.zu_ereignis_hinzufuegen }}</label>
+              <select class="input" value="{{ eing.ziel }}" onChange="{{ eing.onZiel }}">
+                <sc-for list="{{ eing.ziele }}" as="o" hint-placeholder-count="3">
+                  <option value="{{ o.value }}">{{ o.label }}</option>
+                </sc-for>
+              </select>
+            </div>
+            <button class="btn btn-primary" style="white-space: nowrap; min-height: 40px;" disabled="{{ eing.keinZiel }}" onClick="{{ eing.zuEreignis }}">{{ L.hinzufuegen }}</button>
+            <button class="btn btn-secondary" style="white-space: nowrap; min-height: 40px;" onClick="{{ eing.neuesEreignis }}">＋ {{ L.neues_ereignis_daraus }}</button>
+          </div>
+          <div style="display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap;">
+            <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ eing.ausUm }}">{{ eing.ausLabel }}</button>
+            <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ eing.loeschen }}">{{ L.loeschen }}</button>
+            <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ eing.selWeg }}">{{ L.auswahl_aufheben }}</button>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ konto.open }}" hint-placeholder-val="{{ false }}">
+  <div data-noprint="" data-screen-label="Einstellungen" onClick="{{ konto.zu }}" style="{{ lay.ovEinst }}">
+    <div onClick="{{ stop }}" style="{{ lay.panelEinst }}">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);">
+        <div style="min-width: 0;">
+          <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">{{ einst.kicker }}</div>
+          <h2 style="margin: 3px 0 0; font-size: 26px; line-height: 1.05;">{{ einst.titel }}</h2>
+        </div>
+        <button class="btn btn-ghost" style="white-space: nowrap; min-height: 40px;" onClick="{{ einst.zurueck }}">‹ {{ L.zurueck }}</button>
+      </div>
+      <div style="height: 3px; background: var(--ui-saum, var(--color-text));"></div>
+
+      <sc-if value="{{ einst.uebersicht }}" hint-placeholder-val="{{ true }}">
+        <div style="display: grid; gap: 2px;">
+          <sc-for list="{{ einst.seiten }}" as="p" hint-placeholder-count="8">
+            <button onClick="{{ p.auf }}" style="display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-3); width: 100%; min-height: 56px; padding: 10px 12px; border: 0; border-radius: var(--radius-md); background: transparent; font: inherit; text-align: left; cursor: pointer; color: var(--color-text);" style-hover="background: var(--color-accent-100);">
+              <span style="display: grid; gap: 2px; min-width: 0;">
+                <span style="font-size: 16px; line-height: 1.25;">{{ p.titel }}</span>
+                <span style="font-size: 12px; line-height: 1.4; color: var(--color-neutral-700);">{{ p.text }}</span>
+              </span>
+              <span style="font-size: 20px; line-height: 1; color: var(--color-accent-700);">{{ p.zeichen }}</span>
+            </button>
+          </sc-for>
         </div>
       </sc-if>
 
-      <sc-if value="{{ eing.tabAus }}" hint-placeholder-val="{{ false }}">
+      <sc-if value="{{ einst.konto }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; gap: var(--space-4);">
+      <div style="display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4);">
+        <div style="{{ konto.bildStil }}">{{ konto.initialen }}</div>
+        <div style="display: grid; gap: 6px; justify-items: start;">
+          <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.profilbild }}</div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <label class="btn btn-secondary" style="white-space: nowrap; cursor: pointer;">{{ konto.bildCta }}
+              <input type="file" accept="image/*" onChange="{{ konto.bildWaehlen }}" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none;">
+            </label>
+            <sc-if value="{{ konto.hatBild }}" hint-placeholder-val="{{ false }}">
+              <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ konto.bildWeg }}">{{ L.entfernen }}</button>
+            </sc-if>
+          </div>
+          <sc-if value="{{ konto.bildFehler }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size: 12px; line-height: 1.45; color: var(--color-accent-2-700); max-width: 34ch;">{{ konto.bildFehler }}</div>
+          </sc-if>
+        </div>
+      </div>
+
+      <div style="display: grid; gap: 4px; font-size: 13.5px; line-height: 1.5; margin-bottom: var(--space-6);">
+        <div><span style="color: var(--color-neutral-700);">{{ L.e_mail }}:</span> {{ konto.mail }}</div>
+        <div><span style="color: var(--color-neutral-700);">{{ L.dabei_seit }}:</span> {{ konto.seit }}</div>
+        <div><span style="color: var(--color-neutral-700);">{{ L.eigene_ereignisse }}:</span> {{ konto.eigene }}</div>
+        <div><span style="color: var(--color-neutral-700);">{{ L.kontakte }}:</span> {{ konto.kontakte }}</div>
+      </div>
+
+          <button class="btn btn-secondary" style="justify-self: start; white-space: nowrap;" onClick="{{ logout }}">{{ L.abmelden }}</button>
+          <div style="height: 1px; background: var(--color-divider);"></div>
+          <div>
+      <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-2-700); margin-bottom: var(--space-2);">{{ L.konto_loeschen }}</div>
+      <p style="font-size: 12.5px; line-height: 1.55; margin: 0 0 var(--space-3); color: var(--color-neutral-700);">{{ L.damit_verschwinden_dein_zugang_deine_eigen }}</p>
+      <div class="field" style="margin: 0 0 var(--space-3);"><label>{{ L.zum_bestaetigen_das_wort_loeschen_eintippe }}</label>
+        <input class="input" type="text" value="{{ konto.wort }}" onChange="{{ konto.onWort }}" placeholder="{{ L.loeschen_2 }}" autoComplete="off">
+      </div>
+      <sc-if value="{{ konto.fehler }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size: 12.5px; padding: 7px 10px; margin-bottom: var(--space-3); border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700);">{{ konto.fehler }}</div>
+      </sc-if>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <button class="btn btn-primary" style="white-space: nowrap; display: inline-flex; align-items: center; gap: 9px; background: var(--color-accent-2); border-color: var(--color-accent-2);" disabled="{{ konto.busy }}" onClick="{{ konto.loeschen }}">
+          <sc-if value="{{ konto.busy }}" hint-placeholder-val="{{ false }}">
+            <span style="width: 14px; height: 14px; flex: 0 0 auto; border-radius: 50%; border: 2px solid color-mix(in srgb, var(--color-bg) 40%, transparent); border-top-color: var(--color-bg); animation: tl-spin 620ms linear infinite;"></span>
+          </sc-if>
+          <span>{{ konto.cta }}</span>
+        </button>
+        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ konto.zu }}">{{ L.abbrechen }}</button>
+      </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ einst.zeitstrahl }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; gap: var(--space-5, var(--space-4));">
+        <div style="display: grid; gap: 6px; justify-items: start;">
+          <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.lose_anzeige }}</div>
+          <div class="seg" role="group" style="margin: 0;">
+            <sc-for list="{{ loseModi }}" as="m" hint-placeholder-count="3">
+              <label class="seg-opt"><input type="radio" name="losemodus" checked="{{ m.on }}" onChange="{{ m.pick }}" style="position: absolute; opacity: 0; pointer-events: none;">{{ m.label }}</label>
+            </sc-for>
+          </div>
+          <div style="font-size: 12px; line-height: 1.45; color: var(--color-neutral-700); max-width: 52ch;">{{ L.einzelne_bilder_aus_ereignis_fotoshow_und }}</div>
+        </div>
+
+        <div style="display: grid; gap: 6px; justify-items: start;">
+          <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.abstaende }}</div>
+      <div style="display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; padding-bottom: var(--space-2);">
+        <div class="seg" role="group">
+          <label class="seg-opt"><input type="radio" name="tlmode" checked="{{ isProp }}" onChange="{{ setProp }}" style="position: absolute; opacity: 0; pointer-events: none;">{{ L.zeitproportional }}</label>
+          <label class="seg-opt"><input type="radio" name="tlmode" checked="{{ isEven }}" onChange="{{ setEven }}" style="position: absolute; opacity: 0; pointer-events: none;">{{ L.gleichmaessig }}</label>
+        </div>
+        <div style="display: flex; align-items: center; gap: var(--space-2); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">
+          <span>{{ L.massstab }}</span>
+          <input type="range" min="0.35" max="3" step="0.05" value="{{ zoomWert }}" onChange="{{ setZoom }}" style="width: 130px; accent-color: var(--color-accent);">
+          <span style="min-width: 42px; color: var(--color-text);">{{ zoomLabel }}</span>
+        </div>
+        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ togglePlay }}">{{ playLabel }}</button>
+        <sc-if value="{{ stick.moeglich }}" hint-placeholder-val="{{ true }}">
+          <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ stick.toggle }}">{{ stick.label }}</button>
+        </sc-if>
+      </div>
+
+        </div>
+
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ einst.fotoshow }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; gap: 6px; justify-items: start;">
+          <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ konto.autoFensterUm }}">{{ konto.autoFensterLabel }}</button>
+          <div style="font-size: 12px; line-height: 1.45; color: var(--color-neutral-700); max-width: 52ch;">{{ konto.autoFensterHinweis }}</div>
+          <button class="btn btn-secondary" style="white-space: nowrap; margin-top: var(--space-2);" onClick="{{ konto.spotifyUm }}">{{ konto.spotifyLabel }}</button>
+          <div style="font-size: 12px; line-height: 1.45; color: var(--color-neutral-700); max-width: 52ch;">{{ konto.spotifyHinweis }}</div>
+        </div>
+
+      </sc-if>
+
+      <sc-if value="{{ einst.bilder }}" hint-placeholder-val="{{ false }}">
         <div style="display: grid; gap: var(--space-4);">
           <sc-if value="{{ eing.keinSetEv }}" hint-placeholder-val="{{ false }}">
             <div style="font-size: 14px; line-height: 1.55; color: var(--color-neutral-700);">{{ L.noch_kein_ereignis_mit_bildern }}</div>
@@ -2608,72 +2707,9 @@
           </sc-if>
         </div>
       </sc-if>
-    </div>
-  </div>
-</sc-if>
 
-<sc-if value="{{ konto.open }}" hint-placeholder-val="{{ false }}">
-  <div data-noprint="" data-screen-label="Mein Konto" onClick="{{ konto.zu }}" style="position: fixed; inset: 0; z-index: 138; display: grid; place-items: center; padding: var(--space-4); background: color-mix(in srgb, var(--color-text) 42%, transparent);">
-    <div onClick="{{ stop }}" style="width: min(500px, 100%); max-height: 88vh; overflow-y: auto; background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: var(--space-6);">
-      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4);">
+      <sc-if value="{{ einst.inhalte }}" hint-placeholder-val="{{ false }}">
         <div>
-          <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.konto }}</div>
-          <h2 style="margin: 3px 0 0; font-size: 28px; line-height: 1.05;">{{ konto.name }}</h2>
-        </div>
-        <button class="btn btn-secondary btn-icon" onClick="{{ konto.zu }}">✕</button>
-      </div>
-      <div style="height: 3px; background: var(--ui-saum, var(--color-text)); margin: var(--space-4) 0 var(--space-4);"></div>
-
-      <div style="display: grid; gap: 5px; justify-items: start; margin-bottom: var(--space-4);">
-        <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.sprache }}</div>
-        <select class="input" value="{{ konto.sprache }}" onChange="{{ konto.onSprache }}" style="width: 220px;">
-          <sc-for list="{{ konto.sprachen }}" as="o" hint-placeholder-count="2">
-            <option value="{{ o.value }}">{{ o.label }}</option>
-          </sc-for>
-        </select>
-        <div style="font-size: 12px; line-height: 1.45; color: var(--color-neutral-700); max-width: 46ch;">{{ L.die_seite_laedt_danach_neu }}</div>
-      </div>
-
-      <div style="display: grid; gap: 5px; justify-items: start; margin-bottom: var(--space-4);">
-        <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.fotoshow_musik }}</div>
-        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ konto.autoFensterUm }}">{{ konto.autoFensterLabel }}</button>
-        <div style="font-size: 12px; line-height: 1.45; color: var(--color-neutral-700); max-width: 46ch;">{{ konto.autoFensterHinweis }}</div>
-        <button class="btn btn-secondary" style="white-space: nowrap; margin-top: 4px;" onClick="{{ konto.spotifyUm }}">{{ konto.spotifyLabel }}</button>
-        <div style="font-size: 12px; line-height: 1.45; color: var(--color-neutral-700); max-width: 46ch;">{{ konto.spotifyHinweis }}</div>
-      </div>
-
-      <div style="display: grid; gap: 5px; justify-items: start; margin-bottom: var(--space-4);">
-        <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.bilder }}</div>
-        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ konto.bilderEinAus }}">{{ L.bilder_ein_und_ausblenden }}</button>
-        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ konto.loseUm }}">{{ konto.loseLabel }}</button>
-        <div style="font-size: 12px; line-height: 1.45; color: var(--color-neutral-700); max-width: 46ch;">{{ L.einzelne_bilder_aus_ereignis_fotoshow_und }}</div>
-      </div>
-
-      <div style="display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4);">
-        <div style="{{ konto.bildStil }}">{{ konto.initialen }}</div>
-        <div style="display: grid; gap: 6px; justify-items: start;">
-          <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.profilbild }}</div>
-          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-            <label class="btn btn-secondary" style="white-space: nowrap; cursor: pointer;">{{ konto.bildCta }}
-              <input type="file" accept="image/*" onChange="{{ konto.bildWaehlen }}" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none;">
-            </label>
-            <sc-if value="{{ konto.hatBild }}" hint-placeholder-val="{{ false }}">
-              <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ konto.bildWeg }}">{{ L.entfernen }}</button>
-            </sc-if>
-          </div>
-          <sc-if value="{{ konto.bildFehler }}" hint-placeholder-val="{{ false }}">
-            <div style="font-size: 12px; line-height: 1.45; color: var(--color-accent-2-700); max-width: 34ch;">{{ konto.bildFehler }}</div>
-          </sc-if>
-        </div>
-      </div>
-
-      <div style="display: grid; gap: 4px; font-size: 13.5px; line-height: 1.5; margin-bottom: var(--space-6);">
-        <div><span style="color: var(--color-neutral-700);">{{ L.e_mail }}:</span> {{ konto.mail }}</div>
-        <div><span style="color: var(--color-neutral-700);">{{ L.dabei_seit }}:</span> {{ konto.seit }}</div>
-        <div><span style="color: var(--color-neutral-700);">{{ L.eigene_ereignisse }}:</span> {{ konto.eigene }}</div>
-        <div><span style="color: var(--color-neutral-700);">{{ L.kontakte }}:</span> {{ konto.kontakte }}</div>
-      </div>
-
       <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: var(--space-2);">{{ L.was_auf_meinem_zeitstrahl_erscheint }}</div>
       <div style="display: grid; gap: var(--space-3); margin-bottom: var(--space-6);">
         <sc-for list="{{ feed }}" as="f" hint-placeholder-count="3">
@@ -2736,25 +2772,54 @@
         </div>
       </sc-if>
 
-      <div style="height: 1px; background: var(--color-divider); margin: 0 0 var(--space-4);"></div>
-
-      <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-2-700); margin-bottom: var(--space-2);">{{ L.konto_loeschen }}</div>
-      <p style="font-size: 12.5px; line-height: 1.55; margin: 0 0 var(--space-3); color: var(--color-neutral-700);">{{ L.damit_verschwinden_dein_zugang_deine_eigen }}</p>
-      <div class="field" style="margin: 0 0 var(--space-3);"><label>{{ L.zum_bestaetigen_das_wort_loeschen_eintippe }}</label>
-        <input class="input" type="text" value="{{ konto.wort }}" onChange="{{ konto.onWort }}" placeholder="{{ L.loeschen_2 }}" autoComplete="off">
-      </div>
-      <sc-if value="{{ konto.fehler }}" hint-placeholder-val="{{ false }}">
-        <div style="font-size: 12.5px; padding: 7px 10px; margin-bottom: var(--space-3); border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700);">{{ konto.fehler }}</div>
+        </div>
       </sc-if>
-      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <button class="btn btn-primary" style="white-space: nowrap; display: inline-flex; align-items: center; gap: 9px; background: var(--color-accent-2); border-color: var(--color-accent-2);" disabled="{{ konto.busy }}" onClick="{{ konto.loeschen }}">
-          <sc-if value="{{ konto.busy }}" hint-placeholder-val="{{ false }}">
-            <span style="width: 14px; height: 14px; flex: 0 0 auto; border-radius: 50%; border: 2px solid color-mix(in srgb, var(--color-bg) 40%, transparent); border-top-color: var(--color-bg); animation: tl-spin 620ms linear infinite;"></span>
+
+      <sc-if value="{{ einst.mails }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; gap: var(--space-3);">
+        <div style="display: grid; gap: 5px; margin-bottom: var(--space-2);">
+          <sc-for list="{{ notify.opts }}" as="o" hint-placeholder-count="4">
+            <button onClick="{{ o.toggle }}" style="{{ o.style }}">
+              <span style="{{ o.box }}">{{ o.mark }}</span>
+              <span style="font-size: 13px;">{{ o.label }}</span>
+            </button>
+          </sc-for>
+        </div>
+        <div style="font-size: 11.5px; line-height: 1.45; color: var(--color-neutral-700); margin-bottom: var(--space-6);">{{ notify.hint }}</div>
+          <div style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;">
+            <button class="btn btn-secondary" style="white-space: nowrap;" disabled="{{ mailInfo.keinCloud }}" onClick="{{ mailInfo.test }}">{{ L.testmail }}</button>
+            <sc-if value="{{ mailInfo.hat }}" hint-placeholder-val="{{ false }}">
+              <span style="{{ mailInfo.stil }}">{{ mailInfo.text }}</span>
+            </sc-if>
+          </div>
+          <sc-if value="{{ mailInfo.grund }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size: 12px; line-height: 1.45; color: var(--color-neutral-700); max-width: 52ch;">{{ mailInfo.grund }}</div>
           </sc-if>
-          <span>{{ konto.cta }}</span>
-        </button>
-        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ konto.zu }}">{{ L.abbrechen }}</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ einst.sprache }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; gap: 6px; justify-items: start;">
+          <select class="input" value="{{ konto.sprache }}" onChange="{{ konto.onSprache }}" style="width: 240px; min-height: 44px;">
+            <sc-for list="{{ konto.sprachen }}" as="o" hint-placeholder-count="2">
+              <option value="{{ o.value }}">{{ o.label }}</option>
+            </sc-for>
+          </select>
+          <div style="font-size: 12px; line-height: 1.45; color: var(--color-neutral-700); max-width: 52ch;">{{ L.die_seite_laedt_danach_neu }}</div>
+        </div>
+
+      </sc-if>
+
+      <sc-if value="{{ einst.daten }}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; padding-bottom: var(--space-2);">
+        <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ exportJSON }}">{{ L.daten_sichern }}</button>
+        <label class="btn btn-ghost" style="cursor: pointer; white-space: nowrap;">{{ L.daten_laden }}<input type="file" accept="application/json" onChange="{{ importJSON }}" style="display: none;"></label>
+        <span style="width: 1px; height: 22px; background: var(--color-divider);"></span>
+        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ printSmall }}">{{ L.pdf_klein }}</button>
+        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ printLarge }}">{{ L.pdf_gross }}</button>
+        <span style="font-size: 11.5px; color: var(--color-neutral-700); max-width: 40ch; line-height: 1.45;">{{ dataHint }}</span>
       </div>
+      </sc-if>
     </div>
   </div>
 </sc-if>
@@ -3094,7 +3159,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 58 · 2026-09-27";
+const BAU_STAND = "Bau 59 · 2026-09-27";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -3764,6 +3829,11 @@ class Component extends DCLogic {
     autoFenster: true,
     eingang: [],
     loseStart: "",
+    einstSeite: "",
+    menuOffen: false,
+    filterOffen: false,
+    ausEinst: false,
+    mailStatus: null,
     loseEnde: "",
     loseZoom: "",
     eing: { open: false, tab: "eingang", sel: [], anker: null, modus: "einzeln", von: "", bis: "", vis: "private", ziel: "", busy: "", pct: 0, fehler: "", hinweis: "", nurMeine: true, setEv: "" },
@@ -5152,7 +5222,11 @@ class Component extends DCLogic {
     if (!this.state.cloud || !empfaengerId) return;
     const CC = window.ChronikCloud;
     if (!CC || !CC.notify) return;
-    CC.notify(empfaengerId, art, betreff, text).catch(() => {});
+    /* Das Ergebnis wird gemerkt — unter Einstellungen · Benachrichtigungen
+       steht dann, ob die letzte Mail wirklich hinausging und woran es lag. */
+    CC.notify(empfaengerId, art, betreff, text)
+      .then((r) => this.setState({ mailStatus: { at: Date.now(), art: art, ok: !!(r && r.ok), grund: (r && r.reason) || "", detail: (r && r.detail) || "" } }))
+      .catch(() => this.setState({ mailStatus: { at: Date.now(), art: art, ok: false, grund: "nicht-erreichbar" } }));
   }
 
   /* ---------- Leitfaden ---------- */
@@ -5220,7 +5294,7 @@ class Component extends DCLogic {
         text: tx("hinter_diesen_drei_reitern_steckt_die") },
       { ziel: "show", titel: tx("fotoshow"),
         text: tx("zeigt_alle_bilder_deiner_auswahl_gross") },
-      { ziel: "design", titel: tx("ueber_dreissig_gesichter"),
+      { ziel: "konto", titel: tx("ueber_dreissig_gesichter"),
         text: tx("von_zeitungssatz_ueber_emailschild_bis_zum") },
       { ziel: "kontakte", titel: tx("kontakte_und_gruppen"),
         text: tx("suche_jemanden_nach_name_oder_e") },
@@ -6951,7 +7025,7 @@ class Component extends DCLogic {
   /* Dünne Striche unter der Achse: an diesen Tagen liegen lose Bilder. */
   loseMarkenFuer(L, padL, axisY, pxPerDay) {
     const me = this.me();
-    if (!me || !L.items.length || this.feedPrefs().loseAlsBilder) return [];
+    if (!me || !L.items.length || this.loseModus() !== "striche") return [];
     const proTag = {};
     (this.state.eingang || []).forEach((e) => {
       if (this.levelFor(e) < 1) return;
@@ -7015,53 +7089,95 @@ class Component extends DCLogic {
 
   /* Lose Bilder einzeln im Zeitstrahl: ein Band zwischen Achse und Karten,
      jedes Bild an seinem Tag, in wechselnder Größe. */
+  loseModus() {
+    const f = this.feedPrefs();
+    return f.loseAnzeige || (f.loseAlsBilder ? "bilder" : "striche");
+  }
+
+  loseModusSetzen(m) {
+    const f = Object.assign({}, this.feedPrefs());
+    f.loseAnzeige = m;
+    f.loseAlsBilder = m !== "striche";
+    this.setState({ feed: f }, () => this.persist());
+  }
+
+  loseSichtbar() {
+    return this.loseBilder(false).filter((b) => b.zeit && !b.aus && (b.meins || this.imStrahl(b.e)));
+  }
+
+  /* „Nur lose Bilder“: jeder Aufnahmetag wird zu einem Platz auf der
+     Achse, damit Maßstab und Jahresmarken wie gewohnt entstehen. */
+  loseTageEvs() {
+    const tage = {};
+    this.loseSichtbar().forEach((b) => { tage[b.tag] = true; });
+    return Object.keys(tage).sort().map((tag) => ({ id: "lt" + tag, date: tag, end: "", name: "" }));
+  }
+
+  /* Lose Bilder einzeln im Zeitstrahl: jedes an seinem Tag, leicht
+     gedreht, in wechselnder Größe. Innerhalb einer Reihe überdeckt ein
+     Bild das vorige höchstens zu 55 % (nur lose Bilder: 30 %); wird es
+     enger, rückt es in die nächste Reihe oder ein Stück nach rechts. */
   loseBandFuer(L, padL, axisY, pxPerDay) {
     const leer = { hoehe: 0, bilder: [] };
-    if (!this.feedPrefs().loseAlsBilder || !this.me() || !L.items.length) return leer;
-    const alle = this.loseBilder(false).filter((b) => b.zeit && !b.aus && (b.meins || this.imStrahl(b.e)));
+    const modus = this.loseModus();
+    if (modus === "striche" || !this.me() || !L.items.length) return leer;
+    const nur = modus === "nur";
+    const alle = this.loseSichtbar();
     if (!alle.length) return leer;
     const xVon = this.zeitX(L, pxPerDay);
     const imBereich = this.loseBereich().map((b) => b.id);
     const st = this.state;
-    const zeileH = 108, maxR = 3, oben = axisY + 40;
-    const rechts = [];
+    const minS = nur ? 104 : 58, schritt = nur ? 16 : 11, stufen = 5;
+    const maxUeber = nur ? 0.3 : 0.55;
+    const maxR = nur ? 4 : 3;
+    const zeileH = nur ? 164 : 92;
+    const oben = axisY + 46;
+    const rechts = [], letzte = [];
     const bilder = [];
     alle.forEach((b) => {
       const t = dp(b.tag);
       if (t < L.min - 20 * DAY || t > L.max + 20 * DAY) return;
       const h = Math.abs(hash32(b.id));
-      const s = 46 + (h % 5) * 13;
-      const x = Math.max(0, Math.min(L.width, xVon(t))) + padL + 14 - s / 2;
-      let r = rechts.findIndex((re) => re + 6 <= x);
+      const s = minS + (h % stufen) * schritt;
+      let x = Math.max(0, Math.min(L.width, xVon(t))) + padL + 14 - s / 2;
+      let r = -1;
+      for (let k = 0; k < rechts.length; k++) {
+        if (rechts[k] - x <= maxUeber * Math.min(s, letzte[k])) { r = k; break; }
+      }
+      if (r < 0 && rechts.length < maxR) { r = rechts.length; rechts.push(-1e9); letzte.push(s); }
       if (r < 0) {
-        if (rechts.length < maxR) { r = rechts.length; rechts.push(-1e9); }
-        else r = rechts.indexOf(Math.min.apply(null, rechts));
+        r = rechts.indexOf(Math.min.apply(null, rechts));
+        x = rechts[r] - maxUeber * Math.min(s, letzte[r]);
       }
       rechts[r] = Math.max(rechts[r], x + s);
-      const versatz = Math.round((zeileH - 8 - s) * (((h >> 4) % 3) / 2));
+      letzte[r] = s;
+      const dreh = nur ? ((h >> 7) % 11) - 5 : ((h >> 7) % 15) - 7;
+      const versatz = (((h >> 4) % 3) - 1) * (nur ? 8 : 5);
       const istStart = st.loseStart === b.id, istEnde = st.loseEnde === b.id;
       const drin = imBereich.indexOf(b.id) >= 0;
       const nK = (b.im.comments || []).length;
+      const q = b.im.src || LEER_GIF;
       bilder.push({
         key: "lb" + b.id,
-        src: b.im.src || LEER_GIF,
-        bildRef: (el) => { const q = b.im.src || LEER_GIF; if (el && el.getAttribute("src") !== q) el.src = q; },
+        src: q,
+        bildRef: (el) => { if (el && el.getAttribute("src") !== q) el.src = q; },
         title: (b.zeit ? b.zeit.replace("T", " ").slice(0, 16) : "") + (b.im.ort ? " · " + b.im.ort : "") + (nK ? " · " + plural(nK, tx("kommentar"), tx("kommentare")) : ""),
         klick: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.setState({ loseZoom: b.id }); },
         pos: {
           position: "absolute", left: Math.round(x) + "px", top: (oben + r * zeileH + versatz) + "px",
-          width: s + "px", height: s + "px", padding: 0, border: 0, cursor: "zoom-in",
-          borderRadius: "var(--t-radius, 2px)", overflow: "hidden", background: "var(--color-neutral-200)",
-          boxShadow: "var(--shadow-sm)", zIndex: 7,
+          width: s + "px", height: s + "px", padding: nur ? "5px" : "3px", boxSizing: "border-box",
+          border: 0, cursor: "zoom-in", borderRadius: "2px", background: "var(--color-bg)",
+          boxShadow: "var(--shadow-md)", zIndex: 7 + r, transform: "rotate(" + dreh + "deg)",
           outline: (istStart || istEnde) ? "3px solid var(--t-accent, #0088b0)" : (drin ? "2px solid color-mix(in srgb, var(--t-accent, #0088b0) 55%, transparent)" : "none"),
           outlineOffset: (istStart || istEnde || drin) ? "2px" : "0"
         },
-        bildStil: { width: "100%", height: "100%", objectFit: "cover", display: "block", transform: b.im.rot ? "rotate(" + b.im.rot + "deg)" : "none" },
+        bildStil: { width: "100%", height: "100%", objectFit: "cover", display: "block", borderRadius: "1px", background: "var(--color-neutral-200)", transform: b.im.rot ? "rotate(" + b.im.rot + "deg)" : "none" },
         hatKomm: nK > 0, komm: String(nK),
-        kommStil: { position: "absolute", right: "3px", bottom: "3px", minWidth: "16px", height: "16px", padding: "0 4px", boxSizing: "border-box", borderRadius: "99px", fontSize: "10px", lineHeight: "16px", textAlign: "center", background: "var(--color-bg)", color: "var(--color-text)" }
+        kommStil: { position: "absolute", right: "6px", bottom: "6px", minWidth: "18px", height: "18px", padding: "0 5px", boxSizing: "border-box", borderRadius: "99px", fontSize: "10.5px", lineHeight: "18px", textAlign: "center", background: "var(--color-bg)", color: "var(--color-text)", boxShadow: "var(--shadow-sm)" }
       });
     });
-    return { hoehe: bilder.length ? rechts.length * zeileH + 20 : 0, bilder: bilder };
+    const groesst = minS + (stufen - 1) * schritt;
+    return { hoehe: bilder.length ? (rechts.length - 1) * zeileH + groesst + 40 : 0, bilder: bilder };
   }
 
   /* Großansicht eines losen Bildes: Kommentare, Start- und Endbild. */
@@ -7231,7 +7347,14 @@ class Component extends DCLogic {
     const nAus = setBilder.filter((b) => b.aus).length;
 
     const alleAus = gewaehlt.length && gewaehlt.every((b) => b.aus);
+    const bereich = g.modus === "bereich";
     return {
+      bereichKlasse: bereich ? "btn btn-primary" : "btn btn-secondary",
+      bereichUm: () => this.setEing({ modus: bereich ? "einzeln" : "bereich", anker: null }),
+      zeitraumOffen: !!g.zeitraumOffen,
+      zeitraumKlasse: g.zeitraumOffen ? "btn btn-primary" : "btn btn-secondary",
+      zeitraumUm: () => this.setEing({ zeitraumOffen: !g.zeitraumOffen }),
+      zeigeModusHinweis: bereich,
       open: !!g.open,
       knopf: tx("lose_bilder") + (meine.length ? " · " + meine.length : ""),
       auf: () => this.eingOeffnen({}),
@@ -8530,10 +8653,12 @@ class Component extends DCLogic {
     const gap = Math.round(26 * d);
     const laneH = Math.max(268, Math.round(274 * d));
     const maxLanes = Math.max(1, Math.min(4, this.props.lanes == null ? 3 : this.props.lanes));
-    const pxPerDay = this.basePx(evs) * st.zoom;
+    const nurLose = this.loseModus() === "nur";
+    const lEvs = nurLose ? this.loseTageEvs() : evs;
+    const pxPerDay = this.basePx(lEvs) * st.zoom;
     const axisY = 128;
     let laneTop = 196;
-    const L = this.layout(evs, { mode: st.mode, cardW: cardW, gap: gap, maxLanes: maxLanes, pxPerDay: pxPerDay });
+    const L = this.layout(lEvs, { mode: st.mode, cardW: cardW, gap: gap, maxLanes: maxLanes, pxPerDay: pxPerDay });
     const padL = 74;
     const loseBand = this.loseBandFuer(L, padL, axisY, pxPerDay);
     laneTop += loseBand.hoehe;
@@ -8567,7 +8692,7 @@ class Component extends DCLogic {
     const offenAuch = Object.assign({}, offeneStapel);
     const offenesItem = L.items.filter((it) => it.e.id === st.openId)[0];
     if (offenesItem) offenAuch[offenesItem.stapel] = true;
-    const sichtbareItems = L.items.filter((it) => it.lane < STAPEL_SICHTBAR || !!offenAuch[it.stapel]);
+    const sichtbareItems = nurLose ? [] : L.items.filter((it) => it.lane < STAPEL_SICHTBAR || !!offenAuch[it.stapel]);
     /* Im Vollbild füllt das offene Ereignis die Seite — für lange
        Routen und viele Bilder ist die Spur sonst zu eng. */
     const vollOffen = !!st.openVoll && !!st.openId;
@@ -9280,7 +9405,7 @@ class Component extends DCLogic {
     };
 
     const balkenEbene = ebenenVerteiler(64, 3);
-    const bars = L.items.filter((it) => it.e.end && it.ex > (it.xZeit == null ? it.x : it.xZeit) + 2).map((it) => {
+    const bars = L.items.filter((it) => !nurLose && it.e.end && it.ex > (it.xZeit == null ? it.x : it.xZeit) + 2).map((it) => {
       const days = Math.round((dp(it.e.end) - dp(it.e.date)) / DAY);
       const x0 = it.xZeit == null ? it.x : it.xZeit;
       const ebene = balkenEbene(x0, 64);
@@ -10202,6 +10327,10 @@ class Component extends DCLogic {
     const pad = phone ? "var(--space-4)" : tablet ? "var(--space-6)" : "var(--space-8)";
     const lay = {
       phone: phone, tablet: tablet, small: small,
+      ovEinst: { position: "fixed", inset: 0, zIndex: 138, display: "grid", placeItems: phone ? "stretch" : "center", padding: phone ? 0 : "var(--space-4)", background: "color-mix(in srgb, var(--color-text) 42%, transparent)" },
+      ovEing: { position: "fixed", inset: 0, zIndex: 137, display: "grid", placeItems: phone ? "stretch" : "center", padding: phone ? 0 : "var(--space-4)", background: "color-mix(in srgb, var(--color-text) 42%, transparent)" },
+      panelEinst: { width: phone ? "100%" : "min(560px, 100%)", height: phone ? "100%" : "auto", maxHeight: phone ? "100%" : "88vh", overflowY: "auto", boxSizing: "border-box", background: "var(--color-bg)", borderRadius: phone ? 0 : "var(--radius-lg)", boxShadow: "var(--shadow-lg)", padding: phone ? "var(--space-4)" : "var(--space-6)", display: "grid", gap: "var(--space-4)", alignContent: "start" },
+      panelEing: { width: phone ? "100%" : "min(1040px, 100%)", height: phone ? "100%" : "auto", maxHeight: phone ? "100%" : "90vh", overflowY: "auto", boxSizing: "border-box", background: "var(--color-bg)", borderRadius: phone ? 0 : "var(--radius-lg)", boxShadow: "var(--shadow-lg)", padding: "var(--space-4)", display: "grid", gap: "var(--space-3)", alignContent: "start" },
       loginWrap: {
         minHeight: "100vh", background: "var(--color-bg)", color: "var(--color-text)",
         fontFamily: "var(--font-body)", display: "grid",
@@ -10970,7 +11099,7 @@ class Component extends DCLogic {
           try { window.localStorage.setItem("chronik.sprache", ev.target.value); } catch (e) { /* ohne Speicher */ }
           window.location.reload();
         },
-        bilderEinAus: () => this.eingOeffnen({ tab: "aus" }),
+        bilderEinAus: () => this.setState({ konto: true, einstSeite: "bilder" }),
         loseLabel: this.feedPrefs().loseAlsBilder ? tx("lose_bilder_im_zeitstrahl_einzeln_als") : tx("lose_bilder_im_zeitstrahl_als_duenne"),
         loseUm: () => {
           const f = Object.assign({}, this.feedPrefs());
@@ -10981,7 +11110,7 @@ class Component extends DCLogic {
           const an = st.autoFenster === false;
           this.setState({ autoFenster: an }, () => this.persist());
         },
-        toggle: () => this.setState({ konto: !st.konto, drawer: false, admin: false, loeschWort: "", loeschFehler: "" }),
+        toggle: () => this.setState({ konto: !st.konto, einstSeite: "", drawer: false, admin: false, loeschWort: "", loeschFehler: "" }),
         zu: () => this.setState({ konto: false, loeschWort: "", loeschFehler: "" }),
         eigene: me ? st.events.filter((e) => (e.by || "") === me.id).length : 0,
         kontakte: me ? this.friendIds().length : 0,
@@ -11284,7 +11413,7 @@ class Component extends DCLogic {
       }),
       tabView: st.ribbon === "view", tabFilter: st.ribbon === "filter", tabData: st.ribbon === "data",
       dataHint: tx("gesichert_wird_nur_was_du_sehen"),
-      hasEvents: evs.length > 0, noEvents: evs.length === 0,
+      hasEvents: lEvs.length > 0, noEvents: lEvs.length === 0,
       emptyTitle: all.length ? tx("kein_ereignis_passt_zum_filter") : tx("noch_keine_ereignisse"),
       emptyNote: all.length ? tx("setze_den_filter_zurueck_oder_waehle") : tx("lege_das_erste_ereignis_an_name"),
       canCreate: canCreate,
@@ -11319,7 +11448,7 @@ class Component extends DCLogic {
         moeglich: true,
         on: !!st.stickMode,
         label: st.stickMode ? ("◉ " + tx("aufkleben_beenden")) : ("○ " + tx("sticker_aufkleben")),
-        toggle: () => this.setState({ stickMode: !st.stickMode, freeSel: null }),
+        toggle: () => this.setState({ stickMode: !st.stickMode, freeSel: null, konto: false }),
         place: this.stageDown, move: this.freeMove, up: this.freeUp,
         cursor: st.stickMode ? "copy" : "default",
         hint: st.freeSel ? tx("ziehen_zum_verschieben_regler_fuer_groesse") : tx("sticker_waehlen_dann_auf_eine_freie"),
@@ -11621,6 +11750,100 @@ class Component extends DCLogic {
          Band beim Scrollen ein- und ausgehängt, sprang die ganze Bahn. */
       hatStickyAchse: ticks.length > 0,
       loseMarken: this.loseMarkenFuer(L, padL, axisY, pxPerDay),
+      filterOffen: !!st.filterOffen,
+      nurLoseAktiv: nurLose,
+      ribbonZeigen: !!st.filterOffen || !!st.stickMode || nurLose,
+      loseAlles: () => this.loseModusSetzen("bilder"),
+      loseModi: [["striche", tx("lose_striche")], ["bilder", tx("lose_bilder_einzeln")], ["nur", tx("lose_nur")]].map((o) => ({
+        key: o[0], label: o[1], on: this.loseModus() === o[0], pick: () => this.loseModusSetzen(o[0])
+      })),
+      zoomKnopf: {
+        plus: () => this.setState({ zoom: Math.min(3, Math.round(st.zoom * 125) / 100) }),
+        minus: () => this.setState({ zoom: Math.max(0.35, Math.round((st.zoom / 1.25) * 100) / 100) })
+      },
+      nav: (function (self) {
+        const fs = st.filters || {};
+        const n = [fs.q, fs.from, fs.to, fs.place, fs.by].filter(Boolean).length + (fs.cats || []).length + (fs.persons || []).length;
+        const handy = (st.vw || 1280) < 760;
+        const zu = { menuOffen: false };
+        return {
+          breit: !handy, schmal: handy, menuOffen: handy && !!st.menuOffen,
+          menuLabel: st.menuOffen ? "✕ " + tx("menue") : "☰ " + tx("menue"),
+          menuUm: () => self.setState({ menuOffen: !st.menuOffen }),
+          filterUm: () => self.setState({ filterOffen: !st.filterOffen, menuOffen: false }),
+          filterLabel: tx("filter") + (n ? " · " + n : ""),
+          filterKlasse: st.filterOffen ? "btn btn-primary" : "btn btn-secondary",
+          bilder: () => { self.setState(zu); self.eingOeffnen({}); },
+          kontakte: () => self.setState({ admin: true, drawer: false, konto: false, menuOffen: false }),
+          einst: () => self.setState({ konto: true, einstSeite: "", drawer: false, admin: false, vgl: false, menuOffen: false }),
+          hilfe: () => { self.setState(zu); self.tourWahlAuf(); },
+          showStart: (ev) => {
+            if (!self.musikHrefFuer("all", "") && ev && ev.preventDefault) ev.preventDefault();
+            else self.musikFensterNotiert("all", "");
+            self.setState(zu);
+            self.openShow("all", "");
+          }
+        };
+      })(this),
+      /* Zurück: aus einem Fenster, das über die Einstellungen geöffnet
+         wurde, geht es dorthin zurück — sonst schließt es einfach. */
+      zur: (function (self) {
+        const zurueck = (patch) => () => self.setState(Object.assign(patch, st.ausEinst ? { konto: true, ausEinst: false } : { ausEinst: false }));
+        return { design: zurueck({ drawer: false }), kontakte: zurueck({ admin: false }), vgl: zurueck({ vgl: false }) };
+      })(this),
+      einst: (function (self) {
+        const s = st.einstSeite || "";
+        const seiten = [
+          ["konto", tx("konto"), tx("e_konto_text")],
+          ["zeitstrahl", tx("e_zeitstrahl"), tx("e_zeitstrahl_text")],
+          ["design", tx("design"), tx("e_design_text"), 1],
+          ["kontakte", tx("kontakte"), tx("e_kontakte_text"), 1],
+          ["vergleich", tx("vergleichen"), tx("e_vergleich_text"), 1],
+          ["fotoshow", tx("fotoshow_musik"), tx("e_fotoshow_text")],
+          ["bilder", tx("bilder_ein_und_ausblenden"), tx("e_bilder_text")],
+          ["inhalte", tx("e_inhalte"), tx("e_inhalte_text")],
+          ["mails", tx("e_mails"), tx("e_mails_text")],
+          ["sprache", tx("sprache"), tx("e_sprache_text")],
+          ["daten", tx("e_daten"), tx("e_daten_text")]
+        ];
+        const akt = seiten.filter((x) => x[0] === s)[0];
+        const r = {
+          uebersicht: !s,
+          kicker: s ? tx("einstellungen") : (me ? me.username : ""),
+          titel: akt ? akt[1] : tx("einstellungen"),
+          zurueck: () => (s ? self.setState({ einstSeite: "" }) : self.setState({ konto: false })),
+          seiten: seiten.map((x) => ({
+            key: x[0], titel: x[1], text: x[2], zeichen: x[3] ? "↗" : "›",
+            auf: () => {
+              if (x[0] === "design") self.setState({ konto: false, drawer: true, admin: false, ausEinst: true });
+              else if (x[0] === "kontakte") self.setState({ konto: false, admin: true, drawer: false, ausEinst: true });
+              else if (x[0] === "vergleich") self.setState({ konto: false, vgl: true, admin: false, drawer: false, ausEinst: true });
+              else self.setState({ einstSeite: x[0] });
+            }
+          }))
+        };
+        ["konto", "zeitstrahl", "fotoshow", "bilder", "inhalte", "mails", "sprache", "daten"].forEach((k) => { r[k] = s === k; });
+        return r;
+      })(this),
+      mailInfo: (function (self) {
+        const m = st.mailStatus;
+        const gruende = {
+          "D-18": tx("mail_d18"), "D-19": tx("mail_d19"), "D-20": tx("mail_d20"),
+          "abgewaehlt": tx("mail_abgewaehlt"), "kein-worker": tx("mail_kein_worker"),
+          "nicht-erreichbar": tx("mail_weg"), "keine-anmeldung": tx("mail_weg")
+        };
+        let grund = m && !m.ok ? (gruende[m.grund] || m.grund || tx("mail_weg")) : "";
+        if (m && !m.ok && m.art === "test" && m.grund === "abgewaehlt") grund = tx("mail_worker_alt");
+        if (m && m.detail) grund += " (" + String(m.detail).slice(0, 120) + ")";
+        return {
+          keinCloud: !st.cloud,
+          hat: !!m,
+          text: m ? tx("mail_status") + " · " + new Date(m.at).toLocaleTimeString((window.CHRONIK_LOCALE || "de-DE"), { hour: "2-digit", minute: "2-digit" }) + " · " + (m.ok ? tx("mail_gesendet") : tx("mail_nicht")) : "",
+          stil: { fontSize: "12.5px", padding: "4px 10px", borderRadius: "99px", background: m && m.ok ? "var(--color-accent-100)" : "var(--color-accent-2-100)", color: m && m.ok ? "var(--color-accent-700)" : "var(--color-accent-2-700)" },
+          grund: grund,
+          test: () => { const u = self.me(); if (u) self.melden(u.id, "test", tx("testmail_betreff"), tx("testmail_text")); }
+        };
+      })(this),
       loseBand: loseBand.bilder,
       lz: this.loseZoomVals(),
       lbar: this.loseLeisteVals(),

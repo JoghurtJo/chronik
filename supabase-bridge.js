@@ -458,7 +458,7 @@
         body: JSON.stringify({ to: empfaengerId, kind: art, subject: betreff, text: text })
       });
       var out = await res.json().catch(function () { return {}; });
-      return { ok: !!res.ok && !!out.ok, reason: out.error || "", status: res.status };
+      return { ok: !!res.ok && !!out.ok && !out.skipped, reason: out.error || out.skipped || "", detail: out.detail || "", status: res.status };
     } catch (e) {
       return { ok: false, reason: "nicht-erreichbar" };
     }

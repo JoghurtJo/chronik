@@ -1,4 +1,4 @@
-/* Chronik · Sprachwahl*/
+/* Chronik · Sprachwahl */
 (function () {
   var S = window.CHRONIK_SPRACHEN = window.CHRONIK_SPRACHEN || {};
   var wahl = "";
