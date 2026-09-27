@@ -530,6 +530,8 @@
       return {
         src: src, key: im.key || "", path: im.path || "", caption: im.caption || "",
         alb: im.alb || "", et: im.et || "", rot: im.rot || 0,
+        zeit: im.zeit || "", zq: im.zq || "", ort: im.ort || "",
+        lat: im.lat == null ? null : im.lat, lon: im.lon == null ? null : im.lon, aus: !!im.aus,
         comments: comments[row.id + ":" + i] || []
       };
     });
@@ -543,7 +545,8 @@
       themeSnap: d.themeSnap || null,
       themeFein: d.themeFein && typeof d.themeFein === "object" ? d.themeFein : {},
       vis: (row.vis === "selected" ? "people" : row.vis) || "private", who: row.who || [], gwho: row.gwho || [], perms: row.perms || {}, polls: row.polls || [], etappen: row.etappen || [], etLayout: row.et_layout === "split" ? "split" : "gesamt", share: row.share || "view",
-      changedBy: row.changed_by || ""
+      changedBy: row.changed_by || "",
+      lose: !!d.lose
     };
   }
 
@@ -558,8 +561,14 @@
         themeId: e.themeId || "",
         themeSnap: e.themeSnap || null,
         themeFein: e.themeFein || {},
+        lose: !!e.lose,
         images: (e.images || []).map(function (im) {
           var zu = { caption: im.caption || "", alb: im.alb || "", et: im.et || "", rot: im.rot || 0 };
+          /* Aufnahmezeit, Ort und Ausblenden reisen mit dem Bild. */
+          if (im.zeit) { zu.zeit = im.zeit; zu.zq = im.zq || ""; }
+          if (im.ort) zu.ort = im.ort;
+          if (im.lat != null && im.lon != null) { zu.lat = im.lat; zu.lon = im.lon; }
+          if (im.aus) zu.aus = true;
           if (im.key) return Object.assign({ key: im.key }, zu);
           if (im.path) return Object.assign({ path: im.path }, zu);
           return Object.assign({ src: im.src || "" }, zu);
