@@ -395,6 +395,7 @@
           <sc-if value="{{ stick.any }}" hint-placeholder-val="{{ false }}">
             <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ stick.clearAll }}">{{ L.alle_abloesen }}</button>
           </sc-if>
+          <button class="btn btn-primary" style="white-space: nowrap;" onClick="{{ stick.toggle }}">✓ {{ L.fertig_2 }}</button>
         </div>
       </sc-if>
     <sc-if value="{{ nurLoseAktiv }}" hint-placeholder-val="{{ false }}">
@@ -2568,8 +2569,11 @@
       <div style="height: 3px; background: var(--ui-saum, var(--color-text));"></div>
 
       <sc-if value="{{ einst.uebersicht }}" hint-placeholder-val="{{ true }}">
-        <div style="display: grid; gap: 2px;">
-          <sc-for list="{{ einst.seiten }}" as="p" hint-placeholder-count="8">
+        <div style="display: grid; gap: var(--space-4);">
+          <sc-for list="{{ einst.gruppen }}" as="gr" hint-placeholder-count="4">
+          <div style="display: grid; gap: 2px;">
+          <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700); padding: 0 12px 4px;">{{ gr.titel }}</div>
+          <sc-for list="{{ gr.seiten }}" as="p" hint-placeholder-count="3">
             <button onClick="{{ p.auf }}" style="display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-3); width: 100%; min-height: 56px; padding: 10px 12px; border: 0; border-radius: var(--radius-md); background: transparent; font: inherit; text-align: left; cursor: pointer; color: var(--color-text);" style-hover="background: var(--color-accent-100);">
               <span style="display: grid; gap: 2px; min-width: 0;">
                 <span style="font-size: 16px; line-height: 1.25;">{{ p.titel }}</span>
@@ -2578,6 +2582,16 @@
               <span style="font-size: 20px; line-height: 1; color: var(--color-accent-700);">{{ p.zeichen }}</span>
             </button>
           </sc-for>
+          </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ einst.info }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; gap: 6px; justify-items: start;">
+          <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.geladener_stand }}</div>
+          <div style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 14px;">{{ einst.bauStand }}</div>
+          <div style="font-size: 12px; line-height: 1.45; color: var(--color-neutral-700); max-width: 52ch;">{{ L.e_info_hinweis }}</div>
         </div>
       </sc-if>
 
@@ -2656,7 +2670,7 @@
           <input type="range" min="0.35" max="3" step="0.05" value="{{ zoomWert }}" onChange="{{ setZoom }}" style="width: 130px; accent-color: var(--color-accent);">
           <span style="min-width: 42px; color: var(--color-text);">{{ zoomLabel }}</span>
         </div>
-        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ togglePlay }}">{{ playLabel }}</button>
+        <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ einstPlay }}">{{ playLabel }}</button>
         <sc-if value="{{ stick.moeglich }}" hint-placeholder-val="{{ true }}">
           <button class="btn btn-secondary" style="white-space: nowrap;" onClick="{{ stick.toggle }}">{{ stick.label }}</button>
         </sc-if>
@@ -2906,9 +2920,6 @@
      von selbst spielen. -->
 <audio ref="{{ show.audioRef }}" loop="{{ true }}" preload="auto" style="display: none;"></audio>
 
-<!-- Bauzeichen: zeigt unten rechts, welcher Stand wirklich geladen ist.
-     So lässt sich prüfen, ob die neue Datei auf dem Netz liegt. -->
-<div data-noprint="" title="{{ L.geladener_stand }}" style="position: fixed; right: 8px; bottom: 6px; z-index: 200; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 9.5px; letter-spacing: 0.04em; color: var(--color-neutral-600); pointer-events: none; opacity: 0.75;">{{ bauStand }}</div>
 
 <!-- Prüffenster: nur für das Konto „Jokken“. Zeigt, was die Musik
      gerade tut, damit sich Fehler ohne Rätselraten einkreisen lassen. -->
@@ -3159,7 +3170,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 59 · 2026-09-27";
+const BAU_STAND = "Bau 60 · 2026-09-27";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -5707,7 +5718,8 @@ class Component extends DCLogic {
       /* 3) Einzelne Bilder fremder Ereignisse, nur für mich ausgeblendet. */
       ohneBild: Array.isArray(f.ohneBild) ? f.ohneBild : [],
       spotifySeite: !!f.spotifySeite,
-      loseAlsBilder: !!f.loseAlsBilder
+      loseAlsBilder: !!f.loseAlsBilder,
+      loseAnzeige: ["striche", "bilder", "nur"].indexOf(f.loseAnzeige) >= 0 ? f.loseAnzeige : ""
     };
   }
 
@@ -7128,8 +7140,8 @@ class Component extends DCLogic {
     const imBereich = this.loseBereich().map((b) => b.id);
     const st = this.state;
     const minS = nur ? 104 : 58, schritt = nur ? 16 : 11, stufen = 5;
-    const maxUeber = nur ? 0.3 : 0.55;
-    const maxR = nur ? 4 : 3;
+    const maxUeber = nur ? 0.2 : 0.4;
+    const maxR = nur ? 6 : 5;
     const zeileH = nur ? 164 : 92;
     const oben = axisY + 46;
     const rechts = [], letzte = [];
@@ -7140,11 +7152,16 @@ class Component extends DCLogic {
       const h = Math.abs(hash32(b.id));
       const s = minS + (h % stufen) * schritt;
       let x = Math.max(0, Math.min(L.width, xVon(t))) + padL + 14 - s / 2;
-      let r = -1;
-      for (let k = 0; k < rechts.length; k++) {
-        if (rechts[k] - x <= maxUeber * Math.min(s, letzte[k])) { r = k; break; }
-      }
+      /* Zuerst eine Reihe, in der nichts überdeckt wird; sonst eine neue
+         Reihe darunter; erst wenn alle Reihen belegt sind, darf es sich
+         überlappen — und notfalls ein Stück nach rechts rücken. */
+      let r = rechts.findIndex((re) => re + 6 <= x);
       if (r < 0 && rechts.length < maxR) { r = rechts.length; rechts.push(-1e9); letzte.push(s); }
+      if (r < 0) {
+        for (let k = 0; k < rechts.length; k++) {
+          if (rechts[k] - x <= maxUeber * Math.min(s, letzte[k])) { r = k; break; }
+        }
+      }
       if (r < 0) {
         r = rechts.indexOf(Math.min.apply(null, rechts));
         x = rechts[r] - maxUeber * Math.min(s, letzte[r]);
@@ -9277,7 +9294,7 @@ class Component extends DCLogic {
        des Bildschirms — beim Scrollen bedient er immer den Stapel, der
        gerade vor einem liegt. Ohne ihn wäre ein dichter Zeitraum weit
        links nicht mehr erreichbar. */
-    const dichte = (L.stapel || []).filter((s) => s.tiefe > STAPEL_SICHTBAR);
+    const dichte = nurLose ? [] : (L.stapel || []).filter((s) => s.tiefe > STAPEL_SICHTBAR);
     /* Ein geöffneter Stapel behält den Knopf — sonst könnte man ihn
        nicht mehr zuklappen, sobald man weiterscrollt. */
     const offeneDichte = dichte.filter((s) => !!offenAuch[s.id]);
@@ -11424,6 +11441,7 @@ class Component extends DCLogic {
       setZoom: (ev) => this.setState({ zoom: parseFloat(ev.target.value) }),
       playLabel: st.playing ? ("■ " + tx("stop")) : ("▶ " + tx("abspielen")),
       togglePlay: this.togglePlay,
+      einstPlay: () => { this.setState({ konto: false }); this.togglePlay(); },
       musikChip: MUSIK_CHIP,
       stop: (ev) => ev.stopPropagation(),
       stageRef: (el) => { this.stage = el; },
@@ -11793,25 +11811,46 @@ class Component extends DCLogic {
       })(this),
       einst: (function (self) {
         const s = st.einstSeite || "";
-        const seiten = [
-          ["konto", tx("konto"), tx("e_konto_text")],
-          ["zeitstrahl", tx("e_zeitstrahl"), tx("e_zeitstrahl_text")],
-          ["design", tx("design"), tx("e_design_text"), 1],
-          ["kontakte", tx("kontakte"), tx("e_kontakte_text"), 1],
-          ["vergleich", tx("vergleichen"), tx("e_vergleich_text"), 1],
-          ["fotoshow", tx("fotoshow_musik"), tx("e_fotoshow_text")],
-          ["bilder", tx("bilder_ein_und_ausblenden"), tx("e_bilder_text")],
-          ["inhalte", tx("e_inhalte"), tx("e_inhalte_text")],
-          ["mails", tx("e_mails"), tx("e_mails_text")],
-          ["sprache", tx("sprache"), tx("e_sprache_text")],
-          ["daten", tx("e_daten"), tx("e_daten_text")]
+        const gruppen = [
+          [tx("g_ansicht"), [
+            ["zeitstrahl", tx("e_zeitstrahl"), tx("e_zeitstrahl_text")],
+            ["design", tx("design"), tx("e_design_text"), 1],
+            ["bilder", tx("bilder_ein_und_ausblenden"), tx("e_bilder_text")],
+            ["inhalte", tx("e_inhalte"), tx("e_inhalte_text")]
+          ]],
+          [tx("g_menschen"), [
+            ["kontakte", tx("kontakte"), tx("e_kontakte_text"), 1],
+            ["vergleich", tx("vergleichen"), tx("e_vergleich_text"), 1],
+            ["mails", tx("e_mails"), tx("e_mails_text")]
+          ]],
+          [tx("g_fotoshow"), [
+            ["fotoshow", tx("fotoshow_musik"), tx("e_fotoshow_text")]
+          ]],
+          [tx("g_ich"), [
+            ["konto", tx("konto"), tx("e_konto_text")],
+            ["sprache", tx("sprache"), tx("e_sprache_text")],
+            ["daten", tx("e_daten"), tx("e_daten_text")],
+            ["info", tx("e_info"), tx("e_info_text")]
+          ]]
         ];
+        const seiten = [];
+        gruppen.forEach((g) => g[1].forEach((x) => seiten.push(x)));
         const akt = seiten.filter((x) => x[0] === s)[0];
         const r = {
           uebersicht: !s,
           kicker: s ? tx("einstellungen") : (me ? me.username : ""),
           titel: akt ? akt[1] : tx("einstellungen"),
           zurueck: () => (s ? self.setState({ einstSeite: "" }) : self.setState({ konto: false })),
+          bauStand: BAU_STAND,
+          gruppen: gruppen.map((g) => ({ key: g[0], titel: g[0], seiten: g[1].map((x) => ({
+            key: x[0], titel: x[1], text: x[2], zeichen: x[3] ? "↗" : "›",
+            auf: () => {
+              if (x[0] === "design") self.setState({ konto: false, drawer: true, admin: false, ausEinst: true });
+              else if (x[0] === "kontakte") self.setState({ konto: false, admin: true, drawer: false, ausEinst: true });
+              else if (x[0] === "vergleich") self.setState({ konto: false, vgl: true, admin: false, drawer: false, ausEinst: true });
+              else self.setState({ einstSeite: x[0] });
+            }
+          })) })),
           seiten: seiten.map((x) => ({
             key: x[0], titel: x[1], text: x[2], zeichen: x[3] ? "↗" : "›",
             auf: () => {
@@ -11822,7 +11861,7 @@ class Component extends DCLogic {
             }
           }))
         };
-        ["konto", "zeitstrahl", "fotoshow", "bilder", "inhalte", "mails", "sprache", "daten"].forEach((k) => { r[k] = s === k; });
+        ["konto", "zeitstrahl", "fotoshow", "bilder", "inhalte", "mails", "sprache", "daten", "info"].forEach((k) => { r[k] = s === k; });
         return r;
       })(this),
       mailInfo: (function (self) {
