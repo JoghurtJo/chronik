@@ -1,4 +1,8 @@
-/* Chronik · Sprachwahl */
+/* Chronik · Sprachwahl
+   Jede Sprachdatei in diesem Ordner meldet sich mit
+   window.CHRONIK_SPRACHEN.<kürzel> = { name, locale, texte: { schlüssel: text } } an.
+   Neue Sprache: Datei (z. B. fr.js) nach dem Muster von en.js anlegen und
+   in index.html vor dieser Datei einbinden. Fehlt ein Schlüssel, gilt Deutsch. */
 (function () {
   var S = window.CHRONIK_SPRACHEN = window.CHRONIK_SPRACHEN || {};
   var wahl = "";
