@@ -1,6 +1,4 @@
-/* Chronik · Deutsch (Grundsprache)
-   Jeder Text der Seite steht hier unter einem Schlüssel. Fehlt ein
-   Schlüssel in einer anderen Sprache, wird dieser deutsche Text gezeigt. */
+/* Chronik · Deutsch */
 window.CHRONIK_SPRACHEN = window.CHRONIK_SPRACHEN || {};
 window.CHRONIK_SPRACHEN.de = {
   name: "Deutsch",
