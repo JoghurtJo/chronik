@@ -531,7 +531,7 @@
         src: src, key: im.key || "", path: im.path || "", caption: im.caption || "",
         alb: im.alb || "", et: im.et || "", rot: im.rot || 0,
         zeit: im.zeit || "", zq: im.zq || "", ort: im.ort || "",
-        lat: im.lat == null ? null : im.lat, lon: im.lon == null ? null : im.lon, aus: !!im.aus,
+        lat: im.lat == null ? null : im.lat, lon: im.lon == null ? null : im.lon, aus: !!im.aus, weg: !!im.weg,
         comments: comments[row.id + ":" + i] || []
       };
     });
@@ -563,6 +563,8 @@
         themeFein: e.themeFein || {},
         lose: !!e.lose,
         images: (e.images || []).map(function (im) {
+          /* Leere Stelle eines übernommenen losen Bildes: nur die Marke. */
+          if (im.weg) return { weg: true };
           var zu = { caption: im.caption || "", alb: im.alb || "", et: im.et || "", rot: im.rot || 0 };
           /* Aufnahmezeit, Ort und Ausblenden reisen mit dem Bild. */
           if (im.zeit) { zu.zeit = im.zeit; zu.zq = im.zq || ""; }
@@ -704,6 +706,14 @@
 
   /* Abstimmen und Ranken darf jeder, der das Ereignis sehen darf —
      darum über eine eigene Funktion, nicht über das ganze Ereignis. */
+  /* Kommentare eines losen Bildes ziehen mit ins Ereignis. */
+  async function moveComments(fromEvent, fromIdx, toEvent, toIdx) {
+    var c = await client();
+    var r = await c.rpc("move_comments", { p_from: fromEvent, p_from_idx: fromIdx, p_to: toEvent, p_to_idx: toIdx });
+    if (r.error) throw fail(code(r.error));
+    bump({ p_writes: 1 });
+  }
+
   async function setPolls(eventId, polls) {
     var c = await client();
     var r = await c.rpc("set_polls", { p_event: eventId, p_polls: polls || [] });
@@ -881,7 +891,7 @@
     friends: friends, askFriend: askFriend, answerFriend: answerFriend, unfriend: unfriend,
     loadEvents: loadEvents, saveEvent: saveEvent, removeEvent: removeEvent,
     addComment: addComment, removeComment: removeComment, reactComment: reactComment,
-    deleteMe: deleteMe, sweepUnconfirmed: sweepUnconfirmed, deleteImages: deleteImages, setPolls: setPolls, uploadImage: uploadImage, imageUrl: imageUrl, storeCheck: storeCheck, onChange: onChange,
+    deleteMe: deleteMe, sweepUnconfirmed: sweepUnconfirmed, deleteImages: deleteImages, setPolls: setPolls, moveComments: moveComments, uploadImage: uploadImage, imageUrl: imageUrl, storeCheck: storeCheck, onChange: onChange,
     snapshot: snapshot, budget: budget, guard: guard,
     isLegacy: function () { return legacySchema; },
     lastR2Error: function () { return lastR2Error; }
