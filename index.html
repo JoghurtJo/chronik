@@ -230,7 +230,7 @@
 </sc-if>
 
 <sc-if value="{{ unlocked }}" hint-placeholder-val="{{ false }}">
-<div data-noprint="" style="min-height: 100vh; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body);">
+<div data-noprint="" style="min-height: 100vh; max-width: 100vw; overflow-x: clip; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body);">
   <header style="{{ lay.headerPad }}">
     <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap;">
       <div style="min-width: 0;">
@@ -2652,7 +2652,7 @@
           <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.lose_anzeige }}</div>
           <div class="seg" role="group" style="margin: 0;">
             <sc-for list="{{ loseModi }}" as="m" hint-placeholder-count="3">
-              <label class="seg-opt"><input type="radio" name="losemodus" checked="{{ m.on }}" onChange="{{ m.pick }}" style="position: absolute; opacity: 0; pointer-events: none;">{{ m.label }}</label>
+              <label class="seg-opt" style="white-space: nowrap;"><input type="radio" name="losemodus" checked="{{ m.on }}" onChange="{{ m.pick }}" style="position: absolute; opacity: 0; pointer-events: none;">{{ m.label }}</label>
             </sc-for>
           </div>
           <div style="font-size: 12px; line-height: 1.45; color: var(--color-neutral-700); max-width: 52ch;">{{ L.einzelne_bilder_aus_ereignis_fotoshow_und }}</div>
@@ -3170,7 +3170,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 60 · 2026-09-27";
+const BAU_STAND = "Bau 61 · 2026-09-27";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -7151,7 +7151,8 @@ class Component extends DCLogic {
       if (t < L.min - 20 * DAY || t > L.max + 20 * DAY) return;
       const h = Math.abs(hash32(b.id));
       const s = minS + (h % stufen) * schritt;
-      let x = Math.max(0, Math.min(L.width, xVon(t))) + padL + 14 - s / 2;
+      const xTag = Math.max(0, Math.min(L.width, xVon(t))) + padL + 14 - s / 2;
+      let x = xTag;
       /* Zuerst eine Reihe, in der nichts überdeckt wird; sonst eine neue
          Reihe darunter; erst wenn alle Reihen belegt sind, darf es sich
          überlappen — und notfalls ein Stück nach rechts rücken. */
@@ -7164,7 +7165,9 @@ class Component extends DCLogic {
       }
       if (r < 0) {
         r = rechts.indexOf(Math.min.apply(null, rechts));
-        x = rechts[r] - maxUeber * Math.min(s, letzte[r]);
+        /* Nie weiter als gut zwei Bildbreiten von seinem Tag weg — lieber
+           etwas mehr Überdeckung als ein Bild, das ins Leere wandert. */
+        x = Math.min(rechts[r] - maxUeber * Math.min(s, letzte[r]), xTag + 2.5 * s);
       }
       rechts[r] = Math.max(rechts[r], x + s);
       letzte[r] = s;
@@ -7194,7 +7197,7 @@ class Component extends DCLogic {
       });
     });
     const groesst = minS + (stufen - 1) * schritt;
-    return { hoehe: bilder.length ? (rechts.length - 1) * zeileH + groesst + 40 : 0, bilder: bilder };
+    return { hoehe: bilder.length ? (rechts.length - 1) * zeileH + groesst + 40 : 0, bilder: bilder, breite: rechts.length ? Math.max.apply(null, rechts) : 0 };
   }
 
   /* Großansicht eines losen Bildes: Kommentare, Start- und Endbild. */
@@ -8695,7 +8698,7 @@ class Component extends DCLogic {
        berechnete Breite hinaus. Ohne diesen Zuschlag ist die Rollstrecke
        breiter als die Bahn — und am Ende bliebe ein kahler Streifen. */
     const tickRand = 60;
-    const trackW = Math.max(L.width + padL + tickRand, openIt ? openIt.x + padL + openW + 24 : 0);
+    const trackW = Math.max(L.width + padL + tickRand, openIt ? openIt.x + padL + openW + 24 : 0, (loseBand.breite || 0) + 40);
 
     /* Stapel unter einem Datum: die ersten vier Kacheln stehen da, der
        Rest kommt erst auf Klick — der Schalter steht in einem eigenen
@@ -11431,7 +11434,7 @@ class Component extends DCLogic {
       tabView: st.ribbon === "view", tabFilter: st.ribbon === "filter", tabData: st.ribbon === "data",
       dataHint: tx("gesichert_wird_nur_was_du_sehen"),
       hasEvents: lEvs.length > 0, noEvents: lEvs.length === 0,
-      emptyTitle: all.length ? tx("kein_ereignis_passt_zum_filter") : tx("noch_keine_ereignisse"),
+      emptyTitle: nurLose ? tx("noch_keine_losen_bilder_mit_datum") : all.length ? tx("kein_ereignis_passt_zum_filter") : tx("noch_keine_ereignisse"),
       emptyNote: all.length ? tx("setze_den_filter_zurueck_oder_waehle") : tx("lege_das_erste_ereignis_an_name"),
       canCreate: canCreate,
       isProp: st.mode !== "even", isEven: st.mode === "even",
