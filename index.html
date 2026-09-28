@@ -13,12 +13,14 @@
 <helmet>
 <meta name="omelette-owns-print" content="1">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js?v=b80"></script>
-<script src="supabase-bridge.js?v=b80"></script>
+<script src="chronik-config.js?v=b81"></script>
+<script src="supabase-bridge.js?v=b81"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
 <style>
   body { margin: 0; overscroll-behavior-x: none; }
+  [data-handy-offen="1"] img, [data-handy-offen="1"] iframe, [data-handy-offen="1"] video, [data-handy-offen="1"] canvas, [data-handy-offen="1"] table, [data-handy-offen="1"] input, [data-handy-offen="1"] textarea, [data-handy-offen="1"] select { max-width: 100%; }
+  [data-handy-offen="1"] * { min-width: 0; overflow-wrap: anywhere; }
   a { color: var(--color-accent-700); text-decoration: none; }
   a:hover { color: var(--color-accent); text-decoration: underline; }
   @keyframes tl-glide { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
@@ -484,7 +486,7 @@
 
             <sc-for list="{{ cards }}" as="c" hint-placeholder-count="4">
               <div data-ev="{{ c.id }}" onClick="{{ c.vollWeg }}" style="{{ c.pos }}">
-                <div data-zu="{{ c.zuFlag }}" style="{{ c.body }}">
+                <div data-zu="{{ c.zuFlag }}" data-handy-offen="{{ c.handyOffen }}" style="{{ c.body }}">
                 <div onClick="{{ c.toggle }}" style="position: relative; cursor: pointer; background: var(--t-card, #eae9e9); border: 1px solid var(--t-border, rgba(32, 30, 29, 0.16)); border-radius: var(--t-radius, 2px); box-shadow: var(--t-shadow, none); padding: var(--t-pad, 16px); transition: transform 220ms ease;" style-hover="transform: translateY(-3px);">
                   <div style="display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;">
                     <span style="font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--t-accent, #0088b0);">{{ c.dateLabel }}</span>
@@ -2966,7 +2968,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 80) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 81) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -3290,7 +3292,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 80 · 2026-09-28";
+const BAU_STAND = "Bau 81 · 2026-09-28";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -4452,8 +4454,27 @@ class Component extends DCLogic {
     if (Object.keys(patch).length) this.setState(patch);
   }
 
+  /* Bilddateien holen, sobald sie gebraucht werden — je sechs zugleich. */
+  bilderNachladen() {
+    const CC = window.ChronikCloud;
+    if (!CC || !CC.imageUrls) return;
+    this._bildAngefragt = this._bildAngefragt || {};
+    const offen = (this.bildBedarf || []).filter((k) => k && !this._bildAngefragt[k]);
+    if (!offen.length) return;
+    offen.forEach((k) => { this._bildAngefragt[k] = true; });
+    CC.imageUrls(offen, (teil) => {
+      if (!teil || !Object.keys(teil).length) return;
+      const setze = (liste) => (liste || []).map((e) => {
+        if (!(e.images || []).some((im) => im.key && teil[im.key] && !im.src)) return e;
+        return Object.assign({}, e, { images: e.images.map((im) => (im.key && teil[im.key] && !im.src) ? Object.assign({}, im, { src: teil[im.key] }) : im) });
+      });
+      this.setState((s) => ({ events: setze(s.events), eingang: setze(s.eingang) }));
+    });
+  }
+
   componentDidUpdate(vp, vs) {
     this.applyTheme();
+    this.bilderNachladen();
     if (!this._messUhr) this._messUhr = window.setTimeout(() => { this._messUhr = null; this.kachelMessen(); }, 120);
     /* Erstes Anmelden: einmal fragen, ob der Leitfaden laufen soll. */
     this.tourFragen();
@@ -4581,12 +4602,14 @@ class Component extends DCLogic {
     if (!CC || !CC.enabled) return;
     if (!this.state.cloudBusy) { this.setState({ cloudBusy: true }); await this.zeichnen(); }
     try {
-      const users = await CC.profiles();
-      const events = await CC.loadEvents();
-      let gs = this.state.groups;
-      try { gs = await CC.groups(); } catch (e) { /* Gruppen sind optional */ }
-      let fr = this.state.friends;
-      try { if (CC.friends) fr = await CC.friends(); } catch (e) { /* Kontakte sind optional */ }
+      /* Alles gleichzeitig anfragen statt nacheinander. Bilder kommen
+         hier nicht mit — die holt bilderNachladen, sobald sie erscheinen. */
+      const [users, events, gs, fr] = await Promise.all([
+        CC.profiles(),
+        CC.loadEvents(),
+        CC.groups ? CC.groups().catch(() => this.state.groups) : Promise.resolve(this.state.groups),
+        CC.friends ? CC.friends().catch(() => this.state.friends) : Promise.resolve(this.state.friends)
+      ]);
       /* Lose Bilder liegen in eigenen Sammel-Ereignissen — die gehören
          nicht in den Zeitstrahl, sondern in den Bildeingang. */
       const lose = events.filter((e) => e.lose);
@@ -6016,7 +6039,7 @@ class Component extends DCLogic {
         const et = (e.etappen || []).filter((x) => x.i === etId)[0];
         const musik = (alb && alb.musik) || (et && et.musik) || "";
         const musikAb = (alb && alb.musik) ? (alb.musikAb || "") : ((et && et.musik) ? (et.musikAb || "") : "");
-        out.push({ ordAlb: (e.alben || []).findIndex((x) => x.i === (im.alb || "")), ordEt: (e.etappen || []).findIndex((x) => x.i === etId), key: e.id + ":" + j, src: im.src || "", caption: zeigbareUnterschrift(im.caption), event: e.name, date: fmtDate(e.date), n: (im.comments || []).length, rot: im.rot || 0, musik: musik, musikAb: musikAb });
+        out.push({ ordAlb: (e.alben || []).findIndex((x) => x.i === (im.alb || "")), ordEt: (e.etappen || []).findIndex((x) => x.i === etId), key: e.id + ":" + j, imKey: im.key || "", src: im.src || "", caption: zeigbareUnterschrift(im.caption), event: e.name, date: fmtDate(e.date), n: (im.comments || []).length, rot: im.rot || 0, musik: musik, musikAb: musikAb });
       });
     });
     /* Ohne Gruppe zuletzt — sonst stünden die losen Bilder vorn. */
@@ -7481,7 +7504,7 @@ class Component extends DCLogic {
       const nK = (b.im.comments || []).length;
       const q = b.im.src || LEER_GIF;
       bilder.push({
-        key: "lb" + b.id, _t: t, _y: yFest != null ? yFest : oben + r * zeileH + versatz,
+        key: "lb" + b.id, _key: b.im.src ? "" : (b.im.key || ""), _t: t, _y: yFest != null ? yFest : oben + r * zeileH + versatz,
         src: q,
         bildRef: (el) => { if (el && el.getAttribute("src") !== q) el.src = q; },
         title: (b.zeit ? b.zeit.replace("T", " ").slice(0, 16) : "") + (b.im.ort ? " · " + b.im.ort : "") + (nK ? " · " + plural(nK, tx("kommentar"), tx("kommentare")) : ""),
@@ -9079,6 +9102,9 @@ class Component extends DCLogic {
     const cards = sichtbareItems.map((it) => {
       const e = it.e;
       const isOpen = st.openId === e.id;
+      /* Auf dem Handy öffnet ein Ereignis immer bildschirmfüllend: volle
+         Breite, und man scrollt einfach nach unten. */
+      const vollHier = isOpen && (vollOffen || handyAnsicht);
       const top = reiheY(it.lane);
       const bilder = this.bilderSichtbar(e);
       const nImg = bilder.length;
@@ -9210,12 +9236,13 @@ class Component extends DCLogic {
         key: e.id, id: e.id, zuFlag: isOpen ? "0" : "1",
         /* Klick auf den Schleier verlässt das Vollbild; Klicks in der
            Kachel selbst nicht. */
-        vollWeg: (ev) => { if (ev.target === ev.currentTarget) this.setState({ openVoll: false }); },
+        vollWeg: (ev) => { if (ev.target === ev.currentTarget) this.setState(handyAnsicht ? { openId: null, openVoll: false } : { openVoll: false }); },
+        handyOffen: isOpen && handyAnsicht ? "1" : "0",
         vollUm: (ev) => { ev.stopPropagation(); this.setState({ openVoll: !this.state.openVoll }); },
         vollZeichen: vollOffen ? "⤡" : "⤢",
         vollTitel: vollOffen ? tx("vollbild_verlassen") : tx("auf_volle_groesse"),
         pos: Object.assign(
-          (isOpen && vollOffen)
+          vollHier
             /* Unter den Fenstern bleiben, die sich aus dem Ereignis
                heraus öffnen lassen — Editor (100), Fotoshow (110),
                Bildbearbeitung (125) und Lupe (130) müssen obenauf
@@ -9223,21 +9250,21 @@ class Component extends DCLogic {
             /* Animation und Versatz müssen hier weg: eine Regel mit
                transform macht das Fenster zum Bezugsrahmen, und dann
                wandert es beim Scrollen mit dem Zeitstrahl davon. */
-            ? { position: "fixed", inset: "0", left: "0", top: "0", right: "0", bottom: "0", width: "auto", transform: "none", animationName: "none", zIndex: 95, padding: "var(--space-4)", background: "color-mix(in srgb, var(--color-text) 46%, transparent)", display: "grid", placeItems: "start center", overflow: "auto" }
+            ? { position: "fixed", inset: "0", left: "0", top: "0", right: "0", bottom: "0", width: "auto", transform: "none", animationName: "none", zIndex: 95, padding: handyAnsicht ? "6px" : "var(--space-4)", background: "color-mix(in srgb, var(--color-text) 46%, transparent)", display: "grid", placeItems: "start center", overflow: "auto" }
             : { position: "absolute", left: (it.x + padL) + "px", top: top + "px", width: (isOpen ? openW : cardW) + "px", zIndex: isOpen ? 60 : Math.min(50, 10 + it.lane), transition: "width 380ms cubic-bezier(0.16, 1, 0.3, 1)" },
           eVars || {}),
         body: {
           /* Ohne das bleibt „filter: blur(0)“ der Auftritts-Animation
              stehen und der Körper wird zum Bezugsrahmen des Vollbildes —
              dann wandert es beim Scrollen mit. */
-          animationName: (isOpen && vollOffen) ? "none" : undefined,
-          filter: (isOpen && vollOffen) ? "none" : undefined,
-          width: (isOpen && vollOffen) ? "min(1100px, 100%)" : "auto",
+          animationName: vollHier ? "none" : undefined,
+          filter: vollHier ? "none" : undefined,
+          width: vollHier ? "min(1100px, 100%)" : "auto",
           /* Aufgeklappt bekommt die Überschrift die doppelte Größe. */
           "--t-title-eff": isOpen ? "calc(var(--t-title, 21px) * 2)" : "var(--t-title, 21px)",
           /* Auf dem Handy wächst das offene Ereignis auf volle Länge — man
              scrollt einfach mit dem Zeitstrahl nach unten, nichts wird abgeschnitten. */
-          maxHeight: (isOpen && vollOffen) ? "96vh" : (isOpen ? (handyAnsicht ? "none" : "min(86vh, " + Math.max(680, Math.round(laneH * 5.4)) + "px)") : (laneH - 12) + "px"), overflow: isOpen ? (handyAnsicht ? "visible" : "auto") : "hidden", overscrollBehavior: "contain", borderRadius: "var(--t-radius, 2px)", transition: "max-height 420ms cubic-bezier(0.16, 1, 0.3, 1)", animationName: "var(--t-anim, tl-glide)", animationDuration: "var(--t-anim-dur, 620ms)", animationTimingFunction: "var(--t-anim-ease, ease-out)", animationFillMode: "both", animationDelay: (60 + it.i * 55) + "ms" },
+          maxHeight: vollHier ? (handyAnsicht ? "none" : "96vh") : (isOpen ? (handyAnsicht ? "none" : "min(86vh, " + Math.max(680, Math.round(laneH * 5.4)) + "px)") : (laneH - 12) + "px"), overflow: isOpen ? (handyAnsicht ? "visible" : "auto") : "hidden", overscrollBehavior: "contain", borderRadius: "var(--t-radius, 2px)", transition: "max-height 420ms cubic-bezier(0.16, 1, 0.3, 1)", animationName: "var(--t-anim, tl-glide)", animationDuration: "var(--t-anim-dur, 620ms)", animationTimingFunction: "var(--t-anim-ease, ease-out)", animationFillMode: "both", animationDelay: (60 + it.i * 55) + "ms" },
         noteClip: { maxHeight: isOpen ? "none" : "51px", overflow: "hidden" },
         name: e.name, dateLabel: fmtDate(e.date), kicker: e.kicker || "", place: e.place || "", note: e.note || "",
         sign: isOpen ? "－" : "＋",
@@ -12252,6 +12279,24 @@ class Component extends DCLogic {
         };
       })(this),
       loseBand: loseGeladen,
+      _bedarf: (function (self) {
+        /* Welche Bilddateien jetzt gebraucht werden: die der gezeichneten
+           Ereignisse, der sichtbaren einzelnen Bilder, der Fotoshow und
+           des Bildeingangs. */
+        const k = [];
+        st.events.forEach((e) => { if (geladen[e.id]) (e.images || []).forEach((im) => { if (im.key && !im.src) k.push(im.key); }); });
+        loseGeladen.forEach((x) => { if (x._key) k.push(x._key); });
+        if (st.show && st.show.open) {
+          try {
+            const liste = self.showImages(st.show.scope, st.show.ref || "");
+            const i0 = st.show.idx || 0;
+            liste.slice(Math.max(0, i0 - 2), i0 + 6).forEach((x) => { if (x.imKey && !x.src) k.push(x.imKey); });
+          } catch (e) { /* egal */ }
+        }
+        if (st.eing && st.eing.open) (st.eingang || []).forEach((e) => (e.images || []).forEach((im) => { if (im.key && !im.src) k.push(im.key); }));
+        self.bildBedarf = k;
+        return k.length;
+      })(this),
       lz: this.loseZoomVals(),
       lbar: this.loseLeisteVals(),
       eing: this.eingangVals(),

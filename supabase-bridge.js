@@ -1,4 +1,4 @@
-/* Chronik ↔ Supabase*/
+/* Chronik ↔ Supabase */
 (function () {
   var CFG = window.CHRONIK_CONFIG || {};
   var SDK = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
@@ -625,24 +625,10 @@
         (sg.data || []).forEach(function (s) { if (s.path && s.signedUrl) urls[s.path] = s.signedUrl; });
       } catch (e) { /* Speicher nicht vorhanden: Bild bleibt leer */ }
     }
-    if (r2keys.length && R2) {
-      var gg = await guard("get");
-      if (gg.ok) {
-        var tk = await token();
-        for (var i = 0; i < r2keys.length; i++) {
-          var k = r2keys[i];
-          if (urlCache[k]) { urls[k] = urlCache[k]; continue; }
-          try {
-            var res = await fetch(R2 + "/img/" + encodeURIComponent(k), { headers: { Authorization: "Bearer " + tk } });
-            if (res.ok) {
-              var b = await res.blob();
-              urlCache[k] = URL.createObjectURL(b);
-              urls[k] = urlCache[k];
-            }
-          } catch (e) { /* Bild bleibt leer */ }
-        }
-      }
-    }
+    /* R2-Bilder werden NICHT mehr hier geholt — das dauerte bei vielen
+       Bildern sehr lange. Schon Geholtes kommt aus dem Zwischenspeicher,
+       den Rest fordert die Seite mit imageUrls() an, sobald er erscheint. */
+    r2keys.forEach(function (k) { if (urlCache[k]) urls[k] = urlCache[k]; });
 
     bump({ p_reads: 1 });
     return rows.map(function (r) { return rowToEvent(r, byKey, urls); });
@@ -874,6 +860,31 @@
       .subscribe();
   }
 
+  /* Mehrere Bilder holen, je sechs gleichzeitig. fertig(teil) wird nach
+     jedem Bündel aufgerufen, damit die Seite sie sofort zeigen kann. */
+  async function imageUrls(keys, fertig) {
+    var liste = (keys || []).filter(function (k, i, a) { return k && a.indexOf(k) === i; });
+    var alle = {};
+    var schon = {};
+    liste = liste.filter(function (k) { if (urlCache[k]) { schon[k] = urlCache[k]; alle[k] = urlCache[k]; return false; } return true; });
+    if (Object.keys(schon).length && fertig) fertig(schon);
+    if (!liste.length || !R2) return alle;
+    var gg = await guard("get");
+    if (!gg.ok) return alle;
+    var tk = await token();
+    for (var i = 0; i < liste.length; i += 6) {
+      var teil = {};
+      await Promise.all(liste.slice(i, i + 6).map(async function (k) {
+        try {
+          var res = await fetch(R2 + "/img/" + encodeURIComponent(k), { headers: { Authorization: "Bearer " + tk } });
+          if (res.ok) { urlCache[k] = URL.createObjectURL(await res.blob()); teil[k] = urlCache[k]; alle[k] = urlCache[k]; }
+        } catch (e) { /* Bild bleibt leer */ }
+      }));
+      if (fertig && Object.keys(teil).length) fertig(teil);
+    }
+    return alle;
+  }
+
   window.ChronikCloud = {
     enabled: enabled,
     configFault: configFault,
@@ -889,7 +900,7 @@
     groups: groups, saveGroup: saveGroup, removeGroup: removeGroup, leaveGroup: leaveGroup, saveLook: saveLook,
     saveNotify: saveNotify, notify: notify,
     friends: friends, askFriend: askFriend, answerFriend: answerFriend, unfriend: unfriend,
-    loadEvents: loadEvents, saveEvent: saveEvent, removeEvent: removeEvent,
+    loadEvents: loadEvents, imageUrls: imageUrls, saveEvent: saveEvent, removeEvent: removeEvent,
     addComment: addComment, removeComment: removeComment, reactComment: reactComment,
     deleteMe: deleteMe, sweepUnconfirmed: sweepUnconfirmed, deleteImages: deleteImages, setPolls: setPolls, moveComments: moveComments, uploadImage: uploadImage, imageUrl: imageUrl, storeCheck: storeCheck, onChange: onChange,
     snapshot: snapshot, budget: budget, guard: guard,
