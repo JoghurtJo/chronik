@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="lang/de.js?v=b64"></script>
-<script src="lang/en.js?v=b64"></script>
-<script src="lang/sprache.js?v=b64"></script>
-<script src="./support.js?v=b64"></script>
+<script src="lang/de.js?v=b66"></script>
+<script src="lang/en.js?v=b66"></script>
+<script src="lang/sprache.js?v=b66"></script>
+<script src="./support.js?v=b66"></script>
 </head>
 <body>
 <x-dc>
@@ -14,8 +14,7 @@
 <meta name="omelette-owns-print" content="1">
 <link rel="stylesheet" href="broadsheet.css">
 <script src="chronik-config.js"></script>
-<script src="supabase-bridge.js?v=b64"></script>
-<script src="_ds/broadsheet-2c390965-89c1-429e-af6f-993fdd49e5b3/_ds_bundle.js"></script>
+<script src="supabase-bridge.js?v=b66"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
 <style>
@@ -63,15 +62,6 @@
   }
 </style>
 </helmet>
-<sc-if value="{{ renderFehler }}" hint-placeholder-val="{{ false }}">
-  <div data-noprint="" style="position: fixed; left: 12px; right: 12px; top: 12px; z-index: 400; display: grid; gap: 8px; padding: 12px 14px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700); box-shadow: var(--shadow-lg);">
-    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
-      <strong style="font-weight: 600;">{{ L.fehler_gefunden }}</strong>
-      <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ fehlerZu }}">{{ L.schliessen }}</button>
-    </div>
-    <pre style="margin: 0; max-height: 40vh; overflow: auto; white-space: pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; line-height: 1.45; user-select: all;">{{ renderFehler }}</pre>
-  </div>
-</sc-if>
 
 
 <sc-if value="{{ booting }}" hint-placeholder-val="{{ false }}">
@@ -240,7 +230,7 @@
 </sc-if>
 
 <sc-if value="{{ unlocked }}" hint-placeholder-val="{{ false }}">
-<div data-noprint="" style="min-height: 100vh; max-width: 100vw; overflow-x: clip; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body);">
+<div data-noprint="" style="min-height: 100vh; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body);">
   <header style="{{ lay.headerPad }}">
     <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap;">
       <div style="min-width: 0;">
@@ -2973,7 +2963,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 64) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 66) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -3017,7 +3007,7 @@ if (typeof window.tx !== "function") {
   window.CHRONIK_T = window.CHRONIK_T || {};
   window.CHRONIK_LOCALE = window.CHRONIK_LOCALE || "de-DE";
   window.tx = function (k) { return window.CHRONIK_T[k] != null ? window.CHRONIK_T[k] : k; };
-  window.__chronikFehler = "Die Sprachdateien wurden nicht geladen. Auf GitHub muss es den Ordner lang/ mit de.js, en.js und sprache.js geben (Pfad lang/de.js) — neben index.html.";
+  window.__chronikFehlerText = "Die Sprachdateien wurden nicht geladen. Auf GitHub muss es den Ordner lang/ mit de.js, en.js und sprache.js geben (Pfad lang/de.js) — neben index.html.";
 }
 
 const DAY = 86400000;
@@ -3249,7 +3239,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 64 · 2026-09-28";
+const BAU_STAND = "Bau 66 · 2026-09-28";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -4317,15 +4307,6 @@ class Component extends DCLogic {
   }
 
   componentDidMount() {
-    this.fehlerHorcher = (ev) => {
-      const er = ev && (ev.error || ev.reason);
-      const text = String((er && (er.stack || er.message)) || (ev && ev.message) || "").slice(0, 900);
-      if (!text || /ResizeObserver|Script error/.test(text)) return;
-      window.__chronikFehler = BAU_STAND + " · " + text;
-      this.forceUpdate();
-    };
-    window.addEventListener("error", this.fehlerHorcher);
-    window.addEventListener("unhandledrejection", this.fehlerHorcher);
     window.addEventListener("message", this.kartenKlick);
     window.addEventListener("pointerdown", this.audioFreischalten, true);
     window.addEventListener("keydown", this.audioFreischalten, true);
@@ -7285,7 +7266,7 @@ class Component extends DCLogic {
       });
     });
     const groesst = minS + (stufen - 1) * schritt;
-    return { hoehe: bilder.length ? (rechts.length - 1) * zeileH + groesst + 40 : 0, bilder: bilder, breite: rechts.length ? Math.max.apply(null, rechts) : 0 };
+    return { hoehe: bilder.length ? (rechts.length - 1) * zeileH + groesst + 40 : 0, bilder: bilder, breite: rechts.filter((x) => isFinite(x)).length ? Math.max.apply(null, rechts.filter((x) => isFinite(x))) : 0 };
   }
 
   /* Großansicht eines losen Bildes: Kommentare, Start- und Endbild. */
@@ -8743,24 +8724,12 @@ class Component extends DCLogic {
 
   /* ---------- render values ---------- */
 
-  /* Scheitert der Aufbau, bleibt der letzte gute Stand stehen und oben
-     erscheint die Fehlermeldung — so lässt sich der Fehler melden, statt
-     vor einer leeren Seite zu stehen. */
   renderVals() {
-    try {
-      const v = this.renderWerte();
-      v.L = window.CHRONIK_T || {};
-      v.renderFehler = window.__chronikFehler || "";
-      v.fehlerZu = () => { window.__chronikFehler = ""; this.forceUpdate(); };
-      this._letzteWerte = v;
-      return v;
-    } catch (err) {
-      const text = String((err && (err.stack || err.message)) || err).slice(0, 900);
-      try { console.error("Chronik:", err); } catch (x) { /* egal */ }
-      const alt = this._letzteWerte || { L: window.CHRONIK_T || {}, locked: false, unlocked: false };
-      return Object.assign({}, alt, { renderFehler: BAU_STAND + " · " + text, fehlerZu: () => { window.__chronikFehler = ""; this.forceUpdate(); } });
-    }
+    const v = this.renderWerte();
+    v.L = window.CHRONIK_T || {};
+    return v;
   }
+
 
   renderWerte() {
     const self0 = this;
@@ -8799,7 +8768,7 @@ class Component extends DCLogic {
        berechnete Breite hinaus. Ohne diesen Zuschlag ist die Rollstrecke
        breiter als die Bahn — und am Ende bliebe ein kahler Streifen. */
     const tickRand = 60;
-    const trackW = Math.max(L.width + padL + tickRand, openIt ? openIt.x + padL + openW + 24 : 0, (loseBand.breite || 0) + 40);
+    const trackW = Math.max(L.width + padL + tickRand, openIt ? openIt.x + padL + openW + 24 : 0, (isFinite(loseBand.breite) ? loseBand.breite : 0) + 40);
 
     /* Stapel unter einem Datum: die ersten vier Kacheln stehen da, der
        Rest kommt erst auf Klick — der Schalter steht in einem eigenen
