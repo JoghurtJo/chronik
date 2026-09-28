@@ -13,8 +13,8 @@
 <helmet>
 <meta name="omelette-owns-print" content="1">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js?v=b75"></script>
-<script src="supabase-bridge.js?v=b75"></script>
+<script src="chronik-config.js?v=b76"></script>
+<script src="supabase-bridge.js?v=b76"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
 <style>
@@ -468,9 +468,6 @@
                 <img ref="{{ lbx.bildRef }}" alt="" loading="lazy" style="{{ lbx.bildStil }}">
                 <sc-if value="{{ lbx.hatKomm }}" hint-placeholder-val="{{ false }}">
                   <span style="{{ lbx.kommStil }}">{{ lbx.komm }}</span>
-                </sc-if>
-                <sc-if value="{{ lbx.hatMehr }}" hint-placeholder-val="{{ false }}">
-                  <span role="button" title="{{ lbx.mehrTitel }}" onClick="{{ lbx.mehrKlick }}" style="{{ lbx.mehrStil }}">{{ lbx.mehr }}</span>
                 </sc-if>
               </button>
             </sc-for>
@@ -2971,7 +2968,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 75) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 76) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -3295,7 +3292,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 75 · 2026-09-28";
+const BAU_STAND = "Bau 76 · 2026-09-28";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -7322,62 +7319,47 @@ class Component extends DCLogic {
        wie frei. Karten werden nie verdeckt; Bilder untereinander höchstens
        zu 40 %, damit jedes zu mindestens 60 % sichtbar bleibt. */
     const streuen = !nur && !!hind;
-    /* Gegen Häufungen: Bilder, deren Tage auf dem Bildschirm dichter als
-       eine Bildbreite beieinander liegen, bilden eine Gruppe. Gezeigt
-       werden nur wenige davon; ein Zähler „+n“ zoomt an die Stelle heran. */
-    const proGruppe = st.zoom >= 2.9 ? 8 : nur ? 4 : 3;
-    const abstand = nur ? 110 : 70;
-    const gruppen = [];
-    alle.slice().sort((a, b) => dp(a.tag) - dp(b.tag) || String(a.zeit).localeCompare(String(b.zeit))).forEach((b) => {
-      const t = dp(b.tag);
-      if (t < L.min - 20 * DAY || t > L.max + 20 * DAY) return;
-      const xg = xVon(t);
-      const g = gruppen[gruppen.length - 1];
-      if (g && xg - g.x0 < abstand) g.liste.push(b);
-      else gruppen.push({ x0: xg, liste: [b] });
-    });
-    const zeigen = [], mehrVon = {};
-    gruppen.forEach((g) => {
-      const n = g.liste.length;
-      const k = Math.min(n, proGruppe);
-      const wahl = [];
-      for (let i = 0; i < k; i++) wahl.push(g.liste[k === 1 ? 0 : Math.round(i * (n - 1) / (k - 1))]);
-      wahl.forEach((b) => zeigen.push(b));
-      if (n > k) {
-        const tA = dp(g.liste[0].tag), tZ = dp(g.liste[n - 1].tag);
-        mehrVon[wahl[wahl.length - 1].id] = { n: n - k, t: (tA + tZ) / 2 };
-      }
-    });
-    const setzt = [];
-    let unten = 0;
+    /* Alle Bilder, in Zeitfolge. Die Reihenfolge innerhalb eines Tages
+       bestimmt, wie weit unten ein Bild bevorzugt steht — das hängt nicht
+       vom Maßstab ab, darum springen die Bilder beim Zoomen nicht. */
+    const mehrVon = {};
+    const zeigen = alle.slice().sort((a, b) => dp(a.tag) - dp(b.tag) || String(a.zeit).localeCompare(String(b.zeit)) || String(a.id).localeCompare(String(b.id)));
+    const rangImTag = {}, zaehler = {};
+    zeigen.forEach((b) => { zaehler[b.tag] = zaehler[b.tag] || 0; rangImTag[b.id] = zaehler[b.tag]++; });
     const ueber = (ax, ay, aw, ah, bx, by, bw, bh) =>
       Math.max(0, Math.min(ax + aw, bx + bw) - Math.max(ax, bx)) * Math.max(0, Math.min(ay + ah, by + bh) - Math.max(ay, by));
-    const platz = (xTag, s) => {
+    const platz = (xTag, s, yPref) => {
       const rand = 6;
       const nah = hind.filter((o) => o.x < xTag + 3 * s && o.x + o.w > xTag - 2 * s);
-      const schiebe = [0, 0.5 * s, -0.5 * s, s];
-      for (let k = 0; k < 900; k++) {
-        const y = oben + k * 10;
+      const schiebe = [0, 0.35 * s, -0.35 * s, 0.7 * s, -0.7 * s];
+      const frei = (x, y) => {
+        if (x < 0 || y < oben) return null;
+        for (let i = 0; i < nah.length; i++) {
+          const o = nah[i];
+          if (ueber(x - rand, y - rand, s + 2 * rand, s + 2 * rand, o.x, o.y, o.w, o.h) > 0) return null;
+        }
+        const betr = [];
+        for (let i = 0; i < setzt.length; i++) {
+          const q = setzt[i];
+          if (Math.abs(q.x - x) > 240 || Math.abs(q.y - y) > 240) continue;
+          const v = ueber(x, y, s, s, q.x, q.y, q.s, q.s);
+          if (v > 0) {
+            if (q.cov + v > 0.25 * q.s * q.s) return null;
+            betr.push([q, v]);
+          }
+        }
+        return betr;
+      };
+      /* Vom Wunschplatz aus abwechselnd etwas tiefer und höher suchen,
+         bevorzugt nach unten — so bleibt jedes Bild nah an seinem Platz. */
+      const versuche = [];
+      for (let i = 0; i < 900; i++) { versuche.push(i * 6); if (i && i % 2 === 0 && i < 60) versuche.push(-i * 6); }
+      for (let k = 0; k < versuche.length; k++) {
+        const y = yPref + versuche[k];
         for (let d = 0; d < schiebe.length; d++) {
           const x = xTag + schiebe[d];
-          if (x < 0) continue;
-          let ok = true;
-          for (let i = 0; i < nah.length; i++) {
-            const o = nah[i];
-            if (ueber(x - rand, y - rand, s + 2 * rand, s + 2 * rand, o.x, o.y, o.w, o.h) > 0) { ok = false; break; }
-          }
-          if (!ok) continue;
-          const betr = [];
-          for (let i = 0; i < setzt.length; i++) {
-            const q = setzt[i];
-            if (Math.abs(q.x - x) > 240 || Math.abs(q.y - y) > 240) continue;
-            const v = ueber(x, y, s, s, q.x, q.y, q.s, q.s);
-            if (v > 0) {
-              if (q.cov + v > 0.4 * q.s * q.s) { ok = false; break; }
-              betr.push([q, v]);
-            }
-          }
-          if (!ok) continue;
+          const betr = frei(x, y);
+          if (!betr) continue;
           betr.forEach((p) => { p[0].cov += p[1]; });
           setzt.push({ x: x, y: y, s: s, cov: 0 });
           return { x: x, y: y };
@@ -7397,7 +7379,11 @@ class Component extends DCLogic {
       let yFest = null;
       let r = 0;
       if (streuen) {
-        const p = platz(xTag, s);
+        /* Wunschplatz: leicht seitlich versetzt, pro Bild des Tages eine
+           Stufe tiefer — die Bilder eines Tages stehen untereinander. */
+        const xW = xTag + ((((h >> 9) % 5) - 2) * 0.22 * s);
+        const yW = oben + rangImTag[b.id] * Math.round(s * 0.8) + ((h >> 5) % 4) * 7;
+        const p = platz(xW, s, yW);
         x = p.x; yFest = p.y;
         unten = Math.max(unten, p.y + s);
       } else {
@@ -7442,14 +7428,6 @@ class Component extends DCLogic {
         },
         bildStil: { width: "100%", height: "100%", objectFit: "cover", display: "block", borderRadius: "1px", background: "var(--color-neutral-200)", transform: b.im.rot ? "rotate(" + b.im.rot + "deg)" : "none" },
         hatKomm: nK > 0, komm: String(nK),
-        hatMehr: !!mehrVon[b.id], mehr: mehrVon[b.id] ? "+" + mehrVon[b.id].n : "",
-        mehrTitel: tx("lose_mehr_zoom"),
-        mehrKlick: (ev) => {
-          if (ev && ev.stopPropagation) ev.stopPropagation();
-          const m = mehrVon[b.id];
-          if (m) this.zoomAuf(Math.min(3, Math.max(this.state.zoom * 2, this.state.zoom + 0.5)), m.t);
-        },
-        mehrStil: { position: "absolute", left: "-8px", top: "-8px", minWidth: "26px", height: "26px", padding: "0 7px", boxSizing: "border-box", borderRadius: "99px", fontSize: "12px", lineHeight: "26px", textAlign: "center", background: "var(--t-accent, #0088b0)", color: "var(--color-bg)", boxShadow: "var(--shadow-sm)", cursor: "zoom-in" },
         kommStil: { position: "absolute", right: "6px", bottom: "6px", minWidth: "18px", height: "18px", padding: "0 5px", boxSizing: "border-box", borderRadius: "99px", fontSize: "10.5px", lineHeight: "18px", textAlign: "center", background: "var(--color-bg)", color: "var(--color-text)", boxShadow: "var(--shadow-sm)" }
       });
     });
