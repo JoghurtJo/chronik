@@ -2951,8 +2951,10 @@
   if (window.__chronikFehlerBox) return;
   window.__chronikFehlerBox = true;
   var gesehen = {};
+  /* Nur mit debug: true in chronik-config.js — sonst bleibt der Kasten weg. */
   var zeigen = function (text) {
     try {
+      if (!(window.CHRONIK_CONFIG && window.CHRONIK_CONFIG.debug === true)) return;
       text = String(text || "").slice(0, 1800);
       if (!text || gesehen[text]) return;
       gesehen[text] = true;
