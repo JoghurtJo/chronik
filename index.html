@@ -13,8 +13,8 @@
 <helmet>
 <meta name="omelette-owns-print" content="1">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js?v=b77"></script>
-<script src="supabase-bridge.js?v=b77"></script>
+<script src="chronik-config.js?v=b78"></script>
+<script src="supabase-bridge.js?v=b78"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
 <style>
@@ -2966,7 +2966,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 77) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 78) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -3290,7 +3290,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 77 · 2026-09-28";
+const BAU_STAND = "Bau 78 · 2026-09-28";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -7322,6 +7322,7 @@ class Component extends DCLogic {
        vom Maßstab ab, darum springen die Bilder beim Zoomen nicht. */
     const setzt = [];
     let unten = 0;
+    const feldUnten = streuen ? Math.max(oben + 420, (hind || []).filter((o) => o.h < 2000).reduce((m, o) => Math.max(m, o.y + o.h), 0)) : 0;
     const zeigen = alle.slice().sort((a, b) => dp(a.tag) - dp(b.tag) || String(a.zeit).localeCompare(String(b.zeit)) || String(a.id).localeCompare(String(b.id)));
     const rangImTag = {}, zaehler = {};
     zeigen.forEach((b) => { zaehler[b.tag] = zaehler[b.tag] || 0; rangImTag[b.id] = zaehler[b.tag]++; });
@@ -7352,7 +7353,8 @@ class Component extends DCLogic {
       /* Vom Wunschplatz aus abwechselnd etwas tiefer und höher suchen,
          bevorzugt nach unten — so bleibt jedes Bild nah an seinem Platz. */
       const versuche = [];
-      for (let i = 0; i < 900; i++) { versuche.push(i * 6); if (i && i % 2 === 0 && i < 60) versuche.push(-i * 6); }
+      /* Gleichmäßig nach oben und unten suchen — sonst sammelt sich alles unten. */
+      for (let i = 0; i < 900; i++) { versuche.push(i * 6); if (i) versuche.push(-i * 6); }
       for (let k = 0; k < versuche.length; k++) {
         const y = yPref + versuche[k];
         for (let d = 0; d < schiebe.length; d++) {
@@ -7381,7 +7383,11 @@ class Component extends DCLogic {
         /* Wunschplatz: leicht seitlich versetzt, pro Bild des Tages eine
            Stufe tiefer — die Bilder eines Tages stehen untereinander. */
         const xW = xTag + ((((h >> 9) % 5) - 2) * 0.22 * s);
-        const yW = oben + rangImTag[b.id] * Math.round(s * 0.8) + ((h >> 5) % 4) * 7;
+        /* Über die ganze Höhe der Kartenreihen verteilt: jedes Bild hat
+           eine feste Höhe (aus seiner Kennung), dazu eine Stufe je Bild
+           des Tages. Beides hängt nicht vom Zoom ab. */
+        const anteil = ((h >> 11) % 997) / 997;
+        const yW = Math.round(oben + anteil * Math.max(0, feldUnten - oben - s) + (rangImTag[b.id] % 4) * s * 0.35);
         const p = platz(xW, s, yW);
         x = p.x; yFest = p.y;
         unten = Math.max(unten, p.y + s);
@@ -7466,8 +7472,8 @@ class Component extends DCLogic {
       endeLabel: istEnde ? ("✓ " + tx("endbild")) : tx("als_endbild"),
       startKlasse: istStart ? "btn btn-primary" : "btn btn-secondary",
       endeKlasse: istEnde ? "btn btn-primary" : "btn btn-secondary",
-      alsStart: () => this.setState({ loseStart: istStart ? "" : b.id, loseEnde: istEnde ? "" : st.loseEnde }),
-      alsEnde: () => this.setState({ loseEnde: istEnde ? "" : b.id, loseStart: istStart ? "" : st.loseStart }),
+      alsStart: () => this.setState({ loseStart: istStart ? "" : b.id, loseEnde: istEnde ? "" : st.loseEnde, loseZoom: "" }),
+      alsEnde: () => this.setState({ loseEnde: istEnde ? "" : b.id, loseStart: istStart ? "" : st.loseStart, loseZoom: "" }),
       bereichHinweis: (!st.loseStart && !st.loseEnde)
         ? tx("waehle_ein_start_oder_endbild_dann")
         : (st.loseStart && st.loseEnde)
