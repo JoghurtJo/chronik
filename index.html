@@ -13,8 +13,8 @@
 <helmet>
 <meta name="omelette-owns-print" content="1">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js?v=b73"></script>
-<script src="supabase-bridge.js?v=b73"></script>
+<script src="chronik-config.js?v=b75"></script>
+<script src="supabase-bridge.js?v=b75"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
 <style>
@@ -468,6 +468,9 @@
                 <img ref="{{ lbx.bildRef }}" alt="" loading="lazy" style="{{ lbx.bildStil }}">
                 <sc-if value="{{ lbx.hatKomm }}" hint-placeholder-val="{{ false }}">
                   <span style="{{ lbx.kommStil }}">{{ lbx.komm }}</span>
+                </sc-if>
+                <sc-if value="{{ lbx.hatMehr }}" hint-placeholder-val="{{ false }}">
+                  <span role="button" title="{{ lbx.mehrTitel }}" onClick="{{ lbx.mehrKlick }}" style="{{ lbx.mehrStil }}">{{ lbx.mehr }}</span>
                 </sc-if>
               </button>
             </sc-for>
@@ -2968,7 +2971,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 73) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 75) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -3292,7 +3295,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 73 · 2026-09-28";
+const BAU_STAND = "Bau 75 · 2026-09-28";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -7197,10 +7200,10 @@ class Component extends DCLogic {
 
   /* Zoomen ohne Zeitsprung: das Datum in der Mitte der Ansicht bleibt
      nach dem Neuzeichnen in der Mitte stehen. */
-  zoomAuf(z) {
+  zoomAuf(z, tFest) {
     const box = this.stage, g = this.geoZeit;
-    let t = null;
-    if (box && g) {
+    let t = tFest == null ? null : tFest;
+    if (t == null && box && g) {
       const mx = box.scrollLeft + box.clientWidth / 2 - g.off;
       let lo = g.min - 800 * DAY, hi = g.max + 800 * DAY;
       for (let i = 0; i < 60; i++) { const m = (lo + hi) / 2; if (g.xVon(m) < mx) lo = m; else hi = m; }
@@ -7235,10 +7238,12 @@ class Component extends DCLogic {
   /* Eigene lose Bilder zwischen Start- und Endbild, in Zeitfolge. */
   loseBereich() {
     const st = this.state;
-    if (!st.loseStart) return [];
+    /* Start- und Endbild sind gleichwertig: man darf mit jedem anfangen. */
+    const s0 = st.loseStart || st.loseEnde, z0 = st.loseEnde || st.loseStart;
+    if (!s0) return [];
     const liste = this.loseBilder(true).filter((b) => b.zeit);
-    const a = liste.findIndex((b) => b.id === st.loseStart);
-    const z = st.loseEnde ? liste.findIndex((b) => b.id === st.loseEnde) : a;
+    const a = liste.findIndex((b) => b.id === s0);
+    const z = liste.findIndex((b) => b.id === z0);
     if (a < 0 || z < 0) return [];
     return liste.slice(Math.min(a, z), Math.max(a, z) + 1);
   }
@@ -7317,6 +7322,32 @@ class Component extends DCLogic {
        wie frei. Karten werden nie verdeckt; Bilder untereinander höchstens
        zu 40 %, damit jedes zu mindestens 60 % sichtbar bleibt. */
     const streuen = !nur && !!hind;
+    /* Gegen Häufungen: Bilder, deren Tage auf dem Bildschirm dichter als
+       eine Bildbreite beieinander liegen, bilden eine Gruppe. Gezeigt
+       werden nur wenige davon; ein Zähler „+n“ zoomt an die Stelle heran. */
+    const proGruppe = st.zoom >= 2.9 ? 8 : nur ? 4 : 3;
+    const abstand = nur ? 110 : 70;
+    const gruppen = [];
+    alle.slice().sort((a, b) => dp(a.tag) - dp(b.tag) || String(a.zeit).localeCompare(String(b.zeit))).forEach((b) => {
+      const t = dp(b.tag);
+      if (t < L.min - 20 * DAY || t > L.max + 20 * DAY) return;
+      const xg = xVon(t);
+      const g = gruppen[gruppen.length - 1];
+      if (g && xg - g.x0 < abstand) g.liste.push(b);
+      else gruppen.push({ x0: xg, liste: [b] });
+    });
+    const zeigen = [], mehrVon = {};
+    gruppen.forEach((g) => {
+      const n = g.liste.length;
+      const k = Math.min(n, proGruppe);
+      const wahl = [];
+      for (let i = 0; i < k; i++) wahl.push(g.liste[k === 1 ? 0 : Math.round(i * (n - 1) / (k - 1))]);
+      wahl.forEach((b) => zeigen.push(b));
+      if (n > k) {
+        const tA = dp(g.liste[0].tag), tZ = dp(g.liste[n - 1].tag);
+        mehrVon[wahl[wahl.length - 1].id] = { n: n - k, t: (tA + tZ) / 2 };
+      }
+    });
     const setzt = [];
     let unten = 0;
     const ueber = (ax, ay, aw, ah, bx, by, bw, bh) =>
@@ -7356,7 +7387,7 @@ class Component extends DCLogic {
       setzt.push({ x: xTag, y: y, s: s, cov: 0 });
       return { x: xTag, y: y };
     };
-    alle.forEach((b) => {
+    zeigen.forEach((b) => {
       const t = dp(b.tag);
       if (t < L.min - 20 * DAY || t > L.max + 20 * DAY) return;
       const h = Math.abs(hash32(b.id));
@@ -7411,6 +7442,14 @@ class Component extends DCLogic {
         },
         bildStil: { width: "100%", height: "100%", objectFit: "cover", display: "block", borderRadius: "1px", background: "var(--color-neutral-200)", transform: b.im.rot ? "rotate(" + b.im.rot + "deg)" : "none" },
         hatKomm: nK > 0, komm: String(nK),
+        hatMehr: !!mehrVon[b.id], mehr: mehrVon[b.id] ? "+" + mehrVon[b.id].n : "",
+        mehrTitel: tx("lose_mehr_zoom"),
+        mehrKlick: (ev) => {
+          if (ev && ev.stopPropagation) ev.stopPropagation();
+          const m = mehrVon[b.id];
+          if (m) this.zoomAuf(Math.min(3, Math.max(this.state.zoom * 2, this.state.zoom + 0.5)), m.t);
+        },
+        mehrStil: { position: "absolute", left: "-8px", top: "-8px", minWidth: "26px", height: "26px", padding: "0 7px", boxSizing: "border-box", borderRadius: "99px", fontSize: "12px", lineHeight: "26px", textAlign: "center", background: "var(--t-accent, #0088b0)", color: "var(--color-bg)", boxShadow: "var(--shadow-sm)", cursor: "zoom-in" },
         kommStil: { position: "absolute", right: "6px", bottom: "6px", minWidth: "18px", height: "18px", padding: "0 5px", boxSizing: "border-box", borderRadius: "99px", fontSize: "10.5px", lineHeight: "18px", textAlign: "center", background: "var(--color-bg)", color: "var(--color-text)", boxShadow: "var(--shadow-sm)" }
       });
     });
@@ -7450,15 +7489,13 @@ class Component extends DCLogic {
       endeLabel: istEnde ? ("✓ " + tx("endbild")) : tx("als_endbild"),
       startKlasse: istStart ? "btn btn-primary" : "btn btn-secondary",
       endeKlasse: istEnde ? "btn btn-primary" : "btn btn-secondary",
-      alsStart: () => this.setState({ loseStart: istStart ? "" : b.id, loseEnde: istStart ? "" : (st.loseEnde === b.id ? "" : st.loseEnde) }),
-      alsEnde: () => {
-        if (istEnde) { this.setState({ loseEnde: "" }); return; }
-        if (!st.loseStart) { this.setState({ loseStart: b.id }); return; }
-        this.setState({ loseEnde: b.id });
-      },
-      bereichHinweis: !st.loseStart
+      alsStart: () => this.setState({ loseStart: istStart ? "" : b.id, loseEnde: istEnde ? "" : st.loseEnde }),
+      alsEnde: () => this.setState({ loseEnde: istEnde ? "" : b.id, loseStart: istStart ? "" : st.loseStart }),
+      bereichHinweis: (!st.loseStart && !st.loseEnde)
         ? tx("waehle_ein_start_oder_endbild_dann")
-        : (st.loseEnde ? plural(bereich.length, tx("bild"), tx("bilder")) + (" " + tx("im_bereich")) : tx("startbild_gesetzt_jetzt_ein_bild_davor")),
+        : (st.loseStart && st.loseEnde)
+          ? plural(bereich.length, tx("bild"), tx("bilder")) + (" " + tx("im_bereich"))
+          : st.loseStart ? tx("startbild_gesetzt_jetzt_ein_bild_davor") : tx("endbild_gesetzt_jetzt_ein_bild_davor"),
       kommentare: (im.comments || []).filter((c) => !c.deleted).map((c, n) => ({ key: c.id || "c" + n, who: c.who || tx("jemand"), text: c.text || "" })),
       keineKommentare: !(im.comments || []).filter((c) => !c.deleted).length,
       kannKomm: kann,
@@ -7471,14 +7508,14 @@ class Component extends DCLogic {
 
   loseLeisteVals() {
     const st = this.state;
-    if (!st.loseStart) return { zeigen: false };
+    if (!st.loseStart && !st.loseEnde) return { zeigen: false };
     const bereich = this.loseBereich();
-    const fertig = !!st.loseEnde && bereich.length > 0;
+    const fertig = !!st.loseStart && !!st.loseEnde && bereich.length > 0;
     return {
       zeigen: true, fertig: fertig,
       text: fertig
         ? plural(bereich.length, tx("loses_bild_2"), tx("lose_bilder_2")) + (" " + tx("von") + " ") + fmtDate(bereich[0].tag) + (" " + tx("bis") + " ") + fmtDate(bereich[bereich.length - 1].tag)
-        : tx("startbild_gewaehlt_jetzt_ein_zweites_bild"),
+        : st.loseStart ? tx("startbild_gewaehlt_jetzt_ein_zweites_bild") : tx("endbild_gewaehlt_jetzt_ein_zweites_bild"),
       einfuegen: () => {
         const ids = bereich.map((b) => b.id);
         this.setState({ loseZoom: "" });
