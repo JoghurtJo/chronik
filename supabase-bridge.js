@@ -546,7 +546,8 @@
       themeFein: d.themeFein && typeof d.themeFein === "object" ? d.themeFein : {},
       vis: (row.vis === "selected" ? "people" : row.vis) || "private", who: row.who || [], gwho: row.gwho || [], perms: row.perms || {}, polls: row.polls || [], etappen: row.etappen || [], etLayout: row.et_layout === "split" ? "split" : "gesamt", share: row.share || "view",
       changedBy: row.changed_by || "",
-      lose: !!d.lose
+      lose: !!d.lose,
+      timetable: d.timetable && typeof d.timetable === "object" ? d.timetable : null
     };
   }
 
@@ -558,6 +559,7 @@
       data: {
         note: e.note || "", infos: e.infos || [], people: e.people || [], deco: e.deco || null,
         alben: e.alben || [],
+        timetable: e.timetable || null,
         themeId: e.themeId || "",
         themeSnap: e.themeSnap || null,
         themeFein: e.themeFein || {},
