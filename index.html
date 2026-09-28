@@ -13,8 +13,8 @@
 <helmet>
 <meta name="omelette-owns-print" content="1">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js"></script>
-<script src="supabase-bridge.js?v=b70"></script>
+<script src="chronik-config.js?v=b73"></script>
+<script src="supabase-bridge.js?v=b73"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
 <style>
@@ -2968,7 +2968,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 71) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 73) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -3292,7 +3292,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 71 · 2026-09-28";
+const BAU_STAND = "Bau 73 · 2026-09-28";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -7195,6 +7195,28 @@ class Component extends DCLogic {
     });
   }
 
+  /* Zoomen ohne Zeitsprung: das Datum in der Mitte der Ansicht bleibt
+     nach dem Neuzeichnen in der Mitte stehen. */
+  zoomAuf(z) {
+    const box = this.stage, g = this.geoZeit;
+    let t = null;
+    if (box && g) {
+      const mx = box.scrollLeft + box.clientWidth / 2 - g.off;
+      let lo = g.min - 800 * DAY, hi = g.max + 800 * DAY;
+      for (let i = 0; i < 60; i++) { const m = (lo + hi) / 2; if (g.xVon(m) < mx) lo = m; else hi = m; }
+      t = (lo + hi) / 2;
+    }
+    this.setState({ zoom: z }, () => {
+      if (t == null) return;
+      const setzen = () => {
+        const b = this.stage, n = this.geoZeit;
+        if (b && n) b.scrollLeft = Math.max(0, n.xVon(t) + n.off - b.clientWidth / 2);
+      };
+      setzen();
+      window.requestAnimationFrame(setzen);
+    });
+  }
+
   /* Datum → x auf der Spur, in beiden Maßstäben. */
   zeitX(L, pxPerDay) {
     const its = L.items;
@@ -7273,7 +7295,7 @@ class Component extends DCLogic {
      gedreht, in wechselnder Größe. Innerhalb einer Reihe überdeckt ein
      Bild das vorige höchstens zu 55 % (nur lose Bilder: 30 %); wird es
      enger, rückt es in die nächste Reihe oder ein Stück nach rechts. */
-  loseBandFuer(L, padL, axisY, pxPerDay) {
+  loseBandFuer(L, padL, axisY, pxPerDay, hind) {
     const leer = { hoehe: 0, bilder: [] };
     const modus = this.loseModus();
     if (modus === "striche" || !this.me() || !L.items.length) return leer;
@@ -7291,6 +7313,49 @@ class Component extends DCLogic {
     const oben = axisY + 46;
     const rechts = [], letzte = [];
     const bilder = [];
+    /* Zwischen den Ereignissen: jedes Bild an seinem Tag, so weit oben
+       wie frei. Karten werden nie verdeckt; Bilder untereinander höchstens
+       zu 40 %, damit jedes zu mindestens 60 % sichtbar bleibt. */
+    const streuen = !nur && !!hind;
+    const setzt = [];
+    let unten = 0;
+    const ueber = (ax, ay, aw, ah, bx, by, bw, bh) =>
+      Math.max(0, Math.min(ax + aw, bx + bw) - Math.max(ax, bx)) * Math.max(0, Math.min(ay + ah, by + bh) - Math.max(ay, by));
+    const platz = (xTag, s) => {
+      const rand = 6;
+      const nah = hind.filter((o) => o.x < xTag + 3 * s && o.x + o.w > xTag - 2 * s);
+      const schiebe = [0, 0.5 * s, -0.5 * s, s];
+      for (let k = 0; k < 900; k++) {
+        const y = oben + k * 10;
+        for (let d = 0; d < schiebe.length; d++) {
+          const x = xTag + schiebe[d];
+          if (x < 0) continue;
+          let ok = true;
+          for (let i = 0; i < nah.length; i++) {
+            const o = nah[i];
+            if (ueber(x - rand, y - rand, s + 2 * rand, s + 2 * rand, o.x, o.y, o.w, o.h) > 0) { ok = false; break; }
+          }
+          if (!ok) continue;
+          const betr = [];
+          for (let i = 0; i < setzt.length; i++) {
+            const q = setzt[i];
+            if (Math.abs(q.x - x) > 240 || Math.abs(q.y - y) > 240) continue;
+            const v = ueber(x, y, s, s, q.x, q.y, q.s, q.s);
+            if (v > 0) {
+              if (q.cov + v > 0.4 * q.s * q.s) { ok = false; break; }
+              betr.push([q, v]);
+            }
+          }
+          if (!ok) continue;
+          betr.forEach((p) => { p[0].cov += p[1]; });
+          setzt.push({ x: x, y: y, s: s, cov: 0 });
+          return { x: x, y: y };
+        }
+      }
+      const y = unten + 20;
+      setzt.push({ x: xTag, y: y, s: s, cov: 0 });
+      return { x: xTag, y: y };
+    };
     alle.forEach((b) => {
       const t = dp(b.tag);
       if (t < L.min - 20 * DAY || t > L.max + 20 * DAY) return;
@@ -7298,10 +7363,17 @@ class Component extends DCLogic {
       const s = minS + (h % stufen) * schritt;
       const xTag = Math.max(0, Math.min(L.width, xVon(t))) + padL + 14 - s / 2;
       let x = xTag;
+      let yFest = null;
+      let r = 0;
+      if (streuen) {
+        const p = platz(xTag, s);
+        x = p.x; yFest = p.y;
+        unten = Math.max(unten, p.y + s);
+      } else {
       /* Zuerst eine Reihe, in der nichts überdeckt wird; sonst eine neue
          Reihe darunter; erst wenn alle Reihen belegt sind, darf es sich
          überlappen — und notfalls ein Stück nach rechts rücken. */
-      let r = rechts.findIndex((re) => re + 6 <= x);
+      r = rechts.findIndex((re) => re + 6 <= x);
       if (r < 0 && rechts.length < maxR) { r = rechts.length; rechts.push(-1e9); letzte.push(s); }
       if (r < 0) {
         for (let k = 0; k < rechts.length; k++) {
@@ -7316,6 +7388,7 @@ class Component extends DCLogic {
       }
       rechts[r] = Math.max(rechts[r], x + s);
       letzte[r] = s;
+      }
       const dreh = nur ? ((h >> 7) % 11) - 5 : ((h >> 7) % 15) - 7;
       const versatz = (((h >> 4) % 3) - 1) * (nur ? 8 : 5);
       const istStart = st.loseStart === b.id, istEnde = st.loseEnde === b.id;
@@ -7329,10 +7402,10 @@ class Component extends DCLogic {
         title: (b.zeit ? b.zeit.replace("T", " ").slice(0, 16) : "") + (b.im.ort ? " · " + b.im.ort : "") + (nK ? " · " + plural(nK, tx("kommentar"), tx("kommentare")) : ""),
         klick: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.setState({ loseZoom: b.id }); },
         pos: {
-          position: "absolute", left: Math.round(x) + "px", top: (oben + r * zeileH + versatz) + "px",
+          position: "absolute", left: Math.round(x) + "px", top: (yFest != null ? yFest : oben + r * zeileH + versatz) + "px",
           width: s + "px", height: s + "px", padding: nur ? "5px" : "3px", boxSizing: "border-box",
           border: 0, cursor: "zoom-in", borderRadius: "2px", background: "var(--color-bg)",
-          boxShadow: "var(--shadow-md)", zIndex: 7 + r, transform: "rotate(" + dreh + "deg)",
+          boxShadow: "var(--shadow-md)", zIndex: yFest != null ? 55 : 7 + r, transform: "rotate(" + dreh + "deg)",
           outline: (istStart || istEnde) ? "3px solid var(--t-accent, #0088b0)" : (drin ? "2px solid color-mix(in srgb, var(--t-accent, #0088b0) 55%, transparent)" : "none"),
           outlineOffset: (istStart || istEnde || drin) ? "2px" : "0"
         },
@@ -7342,6 +7415,10 @@ class Component extends DCLogic {
       });
     });
     const groesst = minS + (stufen - 1) * schritt;
+    if (streuen) {
+      const br = setzt.reduce((m, q) => Math.max(m, q.x + q.s), 0);
+      return { hoehe: 0, unten: unten, bilder: bilder, breite: br };
+    }
     return { hoehe: bilder.length ? (rechts.length - 1) * zeileH + groesst + 40 : 0, bilder: bilder, breite: rechts.filter((x) => isFinite(x)).length ? Math.max.apply(null, rechts.filter((x) => isFinite(x))) : 0 };
   }
 
@@ -8831,7 +8908,24 @@ class Component extends DCLogic {
     let laneTop = 196;
     const L = this.layout(lEvs, { mode: st.mode, cardW: cardW, gap: gap, maxLanes: maxLanes, pxPerDay: pxPerDay });
     const padL = 74;
-    const loseBand = this.loseBandFuer(L, padL, axisY, pxPerDay);
+    /* Einzelne Bilder stehen zwischen den Ereignissen an ihrem Tag —
+       nie auf einer Karte oder einem Stapel-Schalter. */
+    const hind = nurLose ? null : (() => {
+      const offen0 = Object.assign({}, st.stapelOffen || {});
+      const oi = L.items.filter((it) => it.e.id === st.openId)[0];
+      if (oi) offen0[oi.stapel] = true;
+      const fb = (typeof window !== "undefined" && window.innerWidth) || 1280;
+      const oW = Math.min(Math.round(cardW * 2.9), Math.max(cardW, fb - 2 * padL));
+      const r = L.items.filter((it) => it.lane < STAPEL_SICHTBAR || !!offen0[it.stapel]).map((it) => {
+        const auf = it.e.id === st.openId;
+        return { x: it.x + padL, y: laneTop + it.lane * (laneH + gap), w: auf ? oW : cardW, h: auf ? 2400 : laneH };
+      });
+      (L.stapel || []).forEach((s) => {
+        if (s.tiefe > STAPEL_SICHTBAR && !offen0[s.id]) r.push({ x: s.x + padL, y: laneTop + STAPEL_SICHTBAR * (laneH + gap) - gap, w: s.bis - s.x, h: 90 });
+      });
+      return r;
+    })();
+    const loseBand = this.loseBandFuer(L, padL, axisY, pxPerDay, hind);
     laneTop += loseBand.hoehe;
     const showRuler = this.props.showRuler !== false;
     const canCreate = this.canCreate();
@@ -8841,6 +8935,7 @@ class Component extends DCLogic {
     const fensterB = (typeof window !== "undefined" && window.innerWidth) || 1280;
     const openW = Math.min(Math.round(cardW * 2.9), Math.max(cardW, fensterB - 2 * padL));
     this.geoItems = L.items.map((it) => ({ id: it.e.id, x: it.x + padL }));
+    this.geoZeit = { xVon: this.zeitX(L, pxPerDay), min: L.min, max: L.max, off: padL + 14 };
     this.geoOpenW = openW;
     /* Das aufgeklappte Fenster ist breiter als die Spur. Beim letzten
        Ereignis würde es rechts abgeschnitten — darum wächst die Bahn mit. */
@@ -9642,7 +9737,7 @@ class Component extends DCLogic {
 
     let tiefeSichtbar = 1;
     sichtbareItems.forEach((it) => { tiefeSichtbar = Math.max(tiefeSichtbar, it.lane + 1); });
-    const totalH = Math.max(laneTop + tiefeSichtbar * (laneH + gap) + 30, openBottom + 40);
+    const totalH = Math.max(laneTop + tiefeSichtbar * (laneH + gap) + 30, openBottom + 40, (loseBand.unten || 0) + 40);
     /* Maße merken: die freien Sticker liegen außerhalb dieser Rechnung
        und dürfen die Bahn nicht überragen — sonst steht Deko in einem
        kahlen Streifen hinter dem Ende des Zeitstrahls. */
@@ -11601,7 +11696,7 @@ class Component extends DCLogic {
       setProp: () => this.setState({ mode: "proportional" }),
       setEven: () => this.setState({ mode: "even" }),
       zoomWert: st.zoom, zoomLabel: Math.round(st.zoom * 100) + "%",
-      setZoom: (ev) => this.setState({ zoom: parseFloat(ev.target.value) }),
+      setZoom: (ev) => this.zoomAuf(parseFloat(ev.target.value)),
       playLabel: st.playing ? ("■ " + tx("stop")) : ("▶ " + tx("abspielen")),
       togglePlay: this.togglePlay,
       einstPlay: () => { this.setState({ konto: false }); this.togglePlay(); },
@@ -11940,8 +12035,8 @@ class Component extends DCLogic {
         key: o[0], label: o[1], on: this.loseModus() === o[0], pick: () => this.loseModusSetzen(o[0])
       })),
       zoomKnopf: {
-        plus: () => this.setState({ zoom: Math.min(3, Math.round(st.zoom * 125) / 100) }),
-        minus: () => this.setState({ zoom: Math.max(0.35, Math.round((st.zoom / 1.25) * 100) / 100) })
+        plus: () => this.zoomAuf(Math.min(3, Math.round(st.zoom * 125) / 100)),
+        minus: () => this.zoomAuf(Math.max(0.35, Math.round((st.zoom / 1.25) * 100) / 100))
       },
       nav: (function (self) {
         const fs = st.filters || {};
