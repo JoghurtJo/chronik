@@ -19,8 +19,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Chronik">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js?v=b82"></script>
-<script src="supabase-bridge.js?v=b82"></script>
+<script src="chronik-config.js?v=b83"></script>
+<script src="supabase-bridge.js?v=b83"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
 <style>
@@ -297,7 +297,7 @@
   </header>
 
   <sc-if value="{{ tt.offen }}" hint-placeholder-val="{{ false }}">
-    <div data-noprint="" onClick="{{ tt.zuRand }}" style="position: fixed; inset: 0; z-index: 140; background: rgba(32, 30, 29, 0.45); overflow-y: auto; padding: 8px; box-sizing: border-box;">
+    <div data-noprint="" onClick="{{ tt.zuRand }}" style="position: fixed; inset: 0; z-index: 400; background: rgba(32, 30, 29, 0.45); overflow-y: auto; padding: 8px; box-sizing: border-box;">
       <div style="max-width: 720px; margin: 0 auto; background: var(--color-bg); color: var(--color-text); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); padding: var(--space-4); display: grid; gap: var(--space-4); font-family: var(--font-body); box-sizing: border-box;">
         <div style="display: flex; align-items: flex-start; gap: 12px;">
           <div style="flex: 1; min-width: 0;">
@@ -310,9 +310,23 @@
           <p style="margin: 0; font-size: 15px; line-height: 1.5; text-wrap: pretty; color: var(--color-neutral-700);">{{ L.tt_hinweis }}</p>
         </sc-if>
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-          <label class="btn btn-primary" style="min-height: 44px; cursor: pointer;">{{ L.tt_scannen }}<input type="file" accept="image/*" multiple="" onChange="{{ tt.scan }}" style="display: none;"></label>
-          <button class="btn btn-secondary" style="min-height: 44px;" onClick="{{ tt.tagNeu }}">{{ L.tt_tag_neu }}</button>
+          <label class="btn btn-primary" style="min-height: 44px; cursor: pointer;">{{ L.tt_foto }}<input type="file" accept="image/*" capture="environment" onChange="{{ tt.scan }}" style="display: none;"></label>
+          <label class="btn btn-secondary" style="min-height: 44px; cursor: pointer;">{{ L.tt_galerie }}<input type="file" accept="image/*" multiple="" onChange="{{ tt.scan }}" style="display: none;"></label>
+          <button class="btn btn-ghost" style="min-height: 44px;" onClick="{{ tt.tagNeu }}">{{ L.tt_tag_neu }}</button>
         </div>
+        <sc-if value="{{ tt.hatFotos }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+            <sc-for list="{{ tt.fotos }}" as="f" hint-placeholder-count="0">
+              <div style="position: relative; width: 64px; height: 64px;">
+                <img src="{{ f.url }}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm); display: block;">
+                <button onClick="{{ f.weg }}" aria-label="{{ L.tt_foto_weg }}" style="position: absolute; top: -8px; right: -8px; width: 28px; height: 28px; padding: 0; border-radius: 999px; border: 0; background: var(--color-text); color: var(--color-bg); cursor: pointer; font: inherit; font-size: 13px;">✕</button>
+              </div>
+            </sc-for>
+            <sc-if value="{{ tt.kannPruefen }}" hint-placeholder-val="{{ false }}">
+              <button class="btn btn-secondary" onClick="{{ tt.pruefen }}" style="min-height: 44px;">{{ L.tt_schritt_pruefen }}</button>
+            </sc-if>
+          </div>
+        </sc-if>
         <sc-if value="{{ tt.busy }}" hint-placeholder-val="{{ false }}">
           <div style="display: grid; gap: 6px;">
             <div style="font-size: 14px; color: var(--color-neutral-700);">{{ tt.busyText }}</div>
@@ -322,70 +336,106 @@
         <sc-if value="{{ tt.hatErr }}" hint-placeholder-val="{{ false }}">
           <p style="margin: 0; font-size: 14px; line-height: 1.5; color: var(--color-accent-2-700);">{{ tt.err }}</p>
         </sc-if>
-        <sc-for list="{{ tt.tage }}" as="tg" hint-placeholder-count="0">
+        <sc-if value="{{ tt.hatInfo }}" hint-placeholder-val="{{ false }}">
+          <p style="margin: 0; font-size: 14px; line-height: 1.5; color: var(--color-accent-700);">{{ tt.info }}</p>
+        </sc-if>
+
+        <sc-if value="{{ tt.gefuehrt }}" hint-placeholder-val="{{ false }}">
           <div style="display: grid; gap: 10px;">
-            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-              <input class="input" value="{{ tg.label }}" onChange="{{ tg.setLabel }}" aria-label="{{ L.tt_tag }}" style="flex: 1 1 160px; min-width: 0; font-size: 18px; font-weight: 600;">
-              <input class="input" type="date" value="{{ tg.datum }}" onChange="{{ tg.setDatum }}" style="flex: 0 1 170px; min-width: 0; font-size: 16px;">
-              <button class="btn btn-ghost btn-icon" title="{{ L.tt_tag_weg }}" onClick="{{ tg.weg }}" style="width: 44px; height: 44px;">✕</button>
+            <div style="display: grid; gap: 4px;">
+              <strong style="font-size: 16px;">{{ tt.schrittNr }}</strong>
+              <span style="font-size: 14px; line-height: 1.5; color: var(--color-neutral-700); text-wrap: pretty;">{{ tt.schrittText }}</span>
             </div>
-            <sc-for list="{{ tg.acts }}" as="a" hint-placeholder-count="0">
-              <div style="display: grid; gap: 8px; padding: 10px; border-radius: var(--radius-md); background: var(--color-surface);">
-                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                  <button onClick="{{ a.sternKlick }}" title="{{ L.tt_markieren }}" style="{{ a.sternStil }}">{{ a.stern }}</button>
-                  <input class="input" type="time" value="{{ a.von }}" onChange="{{ a.setVon }}" aria-label="{{ L.tt_von }}" style="flex: 1 1 92px; min-width: 0; font-size: 16px;">
-                  <span>–</span>
-                  <input class="input" type="time" value="{{ a.bis }}" onChange="{{ a.setBis }}" aria-label="{{ L.tt_bis }}" style="flex: 1 1 92px; min-width: 0; font-size: 16px;">
-                  <button class="btn btn-ghost btn-icon" title="{{ L.tt_act_weg }}" onClick="{{ a.weg }}" style="width: 44px; height: 44px;">✕</button>
-                </div>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                  <input class="input" value="{{ a.name }}" placeholder="{{ L.tt_name }}" onChange="{{ a.setName }}" style="flex: 2 1 180px; min-width: 0; font-size: 16px;">
-                  <input class="input" value="{{ a.buehne }}" placeholder="{{ L.tt_buehne }}" onChange="{{ a.setBuehne }}" style="flex: 1 1 120px; min-width: 0; font-size: 16px;">
-                </div>
-                <button class="btn btn-ghost" onClick="{{ a.pickUm }}" style="justify-self: start; min-height: 40px;">{{ a.zuordnenText }}</button>
-                <sc-if value="{{ a.pickOffen }}" hint-placeholder-val="{{ false }}">
-                  <div style="display: grid; gap: 10px;">
-                    <sc-if value="{{ a.hatBilder }}" hint-placeholder-val="{{ false }}">
-                      <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.tt_bilder }}</div>
-                      <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                        <sc-for list="{{ a.bilder }}" as="b" hint-placeholder-count="0">
-                          <button onClick="{{ b.klick }}" style="{{ b.stil }}"><img src="{{ b.src }}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;"></button>
-                        </sc-for>
-                      </div>
-                    </sc-if>
-                    <sc-if value="{{ a.hatAlben }}" hint-placeholder-val="{{ false }}">
-                      <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.tt_alben }}</div>
-                      <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                        <sc-for list="{{ a.alben }}" as="al" hint-placeholder-count="0">
-                          <button onClick="{{ al.klick }}" style="{{ al.stil }}">{{ al.name }}</button>
-                        </sc-for>
-                      </div>
-                    </sc-if>
-                    <sc-if value="{{ a.hatPersonen }}" hint-placeholder-val="{{ false }}">
-                      <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.tt_personen }}</div>
-                      <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                        <sc-for list="{{ a.personen }}" as="pe" hint-placeholder-count="0">
-                          <button onClick="{{ pe.klick }}" style="{{ pe.stil }}">{{ pe.name }}</button>
-                        </sc-for>
-                      </div>
-                    </sc-if>
-                    <sc-if value="{{ a.nichts }}" hint-placeholder-val="{{ false }}">
-                      <p style="margin: 0; font-size: 14px; color: var(--color-neutral-700);">{{ L.tt_nichts_zuordnen }}</p>
-                    </sc-if>
-                  </div>
-                </sc-if>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+              <sc-if value="{{ tt.mehrFotos }}" hint-placeholder-val="{{ false }}">
+                <button class="btn btn-ghost btn-icon" onClick="{{ tt.fotoZurueck }}" style="width: 44px; height: 44px;">‹</button>
+                <span style="font-size: 14px;">{{ tt.fotoInfo }}</span>
+                <button class="btn btn-ghost btn-icon" onClick="{{ tt.fotoVor }}" style="width: 44px; height: 44px;">›</button>
+              </sc-if>
+              <button class="btn btn-ghost" onClick="{{ tt.grossUm }}" style="min-height: 44px; margin-left: auto;">{{ tt.grossText }}</button>
+            </div>
+            <div style="{{ tt.bildRahmen }}">
+              <div style="{{ tt.bildInnen }}">
+                <img src="{{ tt.fotoUrl }}" alt="" style="width: 100%; height: auto; display: block; user-select: none;">
+                <sc-for list="{{ tt.bloecke }}" as="b" hint-placeholder-count="0">
+                  <button onClick="{{ b.klick }}" title="{{ b.t }}" aria-label="{{ b.t }}" style="{{ b.stil }}"></button>
+                </sc-for>
               </div>
-            </sc-for>
-            <button class="btn btn-ghost" onClick="{{ tg.actNeu }}" style="justify-self: start; min-height: 44px;">{{ L.tt_act_neu }}</button>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="btn btn-ghost" onClick="{{ tt.schrittZurueck }}" style="min-height: 44px;">{{ tt.schrittZurueckText }}</button>
+              <button class="btn btn-secondary" onClick="{{ tt.schrittKeine }}" style="min-height: 44px; margin-left: auto;">{{ L.tt_keine }}</button>
+              <button class="btn btn-primary" onClick="{{ tt.schrittWeiter }}" style="min-height: 44px;">{{ tt.schrittWeiterText }}</button>
+            </div>
           </div>
-        </sc-for>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
-          <sc-if value="{{ tt.kannLoeschen }}" hint-placeholder-val="{{ false }}">
-            <button class="btn btn-ghost" onClick="{{ tt.loeschen }}" style="margin-right: auto; min-height: 44px; color: var(--color-accent-2-700);">{{ L.tt_loeschen }}</button>
-          </sc-if>
-          <button class="btn btn-secondary" onClick="{{ tt.zu }}" style="min-height: 44px;">{{ L.tt_abbrechen }}</button>
-          <button class="btn btn-primary" onClick="{{ tt.speichern }}" style="min-height: 44px;">{{ L.tt_speichern }}</button>
-        </div>
+        </sc-if>
+
+        <sc-if value="{{ tt.listeZeigen }}" hint-placeholder-val="{{ true }}">
+          <sc-for list="{{ tt.tage }}" as="tg" hint-placeholder-count="0">
+            <div style="display: grid; gap: 10px;">
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                <input class="input" value="{{ tg.label }}" onChange="{{ tg.setLabel }}" aria-label="{{ L.tt_tag }}" style="flex: 1 1 160px; min-width: 0; font-size: 18px; font-weight: 600;">
+                <input class="input" type="date" value="{{ tg.datum }}" onChange="{{ tg.setDatum }}" style="flex: 0 1 170px; min-width: 0; font-size: 16px;">
+                <button class="btn btn-ghost btn-icon" title="{{ L.tt_tag_weg }}" onClick="{{ tg.weg }}" style="width: 44px; height: 44px;">✕</button>
+              </div>
+              <sc-for list="{{ tg.acts }}" as="a" hint-placeholder-count="0">
+                <div style="display: grid; gap: 8px; padding: 10px; border-radius: var(--radius-md); background: var(--color-surface);">
+                  <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    <button onClick="{{ a.sternKlick }}" title="{{ L.tt_markieren }}" style="{{ a.sternStil }}">{{ a.stern }}</button>
+                    <input class="input" type="time" value="{{ a.von }}" onChange="{{ a.setVon }}" aria-label="{{ L.tt_von }}" style="flex: 1 1 92px; min-width: 0; font-size: 16px;">
+                    <span>–</span>
+                    <input class="input" type="time" value="{{ a.bis }}" onChange="{{ a.setBis }}" aria-label="{{ L.tt_bis }}" style="flex: 1 1 92px; min-width: 0; font-size: 16px;">
+                    <button class="btn btn-ghost btn-icon" title="{{ L.tt_act_weg }}" onClick="{{ a.weg }}" style="width: 44px; height: 44px;">✕</button>
+                  </div>
+                  <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <input class="input" value="{{ a.name }}" placeholder="{{ L.tt_name }}" onChange="{{ a.setName }}" style="flex: 2 1 180px; min-width: 0; font-size: 16px;">
+                    <input class="input" value="{{ a.buehne }}" placeholder="{{ L.tt_buehne }}" onChange="{{ a.setBuehne }}" style="flex: 1 1 120px; min-width: 0; font-size: 16px;">
+                  </div>
+                  <button class="btn btn-ghost" onClick="{{ a.pickUm }}" style="justify-self: start; min-height: 40px;">{{ a.zuordnenText }}</button>
+                  <sc-if value="{{ a.pickOffen }}" hint-placeholder-val="{{ false }}">
+                    <div style="display: grid; gap: 10px;">
+                      <sc-if value="{{ a.hatBilder }}" hint-placeholder-val="{{ false }}">
+                        <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.tt_bilder }}</div>
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                          <sc-for list="{{ a.bilder }}" as="b" hint-placeholder-count="0">
+                            <button onClick="{{ b.klick }}" style="{{ b.stil }}"><img src="{{ b.src }}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;"></button>
+                          </sc-for>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ a.hatAlben }}" hint-placeholder-val="{{ false }}">
+                        <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.tt_alben }}</div>
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                          <sc-for list="{{ a.alben }}" as="al" hint-placeholder-count="0">
+                            <button onClick="{{ al.klick }}" style="{{ al.stil }}">{{ al.name }}</button>
+                          </sc-for>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ a.hatPersonen }}" hint-placeholder-val="{{ false }}">
+                        <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.tt_personen }}</div>
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                          <sc-for list="{{ a.personen }}" as="pe" hint-placeholder-count="0">
+                            <button onClick="{{ pe.klick }}" style="{{ pe.stil }}">{{ pe.name }}</button>
+                          </sc-for>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ a.nichts }}" hint-placeholder-val="{{ false }}">
+                        <p style="margin: 0; font-size: 14px; color: var(--color-neutral-700);">{{ L.tt_nichts_zuordnen }}</p>
+                      </sc-if>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-for>
+              <button class="btn btn-ghost" onClick="{{ tg.actNeu }}" style="justify-self: start; min-height: 44px;">{{ L.tt_act_neu }}</button>
+            </div>
+          </sc-for>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
+            <sc-if value="{{ tt.kannLoeschen }}" hint-placeholder-val="{{ false }}">
+              <button class="btn btn-ghost" onClick="{{ tt.loeschen }}" style="margin-right: auto; min-height: 44px; color: var(--color-accent-2-700);">{{ L.tt_loeschen }}</button>
+            </sc-if>
+            <button class="btn btn-secondary" onClick="{{ tt.zu }}" style="min-height: 44px;">{{ L.tt_abbrechen }}</button>
+            <button class="btn btn-primary" onClick="{{ tt.speichern }}" style="min-height: 44px;">{{ L.tt_uebernehmen_speichern }}</button>
+          </div>
+        </sc-if>
       </div>
     </div>
   </sc-if>
@@ -773,9 +823,6 @@
                           <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                             <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t-accent, #0088b0);">{{ L.tt_titel }}</span>
                             <span style="flex: 1;"></span>
-                            <sc-if value="{{ c.ttDarf }}" hint-placeholder-val="{{ false }}">
-                              <button onClick="{{ c.ttOeffnen }}" style="cursor: pointer; font: inherit; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; min-height: 36px; padding: 6px 12px; border: 1px solid var(--t-border, rgba(32, 30, 29, 0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: var(--t-ink, #201e1d);" style-hover="background: color-mix(in srgb, var(--t-accent, #0088b0) 12%, transparent);">{{ c.ttKnopf }}</button>
-                            </sc-if>
                           </div>
                           <sc-for list="{{ c.ttTage }}" as="tg" hint-placeholder-count="0">
                             <div style="display: grid; gap: 2px;">
@@ -1775,6 +1822,13 @@
             </sc-if>
           </div>
         </sc-if>
+
+        <button data-sec="timetable" onClick="{{ ttFormOeffnen }}" style="{{ form.sec.head }}">
+          <span style="font-size: 15px; opacity: 0.6;">▦</span>
+          <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">{{ ttFormKnopf }}</span>
+          <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
+          <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">{{ ttFormBadge }}</span>
+        </button>
 
         <button data-sec="polls" onClick="{{ form.sec.polls.toggle }}" style="{{ form.sec.head }}">
           <span style="{{ form.sec.polls.sign }}">▸</span>
@@ -3099,7 +3153,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 82) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 83) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -3423,7 +3477,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 82 · 2026-09-28";
+const BAU_STAND = "Bau 83 · 2026-09-29";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -4597,7 +4651,7 @@ class Component extends DCLogic {
     return acts.slice().sort((a, b) => m(a.von) - m(b.von));
   }
 
-  ttKarte(e, darf) {
+  ttKarte(e) {
     const t = e.timetable;
     const hat = !!(t && (t.acts || []).length);
     const tage = hat ? (t.tage || []).map((tg) => ({
@@ -4615,23 +4669,32 @@ class Component extends DCLogic {
         };
       })
     })).filter((tg) => tg.acts.length) : [];
-    return {
-      ttZeigen: !e.lose && (hat || darf), ttDarf: darf,
-      ttKnopf: hat ? tx("tt_bearbeiten") : tx("tt_anlegen"),
-      ttOeffnen: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.ttOeffnen(e.id); },
-      ttTage: tage
-    };
+    return { ttZeigen: !e.lose && hat, ttDarf: false, ttKnopf: "", ttOeffnen: () => {}, ttTage: tage };
   }
 
-  ttOeffnen(evId) {
-    const e = (this.state.events || []).filter((x) => x.id === evId)[0];
+  /* Der Timetable wird im Editor gepflegt (Entwurf) — die Quelle ist
+     also meist der Entwurf, sonst das gespeicherte Ereignis. */
+  ttQuelle(s) {
+    if (s && s.draft) return this.state.draft || {};
+    return (this.state.events || []).filter((x) => x.id === (s && s.evId))[0] || {};
+  }
+
+  ttOeffnen(evId, ausDraft) {
+    const e = ausDraft ? this.state.draft : (this.state.events || []).filter((x) => x.id === evId)[0];
     if (!e) return;
     const t = e.timetable || {};
     this.setState({ tt: {
-      evId: evId, busy: "", pct: 0, err: "", pick: "",
+      evId: evId, draft: !!ausDraft, busy: "", pct: 0, err: "", info: "", pick: "",
+      fotos: [], schritt: -1, fotoIdx: 0, gross: false,
       tage: (t.tage || []).map((x) => Object.assign({}, x)),
-      acts: (t.acts || []).map((x) => Object.assign({}, x, { bilder: (x.bilder || []).slice(), alben: (x.alben || []).slice(), personen: (x.personen || []).slice() }))
+      acts: (t.acts || []).map((x) => Object.assign({}, x, { scan: false, bilder: (x.bilder || []).slice(), alben: (x.alben || []).slice(), personen: (x.personen || []).slice() }))
     } });
+  }
+
+  ttZu() {
+    const s = this.state.tt;
+    if (s) (s.fotos || []).forEach((f) => { try { URL.revokeObjectURL(f.url); } catch (e) { /* egal */ } });
+    this.setState({ tt: null });
   }
 
   ttSet(patch) {
@@ -4652,121 +4715,272 @@ class Component extends DCLogic {
     return this._ocrP;
   }
 
-  async ttVerkleinern(f) {
+  /* Foto für die Texterkennung: passende Größe, Graustufen, Kontrast
+     gestreckt — das hebt blasse oder schräg beleuchtete Plakate an. */
+  async ttVorbereiten(f) {
+    const bm = await createImageBitmap(f);
+    const lang = Math.max(bm.width, bm.height);
+    const k = lang > 2400 ? 2400 / lang : (lang < 1400 ? 1400 / lang : 1);
+    const c = document.createElement("canvas");
+    c.width = Math.round(bm.width * k); c.height = Math.round(bm.height * k);
+    const g = c.getContext("2d");
+    g.drawImage(bm, 0, 0, c.width, c.height);
     try {
-      const bm = await createImageBitmap(f);
-      const k = Math.min(1, 2400 / Math.max(bm.width, bm.height));
-      if (k >= 1) return f;
-      const c = document.createElement("canvas");
-      c.width = Math.round(bm.width * k); c.height = Math.round(bm.height * k);
-      c.getContext("2d").drawImage(bm, 0, 0, c.width, c.height);
-      return c;
-    } catch (e) { return f; }
+      const d = g.getImageData(0, 0, c.width, c.height), p = d.data;
+      const hist = new Array(256).fill(0);
+      for (let i = 0; i < p.length; i += 4) { const v = (p[i] * 0.299 + p[i + 1] * 0.587 + p[i + 2] * 0.114) | 0; p[i] = v; hist[v]++; }
+      const tot = p.length / 4;
+      let n = 0, lo = 0, hi = 255;
+      for (lo = 0; lo < 254; lo++) { n += hist[lo]; if (n > tot * 0.02) break; }
+      n = 0;
+      for (hi = 255; hi > lo + 1; hi--) { n += hist[hi]; if (n > tot * 0.02) break; }
+      const sp = Math.max(1, hi - lo);
+      for (let i = 0; i < p.length; i += 4) { const v = Math.max(0, Math.min(255, ((p[i] - lo) * 255) / sp)); p[i] = p[i + 1] = p[i + 2] = v; }
+      g.putImageData(d, 0, 0);
+    } catch (e) { /* ohne Kontrast weiter */ }
+    return { c: c, w: c.width, h: c.height };
+  }
+
+  ttWT() {
+    return { mo: 1, montag: 1, mon: 1, monday: 1, di: 2, dienstag: 2, tue: 2, tues: 2, tuesday: 2, mi: 3, mittwoch: 3, wed: 3, wednesday: 3,
+      do: 4, donnerstag: 4, thu: 4, thur: 4, thurs: 4, thursday: 4, fr: 5, freitag: 5, fri: 5, friday: 5,
+      sa: 6, samstag: 6, sonnabend: 6, sat: 6, saturday: 6, so: 0, sonntag: 0, sun: 0, sunday: 0 };
+  }
+
+  /* Uhrzeiten finden — auch mit typischen Lesefehlern (O statt 0, l statt 1). */
+  ttZeiten(t) {
+    const roh = String(t || "");
+    const s = roh.replace(/[oO](?=\d)|(?<=\d)[oO]/g, "0").replace(/[lI|](?=\d)|(?<=\d)[lI|]/g, "1");
+    const out = [];
+    const re = /(\d{1,2})\s?[:.hH]\s?(\d{2})(?!\d)|(\d{1,2})\s?[Uu]hr/g;
+    let m;
+    while ((m = re.exec(s))) {
+      const hh = +(m[1] || m[3]), mm = m[2] ? +m[2] : 0;
+      if (hh < 24 && mm < 60) out.push({ z: String(hh).padStart(2, "0") + ":" + String(mm).padStart(2, "0"), i: m.index, n: m[0].length });
+    }
+    return out;
+  }
+
+  ttName(t, zeiten) {
+    let s = String(t || "");
+    zeiten.slice().sort((a, b) => b.i - a.i).forEach((z) => { s = s.slice(0, z.i) + " ".repeat(z.n) + s.slice(z.i + z.n); });
+    return s.replace(/\b(uhr|bis|to|ab|from)\b/gi, " ").replace(/[–—-]+/g, " ").replace(/^[\s:,.;/]+|[\s:,.;/]+$/g, "").replace(/\s+/g, " ").trim();
+  }
+
+  ttDatumAus(label, basisDatum) {
+    const basis = basisDatum ? new Date(basisDatum + "T12:00:00") : null;
+    const iso = (d) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+    const dm = String(label).match(/\b(\d{1,2})\.\s?(\d{1,2})\.(\s?(\d{4}|\d{2}))?/);
+    if (dm) {
+      const j = dm[4] ? (+dm[4] < 100 ? 2000 + +dm[4] : +dm[4]) : (basis ? basis.getFullYear() : new Date().getFullYear());
+      const d = new Date(j, +dm[2] - 1, +dm[1], 12);
+      if (!isNaN(d)) return iso(d);
+    }
+    const w = this.ttWT()[(String(label).toLowerCase().match(/[a-zäöüß]+/) || [""])[0]];
+    if (w !== undefined && basis) {
+      for (let k = 0; k < 14; k++) { const d = new Date(basis.getTime() + k * 864e5); if (d.getDay() === w) return iso(d); }
+    }
+    return "";
+  }
+
+  /* Wörter mit Position → Textblöcke: gleiche Zeile und kleiner Abstand
+     gehören zusammen, große Lücken trennen Spalten (Bühnen). */
+  ttBloecke(words) {
+    const w = (words || []).filter((x) => x && x.text && x.text.trim() && x.bbox && (x.confidence == null || x.confidence > 20))
+      .map((x) => ({ t: x.text.trim(), x0: x.bbox.x0, y0: x.bbox.y0, x1: x.bbox.x1, y1: x.bbox.y1 }));
+    w.sort((a, b) => (a.y0 + a.y1) - (b.y0 + b.y1));
+    const reihen = [];
+    w.forEach((x) => {
+      const h = x.y1 - x.y0, cy = (x.y0 + x.y1) / 2;
+      const r = reihen.filter((q) => Math.abs(q.cy - cy) < Math.max(h, q.h) * 0.5)[0];
+      if (r) { r.w.push(x); r.cy = (r.cy * (r.w.length - 1) + cy) / r.w.length; r.h = Math.max(r.h, h); }
+      else reihen.push({ cy: cy, h: h, w: [x] });
+    });
+    const bl = [];
+    reihen.forEach((r) => {
+      r.w.sort((a, b) => a.x0 - b.x0);
+      let cur = null;
+      r.w.forEach((x) => {
+        if (cur && x.x0 - cur.x1 < r.h * 0.9) {
+          cur.t += " " + x.t; cur.x1 = Math.max(cur.x1, x.x1); cur.y0 = Math.min(cur.y0, x.y0); cur.y1 = Math.max(cur.y1, x.y1);
+        } else { cur = { t: x.t, x0: x.x0, y0: x.y0, x1: x.x1, y1: x.y1 }; bl.push(cur); }
+      });
+    });
+    const WT = this.ttWT();
+    const alle = bl.map((b, i) => {
+      const zeiten = this.ttZeiten(b.t);
+      const name = this.ttName(b.t, zeiten);
+      const buchst = (name.match(/[a-zäöüß]/gi) || []).length;
+      return Object.assign(b, { id: "b" + i, zeiten: zeiten, name: name, nurZeit: zeiten.length > 0 && buchst < 2, buchst: buchst });
+    }).filter((b) => b.buchst > 0 || b.zeiten.length);
+    const zeitBl = alle.filter((b) => b.nurZeit);
+    alle.forEach((b) => {
+      b.rolle = "";
+      if (!b.zeiten.length) {
+        const erstes = (b.t.toLowerCase().match(/[a-zäöüß]+/) || [""])[0];
+        const istWT = WT[erstes] !== undefined && (erstes.length > 2 || b.t.length <= 16);
+        const dm = /\b\d{1,2}\.\s?\d{1,2}\.(\s?\d{2,4})?/.test(b.t);
+        if ((istWT || dm) && b.t.length < 32) { b.rolle = "tag"; return; }
+        if (b.t.length < 40 && /(stage|bühne|buehne|zelt|tent|floor|arena|halle|hall|area|club|garden|garten|dome|forest|wald)/i.test(b.t)) { b.rolle = "buehne"; return; }
+      }
+      if (b.nurZeit || b.buchst < 2) return;
+      if (b.zeiten.length || this.ttZeitNahe(b, zeitBl)) b.rolle = "act";
+    });
+    return alle;
+  }
+
+  /* Die Uhrzeit zu einem Act: in derselben Zeile (links bevorzugt), sonst
+     direkt darüber oder darunter in derselben Spalte. */
+  ttZeitNahe(a, zeitBl) {
+    const h = Math.max(1, a.y1 - a.y0);
+    const andere = zeitBl.filter((c) => c.id !== a.id);
+    const vo = (c) => Math.min(a.y1, c.y1) - Math.max(a.y0, c.y0);
+    const ho = (c) => Math.min(a.x1, c.x1) - Math.max(a.x0, c.x0);
+    const reihe = andere.filter((c) => vo(c) > Math.min(h, c.y1 - c.y0) * 0.4);
+    const dx = (c) => (c.x1 <= a.x0 ? a.x0 - c.x1 : Math.max(0, c.x0 - a.x1) * 1.4);
+    if (reihe.length) return reihe.sort((p, q) => dx(p) - dx(q))[0];
+    const dy = (c) => (c.y1 <= a.y0 + h * 0.3 ? a.y0 - c.y1 : (c.y0 - a.y1) * 1.5);
+    const spalte = andere.filter((c) => ho(c) > 0 && ((c.y1 <= a.y0 + h * 0.3 && a.y0 - c.y1 < h * 3) || (c.y0 >= a.y1 - h * 0.3 && c.y0 - a.y1 < h * 1.6)));
+    if (spalte.length) return spalte.sort((p, q) => dy(p) - dy(q))[0];
+    return null;
+  }
+
+  /* Tag bzw. Bühne zu einem Act: der nächste darüber, der sich mit ihm
+     überschneidet (Spalten); bei Bühnen auch links in derselben Höhe. */
+  ttUeber(a, liste, links) {
+    if (!liste.length) return null;
+    const h = Math.max(1, a.y1 - a.y0);
+    const ho = (c) => Math.min(a.x1, c.x1) - Math.max(a.x0, c.x0);
+    const oben = liste.filter((c) => c.y1 <= a.y0 + h * 0.5);
+    const mitX = oben.filter((c) => ho(c) > 0);
+    if (mitX.length) return mitX.sort((p, q) => (a.y0 - p.y1) - (a.y0 - q.y1))[0];
+    if (links) {
+      const cy = (a.y0 + a.y1) / 2;
+      const l = liste.filter((c) => c.x1 <= a.x0 + 4 && Math.abs((c.y0 + c.y1) / 2 - cy) < h * 3);
+      if (l.length) return l.sort((p, q) => Math.abs((p.y0 + p.y1) / 2 - cy) - Math.abs((q.y0 + q.y1) / 2 - cy))[0];
+    }
+    if (oben.length) return oben.sort((p, q) => ((a.y0 - p.y1) + Math.abs(p.x0 - a.x0)) - ((a.y0 - q.y1) + Math.abs(q.x0 - a.x0)))[0];
+    return null;
+  }
+
+  ttBauen(fotos, basisDatum, basisLabel) {
+    const tage = [], acts = [];
+    let carry = null;
+    const tagVon = (label) => {
+      const k = String(label).toLowerCase().replace(/\s+/g, " ").trim();
+      let t = tage.filter((x) => x._k === k)[0];
+      if (!t) { t = { id: this.ttNid(), label: String(label).slice(0, 40), datum: this.ttDatumAus(label, basisDatum) || (label === basisLabel ? (basisDatum || "") : ""), _k: k }; tage.push(t); }
+      return t;
+    };
+    (fotos || []).forEach((f) => {
+      const bl = f.bloecke || [];
+      const days = bl.filter((b) => b.rolle === "tag"), stages = bl.filter((b) => b.rolle === "buehne"), zeitBl = bl.filter((b) => b.nurZeit);
+      bl.filter((b) => b.rolle === "act").sort((p, q) => p.y0 - q.y0 || p.x0 - q.x0).forEach((a) => {
+        const nah = a.zeiten.length ? null : this.ttZeitNahe(a, zeitBl);
+        const z = a.zeiten.length ? a.zeiten : (nah ? nah.zeiten : []);
+        const d = this.ttUeber(a, days, false);
+        const st = this.ttUeber(a, stages, true);
+        const tag = d ? tagVon(d.t) : (carry || tagVon(basisLabel));
+        acts.push({ id: this.ttNid(), tag: tag.id, von: z[0] ? z[0].z : "", bis: z[1] ? z[1].z : "", name: String(a.name || a.t).slice(0, 80),
+          buehne: st ? String(st.t).slice(0, 40) : "", mark: false, bilder: [], alben: [], personen: [], scan: true });
+      });
+      if (days.length) carry = tagVon(days.slice().sort((p, q) => q.y0 - p.y0 || q.x0 - p.x0)[0].t);
+    });
+    /* Fehlt das Ende, gilt der Beginn des nächsten Acts derselben Bühne. */
+    tage.forEach((tg) => {
+      const gruppen = {};
+      acts.filter((a) => a.tag === tg.id).forEach((a) => { (gruppen[a.buehne] = gruppen[a.buehne] || []).push(a); });
+      Object.keys(gruppen).forEach((k) => {
+        const l = this.ttSortiert(gruppen[k]);
+        l.forEach((a, i) => { if (!a.bis && a.von && l[i + 1] && l[i + 1].von && l[i + 1].von !== a.von) a.bis = l[i + 1].von; });
+      });
+    });
+    return { tage: tage.map((t) => ({ id: t.id, label: t.label, datum: t.datum })).filter((t) => acts.some((a) => a.tag === t.id)), acts: acts };
+  }
+
+  ttAnwenden() {
+    const s = this.state.tt;
+    if (!s) return;
+    const e = this.ttQuelle(s);
+    const r = this.ttBauen(s.fotos, e.date || "", tx("tt_leer_tag"));
+    const hatBloecke = (s.fotos || []).some((f) => (f.bloecke || []).length);
+    this.ttSet((t) => {
+      const bleiben = t.acts.filter((a) => !a.scan);
+      const tage = t.tage.filter((tg) => bleiben.some((a) => a.tag === tg.id));
+      const map = {};
+      r.tage.forEach((tg) => {
+        const g = tage.filter((x) => (tg.datum && x.datum === tg.datum) || String(x.label).toLowerCase() === String(tg.label).toLowerCase())[0];
+        if (g) map[tg.id] = g.id; else { tage.push(tg); map[tg.id] = tg.id; }
+      });
+      return {
+        tage: tage, acts: bleiben.concat(r.acts.map((a) => Object.assign({}, a, { tag: map[a.tag] || a.tag }))),
+        schritt: r.acts.length || !hatBloecke ? -1 : 0, fotoIdx: 0,
+        info: r.acts.length ? plural(r.acts.length, "Act", "Acts") + " " + tx("tt_erkannt") : "",
+        err: r.acts.length ? "" : (hatBloecke ? tx("tt_nichts") : tx("tt_nichts_text"))
+      };
+    });
   }
 
   ttScan = async (ev) => {
     const files = Array.prototype.slice.call((ev && ev.target && ev.target.files) || []);
     if (ev && ev.target) ev.target.value = "";
     if (!files.length || !this.state.tt) return;
-    this.ttSet({ busy: tx("tt_lade_leser"), pct: 0.02, err: "" });
-    let T;
-    try { T = await this.ttLadeOcr(); } catch (e) { this.ttSet({ busy: "", err: tx("tt_fehler_leser") }); return; }
-    const n = files.length;
-    let i = 0, worker = null, text = "";
-    try {
-      worker = await T.createWorker(["deu", "eng"], 1, { logger: (m) => { if (m && m.status === "recognizing text") this.ttSet({ pct: Math.max(0.03, (i + (m.progress || 0)) / n) }); } });
-      for (i = 0; i < n; i++) {
-        this.ttSet({ busy: tx("tt_lese") + " " + (i + 1) + " / " + n });
-        const r = await worker.recognize(await this.ttVerkleinern(files[i]));
-        text += "\n" + ((r && r.data && r.data.text) || "");
-      }
-      await worker.terminate();
-    } catch (e) {
-      try { if (worker) worker.terminate(); } catch (x) { /* egal */ }
-      this.ttSet({ busy: "", err: tx("tt_fehler_lesen") });
-      return;
-    }
-    this.ttEinlesen(text);
+    const neu = files.map((f) => ({ id: this.ttNid(), url: URL.createObjectURL(f), file: f, w: 0, h: 0, bloecke: null }));
+    this.ttSet((t) => ({ fotos: t.fotos.concat(neu), err: "", info: "" }));
+    window.setTimeout(() => this.ttLesen(), 0);
   };
 
-  /* Erkannten Text in Tage und Acts zerlegen. Zeilen mit Wochentag oder
-     Datum beginnen einen Tag, Zeilen mit Stage/Bühne setzen die Bühne,
-     Zeilen mit Uhrzeit werden Acts; steht der Name in der Zeile darunter,
-     wird er nachgetragen. */
-  ttParse(text, basisDatum, basisLabel) {
-    const WT = { mo: 1, montag: 1, mon: 1, monday: 1, di: 2, dienstag: 2, tue: 2, tuesday: 2, mi: 3, mittwoch: 3, wed: 3, wednesday: 3,
-      do: 4, donnerstag: 4, thu: 4, thursday: 4, fr: 5, freitag: 5, fri: 5, friday: 5, sa: 6, samstag: 6, sonnabend: 6, sat: 6, saturday: 6,
-      so: 0, sonntag: 0, sun: 0, sunday: 0 };
-    const basis = basisDatum ? new Date(basisDatum + "T12:00:00") : null;
-    const iso = (d) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
-    const datumWT = (w) => {
-      if (!basis) return "";
-      for (let k = 0; k < 14; k++) { const d = new Date(basis.getTime() + k * 864e5); if (d.getDay() === w) return iso(d); }
-      return "";
-    };
-    const tage = [], acts = [];
-    let tag = null, buehne = "", offen = null;
-    const neuerTag = (label, datum) => { tag = { id: this.ttNid(), label: label, datum: datum || "" }; tage.push(tag); buehne = ""; offen = null; };
-    const zeitRe = /(\d{1,2})\s?[:.h]\s?(\d{2})(?!\d)/g;
-    String(text || "").split(/\r?\n/).forEach((raw) => {
-      const z = raw.replace(/[|_~•·»«]+/g, " ").replace(/\s+/g, " ").trim();
-      if (z.length < 2) return;
-      const zeiten = [];
-      let m; zeitRe.lastIndex = 0;
-      while ((m = zeitRe.exec(z))) { if (+m[1] < 24 && +m[2] < 60) zeiten.push(m); }
-      const erstes = (z.toLowerCase().match(/[a-zäöüß]+/) || [""])[0];
-      const dm = z.match(/\b(\d{1,2})\.\s?(\d{1,2})\.(\s?(\d{4}|\d{2}))?/);
-      const istWT = WT[erstes] !== undefined && (erstes.length > 2 || z.length <= 16);
-      if (!zeiten.length && (istWT || (dm && z.length < 32))) {
-        let datum = "";
-        if (dm) {
-          const j = dm[4] ? (+dm[4] < 100 ? 2000 + +dm[4] : +dm[4]) : (basis ? basis.getFullYear() : new Date().getFullYear());
-          const d = new Date(j, +dm[2] - 1, +dm[1], 12);
-          if (!isNaN(d)) datum = iso(d);
-        } else if (istWT) datum = datumWT(WT[erstes]);
-        neuerTag(z.slice(0, 40), datum);
-        return;
+  ttLesen = async () => {
+    if (this._ttLiest) { this._ttNochmal = true; return; }
+    this._ttLiest = true;
+    const fertig = {};
+    let worker = null;
+    try {
+      this.ttSet({ busy: tx("tt_lade_leser"), pct: 0.02 });
+      let T = null;
+      try { T = await this.ttLadeOcr(); } catch (e) { T = null; }
+      if (!T) { this.ttSet({ busy: "", err: tx("tt_fehler_leser") }); return; }
+      const offen = () => (((this.state.tt || {}).fotos) || []).filter((f) => !f.bloecke && !fertig[f.id]);
+      let i = 0, n = offen().length;
+      worker = await T.createWorker(["deu", "eng"], 1, { logger: (m) => { if (m && m.status === "recognizing text") this.ttSet({ pct: Math.max(0.03, (i + (m.progress || 0)) / Math.max(1, n)) }); } });
+      try { await worker.setParameters({ tessedit_pageseg_mode: "11", preserve_interword_spaces: "1" }); } catch (e) { /* Standard */ }
+      let f;
+      while (this.state.tt && (f = offen()[0])) {
+        fertig[f.id] = true;
+        this.ttSet({ busy: tx("tt_lese") + " " + (i + 1) + " / " + Math.max(n, i + 1) });
+        let erg = { w: 0, h: 0, bloecke: [] };
+        try {
+          const v = await this.ttVorbereiten(f.file);
+          const r = await worker.recognize(v.c);
+          erg = { w: v.w, h: v.h, bloecke: this.ttBloecke((r && r.data && r.data.words) || []) };
+        } catch (e) { /* Bild bleibt ohne Text */ }
+        this.ttSet((t) => ({ fotos: t.fotos.map((x) => (x.id === f.id ? Object.assign({}, x, erg) : x)) }));
+        i++;
+        n = Math.max(n, i + offen().length);
       }
-      if (!zeiten.length) {
-        if (z.length < 40 && /(stage|bühne|buehne|zelt|tent|floor|arena|halle|hall|area|club)/i.test(z)) { buehne = z; offen = null; return; }
-        if (offen && !offen.name && /[a-zäöü]/i.test(z)) { offen.name = z.slice(0, 80); }
-        return;
-      }
-      const fmt = (x) => String(+x[1]).padStart(2, "0") + ":" + x[2];
-      let name = z;
-      zeiten.forEach((x) => { name = name.replace(x[0], " "); });
-      name = name.replace(/\b(uhr|bis|to|h)\b/gi, " ").replace(/\s[-–—]+\s/g, " ").replace(/^[\s\-–—:,.]+|[\s\-–—:,.]+$/g, "").replace(/\s+/g, " ").trim();
-      if (name.length < 2) name = "";
-      if (!tag) neuerTag(basisLabel, basisDatum || "");
-      const a = { id: this.ttNid(), tag: tag.id, von: fmt(zeiten[0]), bis: zeiten[1] ? fmt(zeiten[1]) : "", name: name.slice(0, 80), buehne: buehne, mark: false, bilder: [], alben: [], personen: [] };
-      acts.push(a);
-      offen = a;
-    });
-    return { tage: tage.filter((tg) => acts.some((a) => a.tag === tg.id)), acts: acts };
-  }
-
-  ttEinlesen(text) {
-    const s = this.state.tt;
-    if (!s) return;
-    const e = (this.state.events || []).filter((x) => x.id === s.evId)[0] || {};
-    const r = this.ttParse(text, e.date || "", tx("tt_leer_tag"));
-    if (!r.acts.length) { this.ttSet({ busy: "", pct: 0, err: tx("tt_nichts") }); return; }
-    const tage = s.tage.slice();
-    const zuord = {};
-    r.tage.forEach((tg) => {
-      const gleich = tage.filter((x) => (x.datum && x.datum === tg.datum) || String(x.label).toLowerCase() === String(tg.label).toLowerCase())[0];
-      if (gleich) zuord[tg.id] = gleich.id; else { tage.push(tg); zuord[tg.id] = tg.id; }
-    });
-    const neu = r.acts.map((a) => Object.assign({}, a, { tag: zuord[a.tag] || a.tag }));
-    this.ttSet({ busy: "", pct: 0, err: "", tage: tage, acts: s.acts.concat(neu) });
-  }
+      this.ttSet({ busy: "", pct: 0 });
+      window.setTimeout(() => this.ttAnwenden(), 0);
+    } catch (e) {
+      this.ttSet({ busy: "", pct: 0, err: tx("tt_fehler_lesen") });
+    } finally {
+      try { if (worker) await worker.terminate(); } catch (x) { /* egal */ }
+      this._ttLiest = false;
+      if (this._ttNochmal) { this._ttNochmal = false; window.setTimeout(() => this.ttLesen(), 0); }
+    }
+  };
 
   ttSpeichern() {
     const s = this.state.tt;
     if (!s) return;
-    const acts = this.ttSortiert(s.acts.filter((a) => String(a.name || "").trim() || a.von));
+    const acts = this.ttSortiert(s.acts.filter((a) => String(a.name || "").trim() || a.von)).map((a) => { const x = Object.assign({}, a); delete x.scan; return x; });
     const tage = s.tage.filter((tg) => acts.some((a) => a.tag === tg.id));
     const timetable = acts.length ? { tage: tage, acts: acts } : null;
+    (s.fotos || []).forEach((f) => { try { URL.revokeObjectURL(f.url); } catch (e) { /* egal */ } });
+    if (s.draft) {
+      if (!this.state.draft) { this.setState({ tt: null }); return; }
+      this.setState({ tt: null, draft: Object.assign({}, this.state.draft, { timetable: timetable }) });
+      return;
+    }
     const e = (this.state.events || []).filter((x) => x.id === s.evId)[0];
     if (!e) { this.setState({ tt: null }); return; }
     const evNeu = Object.assign({}, e, { timetable: timetable });
@@ -4776,29 +4990,91 @@ class Component extends DCLogic {
     }
   }
 
+  ttFormVals() {
+    const d = this.state.draft;
+    const n = d && d.timetable ? (d.timetable.acts || []).length : 0;
+    return {
+      ttFormKnopf: n ? tx("tt_bearbeiten") : tx("tt_anlegen"),
+      ttFormBadge: n ? plural(n, "Act", "Acts") : tx("tt_keiner"),
+      ttFormOeffnen: (ev) => { if (ev && ev.preventDefault) ev.preventDefault(); this.ttOeffnen(null, true); }
+    };
+  }
+
   ttVals() {
     const s = this.state.tt;
     if (!s) return { offen: false };
-    const e = (this.state.events || []).filter((x) => x.id === s.evId)[0] || {};
+    const e = this.ttQuelle(s);
     const bilder = (e.images || []).map((im, j) => ({ id: im.key || ("i" + j), src: im.src || "" })).filter((b) => b.src);
     const alben = (e.alben || []).map((a, j) => ({ id: a.id || ("a" + j), name: a.name || a.titel || a.title || tx("tt_album") }));
     const personen = (e.people || []).map((p) => p && p.name).filter(Boolean);
-    const setAct = (id, patch) => this.ttSet((t) => ({ acts: t.acts.map((a) => (a.id === id ? Object.assign({}, a, typeof patch === "function" ? patch(a) : patch) : a)) }));
+    const setAct = (id, patch) => this.ttSet((t) => ({ acts: t.acts.map((a) => (a.id === id ? Object.assign({}, a, typeof patch === "function" ? patch(a) : patch, { scan: false }) : a)) }));
     const um = (arr, v) => ((arr || []).indexOf(v) >= 0 ? arr.filter((x) => x !== v) : (arr || []).concat([v]));
     const feld = (id, k) => (ev) => { const v = ev.target.value; setAct(id, { [k]: v }); };
     const chip = (on) => ({ cursor: "pointer", font: "inherit", fontSize: "14px", minHeight: "40px", padding: "6px 14px", borderRadius: "999px",
       border: "1px solid " + (on ? "var(--color-accent)" : "var(--color-neutral-300)"), background: on ? "var(--color-accent-100)" : "transparent", color: on ? "var(--color-accent-800)" : "var(--color-text)" });
+    const fotos = s.fotos || [];
+    const lesbar = fotos.filter((f) => f.w && (f.bloecke || []).length);
+    const SCHRITTE = [["tag", tx("tt_s_tage"), tx("tt_s_tage_text")], ["buehne", tx("tt_s_buehnen"), tx("tt_s_buehnen_text")], ["act", tx("tt_s_acts"), tx("tt_s_acts_text")]];
+    const gefuehrt = s.schritt >= 0 && lesbar.length > 0;
+    const fi = Math.min(s.fotoIdx || 0, Math.max(0, lesbar.length - 1));
+    const foto = lesbar[fi];
+    const sch = SCHRITTE[Math.max(0, Math.min(2, s.schritt))];
+    const FARBE = { tag: "var(--color-accent-2)", buehne: "var(--color-text)", act: "var(--color-accent)" };
+    const rolleSetzen = (fid, bid, rolle) => this.ttSet((t) => ({ fotos: t.fotos.map((ff) => (ff.id !== fid ? ff : Object.assign({}, ff, {
+      bloecke: ff.bloecke.map((x) => (x.id !== bid ? x : Object.assign({}, x, { rolle: x.rolle === rolle ? "" : rolle }))) }))) }));
+    const pct = (v, g) => (g ? (v / g) * 100 : 0).toFixed(3) + "%";
     return {
-      offen: true, evName: e.name || "",
+      offen: true, evName: e.name || tx("tt_neues_ereignis"),
       busy: !!s.busy, busyText: s.busy || "",
       balken: { width: Math.round((s.pct || 0) * 100) + "%", height: "100%", background: "var(--color-accent)", transition: "width 0.3s" },
-      hatErr: !!s.err, err: s.err || "",
-      leer: !s.tage.length,
+      hatErr: !!s.err, err: s.err || "", hatInfo: !!s.info && !s.err, info: s.info || "",
+      leer: !s.tage.length && !fotos.length,
       kannLoeschen: !!(e.timetable && (e.timetable.acts || []).length),
-      zu: () => this.setState({ tt: null }),
-      zuRand: (ev) => { if (ev.target === ev.currentTarget) this.setState({ tt: null }); },
+      zu: () => this.ttZu(),
+      zuRand: (ev) => { if (ev.target === ev.currentTarget) this.ttZu(); },
       scan: this.ttScan,
-      tagNeu: () => this.ttSet((t) => { const tg = { id: this.ttNid(), label: tx("tt_leer_tag"), datum: "" }; return { tage: t.tage.concat([tg]), acts: t.acts.concat([{ id: this.ttNid(), tag: tg.id, von: "", bis: "", name: "", buehne: "", mark: false, bilder: [], alben: [], personen: [] }]) }; }),
+      hatFotos: fotos.length > 0,
+      fotos: fotos.map((f) => ({ key: f.id, url: f.url, weg: () => this.ttSet((t) => { try { URL.revokeObjectURL(f.url); } catch (x) { /* egal */ } return { fotos: t.fotos.filter((x) => x.id !== f.id) }; }) })),
+      kannPruefen: lesbar.length > 0 && !s.busy && !gefuehrt,
+      pruefen: () => this.ttSet({ schritt: 0, fotoIdx: 0, err: "", info: "" }),
+      listeZeigen: !gefuehrt,
+      gefuehrt: gefuehrt,
+      schrittNr: tx("tt_schritt") + " " + (Math.max(0, s.schritt) + 1) + " / 3 · " + sch[1],
+      schrittText: sch[2],
+      mehrFotos: lesbar.length > 1,
+      fotoInfo: tx("tt_bild") + " " + (fi + 1) + " / " + lesbar.length,
+      fotoZurueck: () => this.ttSet((t) => ({ fotoIdx: Math.max(0, (t.fotoIdx || 0) - 1) })),
+      fotoVor: () => this.ttSet((t) => ({ fotoIdx: Math.min(lesbar.length - 1, (t.fotoIdx || 0) + 1) })),
+      grossText: s.gross ? tx("tt_bild_kleiner") : tx("tt_bild_groesser"),
+      grossUm: () => this.ttSet((t) => ({ gross: !t.gross })),
+      bildRahmen: { overflow: "auto", maxHeight: "70vh", borderRadius: "var(--radius-sm)", background: "var(--color-neutral-200)" },
+      bildInnen: { position: "relative", width: s.gross ? "220%" : "100%", lineHeight: 0 },
+      fotoUrl: foto ? foto.url : "",
+      bloecke: foto ? foto.bloecke.map((b) => {
+        const jetzt = b.rolle && b.rolle === sch[0];
+        const farbe = FARBE[b.rolle];
+        return {
+          key: b.id, t: b.t,
+          klick: () => rolleSetzen(foto.id, b.id, sch[0]),
+          stil: { position: "absolute", left: "calc(" + pct(b.x0, foto.w) + " - 3px)", top: "calc(" + pct(b.y0, foto.h) + " - 3px)",
+            width: "calc(" + pct(b.x1 - b.x0, foto.w) + " + 6px)", height: "calc(" + pct(b.y1 - b.y0, foto.h) + " + 6px)",
+            padding: 0, margin: 0, cursor: "pointer", boxSizing: "border-box", borderRadius: "2px",
+            border: b.rolle ? ("2px solid " + farbe) : (b.nurZeit ? "1px dotted var(--color-neutral-600)" : "1px dashed var(--color-neutral-600)"),
+            background: b.rolle ? ("color-mix(in srgb, " + farbe + (jetzt ? " 34%" : " 14%") + ", transparent)") : "transparent",
+            opacity: b.rolle && !jetzt ? 0.65 : 1 }
+        };
+      }) : [],
+      schrittZurueckText: s.schritt > 0 ? tx("tt_zurueck") : tx("tt_abbrechen"),
+      schrittZurueck: () => this.ttSet((t) => ({ schritt: t.schritt > 0 ? t.schritt - 1 : -1 })),
+      schrittKeine: () => {
+        const rolle = sch[0];
+        this.ttSet((t) => ({ fotos: t.fotos.map((ff) => (ff.bloecke ? Object.assign({}, ff, { bloecke: ff.bloecke.map((x) => (x.rolle === rolle ? Object.assign({}, x, { rolle: "" }) : x)) }) : ff)),
+          schritt: t.schritt < 2 ? t.schritt + 1 : t.schritt }));
+        if (s.schritt >= 2) window.setTimeout(() => this.ttAnwenden(), 0);
+      },
+      schrittWeiterText: s.schritt >= 2 ? tx("tt_uebernehmen") : tx("tt_weiter"),
+      schrittWeiter: () => { if (s.schritt >= 2) this.ttAnwenden(); else this.ttSet((t) => ({ schritt: t.schritt + 1 })); },
+      tagNeu: () => this.ttSet((t) => { const tg = { id: this.ttNid(), label: tx("tt_leer_tag"), datum: e.date || "" }; return { tage: t.tage.concat([tg]), acts: t.acts.concat([{ id: this.ttNid(), tag: tg.id, von: "", bis: "", name: "", buehne: "", mark: false, bilder: [], alben: [], personen: [] }]) }; }),
       speichern: () => this.ttSpeichern(),
       loeschen: () => { this.ttSet({ tage: [], acts: [] }); window.setTimeout(() => this.ttSpeichern(), 0); },
       tage: s.tage.map((tg) => ({
@@ -7080,6 +7356,7 @@ class Component extends DCLogic {
         },
         by: e.by || "", vis: (e.vis === "selected" ? "people" : e.vis) || "private", who: (e.who || []).slice(), gwho: (e.gwho || []).slice(), perms: Object.assign({}, e.perms || {}), polls: (e.polls || []).map((p) => Object.assign({}, p)), share: e.share || "view",
         etappen: (e.etappen || []).map((x) => Object.assign({}, x)),
+        timetable: e.timetable || null,
         alben: (e.alben || []).map((x) => Object.assign({}, x)),
         themeId: e.themeId || "",
         themeSnap: this.themeSnapNachtragen(e).themeSnap || null,
@@ -7122,7 +7399,7 @@ class Component extends DCLogic {
       gwho: (d.gwho || (old && old.gwho) || []).slice(),
       perms: Object.assign({}, (old && old.perms) || {}, d.perms || {}),
       polls: (d.polls || (old && old.polls) || []).map((p) => Object.assign({}, p)),
-      timetable: d.timetable || (old && old.timetable) || null,
+      timetable: d.timetable !== undefined ? d.timetable : ((old && old.timetable) || null),
       etappen: (d.etappen || (old && old.etappen) || []).map((x) => Object.assign({}, x)),
       alben: (d.alben || (old && old.alben) || []).map((x) => Object.assign({}, x)),
       themeId: d.themeId != null ? d.themeId : ((old && old.themeId) || ""),
@@ -9988,7 +10265,7 @@ class Component extends DCLogic {
           });
         })(this),
         hatPolls: ((e.polls || []).length > 0),
-        ...this.ttKarte(e, lvl >= 3 && !e.lose && isOpen),
+        ...this.ttKarte(e),
         handyX: isOpen && handyAnsicht,
         zuX: (ev) => { ev.stopPropagation(); this.setState({ openId: null, openVoll: false }); },
         plain: !eT.flap,
@@ -12674,6 +12951,7 @@ class Component extends DCLogic {
       })(this),
       loseBand: loseGeladen,
       tt: this.ttVals(),
+      ...this.ttFormVals(),
       _bedarf: (function (self) {
         /* Welche Bilddateien jetzt gebraucht werden: die der gezeichneten
            Ereignisse, der sichtbaren einzelnen Bilder, der Fotoshow und
