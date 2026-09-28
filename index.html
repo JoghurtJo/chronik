@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="lang/de.js?v=b69"></script>
-<script src="lang/en.js?v=b69"></script>
-<script src="lang/sprache.js?v=b69"></script>
-<script src="./support.js?v=b69"></script>
+<script src="lang/de.js?v=b70"></script>
+<script src="lang/en.js?v=b70"></script>
+<script src="lang/sprache.js?v=b70"></script>
+<script src="./support.js?v=b70"></script>
 </head>
 <body>
 <x-dc>
@@ -14,7 +14,7 @@
 <meta name="omelette-owns-print" content="1">
 <link rel="stylesheet" href="broadsheet.css">
 <script src="chronik-config.js"></script>
-<script src="supabase-bridge.js?v=b69"></script>
+<script src="supabase-bridge.js?v=b70"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
 <style>
@@ -414,6 +414,15 @@
   </sc-if>
 
   <div style="{{ lay.stagePad }}" data-screen-label="Zeitstrahl">
+    <div data-noprint="" style="display: flex; justify-content: flex-end; margin: 0 0 6px;">
+      <label title="{{ loseWahlTitel }}" style="position: relative; display: grid; place-items: center; width: 30px; height: 30px; border-radius: var(--radius-md); background: var(--color-bg); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-text) 28%, transparent); color: var(--color-text); font-size: 15px; line-height: 1; cursor: pointer;">▦
+        <select aria-label="{{ loseWahlTitel }}" value="{{ loseWahl }}" onChange="{{ loseWahlSetzen }}" style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 14px;">
+          <sc-for list="{{ loseModi }}" as="m" hint-placeholder-count="3">
+            <option value="{{ m.key }}">{{ m.label }}</option>
+          </sc-for>
+        </select>
+      </label>
+    </div>
     <div style="{{ shellStyle }}">
     <div data-stage="" ref="{{ stageRef }}" onScroll="{{ onScroll }}" onPointerDown="{{ stick.place }}" onPointerMove="{{ stick.move }}" onPointerUp="{{ stick.up }}" onPointerLeave="{{ stick.up }}" style="position: relative; overflow-x: auto; overflow-y: auto; max-height: 86vh; overscroll-behavior-x: contain; background-color: var(--t-bg, #f3f2f2); border-radius: var(--radius-lg); box-shadow: inset 0 0 0 1px var(--color-divider); cursor: {{ stick.cursor }};">
       <sc-if value="{{ hatStickyAchse }}" hint-placeholder-val="{{ false }}">
@@ -2963,7 +2972,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 69) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 70) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -3287,7 +3296,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 69 · 2026-09-28";
+const BAU_STAND = "Bau 70 · 2026-09-28";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -8793,7 +8802,12 @@ class Component extends DCLogic {
     const maxLanes = Math.max(1, Math.min(4, this.props.lanes == null ? 3 : this.props.lanes));
     const nurLose = this.loseModus() === "nur";
     const lEvs = nurLose ? this.loseTageEvs() : evs;
-    const pxPerDay = this.basePx(lEvs) * st.zoom;
+    /* Die Bahn nie breiter als ~60 000 px werden lassen. Mit einzelnen
+       Bildern (viele Tage auf engem Raum) und hohem Zoom wurde sie über
+       eine Million Pixel breit — so breite Flächen zeichnet der Browser
+       nicht mehr, die Seite blieb weiß. */
+    const spanTage = lEvs.length ? Math.max(1, (dp(lEvs[lEvs.length - 1].end || lEvs[lEvs.length - 1].date) - dp(lEvs[0].date)) / DAY) : 1;
+    const pxPerDay = Math.min(this.basePx(lEvs) * st.zoom, 60000 / spanTage);
     const axisY = 128;
     let laneTop = 196;
     const L = this.layout(lEvs, { mode: st.mode, cardW: cardW, gap: gap, maxLanes: maxLanes, pxPerDay: pxPerDay });
@@ -11893,6 +11907,9 @@ class Component extends DCLogic {
       nurLoseAktiv: nurLose,
       ribbonZeigen: !!st.filterOffen || !!st.stickMode || nurLose,
       loseAlles: () => this.loseModusSetzen("bilder"),
+      loseWahl: this.loseModus(),
+      loseWahlSetzen: (ev) => this.loseModusSetzen(ev.target.value),
+      loseWahlTitel: tx("lose_anzeige_wahl") + ": " + ({ striche: tx("lose_striche"), bilder: tx("lose_bilder_einzeln"), nur: tx("lose_nur") })[this.loseModus()],
       loseModi: [["striche", tx("lose_striche")], ["bilder", tx("lose_bilder_einzeln")], ["nur", tx("lose_nur")]].map((o) => ({
         key: o[0], label: o[1], on: this.loseModus() === o[0], pick: () => this.loseModusSetzen(o[0])
       })),

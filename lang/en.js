@@ -1,6 +1,4 @@
-/* Chronik · English
-   Neue Sprache: diese Datei kopieren (z. B. als fr.js), Kürzel, Name,
-   locale und Texte ändern und in index.html vor lang/sprache.js einbinden. */
+/* Chronik · English */
 window.CHRONIK_SPRACHEN = window.CHRONIK_SPRACHEN || {};
 window.CHRONIK_SPRACHEN.en = {
   name: "English",
@@ -1034,6 +1032,7 @@ window.CHRONIK_SPRACHEN.en = {
     e_info_text: "Loaded version of the page",
     e_info_hinweis: "If this isn't the newest number, the browser is still loading an old version — reload the page or clear the cache.",
     noch_keine_losen_bilder_mit_datum: "No dated single pictures yet",
-    fehler_gefunden: "Error found — please copy and send this text"
+    fehler_gefunden: "Error found — please copy and send this text",
+    lose_anzeige_wahl: "Timeline shows"
   }
 };

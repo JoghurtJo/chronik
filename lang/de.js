@@ -1,6 +1,4 @@
-/* Chronik · Deutsch (Grundsprache)
-   Jeder Text der Seite steht hier unter einem Schlüssel. Fehlt ein
-   Schlüssel in einer anderen Sprache, wird dieser deutsche Text gezeigt. */
+/* Chronik · Deutsch */
 window.CHRONIK_SPRACHEN = window.CHRONIK_SPRACHEN || {};
 window.CHRONIK_SPRACHEN.de = {
   name: "Deutsch",
@@ -1034,6 +1032,7 @@ window.CHRONIK_SPRACHEN.de = {
     e_info_text: "Geladener Stand der Seite",
     e_info_hinweis: "Steht hier nicht die neueste Nummer, lädt der Browser noch eine alte Fassung — Seite neu laden oder den Zwischenspeicher leeren.",
     noch_keine_losen_bilder_mit_datum: "Noch keine einzelnen Bilder mit Datum",
-    fehler_gefunden: "Fehler gefunden — bitte diesen Text kopieren und schicken"
+    fehler_gefunden: "Fehler gefunden — bitte diesen Text kopieren und schicken",
+    lose_anzeige_wahl: "Zeitstrahl zeigt"
   }
 };
