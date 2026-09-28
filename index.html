@@ -13,8 +13,8 @@
 <helmet>
 <meta name="omelette-owns-print" content="1">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js?v=b78"></script>
-<script src="supabase-bridge.js?v=b78"></script>
+<script src="chronik-config.js?v=b79"></script>
+<script src="supabase-bridge.js?v=b79"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
 <style>
@@ -289,14 +289,14 @@
   </header>
 
   <div data-noprint="" style="position: fixed; right: 14px; bottom: 28px; z-index: 60; display: grid; gap: 6px;">
-    <label title="{{ loseWahlTitel }}" class="btn btn-secondary btn-icon" style="position: relative; width: 44px; height: 44px; font-size: 18px; background: var(--color-bg); box-shadow: var(--shadow-md); cursor: pointer;">▦
+    <label data-tour="ansicht" title="{{ loseWahlTitel }}" class="btn btn-secondary btn-icon" style="position: relative; width: 44px; height: 44px; font-size: 18px; background: var(--color-bg); box-shadow: var(--shadow-md); cursor: pointer;">▦
       <select aria-label="{{ loseWahlTitel }}" value="{{ loseWahl }}" onChange="{{ loseWahlSetzen }}" style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px;">
         <sc-for list="{{ loseModi }}" as="m" hint-placeholder-count="3">
           <option value="{{ m.key }}">{{ m.label }}</option>
         </sc-for>
       </select>
     </label>
-    <button class="btn btn-secondary btn-icon" title="{{ L.vergroessern }}" aria-label="{{ L.vergroessern }}" onClick="{{ zoomKnopf.plus }}" style="width: 44px; height: 44px; font-size: 20px; background: var(--color-bg); box-shadow: var(--shadow-md);">＋</button>
+    <button data-tour="zoom" class="btn btn-secondary btn-icon" title="{{ L.vergroessern }}" aria-label="{{ L.vergroessern }}" onClick="{{ zoomKnopf.plus }}" style="width: 44px; height: 44px; font-size: 20px; background: var(--color-bg); box-shadow: var(--shadow-md);">＋</button>
     <button class="btn btn-secondary btn-icon" title="{{ L.verkleinern }}" aria-label="{{ L.verkleinern }}" onClick="{{ zoomKnopf.minus }}" style="width: 44px; height: 44px; font-size: 20px; background: var(--color-bg); box-shadow: var(--shadow-md);">−</button>
   </div>
 
@@ -2966,7 +2966,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 78) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 79) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -3290,7 +3290,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 78 · 2026-09-28";
+const BAU_STAND = "Bau 79 · 2026-09-28";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -4449,6 +4449,7 @@ class Component extends DCLogic {
       window.setTimeout(() => {
         if (!box) return;
         box.scrollLeft = Math.max(0, box.scrollWidth - box.clientWidth);
+        this.ladeNach(box);
       }, 60);
     }
     if (!this.me()) this.zumNeuesten = false;
@@ -5419,14 +5420,20 @@ class Component extends DCLogic {
         text: tx("in_neun_kurzen_schritten_zeige_ich") },
       { ziel: "neu", titel: tx("ein_ereignis_anlegen"),
         text: tx("alles_beginnt_hier_name_datum_ort") },
+      { ziel: "bilder", titel: tx("t_bilder_titel"), text: tx("t_bilder_text") },
       { ziel: "", titel: tx("dein_zeitstrahl"),
         text: tx("alles_eigene_und_alles_was_kontakte") },
-      { ziel: "band", titel: tx("ansicht_filter_daten"),
-        text: tx("hinter_diesen_drei_reitern_steckt_die") },
+      { ziel: "ansicht", titel: tx("t_ansicht_titel"), text: tx("t_ansicht_text") },
+      { ziel: "zoom", titel: tx("t_zoom_titel"), text: tx("t_zoom_text") },
+      { ziel: "band", titel: tx("t_filter_titel"), text: tx("t_filter_text") },
       { ziel: "show", titel: tx("fotoshow"),
         text: tx("zeigt_alle_bilder_deiner_auswahl_gross") },
+      { ziel: "konto", titel: tx("t_einst_titel"), text: tx("t_einst_text") },
+      { ziel: "konto", titel: tx("t_einst_titel") + " · " + tx("g_ansicht"), text: tx("t_einst_ansicht_text") },
       { ziel: "konto", titel: tx("ueber_dreissig_gesichter"),
         text: tx("von_zeitungssatz_ueber_emailschild_bis_zum") },
+      { ziel: "konto", titel: tx("t_einst_titel") + " · " + tx("g_menschen"), text: tx("t_einst_menschen_text") },
+      { ziel: "konto", titel: tx("t_einst_titel") + " · " + tx("g_fotoshow") + ", " + tx("g_ich"), text: tx("t_einst_rest_text") },
       { ziel: "kontakte", titel: tx("kontakte_und_gruppen"),
         text: tx("suche_jemanden_nach_name_oder_e") },
       { ziel: "konto", titel: tx("mein_konto"),
@@ -6576,7 +6583,42 @@ class Component extends DCLogic {
     /* Die Blickmitte merkt sich der Knopf selbst — sie wird erst beim
        Antippen gebraucht. */
     this.blickX = box.scrollLeft + box.clientWidth / 2;
+    this.ladeNach(box);
   };
+
+  /* Beim Scrollen nach links (älter) oder unten weitere Ereignisse und
+     Bilder zeichnen — je fünf, und so viele, wie das Blickfeld braucht. */
+  ladeNach(box) {
+    if (!box || this._ladeUhr) return;
+    this._ladeUhr = window.setTimeout(() => {
+      this._ladeUhr = null;
+      const g = this.geoZeit, lg = this.geoLade;
+      if (!g || !lg) return;
+      const st = this.state;
+      const patch = {};
+      const links = box.scrollLeft - box.clientWidth * 0.5 - g.off;
+      let lo = g.min - 4000 * DAY, hi = g.max + 800 * DAY;
+      for (let i = 0; i < 50; i++) { const m = (lo + hi) / 2; if (g.xVon(m) < links) lo = m; else hi = m; }
+      const tL = (lo + hi) / 2;
+      if (lg.ab > -Infinity && tL < lg.ab) {
+        const aelter = lg.zeiten.filter((t) => t < lg.ab);
+        const t5 = aelter.length > 5 ? aelter[aelter.length - 5] : -Infinity;
+        patch.ladeAbT = Math.min(t5, tL);
+        patch.ladeBilderN = (st.ladeBilderN || 5) + 5;
+      }
+      const unten = box.scrollTop + box.clientHeight * 1.5;
+      if (unten > (st.ladeBisY || 1100)) {
+        patch.ladeBisY = unten + box.clientHeight * 0.5;
+        patch.ladeBilderN = (patch.ladeBilderN || st.ladeBilderN || 5) + 5;
+      }
+      if (!patch.ladeBilderN && (st.ladeBilderN || 5) < (lg.nBilder || 0)) {
+        /* Auch ohne neue Grenzen: fehlen Bilder im Blickfeld, fünf mehr. */
+        const imBlick = document.querySelectorAll('[data-stage] img').length;
+        if (imBlick < 5) patch.ladeBilderN = (st.ladeBilderN || 5) + 5;
+      }
+      if (Object.keys(patch).length) this.setState(patch);
+    }, 160);
+  }
 
   newEvent = () => {
     const today = new Date().toISOString().slice(0, 10);
@@ -7211,7 +7253,7 @@ class Component extends DCLogic {
         if (b && n) b.scrollLeft = Math.max(0, n.xVon(t) + n.off - b.clientWidth / 2);
       };
       setzen();
-      window.requestAnimationFrame(setzen);
+      window.requestAnimationFrame(() => { setzen(); this.ladeNach(this.stage); });
     });
   }
 
@@ -7418,7 +7460,7 @@ class Component extends DCLogic {
       const nK = (b.im.comments || []).length;
       const q = b.im.src || LEER_GIF;
       bilder.push({
-        key: "lb" + b.id,
+        key: "lb" + b.id, _t: t, _y: yFest != null ? yFest : oben + r * zeileH + versatz,
         src: q,
         bildRef: (el) => { if (el && el.getAttribute("src") !== q) el.src = q; },
         title: (b.zeit ? b.zeit.replace("T", " ").slice(0, 16) : "") + (b.im.ort ? " · " + b.im.ort : "") + (nK ? " · " + plural(nK, tx("kommentar"), tx("kommentare")) : ""),
@@ -8947,6 +8989,25 @@ class Component extends DCLogic {
     })();
     const loseBand = this.loseBandFuer(L, padL, axisY, pxPerDay, hind);
     laneTop += loseBand.hoehe;
+    /* Schneller Start: gezeichnet werden zuerst nur die fünf neuesten
+       Ereignisse und die Bilder im Blickfeld. Wer nach links oder unten
+       scrollt, bekommt weitere dazu (siehe ladeNach). Die Plätze sind
+       schon für alle berechnet — es springt also nichts. */
+    const zeitenAlle = L.items.map((it) => dp(it.e.date)).sort((a, b) => a - b);
+    const ladeAbT = st.ladeAbT != null ? st.ladeAbT : (zeitenAlle.length > 5 ? zeitenAlle[zeitenAlle.length - 5] : -Infinity);
+    const ladeBisY = st.ladeBisY || 1100;
+    const ladeBilderN = st.ladeBilderN || 5;
+    this.geoLade = { ab: ladeAbT, zeiten: zeitenAlle, nBilder: loseBand.bilder.length };
+    const geladen = {};
+    L.items.forEach((it) => { if (dp(it.e.end || it.e.date) >= ladeAbT || it.e.id === st.openId) geladen[it.e.id] = true; });
+    const loseGeladen = (function () {
+      const drin = loseBand.bilder.filter((x) => x._t >= ladeAbT && x._y <= ladeBisY);
+      const neueste = drin.slice().sort((a, b) => b._t - a._t).slice(0, ladeBilderN);
+      const ok = {};
+      neueste.forEach((x) => { ok[x.key] = true; });
+      if (st.loseZoom) ok["lb" + st.loseZoom] = true;
+      return loseBand.bilder.filter((x) => ok[x.key]);
+    })();
     const showRuler = this.props.showRuler !== false;
     const canCreate = this.canCreate();
 
@@ -9634,7 +9695,7 @@ class Component extends DCLogic {
     })(this);
 
 
-    const markers = sichtbareItems.map((it) => {
+    const markers = sichtbareItems.filter((it) => geladen[it.e.id]).map((it) => {
       const top = reiheY(it.lane);
       const mT = this.eventTheme(it.e);
       const mVars = mT === t ? null : Object.assign(
@@ -9697,7 +9758,7 @@ class Component extends DCLogic {
     };
 
     const balkenEbene = ebenenVerteiler(64, 3);
-    const bars = L.items.filter((it) => !nurLose && it.e.end && it.ex > (it.xZeit == null ? it.x : it.xZeit) + 2).map((it) => {
+    const bars = L.items.filter((it) => !nurLose && geladen[it.e.id] && it.e.end && it.ex > (it.xZeit == null ? it.x : it.xZeit) + 2).map((it) => {
       const days = Math.round((dp(it.e.end) - dp(it.e.date)) / DAY);
       const x0 = it.xZeit == null ? it.x : it.xZeit;
       const ebene = balkenEbene(x0, 64);
@@ -12162,11 +12223,11 @@ class Component extends DCLogic {
           test: () => { const u = self.me(); if (u) self.melden(u.id, "test", tx("testmail_betreff"), tx("testmail_text")); }
         };
       })(this),
-      loseBand: loseBand.bilder,
+      loseBand: loseGeladen,
       lz: this.loseZoomVals(),
       lbar: this.loseLeisteVals(),
       eing: this.eingangVals(),
-      cards: cards, markers: markers, bars: bars, ticks: ticks, stapelKnopf: stapelKnopf,
+      cards: cards.filter((c) => geladen[c.id]), markers: markers, bars: bars, ticks: ticks, stapelKnopf: stapelKnopf,
       drawer: st.drawer,
       toggleDrawer: () => this.setState({ drawer: !st.drawer, admin: false }),
       admin: st.admin,
