@@ -1,4 +1,6 @@
-/* Chronik · English */
+/* Chronik · English
+   Neue Sprache: diese Datei kopieren (z. B. als fr.js), Kürzel, Name,
+   locale und Texte ändern und in index.html vor lang/sprache.js einbinden. */
 window.CHRONIK_SPRACHEN = window.CHRONIK_SPRACHEN || {};
 window.CHRONIK_SPRACHEN.en = {
   name: "English",
