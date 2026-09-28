@@ -13,8 +13,8 @@
 <helmet>
 <meta name="omelette-owns-print" content="1">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js?v=b79"></script>
-<script src="supabase-bridge.js?v=b79"></script>
+<script src="chronik-config.js?v=b80"></script>
+<script src="supabase-bridge.js?v=b80"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
 <style>
@@ -484,7 +484,7 @@
 
             <sc-for list="{{ cards }}" as="c" hint-placeholder-count="4">
               <div data-ev="{{ c.id }}" onClick="{{ c.vollWeg }}" style="{{ c.pos }}">
-                <div style="{{ c.body }}">
+                <div data-zu="{{ c.zuFlag }}" style="{{ c.body }}">
                 <div onClick="{{ c.toggle }}" style="position: relative; cursor: pointer; background: var(--t-card, #eae9e9); border: 1px solid var(--t-border, rgba(32, 30, 29, 0.16)); border-radius: var(--t-radius, 2px); box-shadow: var(--t-shadow, none); padding: var(--t-pad, 16px); transition: transform 220ms ease;" style-hover="transform: translateY(-3px);">
                   <div style="display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;">
                     <span style="font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--t-accent, #0088b0);">{{ c.dateLabel }}</span>
@@ -2966,7 +2966,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 79) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 80) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -3290,7 +3290,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 79 · 2026-09-28";
+const BAU_STAND = "Bau 80 · 2026-09-28";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -4432,8 +4432,29 @@ class Component extends DCLogic {
     });
   };
 
+  /* Kacheln messen: die höchste geschlossene bestimmt die Reihenhöhe,
+     das offene Ereignis seine echte Länge (für die Höhe der Bahn). */
+  kachelMessen() {
+    const st = this.state;
+    const patch = {};
+    let m = 0;
+    document.querySelectorAll('[data-zu="1"]').forEach((el) => {
+      const k = el.firstElementChild;
+      if (k) m = Math.max(m, k.scrollHeight);
+    });
+    if (m && m + 14 > (this.geoLaneH || 0) + 1 && m < 1200) patch.kachelH = Math.ceil(m);
+    const auf = document.querySelector('[data-zu="0"]');
+    if (auf && st.openId) {
+      const hh = auf.scrollHeight;
+      const alt = st.offenMess || {};
+      if (alt.id !== st.openId || Math.abs((alt.h || 0) - hh) > 20) patch.offenMess = { id: st.openId, h: hh };
+    }
+    if (Object.keys(patch).length) this.setState(patch);
+  }
+
   componentDidUpdate(vp, vs) {
     this.applyTheme();
+    if (!this._messUhr) this._messUhr = window.setTimeout(() => { this._messUhr = null; this.kachelMessen(); }, 120);
     /* Erstes Anmelden: einmal fragen, ob der Leitfaden laufen soll. */
     this.tourFragen();
     /* Punkt und Text dürfen nicht auseinanderlaufen — jeden Takt abgleichen. */
@@ -8956,7 +8977,10 @@ class Component extends DCLogic {
     const evs = this.filtered().slice().sort((a, b) => dp(a.date) - dp(b.date));
     const cardW = Math.round(268 * d);
     const gap = Math.round(26 * d);
-    const laneH = Math.max(268, Math.round(274 * d));
+    /* Die Reihenhöhe wächst mit der höchsten geschlossenen Kachel
+       (gemessen in kachelMessen) — sonst wird Schrift abgeschnitten. */
+    const laneH = Math.max(268, Math.round(274 * d), (st.kachelH || 0) + 14);
+    this.geoLaneH = laneH;
     const maxLanes = Math.max(1, Math.min(4, this.props.lanes == null ? 3 : this.props.lanes));
     const nurLose = this.loseModus() === "nur";
     const lEvs = nurLose ? this.loseTageEvs() : evs;
@@ -9050,6 +9074,7 @@ class Component extends DCLogic {
        Routen und viele Bilder ist die Spur sonst zu eng. */
     const vollOffen = !!st.openVoll && !!st.openId;
     let openBottom = 0;
+    const handyAnsicht = (st.vw || 1280) < 760;
     const offenesStapelEnde = {};
     const cards = sichtbareItems.map((it) => {
       const e = it.e;
@@ -9079,7 +9104,8 @@ class Component extends DCLogic {
         const est = 300 + Math.ceil(String(e.note || "").length / 64) * 23 + (e.infos || []).length * 24
           + ((e.people || []).length ? 84 : 0) + Math.ceil(nImg / 2) * ((w2 - 40) / 2 * 0.8 + 96)
           + nKom * 26 + (e.polls || []).length * 190 + 140;
-        openBottom = top + est;
+        const mess = st.offenMess && st.offenMess.id === e.id ? st.offenMess.h : 0;
+        openBottom = top + Math.max(est, mess + 40);
         offenesStapelEnde[it.stapel] = Math.max(offenesStapelEnde[it.stapel] || 0, openBottom);
       }
       const bildListe = bilder.map(({ r, j, kopf, albKopf, albMusik, albName, recht, etId, albId }) => ({
@@ -9181,7 +9207,7 @@ class Component extends DCLogic {
           zoom: (ev) => { ev.stopPropagation(); this.setState({ zoomImg: { src: r.src, caption: zeigbareUnterschrift(r.caption), event: e.name, rot: r.rot || 0 } }); }
         }));
       return {
-        key: e.id, id: e.id,
+        key: e.id, id: e.id, zuFlag: isOpen ? "0" : "1",
         /* Klick auf den Schleier verlässt das Vollbild; Klicks in der
            Kachel selbst nicht. */
         vollWeg: (ev) => { if (ev.target === ev.currentTarget) this.setState({ openVoll: false }); },
@@ -9209,7 +9235,9 @@ class Component extends DCLogic {
           width: (isOpen && vollOffen) ? "min(1100px, 100%)" : "auto",
           /* Aufgeklappt bekommt die Überschrift die doppelte Größe. */
           "--t-title-eff": isOpen ? "calc(var(--t-title, 21px) * 2)" : "var(--t-title, 21px)",
-          maxHeight: (isOpen && vollOffen) ? "96vh" : (isOpen ? "min(86vh, " + Math.max(680, Math.round(laneH * 5.4)) + "px)" : (laneH - 12) + "px"), overflow: isOpen ? "auto" : "hidden", overscrollBehavior: "contain", borderRadius: "var(--t-radius, 2px)", transition: "max-height 420ms cubic-bezier(0.16, 1, 0.3, 1)", animationName: "var(--t-anim, tl-glide)", animationDuration: "var(--t-anim-dur, 620ms)", animationTimingFunction: "var(--t-anim-ease, ease-out)", animationFillMode: "both", animationDelay: (60 + it.i * 55) + "ms" },
+          /* Auf dem Handy wächst das offene Ereignis auf volle Länge — man
+             scrollt einfach mit dem Zeitstrahl nach unten, nichts wird abgeschnitten. */
+          maxHeight: (isOpen && vollOffen) ? "96vh" : (isOpen ? (handyAnsicht ? "none" : "min(86vh, " + Math.max(680, Math.round(laneH * 5.4)) + "px)") : (laneH - 12) + "px"), overflow: isOpen ? (handyAnsicht ? "visible" : "auto") : "hidden", overscrollBehavior: "contain", borderRadius: "var(--t-radius, 2px)", transition: "max-height 420ms cubic-bezier(0.16, 1, 0.3, 1)", animationName: "var(--t-anim, tl-glide)", animationDuration: "var(--t-anim-dur, 620ms)", animationTimingFunction: "var(--t-anim-ease, ease-out)", animationFillMode: "both", animationDelay: (60 + it.i * 55) + "ms" },
         noteClip: { maxHeight: isOpen ? "none" : "51px", overflow: "hidden" },
         name: e.name, dateLabel: fmtDate(e.date), kicker: e.kicker || "", place: e.place || "", note: e.note || "",
         sign: isOpen ? "－" : "＋",
