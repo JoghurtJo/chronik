@@ -398,12 +398,6 @@
           <button class="btn btn-primary" style="white-space: nowrap;" onClick="{{ stick.toggle }}">✓ {{ L.fertig_2 }}</button>
         </div>
       </sc-if>
-    <sc-if value="{{ nurLoseAktiv }}" hint-placeholder-val="{{ false }}">
-      <div style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;">
-        <span style="font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 11px; border-radius: 99px; background: var(--color-accent-100); color: var(--color-accent-700);">{{ L.lose_nur }}</span>
-        <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ loseAlles }}">{{ L.alle_zeigen }}</button>
-      </div>
-    </sc-if>
   </div>
   </sc-if>
 
@@ -2972,7 +2966,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 70) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 71) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -3296,7 +3290,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 70 · 2026-09-28";
+const BAU_STAND = "Bau 71 · 2026-09-28";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -7229,14 +7223,36 @@ class Component extends DCLogic {
      jedes Bild an seinem Tag, in wechselnder Größe. */
   loseModus() {
     const f = this.feedPrefs();
-    return f.loseAnzeige || (f.loseAlsBilder ? "bilder" : "striche");
+    const m = f.loseAnzeige || (f.loseAlsBilder ? "bilder" : "striche");
+    /* „Nur einzelne Bilder“ gibt es nur, wenn es solche Bilder gibt. */
+    if (m === "nur" && !this.loseSichtbar().length) return "bilder";
+    return m;
   }
 
   loseModusSetzen(m) {
     const f = Object.assign({}, this.feedPrefs());
     f.loseAnzeige = m;
     f.loseAlsBilder = m !== "striche";
-    this.setState({ feed: f }, () => this.persist());
+    const neu = { feed: f };
+    /* Beim Wechsel auf „Nur einzelne Bilder“: Maßstab so wählen, dass
+       die Bilder gut zu überblicken sind, dann zum neuesten Bild. */
+    if (m === "nur") {
+      const tage = this.loseTageEvs();
+      const box = this.stage;
+      const sicht = (box && box.clientWidth) || 1000;
+      if (tage.length > 1) {
+        const span = Math.max(1, (dp(tage[tage.length - 1].date) - dp(tage[0].date)) / DAY);
+        const basis = this.basePx(tage) * span;
+        neu.zoom = Math.max(0.35, Math.min(3, (sicht * 2.2) / Math.max(1, basis)));
+      } else neu.zoom = 1;
+    }
+    this.setState(neu, () => {
+      this.persist();
+      if (m !== "nur") return;
+      const zumEnde = () => { const b = this.stage; if (b) b.scrollLeft = Math.max(0, b.scrollWidth - b.clientWidth); };
+      window.requestAnimationFrame(zumEnde);
+      window.setTimeout(zumEnde, 120);
+    });
   }
 
   loseSichtbar() {
@@ -7267,7 +7283,8 @@ class Component extends DCLogic {
     const st = this.state;
     const minS = nur ? 104 : 58, schritt = nur ? 16 : 11, stufen = 5;
     const maxUeber = nur ? 0.2 : 0.4;
-    const maxR = nur ? 6 : 5;
+    /* Viele Reihen: lieber untereinander als weit nach rechts. */
+    const maxR = nur ? 14 : 9;
     const zeileH = nur ? 164 : 92;
     const oben = axisY + 46;
     const rechts = [], letzte = [];
@@ -7293,7 +7310,7 @@ class Component extends DCLogic {
         r = rechts.indexOf(Math.min.apply(null, rechts));
         /* Nie weiter als gut zwei Bildbreiten von seinem Tag weg — lieber
            etwas mehr Überdeckung als ein Bild, das ins Leere wandert. */
-        x = Math.min(rechts[r] - maxUeber * Math.min(s, letzte[r]), xTag + 2.5 * s);
+        x = Math.min(rechts[r] - maxUeber * Math.min(s, letzte[r]), xTag + 1.2 * s);
       }
       rechts[r] = Math.max(rechts[r], x + s);
       letzte[r] = s;
@@ -8830,7 +8847,13 @@ class Component extends DCLogic {
        berechnete Breite hinaus. Ohne diesen Zuschlag ist die Rollstrecke
        breiter als die Bahn — und am Ende bliebe ein kahler Streifen. */
     const tickRand = 60;
-    const trackW = Math.max(L.width + padL + tickRand, openIt ? openIt.x + padL + openW + 24 : 0, (isFinite(loseBand.breite) ? loseBand.breite : 0) + 40);
+    /* Der letzte Strich (z. B. die nächste Jahreszahl) kann jenseits der
+       Bahn stehen — dann muss der Hintergrund bis hinter seine Beschriftung reichen. */
+    const tickEnde = showRuler ? this.ticks(L, pxPerDay).reduce((m, tk) => {
+      const px = (tk.jahr || nurLose) ? 30 : 11;
+      return Math.max(m, tk.x + padL + 14 + 8 + Math.ceil(String(tk.label).length * px * 0.82) + 24);
+    }, 0) : 0;
+    const trackW = Math.max(L.width + padL + tickRand, tickEnde, openIt ? openIt.x + padL + openW + 24 : 0, (isFinite(loseBand.breite) ? loseBand.breite : 0) + 40);
 
     /* Stapel unter einem Datum: die ersten vier Kacheln stehen da, der
        Rest kommt erst auf Klick — der Schalter steht in einem eigenen
@@ -9577,7 +9600,10 @@ class Component extends DCLogic {
     const monatEbene = ebenenVerteiler(58, 2);
     /* Grobe Textbreite: Zeichenzahl mal Schriftgröße mal Laufweite. */
     const textBreite = (label, px) => Math.ceil(String(label).length * px * 0.66) + 18;
-    const ticks = showRuler ? this.ticks(L, pxPerDay).map((tk) => {
+    const ticks = showRuler ? this.ticks(L, pxPerDay).map((t0) => {
+      /* Nur einzelne Bilder: kurze Zeiträume zeigen Monate — die stehen
+         dann genauso groß wie die Jahreszahlen im großen Zeitstrahl. */
+      const tk = nurLose ? Object.assign({}, t0, { jahr: true }) : t0;
       const eigen = textBreite(tk.label, tk.jahr ? 30 : 11);
       /* Jahre stehen auf Ebene 0 und 1, Monate darunter auf 2 und 3 —
          so kann sich beides nicht überlagern. */
@@ -11904,13 +11930,11 @@ class Component extends DCLogic {
       hatStickyAchse: ticks.length > 0,
       loseMarken: this.loseMarkenFuer(L, padL, axisY, pxPerDay),
       filterOffen: !!st.filterOffen,
-      nurLoseAktiv: nurLose,
-      ribbonZeigen: !!st.filterOffen || !!st.stickMode || nurLose,
-      loseAlles: () => this.loseModusSetzen("bilder"),
+      ribbonZeigen: !!st.filterOffen || !!st.stickMode,
       loseWahl: this.loseModus(),
       loseWahlSetzen: (ev) => this.loseModusSetzen(ev.target.value),
       loseWahlTitel: tx("lose_anzeige_wahl") + ": " + ({ striche: tx("lose_striche"), bilder: tx("lose_bilder_einzeln"), nur: tx("lose_nur") })[this.loseModus()],
-      loseModi: [["striche", tx("lose_striche")], ["bilder", tx("lose_bilder_einzeln")], ["nur", tx("lose_nur")]].map((o) => ({
+      loseModi: [["striche", tx("lose_striche")], ["bilder", tx("lose_bilder_einzeln")], ["nur", tx("lose_nur")]].filter((o) => o[0] !== "nur" || this.loseSichtbar().length > 0).map((o) => ({
         key: o[0], label: o[1], on: this.loseModus() === o[0], pick: () => this.loseModusSetzen(o[0])
       })),
       zoomKnopf: {
