@@ -19,8 +19,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Chronik">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js?v=b83"></script>
-<script src="supabase-bridge.js?v=b83"></script>
+<script src="chronik-config.js?v=b84"></script>
+<script src="supabase-bridge.js?v=b84"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
 <style>
@@ -352,16 +352,50 @@
                 <span style="font-size: 14px;">{{ tt.fotoInfo }}</span>
                 <button class="btn btn-ghost btn-icon" onClick="{{ tt.fotoVor }}" style="width: 44px; height: 44px;">›</button>
               </sc-if>
-              <button class="btn btn-ghost" onClick="{{ tt.grossUm }}" style="min-height: 44px; margin-left: auto;">{{ tt.grossText }}</button>
+              <button class="btn btn-primary" onClick="{{ tt.zeichnenUm }}" style="min-height: 44px;">{{ tt.zeichnenText }}</button>
+              <button class="btn btn-ghost" onClick="{{ tt.alleUm }}" style="min-height: 44px;">{{ tt.alleText }}</button>
+              <button class="btn btn-ghost" onClick="{{ tt.grossUm }}" style="min-height: 44px;">{{ tt.grossText }}</button>
             </div>
+            <sc-if value="{{ tt.zeichnenAn }}" hint-placeholder-val="{{ false }}">
+              <p style="margin: 0; font-size: 14px; line-height: 1.5; color: var(--color-accent-700);">{{ L.tt_zeichnen_hinweis }}</p>
+            </sc-if>
             <div style="{{ tt.bildRahmen }}">
-              <div style="{{ tt.bildInnen }}">
-                <img src="{{ tt.fotoUrl }}" alt="" style="width: 100%; height: auto; display: block; user-select: none;">
+              <div onPointerDown="{{ tt.zDown }}" onPointerMove="{{ tt.zMove }}" onPointerUp="{{ tt.zUp }}" onPointerCancel="{{ tt.zUp }}" style="{{ tt.bildInnen }}">
+                <img src="{{ tt.fotoUrl }}" alt="" draggable="false" style="width: 100%; height: auto; display: block; user-select: none; pointer-events: none;">
                 <sc-for list="{{ tt.bloecke }}" as="b" hint-placeholder-count="0">
                   <button onClick="{{ b.klick }}" title="{{ b.t }}" aria-label="{{ b.t }}" style="{{ b.stil }}"></button>
                 </sc-for>
+                <sc-if value="{{ tt.hatZug }}" hint-placeholder-val="{{ false }}">
+                  <div style="{{ tt.zugStil }}"></div>
+                </sc-if>
+                <sc-for list="{{ tt.griffe }}" as="gr" hint-placeholder-count="0">
+                  <div onPointerDown="{{ gr.down }}" onPointerMove="{{ gr.move }}" onPointerUp="{{ gr.up }}" onPointerCancel="{{ gr.up }}" style="{{ gr.stil }}"></div>
+                </sc-for>
               </div>
             </div>
+            <sc-if value="{{ tt.hatSel }}" hint-placeholder-val="{{ false }}">
+              <div style="display: grid; gap: 8px; padding: 10px; border-radius: var(--radius-md); background: var(--color-surface);">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.tt_feld }}</span>
+                  <sc-if value="{{ tt.selLiest }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size: 13px; font-style: italic; color: var(--color-accent-700);">{{ L.tt_liest }}</span>
+                  </sc-if>
+                  <span style="flex: 1;"></span>
+                  <button class="btn btn-ghost btn-icon" aria-label="{{ L.x_schliessen }}" onClick="{{ tt.selZu }}" style="width: 40px; height: 40px;">✕</button>
+                </div>
+                <input class="input" value="{{ tt.selText }}" onChange="{{ tt.selSetText }}" aria-label="{{ L.tt_feld_text }}" style="width: 100%; box-sizing: border-box; font-size: 16px;">
+                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                  <sc-for list="{{ tt.selRollen }}" as="ro" hint-placeholder-count="4">
+                    <button onClick="{{ ro.klick }}" style="{{ ro.stil }}">{{ ro.label }}</button>
+                  </sc-for>
+                </div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                  <button class="btn btn-ghost" onClick="{{ tt.selNeu }}" style="min-height: 40px;">{{ L.tt_neu_lesen }}</button>
+                  <button class="btn btn-ghost" onClick="{{ tt.selWeg }}" style="min-height: 40px; color: var(--color-accent-2-700);">{{ L.tt_feld_weg }}</button>
+                  <span style="font-size: 13px; color: var(--color-neutral-700);">{{ L.tt_ecken }}</span>
+                </div>
+              </div>
+            </sc-if>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
               <button class="btn btn-ghost" onClick="{{ tt.schrittZurueck }}" style="min-height: 44px;">{{ tt.schrittZurueckText }}</button>
               <button class="btn btn-secondary" onClick="{{ tt.schrittKeine }}" style="min-height: 44px; margin-left: auto;">{{ L.tt_keine }}</button>
@@ -3153,7 +3187,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 83) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 84) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -3477,7 +3511,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 83 · 2026-09-29";
+const BAU_STAND = "Bau 84 · 2026-09-29";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -4691,7 +4725,65 @@ class Component extends DCLogic {
     } });
   }
 
+  /* Eine Texterkennung für die ganze Sitzung — auch für selbst gezeichnete Felder. */
+  ttWorker() {
+    if (!this._ttW) this._ttW = (async () => {
+      const T = await this.ttLadeOcr();
+      return await T.createWorker(["deu", "eng"], 1, { logger: (m) => { if (this._ttLog) this._ttLog(m); } });
+    })().catch((e) => { this._ttW = null; throw e; });
+    return this._ttW;
+  }
+
+  ttWorkerWeg() {
+    const w = this._ttW;
+    this._ttW = null;
+    this._ttCanvas = {};
+    if (w) w.then((x) => x.terminate()).catch(() => {});
+  }
+
+  ttOcr(fn) {
+    const p = (this._ttQ || Promise.resolve()).catch(() => {}).then(fn);
+    this._ttQ = p.catch(() => {});
+    return p;
+  }
+
+  ttTextInfo(t) {
+    const zeiten = this.ttZeiten(t);
+    const name = this.ttName(t, zeiten);
+    const buchst = (name.match(/[a-zäöüß]/gi) || []).length;
+    return { t: t, zeiten: zeiten, name: name, buchst: buchst, nurZeit: zeiten.length > 0 && buchst < 2 };
+  }
+
+  ttBlockSetzen(fid, bid, patch) {
+    this.ttSet((t) => ({ fotos: t.fotos.map((ff) => (ff.id !== fid ? ff : Object.assign({}, ff, {
+      bloecke: ff.bloecke.map((x) => (x.id !== bid ? x : Object.assign({}, x, typeof patch === "function" ? patch(x) : patch))) }))) }));
+  }
+
+  /* Den Text in einem (selbst gezeichneten oder geänderten) Feld lesen. */
+  async ttBlockLesen(fid, bid) {
+    const c = (this._ttCanvas || {})[fid];
+    const s = this.state.tt;
+    if (!s) return;
+    const f = s.fotos.filter((x) => x.id === fid)[0];
+    const b = f && (f.bloecke || []).filter((x) => x.id === bid)[0];
+    if (!b) return;
+    if (!c) { this.ttBlockSetzen(fid, bid, { liest: false }); return; }
+    this.ttBlockSetzen(fid, bid, { liest: true });
+    let text = "";
+    try {
+      const w = await this.ttWorker();
+      const rect = { left: Math.max(0, Math.round(b.x0)), top: Math.max(0, Math.round(b.y0)), width: Math.max(4, Math.round(b.x1 - b.x0)), height: Math.max(4, Math.round(b.y1 - b.y0)) };
+      const r = await this.ttOcr(async () => {
+        try { await w.setParameters({ tessedit_pageseg_mode: "6" }); } catch (x) { /* Standard */ }
+        return w.recognize(c, { rectangle: rect });
+      });
+      text = String((r && r.data && r.data.text) || "").replace(/\s+/g, " ").trim();
+    } catch (e) { text = ""; }
+    this.ttBlockSetzen(fid, bid, Object.assign({ liest: false }, this.ttTextInfo(text)));
+  }
+
   ttZu() {
+    this.ttWorkerWeg();
     const s = this.state.tt;
     if (s) (s.fotos || []).forEach((f) => { try { URL.revokeObjectURL(f.url); } catch (e) { /* egal */ } });
     this.setState({ tt: null });
@@ -4903,7 +4995,7 @@ class Component extends DCLogic {
     if (!s) return;
     const e = this.ttQuelle(s);
     const r = this.ttBauen(s.fotos, e.date || "", tx("tt_leer_tag"));
-    const hatBloecke = (s.fotos || []).some((f) => (f.bloecke || []).length);
+    const hatBloecke = (s.fotos || []).some((f) => f.w && f.bloecke);
     this.ttSet((t) => {
       const bleiben = t.acts.filter((a) => !a.scan);
       const tage = t.tage.filter((tg) => bleiben.some((a) => a.tag === tg.id));
@@ -4937,13 +5029,11 @@ class Component extends DCLogic {
     let worker = null;
     try {
       this.ttSet({ busy: tx("tt_lade_leser"), pct: 0.02 });
-      let T = null;
-      try { T = await this.ttLadeOcr(); } catch (e) { T = null; }
-      if (!T) { this.ttSet({ busy: "", err: tx("tt_fehler_leser") }); return; }
+      try { worker = await this.ttWorker(); } catch (e) { worker = null; }
+      if (!worker) { this.ttSet({ busy: "", err: tx("tt_fehler_leser") }); return; }
       const offen = () => (((this.state.tt || {}).fotos) || []).filter((f) => !f.bloecke && !fertig[f.id]);
       let i = 0, n = offen().length;
-      worker = await T.createWorker(["deu", "eng"], 1, { logger: (m) => { if (m && m.status === "recognizing text") this.ttSet({ pct: Math.max(0.03, (i + (m.progress || 0)) / Math.max(1, n)) }); } });
-      try { await worker.setParameters({ tessedit_pageseg_mode: "11", preserve_interword_spaces: "1" }); } catch (e) { /* Standard */ }
+      this._ttLog = (m) => { if (m && m.status === "recognizing text") this.ttSet({ pct: Math.max(0.03, (i + (m.progress || 0)) / Math.max(1, n)) }); };
       let f;
       while (this.state.tt && (f = offen()[0])) {
         fertig[f.id] = true;
@@ -4951,7 +5041,12 @@ class Component extends DCLogic {
         let erg = { w: 0, h: 0, bloecke: [] };
         try {
           const v = await this.ttVorbereiten(f.file);
-          const r = await worker.recognize(v.c);
+          this._ttCanvas = this._ttCanvas || {};
+          this._ttCanvas[f.id] = v.c;
+          const r = await this.ttOcr(async () => {
+            try { await worker.setParameters({ tessedit_pageseg_mode: "11", preserve_interword_spaces: "1" }); } catch (x) { /* Standard */ }
+            return worker.recognize(v.c);
+          });
           erg = { w: v.w, h: v.h, bloecke: this.ttBloecke((r && r.data && r.data.words) || []) };
         } catch (e) { /* Bild bleibt ohne Text */ }
         this.ttSet((t) => ({ fotos: t.fotos.map((x) => (x.id === f.id ? Object.assign({}, x, erg) : x)) }));
@@ -4963,7 +5058,7 @@ class Component extends DCLogic {
     } catch (e) {
       this.ttSet({ busy: "", pct: 0, err: tx("tt_fehler_lesen") });
     } finally {
-      try { if (worker) await worker.terminate(); } catch (x) { /* egal */ }
+      this._ttLog = null;
       this._ttLiest = false;
       if (this._ttNochmal) { this._ttNochmal = false; window.setTimeout(() => this.ttLesen(), 0); }
     }
@@ -4976,6 +5071,7 @@ class Component extends DCLogic {
     const tage = s.tage.filter((tg) => acts.some((a) => a.tag === tg.id));
     const timetable = acts.length ? { tage: tage, acts: acts } : null;
     (s.fotos || []).forEach((f) => { try { URL.revokeObjectURL(f.url); } catch (e) { /* egal */ } });
+    this.ttWorkerWeg();
     if (s.draft) {
       if (!this.state.draft) { this.setState({ tt: null }); return; }
       this.setState({ tt: null, draft: Object.assign({}, this.state.draft, { timetable: timetable }) });
@@ -5013,7 +5109,7 @@ class Component extends DCLogic {
     const chip = (on) => ({ cursor: "pointer", font: "inherit", fontSize: "14px", minHeight: "40px", padding: "6px 14px", borderRadius: "999px",
       border: "1px solid " + (on ? "var(--color-accent)" : "var(--color-neutral-300)"), background: on ? "var(--color-accent-100)" : "transparent", color: on ? "var(--color-accent-800)" : "var(--color-text)" });
     const fotos = s.fotos || [];
-    const lesbar = fotos.filter((f) => f.w && (f.bloecke || []).length);
+    const lesbar = fotos.filter((f) => f.w && f.bloecke);
     const SCHRITTE = [["tag", tx("tt_s_tage"), tx("tt_s_tage_text")], ["buehne", tx("tt_s_buehnen"), tx("tt_s_buehnen_text")], ["act", tx("tt_s_acts"), tx("tt_s_acts_text")]];
     const gefuehrt = s.schritt >= 0 && lesbar.length > 0;
     const fi = Math.min(s.fotoIdx || 0, Math.max(0, lesbar.length - 1));
@@ -5023,6 +5119,11 @@ class Component extends DCLogic {
     const rolleSetzen = (fid, bid, rolle) => this.ttSet((t) => ({ fotos: t.fotos.map((ff) => (ff.id !== fid ? ff : Object.assign({}, ff, {
       bloecke: ff.bloecke.map((x) => (x.id !== bid ? x : Object.assign({}, x, { rolle: x.rolle === rolle ? "" : rolle }))) }))) }));
     const pct = (v, g) => (g ? (v / g) * 100 : 0).toFixed(3) + "%";
+    const sel = foto && s.gewaehlt ? foto.bloecke.filter((b) => b.id === s.gewaehlt)[0] : null;
+    const posIn = (ev, el) => {
+      const r = el.getBoundingClientRect();
+      return { x: Math.max(0, Math.min(foto.w, ((ev.clientX - r.left) / Math.max(1, r.width)) * foto.w)), y: Math.max(0, Math.min(foto.h, ((ev.clientY - r.top) / Math.max(1, r.height)) * foto.h)) };
+    };
     return {
       offen: true, evName: e.name || tx("tt_neues_ereignis"),
       busy: !!s.busy, busyText: s.busy || "",
@@ -5043,27 +5144,96 @@ class Component extends DCLogic {
       schrittText: sch[2],
       mehrFotos: lesbar.length > 1,
       fotoInfo: tx("tt_bild") + " " + (fi + 1) + " / " + lesbar.length,
-      fotoZurueck: () => this.ttSet((t) => ({ fotoIdx: Math.max(0, (t.fotoIdx || 0) - 1) })),
-      fotoVor: () => this.ttSet((t) => ({ fotoIdx: Math.min(lesbar.length - 1, (t.fotoIdx || 0) + 1) })),
+      fotoZurueck: () => this.ttSet((t) => ({ gewaehlt: "", fotoIdx: Math.max(0, (t.fotoIdx || 0) - 1) })),
+      fotoVor: () => this.ttSet((t) => ({ gewaehlt: "", fotoIdx: Math.min(lesbar.length - 1, (t.fotoIdx || 0) + 1) })),
       grossText: s.gross ? tx("tt_bild_kleiner") : tx("tt_bild_groesser"),
       grossUm: () => this.ttSet((t) => ({ gross: !t.gross })),
       bildRahmen: { overflow: "auto", maxHeight: "70vh", borderRadius: "var(--radius-sm)", background: "var(--color-neutral-200)" },
-      bildInnen: { position: "relative", width: s.gross ? "220%" : "100%", lineHeight: 0 },
+      bildInnen: { position: "relative", width: s.gross ? "220%" : "100%", lineHeight: 0, touchAction: s.zeichnenAn ? "none" : "auto", cursor: s.zeichnenAn ? "crosshair" : "default" },
       fotoUrl: foto ? foto.url : "",
-      bloecke: foto ? foto.bloecke.map((b) => {
+      bloecke: foto ? foto.bloecke.filter((b) => b.rolle || b.manuell || b.id === s.gewaehlt || s.alleFelder).map((b) => {
         const jetzt = b.rolle && b.rolle === sch[0];
         const farbe = FARBE[b.rolle];
+        const gew = b.id === s.gewaehlt;
         return {
-          key: b.id, t: b.t,
-          klick: () => rolleSetzen(foto.id, b.id, sch[0]),
+          key: b.id, t: b.t || tx("tt_liest"),
+          klick: () => {
+            const t = this.state.tt || {};
+            if (t.zeichnenAn) return;
+            if (t.gewaehlt !== b.id) {
+              this.ttSet({ gewaehlt: b.id });
+              if (!b.rolle) rolleSetzen(foto.id, b.id, sch[0]);
+            } else rolleSetzen(foto.id, b.id, sch[0]);
+          },
           stil: { position: "absolute", left: "calc(" + pct(b.x0, foto.w) + " - 3px)", top: "calc(" + pct(b.y0, foto.h) + " - 3px)",
             width: "calc(" + pct(b.x1 - b.x0, foto.w) + " + 6px)", height: "calc(" + pct(b.y1 - b.y0, foto.h) + " + 6px)",
             padding: 0, margin: 0, cursor: "pointer", boxSizing: "border-box", borderRadius: "2px",
             border: b.rolle ? ("2px solid " + farbe) : (b.nurZeit ? "1px dotted var(--color-neutral-600)" : "1px dashed var(--color-neutral-600)"),
             background: b.rolle ? ("color-mix(in srgb, " + farbe + (jetzt ? " 34%" : " 14%") + ", transparent)") : "transparent",
-            opacity: b.rolle && !jetzt ? 0.65 : 1 }
+            boxShadow: gew ? "0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-text)" : "none",
+            opacity: b.rolle && !jetzt && !gew ? 0.65 : 1 }
         };
       }) : [],
+      zeichnenAn: !!s.zeichnenAn,
+      zeichnenText: s.zeichnenAn ? tx("tt_zeichnen_aus") : tx("tt_zeichnen"),
+      zeichnenUm: () => this.ttSet((t) => ({ zeichnenAn: !t.zeichnenAn })),
+      alleText: s.alleFelder ? tx("tt_nur_gewaehlte") : tx("tt_alle_felder") + (foto ? " (" + foto.bloecke.length + ")" : ""),
+      alleUm: () => this.ttSet((t) => ({ alleFelder: !t.alleFelder })),
+      zDown: (ev) => {
+        const t = this.state.tt || {};
+        if (!t.zeichnenAn || !foto) return;
+        ev.preventDefault();
+        try { ev.currentTarget.setPointerCapture(ev.pointerId); } catch (x) { /* egal */ }
+        const p = posIn(ev, ev.currentTarget);
+        this.ttSet({ zug: { x0: p.x, y0: p.y, x1: p.x, y1: p.y } });
+      },
+      zMove: (ev) => {
+        const z = (this.state.tt || {}).zug;
+        if (!z || !foto) return;
+        const p = posIn(ev, ev.currentTarget);
+        this.ttSet({ zug: Object.assign({}, z, { x1: p.x, y1: p.y }) });
+      },
+      zUp: () => {
+        const z = (this.state.tt || {}).zug;
+        if (!z || !foto) return;
+        this.ttSet({ zug: null });
+        const x0 = Math.min(z.x0, z.x1), x1 = Math.max(z.x0, z.x1), y0 = Math.min(z.y0, z.y1), y1 = Math.max(z.y0, z.y1);
+        if (x1 - x0 < foto.w * 0.012 || y1 - y0 < foto.h * 0.008) return;
+        const bid = "m" + this.ttNid();
+        const neu = { id: bid, x0: x0, y0: y0, x1: x1, y1: y1, t: "", zeiten: [], name: "", buchst: 0, nurZeit: false, rolle: sch[0], manuell: true, liest: true };
+        this.ttSet((t) => ({ gewaehlt: bid, fotos: t.fotos.map((ff) => (ff.id !== foto.id ? ff : Object.assign({}, ff, { bloecke: ff.bloecke.concat([neu]) }))) }));
+        window.setTimeout(() => this.ttBlockLesen(foto.id, bid), 0);
+      },
+      hatZug: !!(s.zug && foto),
+      zugStil: s.zug && foto ? { position: "absolute", pointerEvents: "none", boxSizing: "border-box", border: "2px dashed var(--color-text)",
+        background: "color-mix(in srgb, var(--color-accent) 18%, transparent)",
+        left: pct(Math.min(s.zug.x0, s.zug.x1), foto.w), top: pct(Math.min(s.zug.y0, s.zug.y1), foto.h),
+        width: pct(Math.abs(s.zug.x1 - s.zug.x0), foto.w), height: pct(Math.abs(s.zug.y1 - s.zug.y0), foto.h) } : {},
+      griffe: sel ? [["a", sel.x0, sel.y0], ["b", sel.x1, sel.y1]].map((g) => {
+        const ecke = g[0];
+        return {
+          key: ecke,
+          stil: { position: "absolute", left: "calc(" + pct(g[1], foto.w) + " - 16px)", top: "calc(" + pct(g[2], foto.h) + " - 16px)", width: "32px", height: "32px",
+            borderRadius: "999px", background: "var(--color-bg)", border: "3px solid var(--color-text)", boxSizing: "border-box", touchAction: "none", cursor: "nwse-resize", zIndex: 3 },
+          down: (ev) => { ev.stopPropagation(); ev.preventDefault(); try { ev.currentTarget.setPointerCapture(ev.pointerId); } catch (x) { /* egal */ } this._ttGriff = ecke; },
+          move: (ev) => {
+            if (this._ttGriff !== ecke) return;
+            ev.stopPropagation();
+            const p = posIn(ev, ev.currentTarget.parentElement);
+            this.ttBlockSetzen(foto.id, sel.id, (x) => (ecke === "a" ? { x0: Math.min(p.x, x.x1 - 8), y0: Math.min(p.y, x.y1 - 8) } : { x1: Math.max(p.x, x.x0 + 8), y1: Math.max(p.y, x.y0 + 8) }));
+          },
+          up: (ev) => { if (this._ttGriff !== ecke) return; ev.stopPropagation(); this._ttGriff = null; this.ttBlockLesen(foto.id, sel.id); }
+        };
+      }) : [],
+      hatSel: !!sel,
+      selText: sel ? (sel.t || "") : "",
+      selLiest: !!(sel && sel.liest),
+      selSetText: (ev) => { const v = ev.target.value; if (sel) this.ttBlockSetzen(foto.id, sel.id, this.ttTextInfo(v)); },
+      selRollen: sel ? [["tag", tx("tt_r_tag")], ["buehne", tx("tt_r_buehne")], ["act", tx("tt_r_act")], ["", tx("tt_r_keine")]].map((r) => ({
+        key: r[0] || "x", label: r[1], stil: chip((sel.rolle || "") === r[0]), klick: () => this.ttBlockSetzen(foto.id, sel.id, { rolle: r[0] }) })) : [],
+      selNeu: () => { if (sel) this.ttBlockLesen(foto.id, sel.id); },
+      selWeg: () => { if (!sel) return; this.ttSet((t) => ({ gewaehlt: "", fotos: t.fotos.map((ff) => (ff.id !== foto.id ? ff : Object.assign({}, ff, { bloecke: ff.bloecke.filter((x) => x.id !== sel.id) }))) })); },
+      selZu: () => this.ttSet({ gewaehlt: "" }),
       schrittZurueckText: s.schritt > 0 ? tx("tt_zurueck") : tx("tt_abbrechen"),
       schrittZurueck: () => this.ttSet((t) => ({ schritt: t.schritt > 0 ? t.schritt - 1 : -1 })),
       schrittKeine: () => {
