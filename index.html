@@ -19,8 +19,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Chronik">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js?v=b87"></script>
-<script src="supabase-bridge.js?v=b87"></script>
+<script src="chronik-config.js?v=b89"></script>
+<script src="supabase-bridge.js?v=b89"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
 <style>
@@ -296,6 +296,21 @@
     </sc-if>
   </header>
 
+  <sc-if value="{{ ttWahl.an }}" hint-placeholder-val="{{ false }}">
+    <div data-tt-wahl="" data-noprint="" style="position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 420; width: min(560px, calc(100vw - 24px)); box-sizing: border-box; background: var(--color-bg); color: var(--color-text); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); padding: 12px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; font-family: var(--font-body);">
+      <sc-if value="{{ ttWahl.keinBild }}" hint-placeholder-val="{{ true }}">
+        <div style="flex: 1 1 220px; font-size: 15px; line-height: 1.4;">{{ L.tt_wahl_hinweis }}</div>
+      </sc-if>
+      <sc-if value="{{ ttWahl.hatBild }}" hint-placeholder-val="{{ false }}">
+        <img ref="{{ ttWahl.bildRef }}" alt="" style="width: 72px; height: 72px; object-fit: cover; border-radius: var(--radius-sm); flex: 0 0 72px;">
+        <div style="flex: 1 1 140px; font-size: 15px;">{{ L.tt_wahl_frage }}</div>
+        <button class="btn btn-primary" style="min-height: 44px;" onClick="{{ ttWahl.ok }}">{{ L.tt_wahl_ok }}</button>
+        <button class="btn btn-ghost" style="min-height: 44px;" onClick="{{ ttWahl.anders }}">{{ L.tt_wahl_anders }}</button>
+      </sc-if>
+      <button class="btn btn-secondary" style="min-height: 44px;" onClick="{{ ttWahl.zurueck }}">{{ L.tt_wahl_zurueck }}</button>
+    </div>
+  </sc-if>
+
   <sc-if value="{{ tt.offen }}" hint-placeholder-val="{{ false }}">
     <div data-noprint="" onClick="{{ tt.zuRand }}" style="position: fixed; inset: 0; z-index: 400; background: rgba(32, 30, 29, 0.45); overflow-y: auto; padding: 8px; box-sizing: border-box;">
       <div onDragOver="{{ tt.dragOver }}" onDragLeave="{{ tt.dragLeave }}" onDrop="{{ tt.drop }}" style="{{ tt.panelStil }}">
@@ -322,10 +337,25 @@
         </sc-if>
         <sc-if value="{{ tt.chronikOffen }}" hint-placeholder-val="{{ false }}">
           <div style="display: grid; gap: 8px; padding: 10px; border: 1px solid var(--color-divider); border-radius: var(--radius-sm);">
-            <div style="font-size: 14px; color: var(--color-neutral-700);">{{ L.tt_aus_chronik_hinweis }}</div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 6px; max-height: 280px; overflow-y: auto;">
-              <sc-for list="{{ tt.chronikBilder }}" as="cb" hint-placeholder-count="0">
-                <button onClick="{{ cb.klick }}" title="{{ cb.titel }}" style="aspect-ratio: 1; padding: 0; border: 0; border-radius: var(--radius-sm); overflow: hidden; cursor: pointer; background: var(--color-neutral-200);" style-hover="outline: 3px solid var(--color-accent);"><img ref="{{ cb.bildRef }}" alt="" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; display: block;"></button>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+              <div style="flex: 1 1 220px; font-size: 14px; color: var(--color-neutral-700);">{{ L.tt_aus_chronik_hinweis }}</div>
+              <button class="btn btn-ghost" style="min-height: 44px;" onClick="{{ tt.aufZeitstrahl }}">{{ L.tt_auf_zeitstrahl }}</button>
+            </div>
+            <div style="display: grid; gap: 16px; max-height: 420px; overflow-y: auto; padding-right: 4px;">
+              <sc-for list="{{ tt.chronikGruppen }}" as="cg" hint-placeholder-count="0">
+                <div style="display: grid; gap: 8px;">
+                  <div style="display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid var(--color-divider); padding-bottom: 4px;">
+                    <span style="font-family: var(--font-heading); font-weight: 600; font-size: 15px;">{{ cg.titel }}</span>
+                    <sc-if value="{{ cg.hatDatum }}" hint-placeholder-val="{{ false }}">
+                      <span style="font-size: 12px; color: var(--color-neutral-700);">{{ cg.datum }}</span>
+                    </sc-if>
+                  </div>
+                  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 10px;">
+                    <sc-for list="{{ cg.bilder }}" as="cb" hint-placeholder-count="0">
+                      <button onClick="{{ cb.klick }}" title="{{ cb.titel }}" style="aspect-ratio: 1; width: 100%; padding: 0; border: 0; border-radius: var(--radius-sm); overflow: hidden; cursor: pointer; background: var(--color-neutral-200);" style-hover="outline: 3px solid var(--color-accent); outline-offset: 2px;"><img ref="{{ cb.bildRef }}" alt="" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; display: block;"></button>
+                    </sc-for>
+                  </div>
+                </div>
               </sc-for>
             </div>
             <sc-if value="{{ tt.chronikLeer }}" hint-placeholder-val="{{ false }}">
@@ -3264,7 +3294,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 87) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 89) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -3588,7 +3618,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 87 · 2026-09-29";
+const BAU_STAND = "Bau 89 · 2026-09-29";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -4657,6 +4687,7 @@ class Component extends DCLogic {
 
   componentDidMount() {
     window.addEventListener("paste", this.ttEinfuegen);
+    document.addEventListener("click", this.ttWahlKlick, true);
     /* Eigenes Startbildschirm-Icon: appIcon in chronik-config.js. */
     try {
       const ic = window.CHRONIK_CONFIG && window.CHRONIK_CONFIG.appIcon;
@@ -5314,7 +5345,7 @@ class Component extends DCLogic {
     if (/D-20|kein worker/.test(c)) return tx("ki_f_bindung");
     if (/D-09|login/.test(c)) return tx("ki_f_login");
     if (/D-21/.test(c)) return tx("ki_f_modell") + d;
-    if (/404|not found/i.test(c)) return tx("ki_f_worker");
+    if (/D-11|404|not found/i.test(c)) return tx("ki_f_worker");
     if (/fetch|network|cors/i.test(c)) return tx("ki_f_netz");
     return tx("ki_f_sonst") + " " + c.slice(0, 120) + d;
   }
@@ -5342,19 +5373,40 @@ class Component extends DCLogic {
     }
   }
 
-  ttChronikBilder() {
+  /* Nur Bilder aus Ereignissen, die ich sehen darf — nach Ereignis
+     gruppiert, das gerade bearbeitete zuerst. */
+  ttChronikGruppen() {
     const s = this.state.tt;
     const cur = s ? this.ttQuelle(s) : {};
-    const evs = [cur].concat((this.state.events || []).filter((e) => e && e.id !== cur.id));
-    const out = [], seen = {};
-    evs.forEach((e) => (e.images || []).forEach((im, j) => {
-      if (!im || im.weg || !im.src) return;
-      const id = (e.id || "cur") + ":" + (im.key || j);
-      if (seen[im.src]) return; seen[im.src] = true;
-      out.push({ id: id, src: im.src, ev: e.name || "" });
-    }));
-    return out.slice(0, 200);
+    const andere = (this.state.events || []).filter((e) => e && e.id !== cur.id && !e.lose && this.levelFor(e) >= 1)
+      .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+    const lose = (this.state.events || []).filter((e) => e && e.id !== cur.id && e.lose && this.levelFor(e) >= 1);
+    const evs = [cur].concat(andere, lose);
+    const seen = {}, out = [];
+    evs.forEach((e) => {
+      const b = [];
+      (e.images || []).forEach((im, j) => {
+        if (!im || im.weg || !im.src || seen[im.src]) return;
+        seen[im.src] = true;
+        b.push({ id: (e.id || "cur") + ":" + (im.key || j), src: im.src, ev: e.name || "" });
+      });
+      if (b.length) out.push({ id: e.id || "cur", titel: e.lose ? tx("tt_einzelbilder") : (e.name || tx("tt_neues_ereignis")), datum: e.lose || !e.date ? "" : fmtDate(e.date), bilder: b.slice(0, 60) });
+    });
+    return out.slice(0, 40);
   }
+
+  ttWahlKlick = (ev) => {
+    const s = this.state.tt;
+    if (!s || !s.wahlModus) return;
+    const t = ev.target;
+    if (!t || !t.closest || t.closest("[data-tt-wahl]")) return;
+    const img = t.closest("img");
+    if (!img) return;
+    const src = img.currentSrc || img.getAttribute("src");
+    if (!src || /^data:image\/svg/.test(src)) return;
+    ev.preventDefault(); ev.stopPropagation();
+    this.ttSet({ wahlBild: src });
+  };
 
   async ttAusChronik(b) {
     try {
@@ -5362,7 +5414,7 @@ class Component extends DCLogic {
       const r = await fetch(b.src);
       const blob = await r.blob();
       const f = new File([blob], "chronik-" + b.id.replace(/[^a-z0-9]+/gi, "-") + ".jpg", { type: blob.type || "image/jpeg" });
-      this.ttSet({ busy: "", chronikWahl: false });
+      this.ttSet({ busy: "", chronikWahl: false, wahlModus: false, wahlBild: "" });
       this.ttDateien([f]);
     } catch (x) {
       this.ttSet({ busy: "", err: tx("tt_bild_fehler") });
@@ -5513,7 +5565,7 @@ class Component extends DCLogic {
 
   ttVals() {
     const s = this.state.tt;
-    if (!s) return { offen: false };
+    if (!s || s.wahlModus) return { offen: false };
     const e = this.ttQuelle(s);
     const bilder = (e.images || []).map((im, j) => ({ id: im.key || ("i" + j), src: im.src || "" })).filter((b) => b.src);
     const alben = (e.alben || []).map((a, j) => ({ id: a.id || ("a" + j), name: a.name || a.titel || a.title || tx("tt_album") }));
@@ -5553,10 +5605,12 @@ class Component extends DCLogic {
       galerieText: beruehr ? tx("tt_galerie") : tx("tt_bilder_waehlen"),
       chronikUm: () => this.ttSet({ chronikWahl: !s.chronikWahl }),
       chronikOffen: !!s.chronikWahl,
-      chronikBilder: s.chronikWahl ? this.ttChronikBilder().map((b) => ({ key: b.id, titel: b.ev,
-        bildRef: (el) => { if (el && el.getAttribute("src") !== b.src) el.setAttribute("src", b.src); },
-        klick: () => this.ttAusChronik(b) })) : [],
-      chronikLeer: !!s.chronikWahl && !this.ttChronikBilder().length,
+      chronikGruppen: s.chronikWahl ? this.ttChronikGruppen().map((g) => ({ key: g.id, titel: g.titel, datum: g.datum, hatDatum: !!g.datum,
+        bilder: g.bilder.map((b) => ({ key: b.id, titel: b.ev,
+          bildRef: (el) => { if (el && el.getAttribute("src") !== b.src) el.setAttribute("src", b.src); },
+          klick: () => this.ttAusChronik(b) })) })) : [],
+      aufZeitstrahl: () => this.ttSet({ wahlModus: true, wahlBild: "", chronikWahl: false }),
+      chronikLeer: !!s.chronikWahl && !this.ttChronikGruppen().length,
       desktop: !beruehr,
       dragOver: (ev) => { ev.preventDefault(); if (!s.ziel) this.ttSet({ ziel: true }); },
       dragLeave: (ev) => { if (ev.currentTarget === ev.target) this.ttSet({ ziel: false }); },
@@ -12267,6 +12321,18 @@ class Component extends DCLogic {
             position: "fixed", inset: 0, zIndex: 245,
             background: "color-mix(in srgb, var(--color-text) 46%, transparent)"
           }
+        };
+      })(this),
+      ttWahl: (function (self) {
+        const s = st.tt;
+        const an = !!(s && s.wahlModus);
+        const src = an ? (s.wahlBild || "") : "";
+        return {
+          an: an, hatBild: !!src, keinBild: an && !src,
+          bildRef: (el) => { if (el && src && el.getAttribute("src") !== src) el.setAttribute("src", src); },
+          ok: () => { if (src) self.ttAusChronik({ id: "zeitstrahl", src: src }); },
+          anders: () => self.ttSet({ wahlBild: "" }),
+          zurueck: () => self.ttSet({ wahlModus: false, wahlBild: "" })
         };
       })(this),
       kiInfo: (function (self) {
