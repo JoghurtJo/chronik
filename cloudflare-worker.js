@@ -284,10 +284,26 @@ async function serve(request, env, url, cors) {
 
 
 /* Timetable lesen — mit Workers AI */
-const TT_PROMPT = "Read the festival or event timetable in this photo. Return ONLY valid JSON, no explanation, exactly in this form: " +
+const TT_PROMPT = "Read the festival or event timetable in this image. Return ONLY valid JSON, no explanation, no markdown, exactly in this form: " +
   "{\"tage\":[{\"label\":\"day as printed, e.g. Friday 12.07.\",\"acts\":[{\"name\":\"act or band\",\"buehne\":\"stage name or empty\",\"von\":\"HH:MM\",\"bis\":\"HH:MM or empty\"}]}]}. " +
   "Use 24-hour times. If the timetable is a grid, read start and end of each act from its position against the time axis and its stage from the row or column header. " +
   "If no day is printed, use one entry with an empty label. Include every act exactly once and do not invent anything.";
+
+function ttText(out) {
+  if (out == null) return "";
+  if (typeof out === "string") return out;
+  let r = out.response !== undefined ? out.response : (out.result && out.result.response !== undefined ? out.result.response : undefined);
+  if (r === undefined && out.choices && out.choices[0]) r = (out.choices[0].message || {}).content;
+  if (r === undefined) r = out;
+  return typeof r === "string" ? r : JSON.stringify(r);
+}
+
+function ttJson(text) {
+  const t = String(text || "").replace(/```(json)?/gi, "");
+  const a = t.indexOf("{"), b = t.lastIndexOf("}");
+  if (a < 0 || b <= a) return null;
+  try { const d = JSON.parse(t.slice(a, b + 1)); return d && Array.isArray(d.tage) ? d : (d && Array.isArray(d.acts) ? { tage: [{ label: "", acts: d.acts }] } : null); } catch (e) { return null; }
+}
 
 async function timetable(request, env, cors) {
   await whoami(request, env);
@@ -295,34 +311,32 @@ async function timetable(request, env, cors) {
   const body = await request.json().catch(() => ({}));
   const bild = String(body.bild || "");
   if (!/^data:image\/(jpeg|png|webp);base64,/.test(bild) || bild.length > 6000000) return json({ error: "D-08" }, 400, cors);
-  const modelle = [env.TT_MODEL, "@cf/meta/llama-4-scout-17b-16e-instruct", "@cf/meta/llama-3.2-11b-vision-instruct"].filter(Boolean);
-  let text = "", fehler = "";
+  const modelle = [env.TT_MODEL, "@cf/meta/llama-4-scout-17b-16e-instruct", "@cf/mistralai/mistral-small-3.1-24b-instruct", "@cf/google/gemma-3-12b-it", "@cf/meta/llama-3.2-11b-vision-instruct"].filter(Boolean);
+  const fehler = [];
+  let bytes = null;
   for (const m of modelle) {
     try {
       let out;
       if (/llama-3\.2/.test(m)) {
-        const roh = atob(bild.split(",")[1]);
-        const bytes = new Array(roh.length);
-        for (let i = 0; i < roh.length; i++) bytes[i] = roh.charCodeAt(i);
-        const run = () => env.AI.run(m, { messages: [{ role: "user", content: TT_PROMPT }], image: bytes, max_tokens: 4096 });
+        if (!bytes) { const roh = atob(bild.split(",")[1]); bytes = new Array(roh.length); for (let i = 0; i < roh.length; i++) bytes[i] = roh.charCodeAt(i); }
+        const run = () => env.AI.run(m, { prompt: TT_PROMPT, image: bytes, max_tokens: 4096 });
         try { out = await run(); }
         catch (e) {
-          if (/agree/i.test(String((e && e.message) || ""))) { await env.AI.run(m, { prompt: "agree" }); out = await run(); } else throw e;
+          if (/agree|licen/i.test(String((e && e.message) || ""))) { await env.AI.run(m, { prompt: "agree" }); out = await run(); } else throw e;
         }
       } else {
         out = await env.AI.run(m, {
-          messages: [{ role: "user", content: [{ type: "text", text: TT_PROMPT }, { type: "image_url", image_url: { url: bild } }] }],
+          messages: [
+            { role: "system", content: "You extract timetables from images and answer with JSON only." },
+            { role: "user", content: [{ type: "text", text: TT_PROMPT }, { type: "image_url", image_url: { url: bild } }] }
+          ],
           max_tokens: 4096, temperature: 0.1
         });
       }
-      const r = out && out.response !== undefined ? out.response : out;
-      text = typeof r === "string" ? r : JSON.stringify(r);
-      if (text && text.indexOf("{") >= 0 && text.indexOf("tage") >= 0) break;
-    } catch (e) { fehler = String((e && e.message) || e); }
+      const d = ttJson(ttText(out));
+      if (d) return json({ ok: true, tage: d.tage, modell: m.split("/").pop() }, 200, cors);
+      fehler.push(m.split("/").pop() + ": " + ttText(out).slice(0, 80));
+    } catch (e) { fehler.push(m.split("/").pop() + ": " + String((e && e.message) || e).slice(0, 120)); }
   }
-  const a = text.indexOf("{"), b = text.lastIndexOf("}");
-  let daten = null;
-  try { daten = JSON.parse(text.slice(a, b + 1)); } catch (e) { daten = null; }
-  if (!daten || !Array.isArray(daten.tage)) return json({ error: "D-21", detail: fehler.slice(0, 200) }, 502, cors);
-  return json({ ok: true, tage: daten.tage }, 200, cors);
+  return json({ error: "D-21", detail: fehler.join(" | ").slice(0, 600) }, 502, cors);
 }

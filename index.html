@@ -19,8 +19,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Chronik">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js?v=b86"></script>
-<script src="supabase-bridge.js?v=b86"></script>
+<script src="chronik-config.js?v=b87"></script>
+<script src="supabase-bridge.js?v=b87"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
 <style>
@@ -314,10 +314,24 @@
             <label class="btn btn-primary" style="min-height: 44px; cursor: pointer;">{{ L.tt_foto }}<input type="file" accept="image/*" capture="environment" onChange="{{ tt.scan }}" style="display: none;"></label>
           </sc-if>
           <label class="btn btn-secondary" style="min-height: 44px; cursor: pointer;">{{ tt.galerieText }}<input type="file" accept="image/*" multiple="" onChange="{{ tt.scan }}" style="display: none;"></label>
+          <button class="btn btn-secondary" style="min-height: 44px;" aria-expanded="{{ tt.chronikOffen }}" onClick="{{ tt.chronikUm }}">{{ L.tt_aus_chronik }}</button>
           <button class="btn btn-ghost" style="min-height: 44px;" onClick="{{ tt.tagNeu }}">{{ L.tt_tag_neu }}</button>
         </div>
         <sc-if value="{{ tt.desktop }}" hint-placeholder-val="{{ false }}">
           <p style="margin: 0; font-size: 14px; color: var(--color-neutral-700);">{{ L.tt_ziehen_hinweis }}</p>
+        </sc-if>
+        <sc-if value="{{ tt.chronikOffen }}" hint-placeholder-val="{{ false }}">
+          <div style="display: grid; gap: 8px; padding: 10px; border: 1px solid var(--color-divider); border-radius: var(--radius-sm);">
+            <div style="font-size: 14px; color: var(--color-neutral-700);">{{ L.tt_aus_chronik_hinweis }}</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 6px; max-height: 280px; overflow-y: auto;">
+              <sc-for list="{{ tt.chronikBilder }}" as="cb" hint-placeholder-count="0">
+                <button onClick="{{ cb.klick }}" title="{{ cb.titel }}" style="aspect-ratio: 1; padding: 0; border: 0; border-radius: var(--radius-sm); overflow: hidden; cursor: pointer; background: var(--color-neutral-200);" style-hover="outline: 3px solid var(--color-accent);"><img ref="{{ cb.bildRef }}" alt="" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; display: block;"></button>
+              </sc-for>
+            </div>
+            <sc-if value="{{ tt.chronikLeer }}" hint-placeholder-val="{{ false }}">
+              <p style="margin: 0; font-size: 14px; font-style: italic;">{{ L.tt_aus_chronik_leer }}</p>
+            </sc-if>
+          </div>
         </sc-if>
         <sc-if value="{{ tt.hatFotos }}" hint-placeholder-val="{{ false }}">
           <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
@@ -2998,6 +3012,17 @@
 
       <sc-if value="{{ einst.inhalte }}" hint-placeholder-val="{{ false }}">
         <div>
+      <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: var(--space-2);">{{ L.ki_titel }}</div>
+      <div style="display: grid; gap: var(--space-2); margin-bottom: var(--space-6);">
+        <div style="display: flex; gap: var(--space-2); flex-wrap: wrap; align-items: center;">
+          <button onClick="{{ kiInfo.um }}" aria-pressed="{{ kiInfo.anText }}" style="{{ kiInfo.stil }}">{{ kiInfo.label }}</button>
+          <button class="btn btn-secondary" style="min-height: 36px; white-space: nowrap;" disabled="{{ kiInfo.aus }}" onClick="{{ kiInfo.test }}">{{ L.ki_pruefen }}</button>
+        </div>
+        <div style="font-size: 11.5px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.ki_hinweis }}</div>
+        <sc-if value="{{ kiInfo.hat }}" hint-placeholder-val="{{ false }}">
+          <div style="{{ kiInfo.meldStil }}">{{ kiInfo.meldung }}</div>
+        </sc-if>
+      </div>
       <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: var(--space-2);">{{ L.was_auf_meinem_zeitstrahl_erscheint }}</div>
       <div style="display: grid; gap: var(--space-3); margin-bottom: var(--space-6);">
         <sc-for list="{{ feed }}" as="f" hint-placeholder-count="3">
@@ -3239,7 +3264,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 86) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 87) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -3563,7 +3588,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 86 · 2026-09-29";
+const BAU_STAND = "Bau 87 · 2026-09-29";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -5283,6 +5308,67 @@ class Component extends DCLogic {
     }) });
   }
 
+  kiFehlerText(x) {
+    const c = String((x && (x.code || x.message)) || x || "");
+    const d = x && x.detail ? " (" + String(x.detail).slice(0, 160) + ")" : "";
+    if (/D-20|kein worker/.test(c)) return tx("ki_f_bindung");
+    if (/D-09|login/.test(c)) return tx("ki_f_login");
+    if (/D-21/.test(c)) return tx("ki_f_modell") + d;
+    if (/404|not found/i.test(c)) return tx("ki_f_worker");
+    if (/fetch|network|cors/i.test(c)) return tx("ki_f_netz");
+    return tx("ki_f_sonst") + " " + c.slice(0, 120) + d;
+  }
+
+  async kiTesten() {
+    const CC = window.ChronikCloud;
+    if (!CC || !CC.ttKi) { this.setState({ kiStatus: { ok: false, text: tx("ki_f_worker") } }); return; }
+    this.setState({ kiStatus: { ok: true, text: tx("ki_teste") } });
+    try {
+      const c = document.createElement("canvas");
+      c.width = 900; c.height = 420;
+      const g = c.getContext("2d");
+      g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height);
+      g.fillStyle = "#000"; g.font = "bold 44px sans-serif";
+      g.fillText("SATURDAY", 40, 70);
+      g.font = "34px sans-serif";
+      g.fillText("MAIN STAGE", 40, 140);
+      g.fillText("20:00 - 21:00   The Testers", 40, 210);
+      g.fillText("21:30 - 23:00   Sample Band", 40, 270);
+      const d = await CC.ttKi(c.toDataURL("image/jpeg", 0.9));
+      const n = (d.tage || []).reduce((s, t) => s + ((t.acts || []).length), 0);
+      this.setState({ kiStatus: n ? { ok: true, text: tx("ki_ok") + " " + plural(n, "Act", "Acts") + (d.modell ? " · " + d.modell : "") } : { ok: false, text: tx("ki_f_leer") } });
+    } catch (x) {
+      this.setState({ kiStatus: { ok: false, text: this.kiFehlerText(x) } });
+    }
+  }
+
+  ttChronikBilder() {
+    const s = this.state.tt;
+    const cur = s ? this.ttQuelle(s) : {};
+    const evs = [cur].concat((this.state.events || []).filter((e) => e && e.id !== cur.id));
+    const out = [], seen = {};
+    evs.forEach((e) => (e.images || []).forEach((im, j) => {
+      if (!im || im.weg || !im.src) return;
+      const id = (e.id || "cur") + ":" + (im.key || j);
+      if (seen[im.src]) return; seen[im.src] = true;
+      out.push({ id: id, src: im.src, ev: e.name || "" });
+    }));
+    return out.slice(0, 200);
+  }
+
+  async ttAusChronik(b) {
+    try {
+      this.ttSet({ busy: tx("tt_hole_bild"), pct: 0.02 });
+      const r = await fetch(b.src);
+      const blob = await r.blob();
+      const f = new File([blob], "chronik-" + b.id.replace(/[^a-z0-9]+/gi, "-") + ".jpg", { type: blob.type || "image/jpeg" });
+      this.ttSet({ busy: "", chronikWahl: false });
+      this.ttDateien([f]);
+    } catch (x) {
+      this.ttSet({ busy: "", err: tx("tt_bild_fehler") });
+    }
+  }
+
   ttPruefen() {
     const los = () => this.ttSet((t) => ({ schritt: 0, fotoIdx: 0, fotos: t.fotos.map((f) => this.ttKiRollen(f)) }));
     this.ttSet((t) => ({ fotos: t.fotos.map((f) => Object.assign({}, f, { modus: "felder" })), err: "", info: "" }));
@@ -5329,7 +5415,9 @@ class Component extends DCLogic {
     this._ttLiest = true;
     const fertig = {};
     const CC = window.ChronikCloud;
-    const kiDa = !opts.ocr && this.state.cloud && CC && CC.ttKi;
+    const kiDa = !opts.ocr && this.state.ttKiAn !== false && this.state.cloud && CC && CC.ttKi;
+    this._ttKiAus = false;
+    let kiFehler = "";
     let worker = null;
     try {
       const offen = () => (((this.state.tt || {}).fotos) || []).filter((f) => !fertig[f.id] && (opts.ocr ? !f.bloecke : (!f.bloecke && !f.ki)));
@@ -5350,8 +5438,10 @@ class Component extends DCLogic {
           try {
             const d = await CC.ttKi(await this.ttJpeg(f.file));
             if (d && Array.isArray(d.tage) && d.tage.some((t) => (t.acts || []).length)) erg.ki = { tage: d.tage };
+            else kiFehler = tx("ki_f_leer");
           } catch (x) {
-            if (x && (x.code === "D-20" || /D-20|kein worker/.test(String(x.message)))) this._ttKiAus = true;
+            kiFehler = this.kiFehlerText(x);
+            if (x && (x.code === "D-20" || /D-20|kein worker|D-09/.test(String(x.message)))) this._ttKiAus = true;
           }
         }
         if (!erg.ki && v) {
@@ -5376,7 +5466,10 @@ class Component extends DCLogic {
         n = Math.max(n, i + offen().length);
       }
       this.ttSet({ busy: "", pct: 0 });
-      window.setTimeout(() => { if (opts.danach) opts.danach(); else this.ttAnwenden(); }, 0);
+      window.setTimeout(() => {
+        if (opts.danach) opts.danach(); else this.ttAnwenden();
+        if (kiFehler) this.ttSet((t) => ({ info: tx("ki_fallback") + " " + kiFehler + (t.info ? " — " + t.info : "") }));
+      }, 0);
     } catch (e) {
       this.ttSet({ busy: "", pct: 0, err: tx("tt_fehler_lesen") });
     } finally {
@@ -5458,6 +5551,12 @@ class Component extends DCLogic {
         outline: s.ziel ? "3px dashed var(--color-accent)" : "none", outlineOffset: "-8px" },
       kamera: beruehr,
       galerieText: beruehr ? tx("tt_galerie") : tx("tt_bilder_waehlen"),
+      chronikUm: () => this.ttSet({ chronikWahl: !s.chronikWahl }),
+      chronikOffen: !!s.chronikWahl,
+      chronikBilder: s.chronikWahl ? this.ttChronikBilder().map((b) => ({ key: b.id, titel: b.ev,
+        bildRef: (el) => { if (el && el.getAttribute("src") !== b.src) el.setAttribute("src", b.src); },
+        klick: () => this.ttAusChronik(b) })) : [],
+      chronikLeer: !!s.chronikWahl && !this.ttChronikBilder().length,
       desktop: !beruehr,
       dragOver: (ev) => { ev.preventDefault(); if (!s.ziel) this.ttSet({ ziel: true }); },
       dragLeave: (ev) => { if (ev.currentTarget === ev.target) this.ttSet({ ziel: false }); },
@@ -6216,7 +6315,8 @@ class Component extends DCLogic {
       themeId: this.state.themeId, override: this.state.override, custom: this.state.custom,
       meta: this.state.meta, mode: this.state.mode, zoom: this.state.zoom,
       avatar: this.state.avatar || "",
-      ttMarks: this.state.ttMarks || {}
+      ttMarks: this.state.ttMarks || {},
+      ttKiAn: this.state.ttKiAn !== false
     };
   }
 
@@ -6232,7 +6332,8 @@ class Component extends DCLogic {
       mode: l.mode || "proportional",
       zoom: l.zoom || 1,
       avatar: l.avatar || "",
-      ttMarks: l.ttMarks && typeof l.ttMarks === "object" ? l.ttMarks : {}
+      ttMarks: l.ttMarks && typeof l.ttMarks === "object" ? l.ttMarks : {},
+      ttKiAn: l.ttKiAn !== false
     }, () => this.applyTheme());
   }
 
@@ -12166,6 +12267,23 @@ class Component extends DCLogic {
             position: "fixed", inset: 0, zIndex: 245,
             background: "color-mix(in srgb, var(--color-text) 46%, transparent)"
           }
+        };
+      })(this),
+      kiInfo: (function (self) {
+        const an = st.ttKiAn !== false;
+        const m = st.kiStatus;
+        return {
+          anText: an ? "true" : "false",
+          label: (an ? "✓ " : "") + tx("ki_nutzen"),
+          stil: { font: "inherit", fontSize: "12px", letterSpacing: "0.04em", padding: "5px 12px", cursor: "pointer", whiteSpace: "nowrap", borderRadius: "99px", minHeight: "36px",
+            border: "1px solid " + (an ? "var(--color-accent)" : "var(--color-divider)"), background: an ? "var(--color-accent)" : "transparent", color: an ? "var(--color-bg)" : "var(--color-text)" },
+          um: () => self.setState({ ttKiAn: !an, kiStatus: null }, () => self.saveLook()),
+          aus: !an || !st.cloud,
+          hat: !!m,
+          meldung: m ? m.text : "",
+          meldStil: { fontSize: "12.5px", lineHeight: 1.45, padding: "6px 10px", borderRadius: "var(--radius-sm)", overflowWrap: "anywhere",
+            background: m && m.ok ? "var(--color-accent-100)" : "var(--color-accent-2-100)", color: m && m.ok ? "var(--color-accent-700)" : "var(--color-accent-2-700)" },
+          test: () => self.kiTesten()
         };
       })(this),
       feed: (function (self) {

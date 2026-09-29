@@ -894,7 +894,7 @@
     if (!tk) throw new Error("login");
     var res = await fetch(R2 + "/timetable", { method: "POST", headers: { Authorization: "Bearer " + tk, "content-type": "application/json" }, body: JSON.stringify({ bild: bild }) });
     var d = await res.json().catch(function () { return {}; });
-    if (!res.ok || !d.ok) { var e = new Error(d.error || "D-21"); e.code = d.error || "D-21"; throw e; }
+    if (!res.ok || !d.ok) { var e = new Error(d.error || ("HTTP " + res.status)); e.code = d.error || ("HTTP " + res.status); e.detail = d.detail || ""; throw e; }
     return d;
   }
 
