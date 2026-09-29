@@ -19,8 +19,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Chronik">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js?v=b85"></script>
-<script src="supabase-bridge.js?v=b85"></script>
+<script src="chronik-config.js?v=b86"></script>
+<script src="supabase-bridge.js?v=b86"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
 <style>
@@ -323,7 +323,7 @@
           <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
             <sc-for list="{{ tt.fotos }}" as="f" hint-placeholder-count="0">
               <div style="position: relative; width: 64px; height: 64px;">
-                <img src="{{ f.url }}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm); display: block;">
+                <img ref="{{ f.bildRef }}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm); display: block;">
                 <button onClick="{{ f.weg }}" aria-label="{{ L.tt_foto_weg }}" style="position: absolute; top: -8px; right: -8px; width: 28px; height: 28px; padding: 0; border-radius: 999px; border: 0; background: var(--color-text); color: var(--color-bg); cursor: pointer; font: inherit; font-size: 13px;">✕</button>
               </div>
             </sc-for>
@@ -371,7 +371,7 @@
             </sc-if>
             <div style="{{ tt.bildRahmen }}">
               <div onPointerDown="{{ tt.zDown }}" onPointerMove="{{ tt.zMove }}" onPointerUp="{{ tt.zUp }}" onPointerCancel="{{ tt.zUp }}" style="{{ tt.bildInnen }}">
-                <img src="{{ tt.fotoUrl }}" alt="" draggable="false" style="width: 100%; height: auto; display: block; user-select: none; pointer-events: none;">
+                <img ref="{{ tt.fotoRef }}" alt="" draggable="false" style="width: 100%; height: auto; display: block; user-select: none; pointer-events: none;">
                 <sc-for list="{{ tt.bloecke }}" as="b" hint-placeholder-count="0">
                   <button onClick="{{ b.klick }}" title="{{ b.t }}" aria-label="{{ b.t }}" style="{{ b.stil }}"></button>
                 </sc-for>
@@ -448,7 +448,7 @@
                         <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.tt_bilder }}</div>
                         <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                           <sc-for list="{{ a.bilder }}" as="b" hint-placeholder-count="0">
-                            <button onClick="{{ b.klick }}" style="{{ b.stil }}"><img src="{{ b.src }}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;"></button>
+                            <button onClick="{{ b.klick }}" style="{{ b.stil }}"><img ref="{{ b.bildRef }}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;"></button>
                           </sc-for>
                         </div>
                       </sc-if>
@@ -873,24 +873,57 @@
 
                       <sc-if value="{{ c.ttZeigen }}" hint-placeholder-val="{{ false }}">
                         <div onClick="{{ stop }}" style="display: grid; gap: 10px;">
-                          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                          <button onClick="{{ c.ttUm }}" aria-expanded="{{ c.ttAufText }}" style="display: flex; align-items: center; gap: 8px; width: 100%; min-height: 40px; padding: 4px 0; border: 0; background: transparent; cursor: pointer; font: inherit; color: inherit; text-align: left;">
+                            <span style="font-size: 13px; opacity: 0.6;">{{ c.ttZeichen }}</span>
                             <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t-accent, #0088b0);">{{ L.tt_titel }}</span>
-                            <span style="flex: 1;"></span>
-                          </div>
-                          <sc-for list="{{ c.ttTage }}" as="tg" hint-placeholder-count="0">
-                            <div style="display: grid; gap: 2px;">
-                              <div style="font-family: var(--t-font-head, var(--font-heading)); font-weight: 600; font-size: 16px; margin-bottom: 2px;">{{ tg.label }}</div>
-                              <sc-for list="{{ tg.acts }}" as="a" hint-placeholder-count="0">
-                                <div style="{{ a.stil }}">
-                                  <span style="flex: 0 0 auto; min-width: 96px; font-variant-numeric: tabular-nums;">{{ a.zeit }}</span>
-                                  <span style="flex: 1 1 140px; min-width: 0; overflow-wrap: anywhere;">{{ a.name }}</span>
-                                  <sc-if value="{{ a.hatExtra }}" hint-placeholder-val="{{ false }}">
-                                    <span style="flex: 1 1 100%; padding-left: 106px; box-sizing: border-box; font-size: 12px; font-style: italic; font-weight: 400; color: color-mix(in srgb, var(--t-ink, #201e1d) 62%, var(--t-card, #eae9e9));">{{ a.extra }}</span>
-                                  </sc-if>
+                            <span style="flex: 1; height: 1px; background: var(--t-border, rgba(32, 30, 29, 0.16));"></span>
+                            <span style="font-size: 12px; white-space: nowrap; color: color-mix(in srgb, var(--t-ink, #201e1d) 62%, var(--t-card, #eae9e9));">{{ c.ttInfo }}</span>
+                          </button>
+                          <sc-if value="{{ c.ttAuf }}" hint-placeholder-val="{{ false }}">
+                            <div style="display: grid; gap: 8px;">
+                              <sc-if value="{{ c.ttMehrTage }}" hint-placeholder-val="{{ false }}">
+                                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                  <sc-for list="{{ c.ttTagChips }}" as="ch" hint-placeholder-count="0">
+                                    <button onClick="{{ ch.klick }}" style="{{ ch.stil }}">{{ ch.label }}</button>
+                                  </sc-for>
                                 </div>
-                              </sc-for>
+                              </sc-if>
+                              <sc-if value="{{ c.ttHatBuehnen }}" hint-placeholder-val="{{ false }}">
+                                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                  <sc-for list="{{ c.ttBuehnenChips }}" as="ch" hint-placeholder-count="0">
+                                    <button onClick="{{ ch.klick }}" style="{{ ch.stil }}">{{ ch.label }}</button>
+                                  </sc-for>
+                                </div>
+                              </sc-if>
+                              <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 13px;">
+                                <label style="display: flex; align-items: center; gap: 6px;">{{ L.tt_ab }}<input type="time" value="{{ c.ttAb }}" onChange="{{ c.ttSetAb }}" style="font: inherit; font-size: 16px; padding: 4px 6px; border: 1px solid var(--t-border, rgba(32, 30, 29, 0.2)); border-radius: var(--t-radius, 2px); background: transparent; color: inherit;"></label>
+                                <label style="display: flex; align-items: center; gap: 6px;">{{ L.tt_bis }}<input type="time" value="{{ c.ttBis }}" onChange="{{ c.ttSetBis }}" style="font: inherit; font-size: 16px; padding: 4px 6px; border: 1px solid var(--t-border, rgba(32, 30, 29, 0.2)); border-radius: var(--t-radius, 2px); background: transparent; color: inherit;"></label>
+                                <button onClick="{{ c.ttMeineUm }}" style="{{ c.ttMeineStil }}">★ {{ L.tt_nur_meine }}</button>
+                                <sc-if value="{{ c.ttFilterAktiv }}" hint-placeholder-val="{{ false }}">
+                                  <button onClick="{{ c.ttFilterWeg }}" style="cursor: pointer; font: inherit; font-size: 13px; min-height: 36px; padding: 4px 10px; border: 0; background: transparent; color: var(--t-accent, #0088b0); text-decoration: underline;">{{ L.tt_filter_weg }}</button>
+                                </sc-if>
+                              </div>
                             </div>
-                          </sc-for>
+                            <sc-for list="{{ c.ttTage }}" as="tg" hint-placeholder-count="0">
+                              <div style="display: grid; gap: 0;">
+                                <div style="font-family: var(--t-font-head, var(--font-heading)); font-weight: 600; font-size: 16px; margin: 4px 0 2px;">{{ tg.label }}</div>
+                                <sc-for list="{{ tg.acts }}" as="a" hint-placeholder-count="0">
+                                  <div style="{{ a.stil }}">
+                                    <button onClick="{{ a.merken }}" title="{{ L.tt_merken }}" aria-pressed="{{ a.gemerktText }}" style="{{ a.sternStil }}">{{ a.stern }}</button>
+                                    <span style="flex: 0 0 auto; min-width: 92px; font-variant-numeric: tabular-nums;">{{ a.zeit }}</span>
+                                    <span style="flex: 1 1 140px; min-width: 0; overflow-wrap: anywhere;">{{ a.name }}</span>
+                                    <sc-if value="{{ a.hatExtra }}" hint-placeholder-val="{{ false }}">
+                                      <span style="flex: 1 1 100%; padding: 0 0 4px 50px; box-sizing: border-box; font-size: 12px; font-style: italic; font-weight: 400; color: color-mix(in srgb, var(--t-ink, #201e1d) 62%, var(--t-card, #eae9e9));">{{ a.extra }}</span>
+                                    </sc-if>
+                                  </div>
+                                </sc-for>
+                              </div>
+                            </sc-for>
+                            <sc-if value="{{ c.ttLeerGefiltert }}" hint-placeholder-val="{{ false }}">
+                              <p style="margin: 0; font-size: 14px; font-style: italic;">{{ L.tt_filter_leer }}</p>
+                            </sc-if>
+                            <button onClick="{{ c.ttUm }}" style="justify-self: start; cursor: pointer; font: inherit; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; min-height: 40px; padding: 6px 12px; border: 1px solid var(--t-border, rgba(32, 30, 29, 0.16)); border-radius: var(--t-radius, 2px); background: transparent; color: inherit;">▴ {{ L.tt_einklappen }}</button>
+                          </sc-if>
                         </div>
                       </sc-if>
 
@@ -3206,7 +3239,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 85) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 86) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -3530,7 +3563,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 85 · 2026-09-29";
+const BAU_STAND = "Bau 86 · 2026-09-29";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -4706,29 +4739,92 @@ class Component extends DCLogic {
   }
 
   ttKarte(e, darf) {
+    const st = this.state;
     const t = e.timetable;
     const hat = !!(t && (t.acts || []).length);
-    const tage = hat ? (t.tage || []).map((tg) => ({
-      key: tg.id, label: tg.label || tx("tt_tag"),
-      acts: this.ttSortiert(t.acts.filter((a) => a.tag === tg.id)).map((a) => {
-        const extra = [a.buehne,
-          (a.bilder || []).length ? plural(a.bilder.length, tx("bild"), tx("bilder")) : "",
-          (a.alben || []).length ? plural(a.alben.length, tx("tt_album"), tx("tt_alben")) : "",
-          (a.personen || []).join(", ")].filter(Boolean).join(" · ");
-        return {
-          key: a.id, zeit: (a.von || "–") + (a.bis ? "–" + a.bis : ""), name: (a.mark ? "★ " : "") + (a.name || "—"),
-          hatExtra: !!extra, extra: extra,
-          stil: { display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "2px 10px", fontSize: "14px", lineHeight: 1.45, padding: "3px 0",
-            fontWeight: a.mark ? 600 : 400, color: a.mark ? "var(--t-accent2, #d6006c)" : "inherit" }
-        };
-      })
-    })).filter((tg) => tg.acts.length) : [];
-    return {
+    const basis = {
       ttZeigen: !e.lose && hat, ttDarf: !!darf && !e.lose,
       ttKnopf: hat ? tx("tt_bearbeiten") : tx("tt_anlegen"),
-      ttOeffnen: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.ttOeffnen(e.id); },
-      ttTage: tage
+      ttOeffnen: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.ttOeffnen(e.id); }
     };
+    if (!hat) return Object.assign(basis, { ttAuf: false, ttTage: [], ttTagChips: [], ttBuehnenChips: [] });
+    const LEER = { tage: [], buehnen: [], ab: "", bis: "", meine: false };
+    const auf = (st.ttAuf || {})[e.id] !== false;
+    const fl = Object.assign({}, LEER, (st.ttFilter || {})[e.id] || {});
+    const meine = ((st.ttMarks || {})[e.id]) || [];
+    const setF = (patch) => this.setState((s) => ({ ttFilter: Object.assign({}, s.ttFilter || {}, { [e.id]: Object.assign({}, LEER, (s.ttFilter || {})[e.id] || {}, typeof patch === "function" ? patch(Object.assign({}, LEER, (s.ttFilter || {})[e.id] || {})) : patch) }) }));
+    const um = (arr, v) => ((arr || []).indexOf(v) >= 0 ? arr.filter((x) => x !== v) : (arr || []).concat([v]));
+    const min = (z) => { if (!z) return null; const p = String(z).split(":"); let v = (+p[0] || 0) * 60 + (+p[1] || 0); if (v < 360) v += 1440; return v; };
+    const chip = (on) => ({ cursor: "pointer", font: "inherit", fontSize: "13px", minHeight: "36px", padding: "4px 12px", borderRadius: "999px",
+      border: "1px solid " + (on ? "var(--t-accent, #0088b0)" : "var(--t-border, rgba(32, 30, 29, 0.2))"),
+      background: on ? "color-mix(in srgb, var(--t-accent, #0088b0) 16%, transparent)" : "transparent", color: "inherit" });
+    const tageAlle = (t.tage || []).filter((tg) => t.acts.some((a) => a.tag === tg.id));
+    const buehnen = [];
+    t.acts.forEach((a) => { if (a.buehne && buehnen.indexOf(a.buehne) < 0) buehnen.push(a.buehne); });
+    const passt = (a) => {
+      if (fl.tage.length && fl.tage.indexOf(a.tag) < 0) return false;
+      if (fl.buehnen.length && fl.buehnen.indexOf(a.buehne || "") < 0) return false;
+      if (fl.meine && meine.indexOf(a.id) < 0) return false;
+      const s0 = min(a.von), s1 = min(a.bis) != null ? min(a.bis) : (s0 != null ? s0 + 60 : null);
+      if (fl.ab && s1 != null && s1 <= min(fl.ab)) return false;
+      if (fl.bis && s0 != null && s0 >= min(fl.bis)) return false;
+      return true;
+    };
+    const aktiv = !!(fl.tage.length || fl.buehnen.length || fl.ab || fl.bis || fl.meine);
+    let gezeigt = 0;
+    const tage = tageAlle.map((tg) => {
+      const liste = this.ttSortiert(t.acts.filter((a) => a.tag === tg.id && passt(a)));
+      gezeigt += liste.length;
+      return {
+        key: tg.id, label: tg.label || tx("tt_tag"),
+        acts: liste.map((a) => {
+          const gem = meine.indexOf(a.id) >= 0;
+          const extra = [a.buehne,
+            (a.bilder || []).length ? plural(a.bilder.length, tx("bild"), tx("bilder")) : "",
+            (a.alben || []).length ? plural(a.alben.length, tx("tt_album"), tx("tt_alben")) : "",
+            (a.personen || []).join(", ")].filter(Boolean).join(" · ");
+          return {
+            key: a.id, zeit: (a.von || "–") + (a.bis ? "–" + a.bis : ""), name: a.name || "—",
+            hatExtra: !!extra, extra: extra,
+            stern: gem ? "★" : "☆", gemerktText: gem ? "true" : "false",
+            merken: (ev) => {
+              if (ev && ev.stopPropagation) ev.stopPropagation();
+              this.setState((s) => {
+                const m = Object.assign({}, s.ttMarks || {});
+                const l = m[e.id] || [];
+                m[e.id] = l.indexOf(a.id) >= 0 ? l.filter((x) => x !== a.id) : l.concat([a.id]);
+                return { ttMarks: m };
+              }, () => this.saveLook());
+            },
+            sternStil: { width: "40px", height: "40px", flex: "0 0 40px", padding: 0, border: 0, borderRadius: "999px", cursor: "pointer", font: "inherit", fontSize: "20px", lineHeight: "40px",
+              background: gem ? "color-mix(in srgb, var(--t-accent, #0088b0) 16%, transparent)" : "transparent",
+              color: gem ? "var(--t-accent, #0088b0)" : "color-mix(in srgb, var(--t-ink, #201e1d) 45%, transparent)" },
+            stil: { display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0 10px", fontSize: "14px", lineHeight: 1.4, padding: "1px 0",
+              fontWeight: a.mark || gem ? 600 : 400, color: a.mark ? "var(--t-accent2, #d6006c)" : "inherit" }
+          };
+        })
+      };
+    }).filter((tg) => tg.acts.length);
+    return Object.assign(basis, {
+      ttAuf: auf,
+      ttZeichen: auf ? "▾" : "▸",
+      ttAufText: auf ? "true" : "false",
+      ttUm: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.setState((s) => ({ ttAuf: Object.assign({}, s.ttAuf || {}, { [e.id]: !auf }) })); },
+      ttInfo: plural(t.acts.length, "Act", "Acts") + (meine.length ? " · ★ " + meine.length : "") + (aktiv ? " · " + plural(gezeigt, tx("tt_gezeigt"), tx("tt_gezeigt")) : ""),
+      ttTage: tage,
+      ttLeerGefiltert: aktiv && gezeigt === 0,
+      ttMehrTage: tageAlle.length > 1,
+      ttTagChips: tageAlle.map((tg) => ({ key: tg.id, label: tg.label || tx("tt_tag"), stil: chip(fl.tage.indexOf(tg.id) >= 0), klick: () => setF((f) => ({ tage: um(f.tage, tg.id) })) })),
+      ttHatBuehnen: buehnen.length > 0,
+      ttBuehnenChips: buehnen.map((b) => ({ key: b, label: b, stil: chip(fl.buehnen.indexOf(b) >= 0), klick: () => setF((f) => ({ buehnen: um(f.buehnen, b) })) })),
+      ttAb: fl.ab, ttBis: fl.bis,
+      ttSetAb: (ev) => { const v = ev.target.value; setF({ ab: v }); },
+      ttSetBis: (ev) => { const v = ev.target.value; setF({ bis: v }); },
+      ttMeineStil: chip(fl.meine),
+      ttMeineUm: () => setF((f) => ({ meine: !f.meine })),
+      ttFilterAktiv: aktiv,
+      ttFilterWeg: () => setF(LEER)
+    });
   }
 
   /* Der Timetable wird im Editor gepflegt (Entwurf) — die Quelle ist
@@ -5116,8 +5212,18 @@ class Component extends DCLogic {
     const s = this.state.tt;
     if (!s) return;
     const e = this.ttQuelle(s);
-    const r = this.ttBauen(s.fotos, e.date || "", tx("tt_leer_tag"));
-    const hatBloecke = (s.fotos || []).some((f) => f.w && f.bloecke);
+    const fotos = s.fotos || [];
+    const istKi = (f) => f.ki && f.modus !== "felder";
+    const kiF = fotos.filter(istKi), blF = fotos.filter((f) => !istKi(f));
+    const r1 = this.ttBauen(blF, e.date || "", tx("tt_leer_tag"));
+    const r2 = this.ttKiBauen(kiF, e.date || "", tx("tt_leer_tag"));
+    const tageR = r1.tage.slice(), mapR = {};
+    r2.tage.forEach((tg) => {
+      const g = tageR.filter((x) => String(x.label).toLowerCase() === String(tg.label).toLowerCase())[0];
+      if (g) mapR[tg.id] = g.id; else { tageR.push(tg); mapR[tg.id] = tg.id; }
+    });
+    const r = { tage: tageR, acts: r1.acts.concat(r2.acts.map((a) => Object.assign({}, a, { tag: mapR[a.tag] || a.tag }))) };
+    const hatBloecke = blF.some((f) => f.w && f.bloecke);
     this.ttSet((t) => {
       const bleiben = t.acts.filter((a) => !a.scan);
       const tage = t.tage.filter((tg) => bleiben.some((a) => a.tag === tg.id));
@@ -5129,11 +5235,69 @@ class Component extends DCLogic {
       return {
         tage: tage, acts: bleiben.concat(r.acts.map((a) => Object.assign({}, a, { tag: map[a.tag] || a.tag }))),
         schritt: r.acts.length || !hatBloecke ? -1 : 0, fotoIdx: 0,
-        info: r.acts.length ? [plural(r.tage.length, tx("tt_tag"), tx("tt_s_tage")), plural(new Set(r.acts.map((a) => a.buehne).filter(Boolean)).size, tx("tt_r_buehne"), tx("tt_s_buehnen")), plural(r.acts.length, "Act", "Acts")].join(" · ") + " " + tx("tt_erkannt")
+        info: r.acts.length ? (kiF.length ? tx("tt_ki_gelesen") + " " : "") + [plural(r.tage.length, tx("tt_tag"), tx("tt_s_tage")), plural(new Set(r.acts.map((a) => a.buehne).filter(Boolean)).size, tx("tt_r_buehne"), tx("tt_s_buehnen")), plural(r.acts.length, "Act", "Acts")].join(" · ") + " " + tx("tt_erkannt")
           + (r.acts.some((a) => !a.von) ? " " + tx("tt_ohne_zeit_hinweis") : "") : "",
         err: r.acts.length ? "" : (hatBloecke ? tx("tt_nichts") : tx("tt_nichts_text"))
       };
     });
+  }
+
+  /* Ergebnis der KI-Erkennung (Worker) in Tage und Acts umsetzen. */
+  ttKiBauen(fotos, basisDatum, basisLabel) {
+    const tage = [], acts = [];
+    const tagVon = (label) => {
+      const l = String(label || "").trim() || basisLabel;
+      const k = l.toLowerCase().replace(/\s+/g, " ");
+      let t = tage.filter((x) => x._k === k)[0];
+      if (!t) { t = { id: this.ttNid(), label: l.slice(0, 40), datum: this.ttDatumAus(l, basisDatum) || (l === basisLabel ? (basisDatum || "") : ""), _k: k }; tage.push(t); }
+      return t;
+    };
+    const zeit = (v) => { const m = this.ttZeiten(String(v || "")); return m[0] ? m[0].z : ""; };
+    (fotos || []).forEach((f) => {
+      ((f.ki && f.ki.tage) || []).forEach((td) => {
+        const tg = tagVon(td && td.label);
+        ((td && td.acts) || []).forEach((a) => {
+          const name = String((a && a.name) || "").replace(/\s+/g, " ").trim();
+          if (!name) return;
+          acts.push({ id: this.ttNid(), tag: tg.id, von: zeit(a.von), bis: zeit(a.bis), name: name.slice(0, 80), buehne: String(a.buehne || "").trim().slice(0, 40),
+            mark: false, bilder: [], alben: [], personen: [], scan: true, _f: f.id, _b: [] });
+        });
+      });
+    });
+    return { tage: tage.map((t) => ({ id: t.id, label: t.label, datum: t.datum })).filter((t) => acts.some((a) => a.tag === t.id)), acts: acts };
+  }
+
+  /* Beim Schritt-für-Schritt-Prüfen eines KI-gelesenen Fotos: die Felder,
+     deren Text zu erkannten Acts, Bühnen oder Tagen passt, vorbelegen. */
+  ttKiRollen(f) {
+    if (!f || !f.ki || !f.bloecke) return f;
+    const norm = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9äöüß]+/g, "");
+    const namen = [], buehnen = [], tage = [];
+    (f.ki.tage || []).forEach((t) => { if (t.label) tage.push(norm(t.label)); (t.acts || []).forEach((a) => { if (a.name) namen.push(norm(a.name)); if (a.buehne) buehnen.push(norm(a.buehne)); }); });
+    const trifft = (liste, x) => x.length >= 3 && liste.some((n) => n.length >= 3 && (n.indexOf(x) >= 0 || x.indexOf(n) >= 0));
+    return Object.assign({}, f, { bloecke: f.bloecke.map((b) => {
+      if (b.manuell) return b;
+      const x = norm(b.name || b.t);
+      const rolle = trifft(tage, norm(b.t)) ? "tag" : trifft(buehnen, x) ? "buehne" : trifft(namen, x) ? "act" : (b.rolle === "act" ? "" : b.rolle);
+      return Object.assign({}, b, { rolle: rolle });
+    }) });
+  }
+
+  ttPruefen() {
+    const los = () => this.ttSet((t) => ({ schritt: 0, fotoIdx: 0, fotos: t.fotos.map((f) => this.ttKiRollen(f)) }));
+    this.ttSet((t) => ({ fotos: t.fotos.map((f) => Object.assign({}, f, { modus: "felder" })), err: "", info: "" }));
+    const fehlt = ((this.state.tt || {}).fotos || []).some((f) => !f.bloecke);
+    if (fehlt) this.ttLesen({ ocr: true, danach: los });
+    else los();
+  }
+
+  async ttJpeg(f) {
+    const bm = await createImageBitmap(f);
+    const k = Math.min(1, 1600 / Math.max(bm.width, bm.height));
+    const c = document.createElement("canvas");
+    c.width = Math.round(bm.width * k); c.height = Math.round(bm.height * k);
+    c.getContext("2d").drawImage(bm, 0, 0, c.width, c.height);
+    return c.toDataURL("image/jpeg", 0.85);
   }
 
   ttScan = async (ev) => {
@@ -5157,45 +5321,68 @@ class Component extends DCLogic {
     if (files.length) { ev.preventDefault(); this.ttDateien(files); }
   };
 
-  ttLesen = async () => {
-    if (this._ttLiest) { this._ttNochmal = true; return; }
+  /* Fotos lesen: zuerst mit der KI im eigenen Worker (liest auch Raster
+     zuverlässig), sonst oder bei Bedarf mit der Texterkennung im Browser. */
+  ttLesen = async (opts) => {
+    opts = opts || {};
+    if (this._ttLiest) { this._ttNochmal = opts; return; }
     this._ttLiest = true;
     const fertig = {};
+    const CC = window.ChronikCloud;
+    const kiDa = !opts.ocr && this.state.cloud && CC && CC.ttKi;
     let worker = null;
     try {
-      this.ttSet({ busy: tx("tt_lade_leser"), pct: 0.02 });
-      try { worker = await this.ttWorker(); } catch (e) { worker = null; }
-      if (!worker) { this.ttSet({ busy: "", err: tx("tt_fehler_leser") }); return; }
-      const offen = () => (((this.state.tt || {}).fotos) || []).filter((f) => !f.bloecke && !fertig[f.id]);
-      let i = 0, n = offen().length;
-      this._ttLog = (m) => { if (m && m.status === "recognizing text") this.ttSet({ pct: Math.max(0.03, (i + (m.progress || 0)) / Math.max(1, n)) }); };
-      let f;
+      const offen = () => (((this.state.tt || {}).fotos) || []).filter((f) => !fertig[f.id] && (opts.ocr ? !f.bloecke : (!f.bloecke && !f.ki)));
+      let i = 0, n = offen().length, f;
       while (this.state.tt && (f = offen()[0])) {
         fertig[f.id] = true;
-        this.ttSet({ busy: tx("tt_lese") + " " + (i + 1) + " / " + Math.max(n, i + 1) });
-        let erg = { w: 0, h: 0, bloecke: [] };
+        const nr = " " + (i + 1) + " / " + Math.max(n, i + 1);
+        const erg = {};
+        let v = null;
         try {
-          const v = await this.ttVorbereiten(f.file);
+          v = await this.ttVorbereiten(f.file);
           this._ttCanvas = this._ttCanvas || {};
           this._ttCanvas[f.id] = v.c;
-          const r = await this.ttOcr(async () => {
-            try { await worker.setParameters({ tessedit_pageseg_mode: "11", preserve_interword_spaces: "1" }); } catch (x) { /* Standard */ }
-            return worker.recognize(v.c);
-          });
-          erg = { w: v.w, h: v.h, bloecke: this.ttBloecke((r && r.data && r.data.words) || []) };
-        } catch (e) { /* Bild bleibt ohne Text */ }
+          erg.w = v.w; erg.h = v.h;
+        } catch (x) { v = null; }
+        if (kiDa && !this._ttKiAus) {
+          this.ttSet({ busy: tx("tt_ki_liest") + nr, pct: Math.max(0.08, i / Math.max(1, n)) });
+          try {
+            const d = await CC.ttKi(await this.ttJpeg(f.file));
+            if (d && Array.isArray(d.tage) && d.tage.some((t) => (t.acts || []).length)) erg.ki = { tage: d.tage };
+          } catch (x) {
+            if (x && (x.code === "D-20" || /D-20|kein worker/.test(String(x.message)))) this._ttKiAus = true;
+          }
+        }
+        if (!erg.ki && v) {
+          if (!worker) {
+            this.ttSet({ busy: tx("tt_lade_leser"), pct: 0.02 });
+            try { worker = await this.ttWorker(); } catch (x) { worker = null; }
+            if (!worker) { this.ttSet({ busy: "", err: tx("tt_fehler_leser") }); break; }
+          }
+          this.ttSet({ busy: tx("tt_lese") + nr });
+          this._ttLog = (m) => { if (m && m.status === "recognizing text") this.ttSet({ pct: Math.max(0.03, (i + (m.progress || 0)) / Math.max(1, n)) }); };
+          try {
+            const r = await this.ttOcr(async () => {
+              try { await worker.setParameters({ tessedit_pageseg_mode: "11", preserve_interword_spaces: "1" }); } catch (x) { /* Standard */ }
+              return worker.recognize(v.c);
+            });
+            erg.bloecke = this.ttBloecke((r && r.data && r.data.words) || []);
+          } catch (x) { erg.bloecke = []; }
+        }
+        if (!erg.ki && !erg.bloecke) { erg.bloecke = []; erg.w = erg.w || 0; }
         this.ttSet((t) => ({ fotos: t.fotos.map((x) => (x.id === f.id ? Object.assign({}, x, erg) : x)) }));
         i++;
         n = Math.max(n, i + offen().length);
       }
       this.ttSet({ busy: "", pct: 0 });
-      window.setTimeout(() => this.ttAnwenden(), 0);
+      window.setTimeout(() => { if (opts.danach) opts.danach(); else this.ttAnwenden(); }, 0);
     } catch (e) {
       this.ttSet({ busy: "", pct: 0, err: tx("tt_fehler_lesen") });
     } finally {
       this._ttLog = null;
       this._ttLiest = false;
-      if (this._ttNochmal) { this._ttNochmal = false; window.setTimeout(() => this.ttLesen(), 0); }
+      if (this._ttNochmal) { const o = this._ttNochmal; this._ttNochmal = false; window.setTimeout(() => this.ttLesen(o === true ? {} : o), 0); }
     }
   };
 
@@ -5288,9 +5475,9 @@ class Component extends DCLogic {
       zuRand: (ev) => { if (ev.target === ev.currentTarget) this.ttZu(); },
       scan: this.ttScan,
       hatFotos: fotos.length > 0,
-      fotos: fotos.map((f) => ({ key: f.id, url: f.url, weg: () => this.ttSet((t) => { try { URL.revokeObjectURL(f.url); } catch (x) { /* egal */ } return { fotos: t.fotos.filter((x) => x.id !== f.id) }; }) })),
-      kannPruefen: lesbar.length > 0 && !s.busy && !gefuehrt,
-      pruefen: () => this.ttSet({ schritt: 0, fotoIdx: 0, err: "", info: "" }),
+      fotos: fotos.map((f) => ({ key: f.id, url: f.url, bildRef: (el) => { if (el && el.getAttribute("src") !== f.url) el.setAttribute("src", f.url); }, weg: () => this.ttSet((t) => { try { URL.revokeObjectURL(f.url); } catch (x) { /* egal */ } return { fotos: t.fotos.filter((x) => x.id !== f.id) }; }) })),
+      kannPruefen: fotos.some((f) => f.w) && !s.busy && !gefuehrt,
+      pruefen: () => this.ttPruefen(),
       listeZeigen: !gefuehrt,
       gefuehrt: gefuehrt,
       schrittNr: tx("tt_schritt") + " " + (Math.max(0, s.schritt) + 1) + " / 3 · " + sch[1],
@@ -5304,6 +5491,7 @@ class Component extends DCLogic {
       bildRahmen: { overflow: "auto", maxHeight: "70vh", borderRadius: "var(--radius-sm)", background: "var(--color-neutral-200)" },
       bildInnen: { position: "relative", width: s.gross ? "220%" : "100%", lineHeight: 0, touchAction: s.zeichnenAn ? "none" : "auto", cursor: s.zeichnenAn ? "crosshair" : "default" },
       fotoUrl: foto ? foto.url : "",
+      fotoRef: (el) => { const u = foto ? foto.url : ""; if (el && u && el.getAttribute("src") !== u) el.setAttribute("src", u); },
       bloecke: foto ? foto.bloecke.filter((b) => b.rolle || b.manuell || b.id === s.gewaehlt || s.alleFelder).map((b) => {
         const jetzt = b.rolle && b.rolle === sch[0];
         const farbe = FARBE[b.rolle];
@@ -5426,7 +5614,7 @@ class Component extends DCLogic {
             nichts: !bilder.length && !alben.length && !personen.length,
             bilder: bilder.map((b) => {
               const on = (a.bilder || []).indexOf(b.id) >= 0;
-              return { key: b.id, src: b.src, klick: () => setAct(a.id, (x) => ({ bilder: um(x.bilder, b.id) })),
+              return { key: b.id, src: b.src, bildRef: (el) => { if (el && b.src && el.getAttribute("src") !== b.src) el.setAttribute("src", b.src); }, klick: () => setAct(a.id, (x) => ({ bilder: um(x.bilder, b.id) })),
                 stil: { width: "64px", height: "64px", padding: 0, cursor: "pointer", border: 0, borderRadius: "var(--radius-sm)", overflow: "hidden",
                   outline: on ? "3px solid var(--color-accent)" : "none", outlineOffset: "1px", opacity: on ? 1 : 0.55, background: "var(--color-neutral-200)" } };
             }),
@@ -6027,7 +6215,8 @@ class Component extends DCLogic {
     return {
       themeId: this.state.themeId, override: this.state.override, custom: this.state.custom,
       meta: this.state.meta, mode: this.state.mode, zoom: this.state.zoom,
-      avatar: this.state.avatar || ""
+      avatar: this.state.avatar || "",
+      ttMarks: this.state.ttMarks || {}
     };
   }
 
@@ -6042,7 +6231,8 @@ class Component extends DCLogic {
       meta: Object.assign({}, this.state.meta, fallbackMeta || {}, l.meta || {}),
       mode: l.mode || "proportional",
       zoom: l.zoom || 1,
-      avatar: l.avatar || ""
+      avatar: l.avatar || "",
+      ttMarks: l.ttMarks && typeof l.ttMarks === "object" ? l.ttMarks : {}
     }, () => this.applyTheme());
   }
 

@@ -887,6 +887,17 @@
     return alle;
   }
 
+  /* Timetable-Foto von der KI im eigenen Worker lesen lassen. */
+  async function ttKi(bild) {
+    if (!R2) { var e0 = new Error("kein worker"); e0.code = "D-20"; throw e0; }
+    var tk = await token();
+    if (!tk) throw new Error("login");
+    var res = await fetch(R2 + "/timetable", { method: "POST", headers: { Authorization: "Bearer " + tk, "content-type": "application/json" }, body: JSON.stringify({ bild: bild }) });
+    var d = await res.json().catch(function () { return {}; });
+    if (!res.ok || !d.ok) { var e = new Error(d.error || "D-21"); e.code = d.error || "D-21"; throw e; }
+    return d;
+  }
+
   window.ChronikCloud = {
     enabled: enabled,
     configFault: configFault,
@@ -902,7 +913,7 @@
     groups: groups, saveGroup: saveGroup, removeGroup: removeGroup, leaveGroup: leaveGroup, saveLook: saveLook,
     saveNotify: saveNotify, notify: notify,
     friends: friends, askFriend: askFriend, answerFriend: answerFriend, unfriend: unfriend,
-    loadEvents: loadEvents, imageUrls: imageUrls, saveEvent: saveEvent, removeEvent: removeEvent,
+    loadEvents: loadEvents, imageUrls: imageUrls, ttKi: ttKi, saveEvent: saveEvent, removeEvent: removeEvent,
     addComment: addComment, removeComment: removeComment, reactComment: reactComment,
     deleteMe: deleteMe, sweepUnconfirmed: sweepUnconfirmed, deleteImages: deleteImages, setPolls: setPolls, moveComments: moveComments, uploadImage: uploadImage, imageUrl: imageUrl, storeCheck: storeCheck, onChange: onChange,
     snapshot: snapshot, budget: budget, guard: guard,
