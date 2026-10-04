@@ -33,7 +33,8 @@
   var R2 = cleanUrl(CFG.r2Worker).replace(/\/(upload|img|state).*$/i, "");
   var LIM = Object.assign({
     dbRows: 4000, writesPerDay: 1500, readsPerDay: 8000, uploadsPerDay: 300,
-    getsPerDay: 50000, storageBytes: 8000000000, egressPerMonth: 4000000000, emailsPerHour: 3
+    getsPerDay: 50000, storageBytes: 8000000000, egressPerMonth: 4000000000, emailsPerHour: 3,
+    aiPerDay: 25
   }, CFG.limits || {});
   var sb = null, loading = null, snap = null, snapAt = 0;
   var urlCache = {};
@@ -892,7 +893,14 @@
     if (!R2) { var e0 = new Error("kein worker"); e0.code = "D-20"; throw e0; }
     var tk = await token();
     if (!tk) throw new Error("login");
-    var res = await fetch(R2 + "/timetable", { method: "POST", headers: { Authorization: "Bearer " + tk, "content-type": "application/json" }, body: JSON.stringify({ bild: bild }) });
+    var grenze = Math.max(0, Math.floor(Number(LIM.aiPerDay) || 0));
+    if (grenze > 0) {
+      var c = await client();
+      var r0 = await c.rpc("ai_today");
+      if (r0.error) { var e1 = new Error("D-25"); e1.code = "D-25"; throw e1; }
+      if (Number(r0.data || 0) >= grenze) { var e2 = new Error("D-24"); e2.code = "D-24"; e2.detail = r0.data + "/" + grenze; throw e2; }
+    }
+    var res = await fetch(R2 + "/timetable", { method: "POST", headers: { Authorization: "Bearer " + tk, "content-type": "application/json" }, body: JSON.stringify({ bild: bild, grenze: grenze }) });
     var d = await res.json().catch(function () { return {}; });
     if (!res.ok || !d.ok) { var e = new Error(d.error || ("HTTP " + res.status)); e.code = d.error || ("HTTP " + res.status); e.detail = d.detail || ""; throw e; }
     return d;

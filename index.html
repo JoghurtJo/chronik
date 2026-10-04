@@ -19,8 +19,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Chronik">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js?v=b89"></script>
-<script src="supabase-bridge.js?v=b89"></script>
+<script src="chronik-config.js?v=b91"></script>
+<script src="supabase-bridge.js?v=b91"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
 <style>
@@ -43,6 +43,9 @@
   @keyframes deco-fall { from { opacity: 0; transform: translateY(-42px); } to { opacity: 0.85; } }
   @keyframes deco-drop { from { opacity: 0; transform: translateX(-50%) translateY(-16px); } to { opacity: 0.94; } }
   @keyframes deco-twinkle { 0%, 100% { opacity: 0.22; } 50% { opacity: 1; } }
+  @keyframes deco-steig { 0% { opacity: 0; translate: 0 18px; } 20% { opacity: 0.9; } 80% { opacity: 0.75; } 100% { opacity: 0; translate: 0 -46px; } }
+  @keyframes deco-rieseln { 0% { opacity: 0; translate: 0 -24px; } 25% { opacity: 1; } 100% { opacity: 0; translate: 0 36px; } }
+  @keyframes deco-blase { 0% { opacity: 0; scale: 0.6; translate: 0 10px; } 30% { opacity: 0.7; } 100% { opacity: 0; scale: 1.15; translate: 6px -54px; } }
   @keyframes deco-sway { 0%, 100% { rotate: -2.5deg; } 50% { rotate: 2.5deg; } }
   @keyframes tl-spin { to { transform: rotate(360deg); } }
   @keyframes tour-glow { 0% { transform: scale(1); opacity: 0.95; } 70% { transform: scale(2.6); opacity: 0; } 100% { transform: scale(2.6); opacity: 0; } }
@@ -3294,7 +3297,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 89) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 91) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -3437,6 +3440,12 @@ const PRESETS = [
   T({ id: "zitrus", name: tx("zitrus"), kicker: tx("frisch"), bg: "#fffcea", ink: "#2e3300", card: "#ffffff", accent: "#f5a300", accent2: "#5cb800", line: "#f5a300", fontHead: "Bebas Neue", fontBody: "DM Sans", headWeight: 400, headTransform: "uppercase", headTracking: 0.03, radius: 12, shadow: "md", lineWidth: 4, marker: "circle", pattern: "none", anim: "pop", animDur: 340, density: 1.05, imgShape: "rect", skin: "citrus" }),
   T({ id: "galaxie", name: tx("galaxie"), kicker: tx("nebel"), bg: "#0c0a1e", ink: "#e9e4ff", card: "#181433", accent: "#8b5cf6", accent2: "#22d3ee", line: "#8b5cf6", fontHead: "Space Grotesk", fontBody: "DM Sans", headWeight: 600, radius: 20, shadow: "lg", lineWidth: 2, marker: "circle", pattern: "dots", anim: "rise", animDur: 860, density: 1.25, imgShape: "round", skin: "galaxy" }),
   T({ id: "koralle", name: tx("koralle"), kicker: tx("riff"), bg: "#fff4f1", ink: "#42201c", card: "#ffffff", accent: "#ff5a5f", accent2: "#00b4a6", line: "#ff5a5f", fontHead: "DM Sans", fontBody: "DM Sans", headWeight: 700, radius: 24, shadow: "lg", lineWidth: 3, marker: "circle", pattern: "none", anim: "tilt", animDur: 560, density: 1.1, imgShape: "round", skin: "coral" }),
+  T({ id: "hochzeit", name: tx("p_hochzeit"), kicker: tx("p_hochzeit_k"), bg: "#fbf7f3", ink: "#3a2f2a", card: "#ffffff", accent: "#b08a3e", accent2: "#c98b8b", line: "#b08a3e", fontHead: "Cormorant Garamond", fontBody: "Source Serif 4", headWeight: 500, headTracking: 0.02, radius: 10, shadow: "md", lineWidth: 1, lineStyle: "double", marker: "ring", pattern: "none", anim: "rise", animDur: 900, density: 1.3, imgShape: "round", skin: "wedding" }),
+  T({ id: "boho", name: tx("p_boho"), kicker: tx("p_boho_k"), bg: "#f4ede3", ink: "#3d3127", card: "#fbf7f1", accent: "#a5643f", accent2: "#7d8a64", line: "#a5643f", fontHead: "Playfair Display", fontBody: "DM Sans", headWeight: 500, radius: 18, shadow: "sm", lineWidth: 2, lineStyle: "dashed", marker: "circle", pattern: "none", anim: "glide", animDur: 820, density: 1.25, imgShape: "polaroid", skin: "boho" }),
+  T({ id: "achtzehn", name: tx("p_achtzehn"), kicker: tx("p_achtzehn_k"), bg: "#0f0a1f", ink: "#f7f2ff", card: "#1b1433", accent: "#ff3ea5", accent2: "#3ef0ff", line: "#ff3ea5", fontHead: "Bebas Neue", fontBody: "Space Grotesk", headWeight: 400, headTransform: "uppercase", headTracking: 0.04, radius: 14, shadow: "lg", lineWidth: 5, marker: "diamond", pattern: "none", anim: "pop", animDur: 360, density: 1.05, imgShape: "round", skin: "party" }),
+  T({ id: "gala", name: tx("p_gala"), kicker: tx("p_gala_k"), bg: "#0e0d0b", ink: "#f2ead8", card: "#1a1814", accent: "#d4af37", accent2: "#8fa3b8", line: "#d4af37", fontHead: "Playfair Display", fontBody: "Source Serif 4", headWeight: 600, headTransform: "uppercase", headTracking: 0.08, radius: 2, shadow: "lg", lineWidth: 1, lineStyle: "double", marker: "diamond", pattern: "none", anim: "rise", animDur: 860, density: 1.25, imgShape: "rect", skin: "gala" }),
+  T({ id: "festival", name: tx("p_festival"), kicker: tx("p_festival_k"), bg: "#fff6e0", ink: "#1e1a16", card: "#ffffff", accent: "#ff5a1f", accent2: "#00a3a3", line: "#1e1a16", fontHead: "Bebas Neue", fontBody: "DM Sans", headWeight: 400, headTransform: "uppercase", headTracking: 0.03, radius: 8, shadow: "hard", lineWidth: 4, marker: "bar", pattern: "none", anim: "pop", animDur: 320, density: 1, imgShape: "polaroid", skin: "wristband" }),
+  T({ id: "silvester", name: tx("p_silvester"), kicker: tx("p_silvester_k"), bg: "#0a0e1c", ink: "#eef1ff", card: "#141a30", accent: "#ffd166", accent2: "#c0c7ff", line: "#ffd166", fontHead: "Cormorant Garamond", fontBody: "DM Sans", headWeight: 700, radius: 10, shadow: "lg", lineWidth: 2, marker: "circle", pattern: "none", anim: "rise", animDur: 700, density: 1.15, imgShape: "round", skin: "fireworks" }),
   T({ id: "regenbogen", name: tx("regenbogen"), kicker: tx("farbrad"), bg: "#fdfcff", ink: "#231c33", card: "#ffffff", accent: "#e5006e", accent2: "#009fe3", line: "#e5006e", fontHead: "Space Grotesk", fontBody: "DM Sans", headWeight: 700, radius: 14, shadow: "md", lineWidth: 5, marker: "square", pattern: "none", anim: "pop", animDur: 380, density: 1.1, imgShape: "rect", skin: "rainbow" })
 ];
 
@@ -3618,7 +3627,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 89 · 2026-09-29";
+const BAU_STAND = "Bau 91 · 2026-10-03";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -3980,6 +3989,9 @@ const FX = [
   ["schlangen", tx("luftschlangen")],
   ["girlande", tx("girlande")],
   ["sterne", tx("sternenregen")],
+  ["herzen", tx("fx_herzen")],
+  ["goldregen", tx("fx_goldregen")],
+  ["blasen", tx("fx_blasen")],
   ["tape", tx("klebeband")]
 ];
 
@@ -5344,6 +5356,8 @@ class Component extends DCLogic {
     const d = x && x.detail ? " (" + String(x.detail).slice(0, 160) + ")" : "";
     if (/D-20|kein worker/.test(c)) return tx("ki_f_bindung");
     if (/D-09|login/.test(c)) return tx("ki_f_login");
+    if (/D-24/.test(c)) return tx("ki_f_grenze") + d;
+    if (/D-25/.test(c)) return tx("ki_f_zaehler");
     if (/D-21/.test(c)) return tx("ki_f_modell") + d;
     if (/D-11|404|not found/i.test(c)) return tx("ki_f_worker");
     if (/fetch|network|cors/i.test(c)) return tx("ki_f_netz");
@@ -5493,7 +5507,7 @@ class Component extends DCLogic {
             else kiFehler = tx("ki_f_leer");
           } catch (x) {
             kiFehler = this.kiFehlerText(x);
-            if (x && (x.code === "D-20" || /D-20|kein worker|D-09/.test(String(x.message)))) this._ttKiAus = true;
+            if (x && (x.code === "D-20" || /D-20|D-24|D-25|kein worker|D-09/.test(String(x.message)))) this._ttKiAus = true;
           }
         }
         if (!erg.ki && v) {
@@ -10256,6 +10270,38 @@ class Component extends DCLogic {
       }
     }
 
+    if (fx.indexOf("herzen") >= 0) {
+      for (let i = 0; i < 9; i++) glyphs.push({
+        key: "hz" + i + gen, glyph: "♥",
+        style: { position: "absolute", left: (4 + rnd() * 92) + "%", top: (40 + rnd() * 56) + "%", transform: "translate(-50%, -50%)",
+          fontSize: (10 + rnd() * 12).toFixed(1) + "px", color: pal[Math.floor(rnd() * pal.length)], lineHeight: 1,
+          animationName: "deco-steig", animationDuration: (3200 + rnd() * 2600) + "ms", animationIterationCount: "infinite",
+          animationTimingFunction: "ease-out", animationDelay: (rnd() * 3000) + "ms", animationFillMode: "both" }
+      });
+    }
+    if (fx.indexOf("goldregen") >= 0) {
+      const gold = ["#c39a2c", "#e3c778", "#f3dc8a", "#a5842a"];
+      for (let i = 0; i < 16; i++) glyphs.push({
+        key: "gr" + i + gen, glyph: rnd() < 0.5 ? "✦" : "·",
+        style: { position: "absolute", left: (rnd() * 98) + "%", top: (rnd() * 70) + "%", transform: "translate(-50%, -50%)",
+          fontSize: (8 + rnd() * 12).toFixed(1) + "px", color: gold[Math.floor(rnd() * gold.length)], lineHeight: 1,
+          animationName: "deco-rieseln", animationDuration: (2400 + rnd() * 2200) + "ms", animationIterationCount: "infinite",
+          animationTimingFunction: "linear", animationDelay: (rnd() * 2400) + "ms", animationFillMode: "both" }
+      });
+    }
+    if (fx.indexOf("blasen") >= 0) {
+      for (let i = 0; i < 8; i++) {
+        const g = (12 + rnd() * 16).toFixed(0) + "px";
+        glyphs.push({
+          key: "bl" + i + gen, glyph: "",
+          style: { position: "absolute", left: (rnd() * 96) + "%", top: (45 + rnd() * 50) + "%", width: g, height: g, borderRadius: "50%",
+            border: "1.5px solid " + pal[Math.floor(rnd() * pal.length)] + "aa", background: "radial-gradient(circle at 32% 30%, rgba(255,255,255,0.75) 0 16%, transparent 22%)",
+            animationName: "deco-blase", animationDuration: (3600 + rnd() * 2400) + "ms", animationIterationCount: "infinite",
+            animationTimingFunction: "ease-out", animationDelay: (rnd() * 3200) + "ms", animationFillMode: "both" }
+        });
+      }
+    }
+
     const stickers = stk.map((s, i) => ({
       key: "sk" + i + gen + s.k,
       glyph: stickerDef(s.k).g,
@@ -13414,6 +13460,36 @@ class Component extends DCLogic {
           "linear-gradient(24deg, " + t.accent2 + "22 0%, transparent 38%)"
         ]);
 
+        if (id === "wedding") return voll([
+          "radial-gradient(ellipse at 0% 0%, " + t.accent2 + "26 0%, transparent 46%)",
+          "radial-gradient(ellipse at 100% 100%, " + t.accent + "1c 0%, transparent 44%)",
+          "linear-gradient(to bottom, " + t.card + "aa 0%, transparent 30%)"
+        ]);
+
+        if (id === "boho") return rasterUndVoll(
+          "radial-gradient(" + t.accent + "14 0.9px, transparent 1.2px)", "7px 7px",
+          ["linear-gradient(160deg, " + t.accent2 + "1e 0%, transparent 40%)", "linear-gradient(340deg, " + t.accent + "1a 0%, transparent 38%)"]);
+
+        if (id === "party") return rasterUndVoll(
+          "radial-gradient(" + t.accent + "55 1.4px, transparent 1.8px), radial-gradient(" + t.accent2 + "44 1.2px, transparent 1.6px)", "61px 53px, 47px 71px",
+          ["linear-gradient(118deg, " + t.accent + "30 0%, transparent 40%)", "linear-gradient(298deg, " + t.accent2 + "26 0%, transparent 40%)"]);
+
+        if (id === "gala") return voll([
+          "linear-gradient(to bottom, " + t.accent + "1c 0%, transparent 22%, transparent 78%, " + t.accent + "14 100%)",
+          "repeating-linear-gradient(90deg, transparent 0 120px, " + t.accent + "0c 120px 121px)"
+        ]);
+
+        if (id === "wristband") return Object.assign({}, base, {
+          backgroundImage: "repeating-linear-gradient(135deg, " + t.accent + "14 0 18px, transparent 18px 36px, " + t.accent2 + "12 36px 54px, transparent 54px 72px)",
+          backgroundSize: "auto"
+        });
+
+        if (id === "fireworks") return rasterUndVoll(
+          "radial-gradient(rgba(255,255,255,0.45) 0.7px, transparent 0.9px)", "71px 89px",
+          ["radial-gradient(circle at 18% 22%, " + t.accent + "26 0%, transparent 16%)",
+           "radial-gradient(circle at 76% 30%, " + t.accent2 + "22 0%, transparent 14%)",
+           "linear-gradient(to bottom, transparent 60%, " + t.accent + "12 100%)"]);
+
         if (id === "rainbow") return voll([
           "linear-gradient(96deg, " + t.accent + "1e 0%, " + t.accent2 + "1a 34%, " + t.accent + "16 68%, " + t.accent2 + "12 100%)"
         ]);
@@ -13433,6 +13509,12 @@ class Component extends DCLogic {
         if (id === "citrus") return { padding: "12px", borderRadius: "16px", background: "linear-gradient(102deg, " + t.accent + "40, " + t.accent2 + "34)" };
         if (id === "galaxy") return { padding: "14px", borderRadius: "24px", background: "linear-gradient(146deg, " + t.accent + "4a, " + t.accent2 + "2e)" };
         if (id === "coral") return { padding: "13px", borderRadius: "28px", background: "linear-gradient(160deg, " + t.accent + "3e, " + t.accent2 + "30)" };
+        if (id === "wedding") return { padding: "14px", borderRadius: "16px", background: "linear-gradient(140deg, " + t.accent2 + "30, " + t.card + ", " + t.accent + "2a)", boxShadow: "inset 0 0 0 1px " + t.accent + "55" };
+        if (id === "boho") return { padding: "12px", borderRadius: "22px", background: t.accent2 + "26", boxShadow: "inset 0 0 0 1px " + t.accent + "33" };
+        if (id === "party") return { padding: "12px", borderRadius: "20px", background: "linear-gradient(110deg, " + t.accent + "55, " + t.accent2 + "44)", boxShadow: "0 0 28px -6px " + t.accent + "88" };
+        if (id === "gala") return { padding: "14px", borderRadius: "2px", background: "linear-gradient(" + t.card + ", " + t.bg + ")", boxShadow: "inset 0 0 0 1px " + t.accent + "88, inset 0 0 0 4px " + t.bg + ", inset 0 0 0 5px " + t.accent + "44" };
+        if (id === "wristband") return { padding: "10px", borderRadius: "12px", background: "repeating-linear-gradient(90deg, " + t.accent + " 0 14px, " + t.accent2 + " 14px 28px)", boxShadow: "5px 5px 0 0 " + t.ink };
+        if (id === "fireworks") return { padding: "13px", borderRadius: "18px", background: "linear-gradient(150deg, " + t.accent + "40, " + t.accent2 + "26)" };
         if (id === "rainbow") return { padding: "11px", borderRadius: "18px", background: "linear-gradient(96deg, " + t.accent + "44, " + t.accent2 + "3c, " + t.accent + "30)" };
         if (id === "board") return {
           padding: "15px", borderRadius: "8px",
