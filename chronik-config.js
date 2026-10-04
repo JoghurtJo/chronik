@@ -19,7 +19,10 @@ window.CHRONIK_CONFIG = {
     getsPerDay:    50000,       // Bilder anzeigen (Worker: 100.000/Tag)
     storageBytes:  8000000000,  // 8 GB Bilder (R2 gratis: 10 GB)
     egressPerMonth: 4000000000, // 4 GB Datenverkehr (Supabase: 5 GB)
-    emailsPerHour: 3            // Bestätigungs- und Passwortmails
+    emailsPerHour: 3,            // Bestätigungs- und Passwortmails
+    aiPerDay:      25           // KI-Aufrufe für Timetables pro Tag (alle zusammen).
+                                // Workers AI gratis: 10.000 Neuronen/Tag ≈ 30–60 Bilder.
+                                // 0 = Sperre aus (nur, wenn dir Kosten egal sind).
   },
 
   /* --- 5. Heimnetz-Modus (Testbetrieb ohne HTTPS) -------- */
