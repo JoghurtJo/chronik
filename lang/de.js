@@ -1059,6 +1059,8 @@ window.CHRONIK_SPRACHEN.de = {
     tt_abbrechen: "Abbrechen",
     tt_loeschen: "Timetable löschen",
     tt_leer_tag: "Tag 1",
+    gast_uebersicht: "Übersicht",
+    gast_name_aendern: "Name ändern",
     sp_tisch_waehlen: "Tisch zum Bearbeiten und Dekorieren wählen",
     sp_groesse: "Größe",
     sp_griff_hinweis: "Tipp: Ausgewählte Tische lassen sich auch am runden Griff direkt vergrößern oder verkleinern.",

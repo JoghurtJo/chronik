@@ -19,8 +19,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Chronik">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js?v=b102"></script>
-<script src="supabase-bridge.js?v=b102"></script>
+<script src="chronik-config.js?v=b103"></script>
+<script src="supabase-bridge.js?v=b103"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
@@ -103,12 +103,12 @@
         </div>
       </sc-if>
       <sc-if value="{{ gv.bereit }}" hint-placeholder-val="{{ false }}">
-        <header style="position: relative; overflow: hidden; display: grid; align-items: end; min-height: clamp(360px, 62vh, 620px); background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--g-accent2) 22%, var(--g-bg)) 0%, var(--g-bg) 70%);">
+        <header style="position: relative; overflow: hidden; display: grid; align-items: end; min-height: clamp(280px, 50vh, 560px); background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--g-accent2) 22%, var(--g-bg)) 0%, var(--g-bg) 70%);">
           <sc-if value="{{ gv.hatTitelbild }}" hint-placeholder-val="{{ false }}">
             <img ref="{{ gv.titelRef }}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;">
             <div style="position: absolute; inset: 0; background: linear-gradient(to top, var(--g-bg) 0%, color-mix(in srgb, var(--g-bg) 70%, transparent) 38%, color-mix(in srgb, var(--g-bg) 10%, transparent) 75%, transparent 100%);"></div>
           </sc-if>
-          <div style="position: relative; width: min(760px, 100%); margin: 0 auto; box-sizing: border-box; padding: 96px 20px 36px; display: grid; gap: 14px; justify-items: center; text-align: center;">
+          <div style="position: relative; width: min(760px, 100%); margin: 0 auto; box-sizing: border-box; padding: 64px 20px 28px; display: grid; gap: 14px; justify-items: center; text-align: center;">
             <sc-if value="{{ gv.hatKicker }}" hint-placeholder-val="{{ false }}">
               <div style="font-size: 13px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--g-accent2); font-weight: 600;">{{ gv.kicker }}</div>
             </sc-if>
@@ -128,7 +128,7 @@
           </div>
         </header>
 
-        <main style="width: min(760px, 100%); margin: 0 auto; box-sizing: border-box; padding: 8px 16px 72px; display: grid; gap: 22px;">
+        <main style="width: min(760px, 100%); margin: 0 auto; box-sizing: border-box; padding: 8px 14px calc(110px + env(safe-area-inset-bottom)); display: grid; gap: 18px;">
           <sc-if value="{{ gv.hatGruss }}" hint-placeholder-val="{{ false }}">
             <p style="margin: 0 auto; max-width: 560px; text-align: center; font-family: var(--g-head); font-style: italic; font-size: clamp(18px, 4vw, 22px); line-height: 1.5; white-space: pre-wrap; text-wrap: pretty;">{{ gv.gruss }}</p>
           </sc-if>
@@ -140,8 +140,11 @@
             <sc-if value="{{ gv.konto }}" hint-placeholder-val="{{ false }}">
               <div style="font-size: 15px; opacity: 0.8;">{{ gv.kontoText }}</div>
             </sc-if>
-            <sc-if value="{{ gv.ohneKonto }}" hint-placeholder-val="{{ true }}">
-            <label style="display: grid; gap: 8px;"><span style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: color-mix(in srgb, var(--g-ink) 62%, transparent);">{{ L.gast_wie_heisst }}</span><input value="{{ gv.name }}" onChange="{{ gv.onName }}" placeholder="{{ L.gast_name_ph }}" autocomplete="name" style="width: 100%; box-sizing: border-box; padding: 13px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px;"></label>
+            <sc-if value="{{ gv.nameKurz }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ gv.nameAendern }}" style="justify-self: start; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: transparent; color: var(--g-ink); font: inherit; font-size: 14px; cursor: pointer; white-space: nowrap;">{{ L.gast_name_aendern }}</button>
+            </sc-if>
+            <sc-if value="{{ gv.nameZeigen }}" hint-placeholder-val="{{ true }}">
+            <label style="display: grid; gap: 8px;"><span style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: color-mix(in srgb, var(--g-ink) 62%, transparent);">{{ L.gast_wie_heisst }}</span><input value="{{ gv.name }}" onChange="{{ gv.onName }}" onBlur="{{ gv.nameFertig }}" placeholder="{{ L.gast_name_ph }}" autocomplete="name" enterkeyhint="done" style="width: 100%; box-sizing: border-box; padding: 13px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px;"></label>
             <div style="font-size: 13.5px; opacity: 0.7;">{{ L.gast_name_hinweis }}</div>
             <sc-if value="{{ gv.kannAnmelden }}" hint-placeholder-val="{{ false }}">
               <button onClick="{{ gv.anmelden }}" style="justify-self: start; min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1.5px solid var(--g-accent); background: transparent; color: var(--g-accent); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;">{{ L.gast_mit_konto }}</button>
@@ -166,7 +169,7 @@
             </div>
           </sc-if>
 
-          <sc-if value="{{ gv.hatTabs }}" hint-placeholder-val="{{ true }}">
+          <sc-if value="{{ gv.zeigKacheln }}" hint-placeholder-val="{{ true }}">
             <nav style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 46%), 1fr)); gap: 10px;">
               <sc-for list="{{ gv.tabs }}" as="t" hint-placeholder-count="4">
                 <button onClick="{{ t.klick }}" style="{{ t.stil }}">
@@ -265,7 +268,7 @@
                     <div style="{{ gv.sp.innenStil }}">
                       <svg width="{{ gv.sp.bw }}" height="{{ gv.sp.bh }}" style="position: absolute; left: 0; top: 0; display: block;">
                         <g transform="{{ gv.sp.skala }}">
-                          <sc-for list="{{ gv.sp.orn }}" as="on" hint-placeholder-count="0"><text x="{{ on.x }}" y="{{ on.y }}" style="{{ on.stil }}">{{ on.g }}</text></sc-for>
+                          <sc-for list="{{ gv.sp.orn }}" as="on" hint-placeholder-count="0"><text x="{{ on.x }}" y="{{ on.y }}" style="{{ on.stil }}" ref="{{ on.gRef }}"></text></sc-for>
                           <sc-for list="{{ gv.sp.tische }}" as="t" hint-placeholder-count="0">
                             <g transform="{{ t.tf }}" style="{{ t.gStil }}">
                               <g transform="{{ t.drehTf }}">
@@ -273,11 +276,11 @@
                               <sc-if value="{{ t.istOval }}" hint-placeholder-val="{{ false }}"><ellipse cx="0" cy="0" rx="{{ t.rx }}" ry="{{ t.ry }}" style="{{ t.formStil }}"></ellipse></sc-if>
                               <sc-if value="{{ t.istEckig }}" hint-placeholder-val="{{ false }}"><rect x="{{ t.x0 }}" y="{{ t.y0 }}" width="{{ t.w }}" height="{{ t.h }}" rx="6" style="{{ t.formStil }}"></rect></sc-if>
                               </g>
-                              <sc-if value="{{ t.hatMotiv }}" hint-placeholder-val="{{ false }}"><text x="0" y="-12" style="{{ t.motivStil }}">{{ t.motiv }}</text></sc-if><text x="0" y="{{ t.labelY }}" style="{{ t.labelStil }}">{{ t.name }}</text>
-                              <sc-for list="{{ t.deko }}" as="dz" hint-placeholder-count="0"><text x="{{ dz.x }}" y="{{ dz.y }}" style="{{ dz.stil }}">{{ dz.g }}</text></sc-for><sc-for list="{{ t.sitze }}" as="s" hint-placeholder-count="0">
+                              <sc-if value="{{ t.hatMotiv }}" hint-placeholder-val="{{ false }}"><text x="0" y="-12" style="{{ t.motivStil }}" ref="{{ t.motivRef }}"></text></sc-if><text x="0" y="{{ t.labelY }}" style="{{ t.labelStil }}" ref="{{ t.nameRef }}"></text>
+                              <sc-for list="{{ t.deko }}" as="dz" hint-placeholder-count="0"><text x="{{ dz.x }}" y="{{ dz.y }}" style="{{ dz.stil }}" ref="{{ dz.gRef }}"></text></sc-for><sc-for list="{{ t.sitze }}" as="s" hint-placeholder-count="0">
                                 <circle cx="{{ s.x }}" cy="{{ s.y }}" r="9" style="{{ s.stil }}"></circle>
-                                <text x="{{ s.x }}" y="{{ s.y }}" style="{{ s.nrStil }}">{{ s.nr }}</text>
-                                <text x="{{ s.tx }}" y="{{ s.ty }}" transform="{{ s.rot }}" style="{{ s.nameStil }}">{{ s.name }}</text><circle cx="{{ s.x }}" cy="{{ s.y }}" r="16" style="{{ s.hitStil }}" onClick="{{ s.info }}"></circle>
+                                <text x="{{ s.x }}" y="{{ s.y }}" style="{{ s.nrStil }}" ref="{{ s.nrRef }}"></text>
+                                <text x="{{ s.tx }}" y="{{ s.ty }}" transform="{{ s.rot }}" style="{{ s.nameStil }}" ref="{{ s.nameRef }}"></text><circle cx="{{ s.x }}" cy="{{ s.y }}" r="16" style="{{ s.hitStil }}" onClick="{{ s.info }}"></circle>
                               </sc-for>
                               <sc-if value="{{ t.griff }}" hint-placeholder-val="{{ false }}"><circle cx="{{ t.gx }}" cy="{{ t.gx }}" r="11" style="{{ t.griffStil }}" onPointerDown="{{ t.groesse }}"></circle></sc-if>
                             </g>
@@ -372,6 +375,15 @@
             <button onClick="{{ gv.zurChronik }}" style="min-height: 44px; border: 0; background: transparent; color: var(--g-ink); font: inherit; font-size: 14px; text-decoration: underline; cursor: pointer;">{{ L.gast_zur_chronik }}</button>
           </footer>
         </main>
+        <sc-if value="{{ gv.hatTabs }}" hint-placeholder-val="{{ false }}">
+          <nav style="position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; display: flex; justify-content: center; padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); background: color-mix(in srgb, var(--g-card) 94%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 -8px 24px -18px rgba(0,0,0,0.5);">
+            <div style="display: flex; gap: 2px; width: min(760px, 100%); overflow-x: auto;">
+              <sc-for list="{{ gv.leiste }}" as="lt" hint-placeholder-count="4">
+                <button onClick="{{ lt.klick }}" style="{{ lt.stil }}"><span style="font-size: 20px; line-height: 1;">{{ lt.g }}</span><span style="font-size: 11px; line-height: 1.15; text-align: center;">{{ lt.label }}</span></button>
+              </sc-for>
+            </div>
+          </nav>
+        </sc-if>
       </sc-if>
     </div>
   </sc-if>
@@ -1404,7 +1416,7 @@
                                       <div style="{{ c.sp.innenStil }}">
                                         <svg width="{{ c.sp.bw }}" height="{{ c.sp.bh }}" style="position: absolute; left: 0; top: 0; display: block;">
                                           <g transform="{{ c.sp.skala }}">
-                                            <sc-for list="{{ c.sp.orn }}" as="on" hint-placeholder-count="0"><text x="{{ on.x }}" y="{{ on.y }}" style="{{ on.stil }}">{{ on.g }}</text></sc-for>
+                                            <sc-for list="{{ c.sp.orn }}" as="on" hint-placeholder-count="0"><text x="{{ on.x }}" y="{{ on.y }}" style="{{ on.stil }}" ref="{{ on.gRef }}"></text></sc-for>
                                             <sc-for list="{{ c.sp.tische }}" as="t" hint-placeholder-count="0">
                                               <g transform="{{ t.tf }}" onPointerDown="{{ t.ziehen }}" style="{{ t.gStil }}">
                                                 <g transform="{{ t.drehTf }}">
@@ -1412,11 +1424,11 @@
                                                 <sc-if value="{{ t.istOval }}" hint-placeholder-val="{{ false }}"><ellipse cx="0" cy="0" rx="{{ t.rx }}" ry="{{ t.ry }}" style="{{ t.formStil }}"></ellipse></sc-if>
                                                 <sc-if value="{{ t.istEckig }}" hint-placeholder-val="{{ false }}"><rect x="{{ t.x0 }}" y="{{ t.y0 }}" width="{{ t.w }}" height="{{ t.h }}" rx="6" style="{{ t.formStil }}"></rect></sc-if>
                                                 </g>
-                                                <sc-if value="{{ t.hatMotiv }}" hint-placeholder-val="{{ false }}"><text x="0" y="-12" style="{{ t.motivStil }}">{{ t.motiv }}</text></sc-if><text x="0" y="{{ t.labelY }}" style="{{ t.labelStil }}">{{ t.name }}</text>
-                                                <sc-for list="{{ t.deko }}" as="dz" hint-placeholder-count="0"><text x="{{ dz.x }}" y="{{ dz.y }}" style="{{ dz.stil }}">{{ dz.g }}</text></sc-for><sc-for list="{{ t.sitze }}" as="s" hint-placeholder-count="0">
+                                                <sc-if value="{{ t.hatMotiv }}" hint-placeholder-val="{{ false }}"><text x="0" y="-12" style="{{ t.motivStil }}" ref="{{ t.motivRef }}"></text></sc-if><text x="0" y="{{ t.labelY }}" style="{{ t.labelStil }}" ref="{{ t.nameRef }}"></text>
+                                                <sc-for list="{{ t.deko }}" as="dz" hint-placeholder-count="0"><text x="{{ dz.x }}" y="{{ dz.y }}" style="{{ dz.stil }}" ref="{{ dz.gRef }}"></text></sc-for><sc-for list="{{ t.sitze }}" as="s" hint-placeholder-count="0">
                                                   <circle cx="{{ s.x }}" cy="{{ s.y }}" r="9" style="{{ s.stil }}"></circle>
-                                                  <text x="{{ s.x }}" y="{{ s.y }}" style="{{ s.nrStil }}">{{ s.nr }}</text>
-                                                  <text x="{{ s.tx }}" y="{{ s.ty }}" transform="{{ s.rot }}" style="{{ s.nameStil }}">{{ s.name }}</text><circle cx="{{ s.x }}" cy="{{ s.y }}" r="16" style="{{ s.hitStil }}" onClick="{{ s.info }}"></circle>
+                                                  <text x="{{ s.x }}" y="{{ s.y }}" style="{{ s.nrStil }}" ref="{{ s.nrRef }}"></text>
+                                                  <text x="{{ s.tx }}" y="{{ s.ty }}" transform="{{ s.rot }}" style="{{ s.nameStil }}" ref="{{ s.nameRef }}"></text><circle cx="{{ s.x }}" cy="{{ s.y }}" r="16" style="{{ s.hitStil }}" onClick="{{ s.info }}"></circle>
                                                 </sc-for>
                                                 <sc-if value="{{ t.griff }}" hint-placeholder-val="{{ false }}"><circle cx="{{ t.gx }}" cy="{{ t.gx }}" r="11" style="{{ t.griffStil }}" onPointerDown="{{ t.groesse }}"></circle></sc-if>
                                               </g>
@@ -2837,7 +2849,7 @@
                             <div style="{{ vo.sp.innenStil }}">
                               <svg width="{{ vo.sp.bw }}" height="{{ vo.sp.bh }}" style="position: absolute; left: 0; top: 0; display: block;">
                                 <g transform="{{ vo.sp.skala }}">
-                                  <sc-for list="{{ vo.sp.orn }}" as="on" hint-placeholder-count="0"><text x="{{ on.x }}" y="{{ on.y }}" style="{{ on.stil }}">{{ on.g }}</text></sc-for>
+                                  <sc-for list="{{ vo.sp.orn }}" as="on" hint-placeholder-count="0"><text x="{{ on.x }}" y="{{ on.y }}" style="{{ on.stil }}" ref="{{ on.gRef }}"></text></sc-for>
                                   <sc-for list="{{ vo.sp.tische }}" as="t" hint-placeholder-count="0">
                                     <g transform="{{ t.tf }}" onPointerDown="{{ t.ziehen }}" style="{{ t.gStil }}">
                                       <g transform="{{ t.drehTf }}">
@@ -2845,11 +2857,11 @@
                                       <sc-if value="{{ t.istOval }}" hint-placeholder-val="{{ false }}"><ellipse cx="0" cy="0" rx="{{ t.rx }}" ry="{{ t.ry }}" style="{{ t.formStil }}"></ellipse></sc-if>
                                       <sc-if value="{{ t.istEckig }}" hint-placeholder-val="{{ false }}"><rect x="{{ t.x0 }}" y="{{ t.y0 }}" width="{{ t.w }}" height="{{ t.h }}" rx="6" style="{{ t.formStil }}"></rect></sc-if>
                                       </g>
-                                      <sc-if value="{{ t.hatMotiv }}" hint-placeholder-val="{{ false }}"><text x="0" y="-12" style="{{ t.motivStil }}">{{ t.motiv }}</text></sc-if><text x="0" y="{{ t.labelY }}" style="{{ t.labelStil }}">{{ t.name }}</text>
-                                      <sc-for list="{{ t.deko }}" as="dz" hint-placeholder-count="0"><text x="{{ dz.x }}" y="{{ dz.y }}" style="{{ dz.stil }}">{{ dz.g }}</text></sc-for><sc-for list="{{ t.sitze }}" as="s" hint-placeholder-count="0">
+                                      <sc-if value="{{ t.hatMotiv }}" hint-placeholder-val="{{ false }}"><text x="0" y="-12" style="{{ t.motivStil }}" ref="{{ t.motivRef }}"></text></sc-if><text x="0" y="{{ t.labelY }}" style="{{ t.labelStil }}" ref="{{ t.nameRef }}"></text>
+                                      <sc-for list="{{ t.deko }}" as="dz" hint-placeholder-count="0"><text x="{{ dz.x }}" y="{{ dz.y }}" style="{{ dz.stil }}" ref="{{ dz.gRef }}"></text></sc-for><sc-for list="{{ t.sitze }}" as="s" hint-placeholder-count="0">
                                         <circle cx="{{ s.x }}" cy="{{ s.y }}" r="9" style="{{ s.stil }}"></circle>
-                                        <text x="{{ s.x }}" y="{{ s.y }}" style="{{ s.nrStil }}">{{ s.nr }}</text>
-                                        <text x="{{ s.tx }}" y="{{ s.ty }}" transform="{{ s.rot }}" style="{{ s.nameStil }}">{{ s.name }}</text><circle cx="{{ s.x }}" cy="{{ s.y }}" r="16" style="{{ s.hitStil }}" onClick="{{ s.info }}"></circle>
+                                        <text x="{{ s.x }}" y="{{ s.y }}" style="{{ s.nrStil }}" ref="{{ s.nrRef }}"></text>
+                                        <text x="{{ s.tx }}" y="{{ s.ty }}" transform="{{ s.rot }}" style="{{ s.nameStil }}" ref="{{ s.nameRef }}"></text><circle cx="{{ s.x }}" cy="{{ s.y }}" r="16" style="{{ s.hitStil }}" onClick="{{ s.info }}"></circle>
                                       </sc-for>
                                       <sc-if value="{{ t.griff }}" hint-placeholder-val="{{ false }}"><circle cx="{{ t.gx }}" cy="{{ t.gx }}" r="11" style="{{ t.griffStil }}" onPointerDown="{{ t.groesse }}"></circle></sc-if>
                                     </g>
@@ -4226,7 +4238,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 102) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 103) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -4556,7 +4568,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 102 · 2026-10-07";
+const BAU_STAND = "Bau 103 · 2026-10-07";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -7012,8 +7024,7 @@ class Component extends DCLogic {
     try {
       const d = await CC.gastSicht(g.ev, g.tk);
       if (!d) { this.gastSet({ laden: false, err: tx("gast_f_link") }); return; }
-      const t0 = this.gastTabs(d)[0];
-      this.gastSet((x) => ({ laden: false, err: "", d: d, tab: x.tab || (t0 ? t0.k : "") }));
+      this.gastSet((x) => ({ laden: false, err: "", d: d, tab: x.tab || "" }));
     } catch (e) {
       this.gastSet({ laden: false, err: e && e.code === "D-28" ? tx("gast_f_sql") : tx("gast_f_link") + " (" + ((e && (e.code || e.message)) || "?") + ")" });
     }
@@ -7157,6 +7168,15 @@ class Component extends DCLogic {
       })(),
       hatCdTeile: !!cd,
       hatTabs: tabs.length > 0,
+      zeigKacheln: tabs.length > 0 && !g.tab,
+      leiste: [{ k: "", l: tx("gast_uebersicht"), g: "⌂" }].concat(tabs).map((t) => ({ key: t.k || "home", label: t.l, g: t.g,
+        klick: () => { this.gastSet({ tab: t.k, info: "" }); const r = document.querySelector('[data-screen-label="Gastbereich"]'); if (r) r.scrollTo({ top: t.k ? Math.max(0, (r.querySelector("main") || r).offsetTop - 8) : 0, behavior: "smooth" }); },
+        stil: { display: "grid", justifyItems: "center", alignContent: "center", gap: "2px", minWidth: "60px", flex: "1 1 0", minHeight: "56px", padding: "6px 4px", border: 0, borderRadius: "14px", cursor: "pointer", font: "inherit",
+          background: (g.tab || "") === t.k ? "color-mix(in srgb, var(--g-accent) 16%, transparent)" : "transparent", color: (g.tab || "") === t.k ? "var(--g-accent)" : "var(--g-ink)" } })),
+      nameZeigen: !kontoName && (!String(g.name || "").trim() || !!g.nameEdit),
+      nameKurz: !kontoName && !!String(g.name || "").trim() && !g.nameEdit,
+      nameAendern: () => this.gastSet({ nameEdit: true }),
+      nameFertig: () => { this.gastName(); this.gastSet({ nameEdit: false }); },
       istFoto: g.tab === "foto", istBuch: g.tab === "buch", istSitz: g.tab === "sitz", istRsvp: g.tab === "rsvp", istLage: g.tab === "lage",
       busy: g.busy || "", hatBusy: !!g.busy, info: g.info || "", hatInfo: !!g.info && !g.busy,
       fotos: eintr.filter((x) => x.kind === "foto" && x.img).map((x) => { const u = url(x.img); return { key: x.id, name: x.name, bildRef: (el) => { if (el && u && el.getAttribute("src") !== u) el.setAttribute("src", u); } }; }),
@@ -7301,6 +7321,7 @@ class Component extends DCLogic {
 
   sitzplanVals(key, liste, opt) {
     opt = opt || {};
+    const txtRef = (v) => (el) => { const s0 = String(v == null ? "" : v); if (el && el.textContent !== s0) el.textContent = s0; };
     const st = this.state;
     const tische = this.spTische(liste);
     const meta = this.spMeta(liste);
@@ -7349,7 +7370,7 @@ class Component extends DCLogic {
         r: +(g.r || 0).toFixed(1), rx: +(g.rx || 0).toFixed(1), ry: +(g.ry || 0).toFixed(1),
         w: g.w || 0, h: g.h || 0, x0: -(g.w || 0) / 2, y0: -(g.h || 0) / 2,
         formStil: { fill: t.farbe || D.tisch, stroke: aktiv ? D.akz : (t.rand || D.rand), strokeWidth: aktiv ? 3 : (t.rand ? 2.4 : 1.6) },
-        hatMotiv: !!(t.motiv || D.orn), motiv: t.motiv || D.orn, labelY: (t.motiv || D.orn) ? 11 : 0,
+        hatMotiv: !!(t.motiv || D.orn), motiv: t.motiv || D.orn, motivRef: txtRef(t.motiv || D.orn), nameRef: txtRef(this.spName(t.name, 40).txt), labelY: (t.motiv || D.orn) ? 11 : 0,
         motivStil: { fontSize: "18px", textAnchor: "middle", dominantBaseline: "central", fill: t.rand || D.akz, pointerEvents: "none" },
         deko: (function () {
           const gl = t.motiv || D.orn;
@@ -7359,7 +7380,7 @@ class Component extends DCLogic {
           for (let k = 0; k < g.sitze.length; k++) {
             const a = g.sitze[k], b = g.sitze[(k + 1) % g.sitze.length];
             if (Math.hypot(a.x - b.x, a.y - b.y) > 90) continue;
-            out.push({ key: "d" + k, g: gl, x: +((a.x + b.x) / 2).toFixed(1), y: +((a.y + b.y) / 2).toFixed(1),
+            out.push({ key: "d" + k, g: gl, gRef: txtRef(gl), x: +((a.x + b.x) / 2).toFixed(1), y: +((a.y + b.y) / 2).toFixed(1),
               stil: { fontSize: "10px", textAnchor: "middle", dominantBaseline: "central", fill: farben[k % farben.length], opacity: 0.85, pointerEvents: "none" } });
           }
           return out;
@@ -7380,7 +7401,8 @@ class Component extends DCLogic {
           const tx0 = s.x + s.nx * 14, ty0 = s.y + s.ny * 14;
           const nn = this.spName(nm, s.sp);
           return {
-            key: "s" + k, x: +s.x.toFixed(1), y: +s.y.toFixed(1), nr: String(k + 1),
+            key: "s" + k, x: +s.x.toFixed(1), y: +s.y.toFixed(1), nr: String(k + 1), nrRef: txtRef(k + 1),
+            nameRef: txtRef((namenAn && !engT) || hit ? nn.txt : ""),
             stil: { fill: hit ? D.akz : (nm ? D.sitz : "transparent"), stroke: hit ? D.akz : D.rand, strokeWidth: 1.2 },
             nrStil: { fontSize: "8.5px", textAnchor: "middle", dominantBaseline: "central", fill: hit ? "#fff" : (nm ? D.sitzInk : D.ink), pointerEvents: "none", fontFamily: "var(--font-body)" },
             tx: +tx0.toFixed(1), ty: +ty0.toFixed(1),
@@ -7428,7 +7450,7 @@ class Component extends DCLogic {
     if (opt.randDeko && D.orn) {
       const schritt = 150;
       let n = 0;
-      const add = (x, y, s) => { orn.push({ key: "o" + n, x: Math.round(x), y: Math.round(y), g: D.orn, stil: { fontSize: s + "px", textAnchor: "middle", dominantBaseline: "central", fill: D.ornF[n % D.ornF.length], opacity: 0.55, pointerEvents: "none" } }); n++; };
+      const add = (x, y, s) => { orn.push({ key: "o" + n, x: Math.round(x), y: Math.round(y), g: D.orn, gRef: txtRef(D.orn), stil: { fontSize: s + "px", textAnchor: "middle", dominantBaseline: "central", fill: D.ornF[n % D.ornF.length], opacity: 0.55, pointerEvents: "none" } }); n++; };
       for (let x = 30; x < W; x += schritt) { add(x, 22, 16); add(x + schritt / 2, H - 22, 16); }
       for (let y = 30 + schritt / 2; y < H - 40; y += schritt) { add(22, y, 16); add(W - 22, y + schritt / 2 > H - 40 ? y : y + schritt / 2, 16); }
     }

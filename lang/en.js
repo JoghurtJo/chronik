@@ -1059,6 +1059,8 @@ window.CHRONIK_SPRACHEN.en = {
     tt_abbrechen: "Cancel",
     tt_loeschen: "Delete timetable",
     tt_leer_tag: "Day 1",
+    gast_uebersicht: "Overview",
+    gast_name_aendern: "Change name",
     sp_tisch_waehlen: "Choose a table to edit and decorate",
     sp_groesse: "Size",
     sp_griff_hinweis: "Tip: drag the round handle of a selected table to resize it.",
