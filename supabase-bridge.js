@@ -895,7 +895,11 @@
   async function gastSicht(ev, tk) {
     var c = await client();
     var r = await c.rpc("guest_view", { p_event: ev, p_token: tk });
-    if (r.error) throw fail(codeAus(r.error));
+    if (r.error) {
+      var m = String(r.error.message || "") + " " + String(r.error.code || "");
+      if (/PGRST202|42883|42P01|guest_view|guest_cfg|guest_entries|schema cache|does not exist/i.test(m)) throw fail("D-28");
+      throw fail(codeAus(r.error));
+    }
     return r.data || null;
   }
   async function gastAdd(ev, tk, kind, name, text, data, img) {

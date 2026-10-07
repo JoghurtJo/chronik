@@ -19,8 +19,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Chronik">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js?v=b92"></script>
-<script src="supabase-bridge.js?v=b92"></script>
+<script src="chronik-config.js?v=b93"></script>
+<script src="supabase-bridge.js?v=b93"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
 <style>
@@ -186,21 +186,17 @@
           <sc-if value="{{ gv.istSitz }}" hint-placeholder-val="{{ false }}">
             <section style="display: grid; gap: var(--space-3);">
               <input class="input" type="search" value="{{ gv.suche }}" onChange="{{ gv.onSuche }}" placeholder="{{ L.gast_suche_ph }}" style="font-size: 16px;">
-              <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); gap: 10px;">
-                <sc-for list="{{ gv.tische }}" as="t" hint-placeholder-count="0">
-                  <div style="{{ t.stil }}">
-                    <div style="font-family: var(--font-heading); font-weight: 600; font-size: 17px;">{{ t.name }}</div>
-                    <sc-for list="{{ t.namen }}" as="n" hint-placeholder-count="0">
-                      <div style="{{ n.stil }}">{{ n.name }}</div>
-                    </sc-for>
-                  </div>
-                </sc-for>
-              </div>
-              <sc-if value="{{ gv.keineTische }}" hint-placeholder-val="{{ false }}">
+              <sc-if value="{{ gv.sp.hatTreffer }}" hint-placeholder-val="{{ false }}">
+                <div style="display: grid; gap: 4px; padding: 10px 14px; border-radius: var(--radius-md); background: var(--color-accent-100); color: var(--color-accent-800);">
+                  <sc-for list="{{ gv.sp.treffer }}" as="tr" hint-placeholder-count="0">
+                    <div style="font-size: 16px; font-weight: 600;">{{ tr.text }}</div>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{ gv.sp.keinTreffer }}" hint-placeholder-val="{{ false }}">
                 <p style="margin: 0; font-size: 15px; font-style: italic; color: var(--color-neutral-700);">{{ L.gast_kein_tisch }}</p>
               </sc-if>
-            </section>
-          </sc-if>
+              <sc-if value="{{ gv.sp.hat }}" hint-placeholder-val="{{ false }}">
 
           <sc-if value="{{ gv.istRsvp }}" hint-placeholder-val="{{ false }}">
             <section style="display: grid; gap: var(--space-3);">
@@ -1251,14 +1247,9 @@
                                   </sc-for>
                                 </div>
                               </sc-if>
-                              <sc-if value="{{ c.hatGTische }}" hint-placeholder-val="{{ false }}">
-                                <div style="display: grid; gap: 4px;">
+                              <sc-if value="{{ c.sp.hat }}" hint-placeholder-val="{{ false }}">
+                                <div style="display: grid; gap: 6px;">
                                   <div style="font-family: var(--t-font-head, var(--font-heading)); font-weight: 600; font-size: 15px;">{{ L.gast_sitz }}</div>
-                                  <sc-for list="{{ c.gTische }}" as="gti" hint-placeholder-count="0">
-                                    <div style="font-size: 14px; overflow-wrap: anywhere;"><strong style="font-weight: 600;">{{ gti.name }}:</strong> {{ gti.namen }}</div>
-                                  </sc-for>
-                                </div>
-                              </sc-if>
                               <sc-if value="{{ c.hatGFotos }}" hint-placeholder-val="{{ false }}">
                                 <div style="display: grid; gap: 6px;">
                                   <div style="font-family: var(--t-font-head, var(--font-heading)); font-weight: 600; font-size: 15px;">{{ L.gast_fotowand }}</div>
@@ -2430,36 +2421,73 @@
                       <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
                         <button class="btn btn-primary" style="min-height: 40px;" onClick="{{ vo.gaTeilen }}">{{ vo.gaKopiertText }}</button>
                         <button class="btn btn-ghost" style="min-height: 40px;" onClick="{{ vo.gaNeuerLink }}">{{ L.ga_neuer_link }}</button>
+                        <button class="btn btn-ghost" style="min-height: 40px;" onClick="{{ vo.gaPruefen }}">{{ L.ga_pruefen }}</button>
                       </div>
                     </div>
+                  </sc-if>
+                  <sc-if value="{{ vo.hatGaPruef }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size: 13px; line-height: 1.45; color: var(--color-accent-700);">{{ vo.gaPruef }}</div>
                   </sc-if>
                   <sc-if value="{{ vo.gaRsvp }}" hint-placeholder-val="{{ false }}">
                     <div class="field" style="margin: 0;"><label>{{ L.ga_essen }}</label><input class="input" value="{{ vo.gaEssen }}" onChange="{{ vo.onGaEssen }}" placeholder="{{ L.ga_essen_ph }}" style="font-size: 16px;"></div>
                     <div style="display: grid; gap: 6px;">
                       <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.ga_sicht }}</div>
                       <div style="font-size: 13px; color: var(--color-neutral-700);">{{ L.ga_sicht_hinweis }}</div>
+                      <sc-if value="{{ vo.hatSichtGewaehlt }}" hint-placeholder-val="{{ false }}">
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                          <sc-for list="{{ vo.sichtGewaehlt }}" as="sc" hint-placeholder-count="0">
+                            <button onClick="{{ sc.klick }}" title="{{ L.entfernen }}" style="{{ sc.stil }}">{{ sc.label }}</button>
+                          </sc-for>
+                        </div>
+                      </sc-if>
+                      <input class="input" type="search" value="{{ vo.sichtSuche }}" onChange="{{ vo.onSichtSuche }}" placeholder="{{ L.ga_kontakt_suchen }}" style="font-size: 16px;">
                       <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                        <sc-for list="{{ vo.sichtChips }}" as="sc" hint-placeholder-count="0">
+                        <sc-for list="{{ vo.sichtTreffer }}" as="sc" hint-placeholder-count="0">
                           <button onClick="{{ sc.klick }}" style="{{ sc.stil }}">{{ sc.label }}</button>
                         </sc-for>
                       </div>
+                      <sc-if value="{{ vo.keinSichtTreffer }}" hint-placeholder-val="{{ false }}">
+                        <div style="font-size: 13px; font-style: italic; color: var(--color-neutral-700);">{{ L.ga_kein_kontakt }}</div>
+                      </sc-if>
                     </div>
                   </sc-if>
                   <sc-if value="{{ vo.gaSitz }}" hint-placeholder-val="{{ false }}">
                     <div style="display: grid; gap: var(--space-2);">
                       <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.gast_sitz }}</div>
-                      <sc-for list="{{ vo.tische }}" as="ti" hint-placeholder-count="0">
-                        <div style="display: grid; gap: 6px; padding: 10px; border-radius: var(--radius-md); background: var(--color-neutral-100);">
-                          <div style="display: flex; gap: 8px; align-items: center;">
-                            <input class="input" value="{{ ti.name }}" onChange="{{ ti.onName }}" style="flex: 1; min-width: 0; font-size: 16px;">
-                            <button class="btn btn-ghost btn-icon" title="{{ L.entfernen }}" aria-label="{{ L.entfernen }}" style="min-height: 40px; color: var(--color-accent-2-700);" onClick="{{ ti.weg }}">✕</button>
+                      <div style="font-size: 13px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.sp_hinweis }}</div>
+                      <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                        <sc-for list="{{ vo.spFormen }}" as="sf" hint-placeholder-count="0">
+                          <button class="btn btn-secondary" style="min-height: 40px;" onClick="{{ sf.klick }}">＋ {{ sf.label }}</button>
+                        </sc-for>
+                      </div>
+                      <sc-if value="{{ vo.sp.hat }}" hint-placeholder-val="{{ false }}">
+                        <div style="display: grid; gap: 6px; min-width: 0;">
+                          <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                            <button class="btn btn-secondary btn-icon" title="{{ L.vergroessern }}" aria-label="{{ L.vergroessern }}" onClick="{{ vo.sp.plus }}" style="width: 40px; height: 40px;">＋</button>
+                            <button class="btn btn-secondary btn-icon" title="{{ L.verkleinern }}" aria-label="{{ L.verkleinern }}" onClick="{{ vo.sp.minus }}" style="width: 40px; height: 40px;">−</button>
+                            <button class="btn btn-ghost" onClick="{{ vo.sp.einpassen }}" style="min-height: 40px;">{{ L.sp_einpassen }}</button>
+                            <span style="font-size: 12px; opacity: 0.7;">{{ vo.sp.zoomText }}</span>
                           </div>
-                          <textarea class="input" value="{{ ti.gaeste }}" onChange="{{ ti.onGaeste }}" rows="3" placeholder="{{ L.ga_gaeste_ph }}" style="font-size: 16px;"></textarea>
+                          <div ref="{{ vo.sp.boxRef }}" style="width: 100%; max-height: 70vh; overflow: auto; border-radius: var(--radius-md); background: var(--color-neutral-100); box-shadow: inset 0 0 0 1px var(--color-divider); -webkit-overflow-scrolling: touch;">
+                            <svg width="{{ vo.sp.bw }}" height="{{ vo.sp.bh }}" style="display: block;">
+                              <g transform="{{ vo.sp.skala }}">
+                                <sc-for list="{{ vo.sp.tische }}" as="t" hint-placeholder-count="0">
+                                  <g transform="{{ t.tf }}" onPointerDown="{{ t.ziehen }}" style="{{ t.gStil }}">
+                                    <sc-if value="{{ t.istRund }}" hint-placeholder-val="{{ false }}"><circle cx="0" cy="0" r="{{ t.r }}" style="{{ t.formStil }}"></circle></sc-if>
+                                    <sc-if value="{{ t.istOval }}" hint-placeholder-val="{{ false }}"><ellipse cx="0" cy="0" rx="{{ t.rx }}" ry="{{ t.ry }}" style="{{ t.formStil }}"></ellipse></sc-if>
+                                    <sc-if value="{{ t.istEckig }}" hint-placeholder-val="{{ false }}"><rect x="{{ t.x0 }}" y="{{ t.y0 }}" width="{{ t.w }}" height="{{ t.h }}" rx="6" style="{{ t.formStil }}"></rect></sc-if>
+                                    <text x="0" y="0" style="{{ t.labelStil }}">{{ t.name }}</text>
+                                    <sc-for list="{{ t.sitze }}" as="s" hint-placeholder-count="0">
+                                      <circle cx="{{ s.x }}" cy="{{ s.y }}" r="9" style="{{ s.stil }}"></circle>
+                                      <text x="{{ s.x }}" y="{{ s.y }}" style="{{ s.nrStil }}">{{ s.nr }}</text>
+                                      <text x="{{ s.tx }}" y="{{ s.ty }}" transform="{{ s.rot }}" style="{{ s.nameStil }}">{{ s.name }}</text>
+                                    </sc-for>
+                                  </g>
+                                </sc-for>
+                              </g>
+                            </svg>
+                          </div>
                         </div>
-                      </sc-for>
-                      <button class="btn btn-ghost" style="justify-self: start; min-height: 40px;" onClick="{{ vo.tischNeu }}">＋ {{ L.ga_tisch_neu }}</button>
-                    </div>
-                  </sc-if>
                 </div>
               </sc-if>
             </div>
@@ -3808,7 +3836,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 92) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 93) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -4138,7 +4166,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 92 · 2026-10-07";
+const BAU_STAND = "Bau 93 · 2026-10-07";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -6294,7 +6322,8 @@ class Component extends DCLogic {
       gRsvpSumme: plural(ja.length, tx("gast_zusage"), tx("gast_zusagen")) + " · " + plural(rsvp.length - ja.length, tx("gast_absage"), tx("gast_absagen")) + " · " + plural(personen, tx("person"), tx("personen")) +
         (Object.keys(essen).length ? " · " + Object.keys(essen).map((k) => essen[k] + "× " + k).join(", ") : ""),
       gTische: (o.sitz ? (o.tische || []) : []).map((t, n) => ({ key: t.i || "t" + n, name: t.name || tx("gast_tisch") + " " + (n + 1), namen: String(t.gaeste || "").split(/\n|,/).map((s) => s.trim()).filter(Boolean).join(", ") })),
-      hatGTische: !!o.sitz && (o.tische || []).length > 0
+      hatGTische: !!o.sitz && (o.tische || []).length > 0,
+      sp: this.sitzplanVals("k" + e.id, o.sitz ? (o.tische || []) : [], {})
     });
   }
 
@@ -6387,6 +6416,22 @@ class Component extends DCLogic {
           klick: () => this.voSet("offen.sicht", an ? sicht.filter((x) => x !== u.id) : sicht.concat([u.id])) };
       }),
       keineKontakte: !fids.length,
+      sp: this.sitzplanVals("ed", o.tische || [], { edit: true }),
+      spp: this.spPanel(),
+      spFormen: [["rund", tx("sp_rund")], ["oval", tx("sp_oval")], ["eckig", tx("sp_eckig")], ["tafel", tx("sp_tafel")]].map((f) => ({ key: f[0], label: f[1], klick: () => this.spNeu(f[0]) })),
+      kontaktNamen: (st.users || []).filter((u) => fids.indexOf(u.id) >= 0 && u.username).map((u) => ({ key: u.id, name: u.username })),
+      sichtSuche: st.sichtSuche || "",
+      onSichtSuche: (ev) => this.setState({ sichtSuche: ev.target.value }),
+      sichtGewaehlt: (st.users || []).filter((u) => sicht.indexOf(u.id) >= 0).map((u) => ({ key: u.id, label: "✓ " + (u.username || tx("jemand")) + "  ✕", stil: this.voPill(true),
+        klick: () => this.voSet("offen.sicht", sicht.filter((x) => x !== u.id)) })),
+      hatSichtGewaehlt: sicht.length > 0,
+      sichtTreffer: (function (self) {
+        const q = String(st.sichtSuche || "").trim().toLowerCase();
+        return (st.users || []).filter((u) => fids.indexOf(u.id) >= 0 && sicht.indexOf(u.id) < 0 && (!q || String(u.username || "").toLowerCase().indexOf(q) >= 0)).slice(0, 3)
+          .map((u) => ({ key: u.id, label: "＋ " + (u.username || tx("jemand")), stil: self.voPill(false), klick: () => { self.voSet("offen.sicht", sicht.concat([u.id])); self.setState({ sichtSuche: "" }); } }));
+      })(this),
+      keinSichtTreffer: !!String(st.sichtSuche || "").trim() && !(st.users || []).some((u) => fids.indexOf(u.id) >= 0 && sicht.indexOf(u.id) < 0 && String(u.username || "").toLowerCase().indexOf(String(st.sichtSuche).trim().toLowerCase()) >= 0),
+      gaPruefen: () => this.gaPruefen(), gaPruef: st.gaPruef || "", hatGaPruef: !!st.gaPruef,
       gaLink: link, hatGaLink: !!link && !!o.an,
       gaHinweis: !st.cloud ? tx("ga_nur_cloud") : (!link ? tx("ga_erst_speichern") : ""), hatGaHinweis: !!o.an && (!st.cloud || !link),
       gaTeilen: () => this.linkTeilen(link, d.name),
@@ -6490,7 +6535,7 @@ class Component extends DCLogic {
       const t0 = this.gastTabs(d)[0];
       this.gastSet((x) => ({ laden: false, err: "", d: d, tab: x.tab || (t0 ? t0.k : "") }));
     } catch (e) {
-      this.gastSet({ laden: false, err: tx("gast_f_link") });
+      this.gastSet({ laden: false, err: e && e.code === "D-28" ? tx("gast_f_sql") : tx("gast_f_link") + " (" + ((e && (e.code || e.message)) || "?") + ")" });
     }
   }
   gastTabs(d) {
@@ -6598,7 +6643,8 @@ class Component extends DCLogic {
       buch: eintr.filter((x) => x.kind === "buch").map((x) => ({ key: x.id, name: x.name, text: x.text, wann: fmtDate(String(x.created || "").slice(0, 10)) })),
       keinBuch: !eintr.some((x) => x.kind === "buch"),
       text: g.text || "", onText: (ev) => this.gastSet({ text: ev.target.value }), buchSenden: () => this.gastBuchSenden(),
-      suche: g.suche || "", onSuche: (ev) => this.gastSet({ suche: ev.target.value }),
+      suche: g.suche || "", onSuche: (ev) => { this._spSucheNeu = "gast"; this.gastSet({ suche: ev.target.value }); },
+      sp: this.sitzplanVals("gast", c.sitz ? (d.tische || []) : [], { suche: g.suche }),
       tische: tische, keineTische: !tische.length,
       rsvpFertig: !!g.rsvpFertig, rsvpOffen: !g.rsvpFertig, rsvpNeu: () => this.gastSet({ rsvpFertig: false }),
       jaStil: this.voPill(ja), neinStil: this.voPill(!ja), setJa: () => this.gastRsvpSet({ kommt: "ja" }), setNein: () => this.gastRsvpSet({ kommt: "nein" }),
@@ -6614,6 +6660,232 @@ class Component extends DCLogic {
       lp: lv,
       zurChronik: () => { try { history.replaceState(null, "", location.pathname + location.search); } catch (x) { location.hash = ""; } this.setState({ gast: null }); }
     }, this.notfallVals(d.notfall));
+  }
+
+  /* ---- Sitzplan: Tische mit Form, nummerierten Plätzen und Namen ---- */
+  spTische(liste) {
+    return (liste || []).map((t, k) => {
+      const form = ["rund", "oval", "eckig", "tafel"].indexOf(t.form) >= 0 ? t.form : "rund";
+      const alt = String(t.gaeste || "").split(/\n|,/).map((s) => s.trim()).filter(Boolean);
+      let seiten = null, n;
+      if (form === "eckig" || form === "tafel") {
+        const d0 = form === "tafel" ? { o: 4, u: 4, l: 0, r: 0 } : { o: 2, u: 2, l: 2, r: 2 };
+        const s0 = t.seiten || {};
+        seiten = {};
+        ["o", "u", "l", "r"].forEach((q) => {
+          const v = Number(s0[q]);
+          seiten[q] = Math.max(0, Math.min(20, s0[q] !== undefined && s0[q] !== "" && isFinite(v) ? Math.round(v) : d0[q]));
+        });
+        n = seiten.o + seiten.u + seiten.l + seiten.r;
+        if (!n) { seiten.o = 1; n = 1; }
+      } else {
+        n = Math.max(1, Math.min(40, Math.round(Number(t.plaetze) || Math.max(8, alt.length))));
+      }
+      const sitze = (Array.isArray(t.sitze) ? t.sitze : alt).slice(0, n).map((s) => String(s || ""));
+      while (sitze.length < n) sitze.push("");
+      const x = Number(t.x), y = Number(t.y);
+      return {
+        i: t.i || "t" + k, name: t.name || tx("gast_tisch") + " " + (k + 1), form: form, plaetze: n, n: n, seiten: seiten, sitze: sitze,
+        x: t.x != null && isFinite(x) ? x : 180 + (k % 4) * 290, y: t.y != null && isFinite(y) ? y : 180 + Math.floor(k / 4) * 290
+      };
+    });
+  }
+
+  spGeo(t) {
+    const out = { sitze: [] };
+    const push = (x, y, nx, ny, sp) => out.sitze.push({ x: x, y: y, nx: nx, ny: ny, sp: sp });
+    if (t.form === "rund") {
+      const R = Math.max(34, (t.n * 30) / (2 * Math.PI));
+      out.r = R; out.ext = R + 160;
+      for (let k = 0; k < t.n; k++) {
+        const a = -Math.PI / 2 + (2 * Math.PI * k) / t.n;
+        push(Math.cos(a) * (R + 13), Math.sin(a) * (R + 13), Math.cos(a), Math.sin(a), (2 * Math.PI * (R + 40)) / t.n);
+      }
+    } else if (t.form === "oval") {
+      const ry = Math.max(30, (t.n * 22) / (2 * Math.PI)), rx = ry * 1.7;
+      out.rx = rx; out.ry = ry; out.ext = rx + 160;
+      const a0 = rx + 40, b0 = ry + 40;
+      const per = Math.PI * (3 * (a0 + b0) - Math.sqrt((3 * a0 + b0) * (a0 + 3 * b0)));
+      for (let k = 0; k < t.n; k++) {
+        const a = -Math.PI / 2 + (2 * Math.PI * k) / t.n;
+        let nx = Math.cos(a) / rx, ny = Math.sin(a) / ry;
+        const l = Math.hypot(nx, ny) || 1;
+        nx /= l; ny /= l;
+        push(Math.cos(a) * rx + nx * 13, Math.sin(a) * ry + ny * 13, nx, ny, per / t.n);
+      }
+    } else {
+      const s = t.seiten, c = 36;
+      const W = Math.max(70, Math.max(s.o, s.u) * c);
+      const H = Math.max(56, Math.max(s.l, s.r) * c);
+      out.w = W; out.h = H; out.ext = Math.max(W, H) / 2 + 160;
+      for (let j = 0; j < s.o; j++) push(-W / 2 + ((j + 0.5) * W) / s.o, -H / 2 - 13, 0, -1, W / s.o);
+      for (let j = 0; j < s.r; j++) push(W / 2 + 13, -H / 2 + ((j + 0.5) * H) / s.r, 1, 0, H / s.r);
+      for (let j = s.u - 1; j >= 0; j--) push(-W / 2 + ((j + 0.5) * W) / s.u, H / 2 + 13, 0, 1, W / s.u);
+      for (let j = s.l - 1; j >= 0; j--) push(-W / 2 - 13, -H / 2 + ((j + 0.5) * H) / s.l, -1, 0, H / s.l);
+    }
+    return out;
+  }
+
+  /* Name passt neben seinen Platz: Schrift höchstens so hoch wie der
+     Abstand zum Nachbarplatz, bei langen Namen kleiner, zur Not gekürzt. */
+  spName(name, sp) {
+    const maxL = 130;
+    let fs = Math.max(6, Math.min(13, sp * 0.78));
+    let txt = String(name || "");
+    if (txt.length * 0.56 * fs > maxL) fs = Math.max(6, maxL / (0.56 * txt.length));
+    const passt = Math.floor(maxL / (0.56 * fs));
+    if (txt.length > passt) txt = txt.slice(0, Math.max(1, passt - 1)) + "…";
+    return { txt: txt, fs: fs };
+  }
+
+  sitzplanVals(key, liste, opt) {
+    opt = opt || {};
+    const st = this.state;
+    const tische = this.spTische(liste);
+    const drag = st.spPos;
+    const such = String(opt.suche || "").trim().toLowerCase();
+    const treffer = [];
+    let W = 900, H = 600;
+    const geos = tische.map((t0) => {
+      const t = drag && drag.k === key && drag.i === t0.i ? Object.assign({}, t0, { x: drag.x, y: drag.y }) : t0;
+      const g = this.spGeo(t);
+      W = Math.max(W, t.x + g.ext); H = Math.max(H, t.y + g.ext);
+      return { t: t, g: g };
+    });
+    const zMap = st.spZoom || {};
+    const fit = Math.max(0.3, Math.min(1, ((window.innerWidth || 800) - (opt.edit ? 90 : 56)) / W));
+    const z = zMap[key] || fit;
+    const sel = opt.edit ? (st.spSel || "") : "";
+    const view = geos.map((gt) => {
+      const t = gt.t, g = gt.g;
+      const hitT = !!such && t.sitze.some((nm) => nm && nm.toLowerCase().indexOf(such) >= 0);
+      const aktiv = t.i === sel || hitT;
+      return {
+        key: t.i, tf: "translate(" + Math.round(t.x) + " " + Math.round(t.y) + ")",
+        gStil: { cursor: opt.edit ? "grab" : "default", touchAction: opt.edit ? "none" : "auto" },
+        istRund: t.form === "rund", istOval: t.form === "oval", istEckig: t.form === "eckig" || t.form === "tafel",
+        r: +(g.r || 0).toFixed(1), rx: +(g.rx || 0).toFixed(1), ry: +(g.ry || 0).toFixed(1),
+        w: g.w || 0, h: g.h || 0, x0: -(g.w || 0) / 2, y0: -(g.h || 0) / 2,
+        formStil: { fill: aktiv ? "var(--color-accent-100)" : "var(--color-neutral-100)", stroke: aktiv ? "var(--color-accent)" : "var(--color-neutral-500)", strokeWidth: aktiv ? 2.5 : 1.5 },
+        name: this.spName(t.name, 40).txt,
+        labelStil: { fontSize: "12.5px", fontWeight: 700, textAnchor: "middle", dominantBaseline: "central", fill: "var(--color-text)", fontFamily: "var(--font-heading)", pointerEvents: "none" },
+        ziehen: opt.edit ? (ev) => this.spZiehen(key, t, ev, z) : undefined,
+        sitze: g.sitze.map((s, k) => {
+          const nm = t.sitze[k] || "";
+          const hit = !!such && !!nm && nm.toLowerCase().indexOf(such) >= 0;
+          if (hit) treffer.push({ name: nm, tisch: t.name, platz: k + 1, x: t.x, y: t.y });
+          const deg = (Math.atan2(s.ny, s.nx) * 180) / Math.PI;
+          const links = s.nx < -0.01;
+          const tx0 = s.x + s.nx * 14, ty0 = s.y + s.ny * 14;
+          const nn = this.spName(nm, s.sp);
+          return {
+            key: "s" + k, x: +s.x.toFixed(1), y: +s.y.toFixed(1), nr: String(k + 1),
+            stil: { fill: hit ? "var(--color-accent)" : (nm ? "var(--color-bg)" : "var(--color-neutral-200)"), stroke: hit ? "var(--color-accent-700)" : "var(--color-neutral-500)", strokeWidth: 1.2 },
+            nrStil: { fontSize: "8.5px", textAnchor: "middle", dominantBaseline: "central", fill: hit ? "#fff" : "var(--color-neutral-700)", pointerEvents: "none", fontFamily: "var(--font-body)" },
+            tx: +tx0.toFixed(1), ty: +ty0.toFixed(1),
+            rot: "rotate(" + (links ? deg + 180 : deg).toFixed(1) + " " + tx0.toFixed(1) + " " + ty0.toFixed(1) + ")",
+            name: nn.txt,
+            nameStil: { fontSize: nn.fs.toFixed(1) + "px", textAnchor: links ? "end" : "start", dominantBaseline: "central", fill: hit ? "var(--color-accent-700)" : "var(--color-text)", fontWeight: hit ? 700 : 400, pointerEvents: "none", fontFamily: "var(--font-body)" }
+          };
+        })
+      };
+    });
+    if (this._spSucheNeu === key && treffer[0]) { this._spSucheNeu = null; this._spZiel = { k: key, x: treffer[0].x, y: treffer[0].y }; }
+    const setZ = (v) => { const n = Object.assign({}, zMap); if (v == null) delete n[key]; else n[key] = v; this.setState({ spZoom: n }); };
+    return {
+      hat: tische.length > 0,
+      tische: view,
+      bw: Math.round(W * z), bh: Math.round(H * z), skala: "scale(" + z.toFixed(3) + ")",
+      zoomText: Math.round(z * 100) + " %",
+      plus: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); setZ(Math.min(3, z * 1.25)); },
+      minus: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); setZ(Math.max(0.25, z / 1.25)); },
+      einpassen: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); setZ(null); },
+      boxRef: (el) => {
+        if (!el || !this._spZiel || this._spZiel.k !== key) return;
+        const zi = this._spZiel;
+        this._spZiel = null;
+        window.setTimeout(() => { try { el.scrollTo({ left: zi.x * z - el.clientWidth / 2, top: zi.y * z - el.clientHeight / 2, behavior: "smooth" }); } catch (x) { /* egal */ } }, 60);
+      },
+      treffer: treffer.slice(0, 6).map((r, k) => ({ key: "h" + k, text: r.name + ": " + r.tisch + " · " + tx("sp_platz") + " " + r.platz })),
+      hatTreffer: treffer.length > 0, keinTreffer: !!such && !treffer.length
+    };
+  }
+
+  spZiehen(key, t, ev, z) {
+    if (ev.button != null && ev.button > 0) return;
+    ev.stopPropagation();
+    const s = { cx: ev.clientX, cy: ev.clientY, moved: false };
+    const move = (e) => {
+      const dx = (e.clientX - s.cx) / z, dy = (e.clientY - s.cy) / z;
+      if (!s.moved && Math.abs(dx) + Math.abs(dy) < 4) return;
+      s.moved = true;
+      if (e.cancelable) e.preventDefault();
+      this.setState({ spPos: { k: key, i: t.i, x: Math.max(70, Math.round(t.x + dx)), y: Math.max(70, Math.round(t.y + dy)) } });
+    };
+    const up = () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", up);
+      const p = this.state.spPos;
+      if (s.moved && p && p.i === t.i) this.spTischAendern(t.i, { x: p.x, y: p.y });
+      this.setState({ spPos: null, spSel: t.i });
+    };
+    window.addEventListener("pointermove", move, { passive: false });
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
+  }
+
+  spRoh() { return ((this.exOf(this.state.draft).offen || {}).tische || []); }
+  spTischAendern(i, patch) {
+    this.voSet("offen.tische", this.spTische(this.spRoh()).map((t) => (t.i === i ? Object.assign({}, t, patch) : t)));
+  }
+  spNeu(form) {
+    const alle = this.spTische(this.spRoh());
+    const k = alle.length;
+    const t = { i: "t" + uid(), name: tx("gast_tisch") + " " + (k + 1), form: form, x: 180 + (k % 4) * 290, y: 180 + Math.floor(k / 4) * 290 };
+    this.voSet("offen.tische", alle.concat([t]));
+    this.setState({ spSel: t.i });
+  }
+
+  spPanel() {
+    const st = this.state;
+    const t = this.spTische(this.spRoh()).filter((x) => x.i === st.spSel)[0];
+    if (!t) return { an: false };
+    const aend = (p) => this.spTischAendern(t.i, p);
+    return {
+      an: true, name: t.name, onName: (ev) => aend({ name: ev.target.value }),
+      form: t.form,
+      formWahl: [["rund", tx("sp_rund")], ["oval", tx("sp_oval")], ["eckig", tx("sp_eckig")], ["tafel", tx("sp_tafel")]].map((o) => ({ key: o[0], value: o[0], label: o[1] })),
+      onForm: (ev) => aend({ form: ev.target.value, seiten: null }),
+      istRundOval: t.form === "rund" || t.form === "oval",
+      istEckig: t.form === "eckig" || t.form === "tafel",
+      plaetze: String(t.n), onPlaetze: (ev) => aend({ plaetze: Math.max(1, Math.min(40, Number(ev.target.value) || 1)) }),
+      seiten: [["o", tx("sp_oben")], ["r", tx("sp_rechts")], ["u", tx("sp_unten")], ["l", tx("sp_links")]].map((q) => ({
+        key: q[0], label: q[1], wert: String((t.seiten || {})[q[0]] || 0),
+        on: (ev) => aend({ seiten: Object.assign({}, t.seiten, { [q[0]]: Math.max(0, Math.min(20, Number(ev.target.value) || 0)) }) })
+      })),
+      sitze: t.sitze.map((nm, k) => ({
+        key: "s" + k, nr: String(k + 1), name: nm,
+        onName: (ev) => { const s = t.sitze.slice(); s[k] = ev.target.value; aend({ sitze: s }); }
+      })),
+      weg: () => { if (window.confirm(tx("sp_weg_frage"))) { this.voSet("offen.tische", this.spTische(this.spRoh()).filter((x) => x.i !== t.i)); this.setState({ spSel: "" }); } },
+      zu: () => this.setState({ spSel: "" })
+    };
+  }
+
+  async gaPruefen() {
+    const d = this.state.draft;
+    if (!d) return;
+    const o = this.exOf(d).offen || {};
+    const CC = window.ChronikCloud;
+    if (!CC || !CC.gastSicht || !d.id || !o.token) { this.setState({ gaPruef: tx("ga_erst_speichern") }); return; }
+    this.setState({ gaPruef: tx("ga_prueft") });
+    try {
+      const r = await CC.gastSicht(d.id, o.token);
+      this.setState({ gaPruef: r ? tx("ga_pruef_ok") : tx("ga_pruef_nicht_gespeichert") });
+    } catch (e) {
+      this.setState({ gaPruef: e && e.code === "D-28" ? tx("ga_pruef_sql") : tx("ga_pruef_fehler") + " " + ((e && (e.code || e.message)) || "") });
+    }
   }
 
   kiFehlerText(x) {
