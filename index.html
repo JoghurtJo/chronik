@@ -19,8 +19,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Chronik">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js?v=b101"></script>
-<script src="supabase-bridge.js?v=b101"></script>
+<script src="chronik-config.js?v=b102"></script>
+<script src="supabase-bridge.js?v=b102"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
@@ -263,14 +263,7 @@
                   </sc-if>
                   <div ref="{{ gv.sp.boxRef }}" style="{{ gv.sp.boxStil }}">
                     <div style="{{ gv.sp.innenStil }}">
-                      <sc-for list="{{ gv.sp.objekte }}" as="ob" hint-placeholder-count="0">
-                        <div onPointerDown="{{ ob.ziehen }}" title="{{ ob.text }}" style="{{ ob.stil }}">
-                          <sc-if value="{{ ob.istIcon }}" hint-placeholder-val="{{ true }}"><i class="{{ ob.icon }}" style="{{ ob.iconStil }}"></i><span style="{{ ob.labelStil }}">{{ ob.text }}</span></sc-if>
-                          <sc-if value="{{ ob.istText }}" hint-placeholder-val="{{ false }}"><span style="{{ ob.textStil }}">{{ ob.text }}</span></sc-if>
-                          <sc-if value="{{ ob.griff }}" hint-placeholder-val="{{ false }}"><span onPointerDown="{{ ob.groesse }}" style="{{ ob.griffStil }}"></span></sc-if>
-                        </div>
-                      </sc-for>
-                      <svg width="{{ gv.sp.bw }}" height="{{ gv.sp.bh }}" style="position: absolute; left: 0; top: 0; display: block; pointer-events: none;">
+                      <svg width="{{ gv.sp.bw }}" height="{{ gv.sp.bh }}" style="position: absolute; left: 0; top: 0; display: block;">
                         <g transform="{{ gv.sp.skala }}">
                           <sc-for list="{{ gv.sp.orn }}" as="on" hint-placeholder-count="0"><text x="{{ on.x }}" y="{{ on.y }}" style="{{ on.stil }}">{{ on.g }}</text></sc-for>
                           <sc-for list="{{ gv.sp.tische }}" as="t" hint-placeholder-count="0">
@@ -291,6 +284,15 @@
                           </sc-for>
                         </g>
                       </svg>
+                      <div style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; pointer-events: none;">
+                      <sc-for list="{{ gv.sp.objekte }}" as="ob" hint-placeholder-count="0">
+                        <div onPointerDown="{{ ob.ziehen }}" title="{{ ob.text }}" style="{{ ob.stil }}">
+                          <sc-if value="{{ ob.istIcon }}" hint-placeholder-val="{{ true }}"><i class="{{ ob.icon }}" style="{{ ob.iconStil }}"></i><span style="{{ ob.labelStil }}">{{ ob.text }}</span></sc-if>
+                          <sc-if value="{{ ob.istText }}" hint-placeholder-val="{{ false }}"><span style="{{ ob.textStil }}">{{ ob.text }}</span></sc-if>
+                          <sc-if value="{{ ob.griff }}" hint-placeholder-val="{{ false }}"><span onPointerDown="{{ ob.groesse }}" style="{{ ob.griffStil }}"></span></sc-if>
+                        </div>
+                      </sc-for>
+                      </div>
                     </div>
                   </div>
                   <sc-if value="{{ gv.sp.hatNamensListe }}" hint-placeholder-val="{{ false }}">
@@ -1400,14 +1402,7 @@
                                     </sc-if>
                                     <div ref="{{ c.sp.boxRef }}" style="{{ c.sp.boxStil }}">
                                       <div style="{{ c.sp.innenStil }}">
-                                        <sc-for list="{{ c.sp.objekte }}" as="ob" hint-placeholder-count="0">
-                                          <div onPointerDown="{{ ob.ziehen }}" title="{{ ob.text }}" style="{{ ob.stil }}">
-                                            <sc-if value="{{ ob.istIcon }}" hint-placeholder-val="{{ true }}"><i class="{{ ob.icon }}" style="{{ ob.iconStil }}"></i><span style="{{ ob.labelStil }}">{{ ob.text }}</span></sc-if>
-                                            <sc-if value="{{ ob.istText }}" hint-placeholder-val="{{ false }}"><span style="{{ ob.textStil }}">{{ ob.text }}</span></sc-if>
-                                            <sc-if value="{{ ob.griff }}" hint-placeholder-val="{{ false }}"><span onPointerDown="{{ ob.groesse }}" style="{{ ob.griffStil }}"></span></sc-if>
-                                          </div>
-                                        </sc-for>
-                                        <svg width="{{ c.sp.bw }}" height="{{ c.sp.bh }}" style="position: absolute; left: 0; top: 0; display: block; pointer-events: none;">
+                                        <svg width="{{ c.sp.bw }}" height="{{ c.sp.bh }}" style="position: absolute; left: 0; top: 0; display: block;">
                                           <g transform="{{ c.sp.skala }}">
                                             <sc-for list="{{ c.sp.orn }}" as="on" hint-placeholder-count="0"><text x="{{ on.x }}" y="{{ on.y }}" style="{{ on.stil }}">{{ on.g }}</text></sc-for>
                                             <sc-for list="{{ c.sp.tische }}" as="t" hint-placeholder-count="0">
@@ -1428,6 +1423,15 @@
                                             </sc-for>
                                           </g>
                                         </svg>
+                                        <div style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; pointer-events: none;">
+                                        <sc-for list="{{ c.sp.objekte }}" as="ob" hint-placeholder-count="0">
+                                          <div onPointerDown="{{ ob.ziehen }}" title="{{ ob.text }}" style="{{ ob.stil }}">
+                                            <sc-if value="{{ ob.istIcon }}" hint-placeholder-val="{{ true }}"><i class="{{ ob.icon }}" style="{{ ob.iconStil }}"></i><span style="{{ ob.labelStil }}">{{ ob.text }}</span></sc-if>
+                                            <sc-if value="{{ ob.istText }}" hint-placeholder-val="{{ false }}"><span style="{{ ob.textStil }}">{{ ob.text }}</span></sc-if>
+                                            <sc-if value="{{ ob.griff }}" hint-placeholder-val="{{ false }}"><span onPointerDown="{{ ob.groesse }}" style="{{ ob.griffStil }}"></span></sc-if>
+                                          </div>
+                                        </sc-for>
+                                        </div>
                                       </div>
                                     </div>
                                     <sc-if value="{{ c.sp.hatNamensListe }}" hint-placeholder-val="{{ false }}">
@@ -2831,14 +2835,7 @@
                           </sc-if>
                           <div ref="{{ vo.sp.boxRef }}" style="{{ vo.sp.boxStil }}">
                             <div style="{{ vo.sp.innenStil }}">
-                              <sc-for list="{{ vo.sp.objekte }}" as="ob" hint-placeholder-count="0">
-                                <div onPointerDown="{{ ob.ziehen }}" title="{{ ob.text }}" style="{{ ob.stil }}">
-                                  <sc-if value="{{ ob.istIcon }}" hint-placeholder-val="{{ true }}"><i class="{{ ob.icon }}" style="{{ ob.iconStil }}"></i><span style="{{ ob.labelStil }}">{{ ob.text }}</span></sc-if>
-                                  <sc-if value="{{ ob.istText }}" hint-placeholder-val="{{ false }}"><span style="{{ ob.textStil }}">{{ ob.text }}</span></sc-if>
-                                  <sc-if value="{{ ob.griff }}" hint-placeholder-val="{{ false }}"><span onPointerDown="{{ ob.groesse }}" style="{{ ob.griffStil }}"></span></sc-if>
-                                </div>
-                              </sc-for>
-                              <svg width="{{ vo.sp.bw }}" height="{{ vo.sp.bh }}" style="position: absolute; left: 0; top: 0; display: block; pointer-events: none;">
+                              <svg width="{{ vo.sp.bw }}" height="{{ vo.sp.bh }}" style="position: absolute; left: 0; top: 0; display: block;">
                                 <g transform="{{ vo.sp.skala }}">
                                   <sc-for list="{{ vo.sp.orn }}" as="on" hint-placeholder-count="0"><text x="{{ on.x }}" y="{{ on.y }}" style="{{ on.stil }}">{{ on.g }}</text></sc-for>
                                   <sc-for list="{{ vo.sp.tische }}" as="t" hint-placeholder-count="0">
@@ -2859,6 +2856,15 @@
                                   </sc-for>
                                 </g>
                               </svg>
+                              <div style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; pointer-events: none;">
+                              <sc-for list="{{ vo.sp.objekte }}" as="ob" hint-placeholder-count="0">
+                                <div onPointerDown="{{ ob.ziehen }}" title="{{ ob.text }}" style="{{ ob.stil }}">
+                                  <sc-if value="{{ ob.istIcon }}" hint-placeholder-val="{{ true }}"><i class="{{ ob.icon }}" style="{{ ob.iconStil }}"></i><span style="{{ ob.labelStil }}">{{ ob.text }}</span></sc-if>
+                                  <sc-if value="{{ ob.istText }}" hint-placeholder-val="{{ false }}"><span style="{{ ob.textStil }}">{{ ob.text }}</span></sc-if>
+                                  <sc-if value="{{ ob.griff }}" hint-placeholder-val="{{ false }}"><span onPointerDown="{{ ob.groesse }}" style="{{ ob.griffStil }}"></span></sc-if>
+                                </div>
+                              </sc-for>
+                              </div>
                             </div>
                           </div>
                           <sc-if value="{{ vo.sp.hatNamensListe }}" hint-placeholder-val="{{ false }}">
@@ -4220,7 +4226,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 101) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 102) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -4550,7 +4556,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 101 · 2026-10-07";
+const BAU_STAND = "Bau 102 · 2026-10-07";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -7254,8 +7260,9 @@ class Component extends DCLogic {
     let txt = String(name || "");
     if (txt.length * 0.56 * fs > maxL) fs = Math.max(6, maxL / (0.56 * txt.length));
     const passt = Math.floor(maxL / (0.56 * fs));
+    const voll = txt;
     if (txt.length > passt) txt = txt.slice(0, Math.max(1, passt - 1)) + "…";
-    return { txt: txt, fs: fs };
+    return { txt: txt, fs: fs, eng: fs < 8 || txt !== voll };
   }
 
   spDekos() {
@@ -7326,12 +7333,15 @@ class Component extends DCLogic {
     const oSel = opt.edit ? (st.spObjSel || "") : "";
     const nMap = st.spNamen || {};
     const namenAn = nMap[key] != null ? !!nMap[key] : true;
+    const engIds = [];
     const view = geos.map((gt) => {
       const t = gt.t, g0 = gt.g;
       const rad = ((t.dreh || 0) * Math.PI) / 180, co = Math.cos(rad), si = Math.sin(rad);
       const g = Object.assign({}, g0, { sitze: g0.sitze.map((s) => ({ x: s.x * co - s.y * si, y: s.x * si + s.y * co, nx: s.nx * co - s.ny * si, ny: s.nx * si + s.ny * co, sp: s.sp })) });
       const hitT = !!such && t.sitze.some((nm) => nm && nm.toLowerCase().indexOf(such) >= 0);
       const aktiv = t.i === sel || hitT;
+      const engT = t.sitze.some((nm, k) => nm && g.sitze[k] && this.spName(nm, g.sitze[k].sp).eng);
+      if (engT) engIds.push(t.i);
       return {
         key: t.i, tf: "translate(" + Math.round(t.x) + " " + Math.round(t.y) + ")", drehTf: "rotate(" + (t.dreh || 0) + ")",
         gStil: { cursor: opt.edit ? "grab" : "default", touchAction: opt.edit ? "none" : "auto", pointerEvents: "auto" },
@@ -7375,7 +7385,7 @@ class Component extends DCLogic {
             nrStil: { fontSize: "8.5px", textAnchor: "middle", dominantBaseline: "central", fill: hit ? "#fff" : (nm ? D.sitzInk : D.ink), pointerEvents: "none", fontFamily: "var(--font-body)" },
             tx: +tx0.toFixed(1), ty: +ty0.toFixed(1),
             rot: "rotate(" + (links ? deg + 180 : deg).toFixed(1) + " " + tx0.toFixed(1) + " " + ty0.toFixed(1) + ")",
-            name: namenAn || hit ? nn.txt : "",
+            name: (namenAn && !engT) || hit ? nn.txt : "",
             hitStil: { fill: "transparent", cursor: "pointer", pointerEvents: "all" },
             info: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.setState({ spInfo: { k: key, i: t.i, n: k } }); },
             nameStil: { fontSize: nn.fs.toFixed(1) + "px", textAnchor: links ? "end" : "start", dominantBaseline: "central", fill: hit ? D.akz : D.ink, fontWeight: hit ? 700 : 400, pointerEvents: "none", fontFamily: "var(--font-body)", paintOrder: "stroke", stroke: D.bg, strokeWidth: 3, strokeLinejoin: "round" }
@@ -7406,7 +7416,7 @@ class Component extends DCLogic {
           gap: (6 * z).toFixed(1) + "px", padding: (4 * z).toFixed(1) + "px", borderRadius: (10 * z).toFixed(1) + "px",
           background: istText ? "transparent" : "color-mix(in srgb, " + farbe + " 16%, " + D.bg + ")",
           border: istText ? (aktiv ? "1.5px dashed " + D.akz : "1px dashed transparent") : (aktiv ? "3px solid " + D.akz : "1.6px " + (T.k === "tanz" ? "dashed " : "solid ") + farbe),
-          color: farbe, cursor: opt.edit ? "grab" : "default", touchAction: opt.edit ? "none" : "auto", userSelect: "none", WebkitUserSelect: "none"
+          color: farbe, cursor: opt.edit ? "grab" : "default", touchAction: opt.edit ? "none" : "auto", userSelect: "none", WebkitUserSelect: "none", pointerEvents: "auto"
         },
         iconStil: { fontSize: (iconPx * z).toFixed(1) + "px", lineHeight: 1, color: farbe, flex: "0 0 auto" },
         labelStil: { fontSize: (fontPx * z).toFixed(1) + "px", fontWeight: 600, color: D.ink, lineHeight: 1.15, textAlign: "center", overflowWrap: "anywhere", fontFamily: "var(--font-body)" },
@@ -7461,8 +7471,8 @@ class Component extends DCLogic {
       tische: view, objekte: objekte, orn: orn,
       innenStil: { position: "relative", width: Math.round(W * z) + "px", height: Math.round(H * z) + "px" },
       boxStil: { width: "100%", maxHeight: "70vh", overflow: "auto", borderRadius: "14px", backgroundColor: D.bg, boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.10)", WebkitOverflowScrolling: "touch" },
-      hatNamensListe: namenAn && tische.some((t) => t.sitze.some(Boolean)),
-      namensListe: tische.filter((t) => t.sitze.some(Boolean)).map((t) => ({ key: t.i, tisch: t.name,
+      hatNamensListe: namenAn && engIds.length > 0,
+      namensListe: tische.filter((t) => engIds.indexOf(t.i) >= 0 && t.sitze.some(Boolean)).map((t) => ({ key: t.i, tisch: t.name,
         namen: t.sitze.map((n, k) => (n ? (k + 1) + " " + n : "")).filter(Boolean).join(" · ") })),
       hatInfo: !!info, info: info || { name: "", ini: "", ort: "", zeilen: [], zu: () => {} },
       namenText: namenAn ? tx("sp_namen_aus") : tx("sp_namen_ein"),
