@@ -548,7 +548,8 @@
       vis: (row.vis === "selected" ? "people" : row.vis) || "private", who: row.who || [], gwho: row.gwho || [], perms: row.perms || {}, polls: row.polls || [], etappen: row.etappen || [], etLayout: row.et_layout === "split" ? "split" : "gesamt", share: row.share || "view",
       changedBy: row.changed_by || "",
       lose: !!d.lose,
-      timetable: d.timetable && typeof d.timetable === "object" ? d.timetable : null
+      timetable: d.timetable && typeof d.timetable === "object" ? d.timetable : null,
+      extras: d.extras && typeof d.extras === "object" ? d.extras : null
     };
   }
 
@@ -561,6 +562,7 @@
         note: e.note || "", infos: e.infos || [], people: e.people || [], deco: e.deco || null,
         alben: e.alben || [],
         timetable: e.timetable || null,
+        extras: e.extras || null,
         themeId: e.themeId || "",
         themeSnap: e.themeSnap || null,
         themeFein: e.themeFein || {},
@@ -888,6 +890,64 @@
     return alle;
   }
 
+  /* ---- Offener Bereich & Standorte ---- */
+  function codeAus(err) { var m = /D-\d\d/.exec(String((err && err.message) || "")); return m ? m[0] : code(err); }
+  async function gastSicht(ev, tk) {
+    var c = await client();
+    var r = await c.rpc("guest_view", { p_event: ev, p_token: tk });
+    if (r.error) throw fail(codeAus(r.error));
+    return r.data || null;
+  }
+  async function gastAdd(ev, tk, kind, name, text, data, img) {
+    var c = await client();
+    var r = await c.rpc("guest_add", { p_event: ev, p_token: tk, p_kind: kind, p_name: name, p_text: text || "", p_data: data || {}, p_img: img || null });
+    if (r.error) throw fail(codeAus(r.error));
+    return r.data;
+  }
+  async function gastUpload(ev, tk, file) {
+    if (!R2) throw fail("D-20");
+    var fd = new FormData();
+    fd.append("event", ev); fd.append("token", tk); fd.append("file", file, "gast.jpg");
+    var res = await fetch(R2 + "/gast/upload", { method: "POST", body: fd });
+    var d = await res.json().catch(function () { return {}; });
+    if (!res.ok || !d.key) throw fail(d.error || "D-05");
+    return d.key;
+  }
+  function gastBildUrl(ev, tk, key) {
+    if (!R2 || !key) return "";
+    return R2 + "/gast/img/" + encodeURIComponent(key) + "?e=" + encodeURIComponent(ev) + "&t=" + encodeURIComponent(tk);
+  }
+  async function gastListe(ev) {
+    var c = await client();
+    var r = await c.from("guest_entries").select("id,kind,name,text,data,img,created").eq("event_id", ev).order("created", { ascending: false }).limit(800);
+    if (r.error) throw fail(code(r.error));
+    return r.data || [];
+  }
+  async function gastWeg(id) {
+    var c = await client();
+    var r = await c.from("guest_entries").delete().eq("id", id);
+    if (r.error) throw fail(code(r.error));
+  }
+  async function meinId() { var s = await session(); return (s && s.user && s.user.id) || ""; }
+  async function posSet(ev, lat, lon, acc) {
+    var c = await client();
+    var id = await meinId();
+    if (!id) throw fail("D-09");
+    var r = await c.from("event_pos").upsert({ event_id: ev, user_id: id, lat: lat, lon: lon, acc: acc || null, at: new Date().toISOString() }, { onConflict: "event_id,user_id" });
+    if (r.error) throw fail(code(r.error));
+  }
+  async function posList(ev) {
+    var c = await client();
+    var r = await c.from("event_pos").select("user_id,lat,lon,acc,at").eq("event_id", ev).gte("at", new Date(Date.now() - 3 * 3600000).toISOString());
+    if (r.error) throw fail(code(r.error));
+    return r.data || [];
+  }
+  async function posDel(ev) {
+    var c = await client();
+    var id = await meinId();
+    if (id) await c.from("event_pos").delete().eq("event_id", ev).eq("user_id", id);
+  }
+
   /* Timetable-Foto von der KI im eigenen Worker lesen lassen. */
   async function ttKi(bild) {
     if (!R2) { var e0 = new Error("kein worker"); e0.code = "D-20"; throw e0; }
@@ -921,7 +981,7 @@
     groups: groups, saveGroup: saveGroup, removeGroup: removeGroup, leaveGroup: leaveGroup, saveLook: saveLook,
     saveNotify: saveNotify, notify: notify,
     friends: friends, askFriend: askFriend, answerFriend: answerFriend, unfriend: unfriend,
-    loadEvents: loadEvents, imageUrls: imageUrls, ttKi: ttKi, saveEvent: saveEvent, removeEvent: removeEvent,
+    loadEvents: loadEvents, imageUrls: imageUrls, ttKi: ttKi, gastSicht: gastSicht, gastAdd: gastAdd, gastUpload: gastUpload, gastBildUrl: gastBildUrl, gastListe: gastListe, gastWeg: gastWeg, posSet: posSet, posList: posList, posDel: posDel, saveEvent: saveEvent, removeEvent: removeEvent,
     addComment: addComment, removeComment: removeComment, reactComment: reactComment,
     deleteMe: deleteMe, sweepUnconfirmed: sweepUnconfirmed, deleteImages: deleteImages, setPolls: setPolls, moveComments: moveComments, uploadImage: uploadImage, imageUrl: imageUrl, storeCheck: storeCheck, onChange: onChange,
     snapshot: snapshot, budget: budget, guard: guard,

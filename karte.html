@@ -34,11 +34,22 @@
     color: var(--color-neutral-700);
   }
   #leer[hidden] { display: none; }
+  /* Lageplan */
+  .lp { display: grid; place-items: center; min-width: 28px; height: 28px; padding: 0 4px; box-sizing: border-box; border-radius: 99px;
+    font-family: var(--font-body); font-size: 11.5px; font-weight: 700; color: #fff; border: 2px solid #fff; box-shadow: 0 2px 6px -1px rgba(0,0,0,0.45); }
+  .person { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-family: var(--font-body); font-size: 10px; font-weight: 700;
+    color: #fff; background: #201e1d; border: 2px solid #fff; box-shadow: 0 2px 6px -1px rgba(0,0,0,0.45); }
+  .person.ich { background: #0088b0; }
+  #hinweis { position: absolute; left: 50%; top: 10px; transform: translateX(-50%); z-index: 600; max-width: calc(100% - 90px);
+    padding: 6px 12px; border-radius: 99px; background: var(--color-bg); box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    font-family: var(--font-body); font-size: 13px; line-height: 1.35; text-align: center; pointer-events: none; }
+  #hinweis[hidden] { display: none; }
 </style>
 </head>
 <body>
 <div id="karte"></div>
 <div id="leer">Noch keine Station auf der Karte.</div>
+<div id="hinweis" hidden></div>
 
 <script>
 /* ============================================================
@@ -158,6 +169,50 @@ function zeichne(daten) {
   else karte.fitBounds(grenzen, { padding: [34, 34] });
 }
 
+/* Lageplan: Bereich, Punkte und freiwillig geteilte Standorte. */
+var lpZentriert = false, lpBereichAlt = "", lpOrtGesucht = "";
+function lageplan(d) {
+  setzModus = !!d.setzen;
+  document.getElementById("karte").style.cursor = setzModus ? "crosshair" : "";
+  leer.hidden = true;
+  var hw = document.getElementById("hinweis");
+  hw.textContent = d.text || "";
+  hw.hidden = !d.text;
+  ebene.clearLayers();
+  var farbe = d.farbe || "#0088b0", farbe2 = d.farbe2 || "#d6006c";
+  var pk = d.punkte || [], lt = d.leute || [];
+  var alle = [];
+  if (d.bereich) {
+    L.rectangle([[d.bereich.s, d.bereich.w], [d.bereich.n, d.bereich.e]], { color: farbe, weight: 2, dashArray: "6 6", fill: true, fillOpacity: 0.04 }).addTo(ebene);
+  }
+  pk.forEach(function (p) {
+    var ic = L.divIcon({ className: "", html: '<div class="lp" style="background:' + (p.not ? farbe2 : farbe) + (p.aktiv ? ';transform:scale(1.35)' : '') + '">' + esc(p.g) + "</div>", iconSize: [28, 28], iconAnchor: [14, 14] });
+    var m = L.marker([p.lat, p.lon], { icon: ic, title: p.name || "", zIndexOffset: p.aktiv ? 1000 : 0 }).addTo(ebene);
+    m.bindPopup("<strong>" + esc(p.name) + "</strong>" + (p.typ && p.typ !== p.name ? "<br>" + esc(p.typ) : ""));
+    if (p.aktiv) karte.setView([p.lat, p.lon], Math.max(karte.getZoom(), 17));
+    alle.push([p.lat, p.lon]);
+  });
+  lt.forEach(function (p) {
+    var ini = String(p.name || "?").trim().split(/\s+/).slice(0, 2).map(function (w) { return w[0] || ""; }).join("").toUpperCase();
+    var ic = L.divIcon({ className: "", html: '<div class="person' + (p.ich ? " ich" : "") + '">' + esc(ini) + "</div>", iconSize: [24, 24], iconAnchor: [12, 12] });
+    L.marker([p.lat, p.lon], { icon: ic, title: p.name || "", zIndexOffset: 500 }).addTo(ebene).bindTooltip(esc(p.name), { direction: "right", offset: [12, 0] });
+    alle.push([p.lat, p.lon]);
+  });
+  var bk = JSON.stringify(d.bereich || null);
+  if (lpZentriert && bk === lpBereichAlt) return;
+  lpBereichAlt = bk;
+  if (d.bereich) { karte.fitBounds([[d.bereich.s, d.bereich.w], [d.bereich.n, d.bereich.e]]); lpZentriert = true; }
+  else if (alle.length === 1) { karte.setView(alle[0], 17); lpZentriert = true; }
+  else if (alle.length > 1) { karte.fitBounds(L.latLngBounds(alle), { padding: [34, 34] }); lpZentriert = true; }
+  else if (d.ort && lpOrtGesucht !== d.ort) {
+    lpOrtGesucht = d.ort;
+    fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" + encodeURIComponent(d.ort))
+      .then(function (r) { return r.json(); })
+      .then(function (a) { if (a && a[0] && !lpZentriert) { karte.setView([+a[0].lat, +a[0].lon], 16); lpZentriert = true; } })
+      .catch(function () {});
+  }
+}
+
 function esc(s) {
   return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
     return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
@@ -178,6 +233,11 @@ window.addEventListener("message", function (ev) {
       ? "Auf die Karte tippen, um die gewählte Station dort zu setzen."
       : "Noch keine Station auf der Karte.";
     zeichne(d);
+  } else if (d.typ === "lageplan") {
+    lageplan(d);
+  } else if (d.typ === "bereichHolen") {
+    var b = karte.getBounds();
+    parent.postMessage({ typ: "bereich", s: +b.getSouth().toFixed(6), w: +b.getWest().toFixed(6), n: +b.getNorth().toFixed(6), e: +b.getEast().toFixed(6) }, "*");
   } else if (d.typ === "aktiv" && typeof d.i === "number") {
     /* Hervorheben durch Anfahren — bleibt schlicht und robust. */
     var s = (d.stationen || [])[d.i];
