@@ -19,8 +19,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Chronik">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js?v=b100"></script>
-<script src="supabase-bridge.js?v=b100"></script>
+<script src="chronik-config.js?v=b101"></script>
+<script src="supabase-bridge.js?v=b101"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
@@ -293,6 +293,13 @@
                       </svg>
                     </div>
                   </div>
+                  <sc-if value="{{ gv.sp.hatNamensListe }}" hint-placeholder-val="{{ false }}">
+                    <div style="display: grid; gap: 4px; font-size: 13.5px; line-height: 1.45;">
+                      <sc-for list="{{ gv.sp.namensListe }}" as="nl" hint-placeholder-count="0">
+                        <div style="overflow-wrap: anywhere;"><strong style="font-weight: 700;">{{ nl.tisch }}:</strong> {{ nl.namen }}</div>
+                      </sc-for>
+                    </div>
+                  </sc-if>
                 </div>
               </sc-if>
             </section>
@@ -1423,6 +1430,13 @@
                                         </svg>
                                       </div>
                                     </div>
+                                    <sc-if value="{{ c.sp.hatNamensListe }}" hint-placeholder-val="{{ false }}">
+                                      <div style="display: grid; gap: 4px; font-size: 13.5px; line-height: 1.45;">
+                                        <sc-for list="{{ c.sp.namensListe }}" as="nl" hint-placeholder-count="0">
+                                          <div style="overflow-wrap: anywhere;"><strong style="font-weight: 700;">{{ nl.tisch }}:</strong> {{ nl.namen }}</div>
+                                        </sc-for>
+                                      </div>
+                                    </sc-if>
                                   </div>
                                 </div>
                               </sc-if>
@@ -2459,7 +2473,7 @@
 
             <sc-if value="{{ vo.cdZukunft }}" hint-placeholder-val="{{ false }}">
             <div style="display: grid; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-md); background: var(--color-neutral-100);">
-              <div style="display: flex; align-items: baseline; gap: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--color-divider);"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.cd }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.cd_titel }}</span></div>
+              <button onClick="{{ vo.klapp.cd.um }}" aria-expanded="{{ vo.klapp.cd.text }}" style="display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--color-text); font: inherit; text-align: left; cursor: pointer;"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.cd }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.cd_titel }}</span><span style="flex: 1;"></span><span style="{{ vo.klapp.cd.zeichen }}">▸</span></button><sc-if value="{{ vo.klapp.cd.auf }}" hint-placeholder-val="{{ false }}">
               <div style="font-size: 13px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.cd_sub }}</div>
               <div style="display: flex; gap: var(--space-2); flex-wrap: wrap; align-items: center;">
                 <button onClick="{{ vo.cdUm }}" style="{{ vo.cdStil }}">{{ vo.cdLabel }}</button>
@@ -2468,11 +2482,11 @@
                   <span style="font-size: 13px; color: var(--color-accent-700);">{{ vo.cdVorschau }}</span>
                 </sc-if>
               </div>
-            </div>
+            </sc-if></div>
 
             </sc-if>
             <div style="display: grid; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-md); background: var(--color-neutral-100);">
-              <div style="display: flex; align-items: baseline; gap: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--color-divider);"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.nf }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.nf_titel }}</span></div>
+              <button onClick="{{ vo.klapp.nf.um }}" aria-expanded="{{ vo.klapp.nf.text }}" style="display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--color-text); font: inherit; text-align: left; cursor: pointer;"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.nf }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.nf_titel }}</span><span style="flex: 1;"></span><span style="{{ vo.klapp.nf.zeichen }}">▸</span></button><sc-if value="{{ vo.klapp.nf.auf }}" hint-placeholder-val="{{ false }}">
               <div style="font-size: 13px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.nf_sub }}</div>
               <div><button onClick="{{ vo.nfUm }}" style="{{ vo.nfStil }}">{{ vo.nfLabel }}</button></div>
               <sc-if value="{{ vo.nfAn }}" hint-placeholder-val="{{ false }}">
@@ -2485,10 +2499,10 @@
                 </div>
                 <div class="field" style="margin: 0;"><label>{{ L.nf_text }}</label><textarea class="input" value="{{ vo.nfText }}" onChange="{{ vo.onNfText }}" rows="2" placeholder="{{ L.nf_text_ph }}" style="font-size: 16px;"></textarea></div>
               </sc-if>
-            </div>
+            </sc-if></div>
 
             <div style="display: grid; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-md); background: var(--color-neutral-100);">
-              <div style="display: flex; align-items: baseline; gap: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--color-divider);"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.lp }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.lp_titel }}</span></div>
+              <button onClick="{{ vo.klapp.lp.um }}" aria-expanded="{{ vo.klapp.lp.text }}" style="display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--color-text); font: inherit; text-align: left; cursor: pointer;"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.lp }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.lp_titel }}</span><span style="flex: 1;"></span><span style="{{ vo.klapp.lp.zeichen }}">▸</span></button><sc-if value="{{ vo.klapp.lp.auf }}" hint-placeholder-val="{{ false }}">
               <div style="font-size: 13px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.lp_hinweis }}</div>
               <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
                 <button class="btn btn-secondary" style="min-height: 44px;" onClick="{{ vo.karteAn }}">{{ L.lp_karte_nutzen }}</button>
@@ -2574,16 +2588,16 @@
                   <button class="btn btn-ghost btn-icon" title="{{ L.entfernen }}" aria-label="{{ L.entfernen }}" style="min-height: 40px; color: var(--color-accent-2-700);" onClick="{{ pk.weg }}">✕</button>
                 </div>
               </sc-for>
-            </div>
+            </sc-if></div>
 
             <div style="display: grid; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-md); background: var(--color-neutral-100);">
-              <div style="display: flex; align-items: baseline; gap: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--color-divider);"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.leute }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.leute_titel }}</span></div>
+              <button onClick="{{ vo.klapp.leute.um }}" aria-expanded="{{ vo.klapp.leute.text }}" style="display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--color-text); font: inherit; text-align: left; cursor: pointer;"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.leute }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.leute_titel }}</span><span style="flex: 1;"></span><span style="{{ vo.klapp.leute.zeichen }}">▸</span></button><sc-if value="{{ vo.klapp.leute.auf }}" hint-placeholder-val="{{ false }}">
               <div><button onClick="{{ vo.leuteUm }}" style="{{ vo.leuteStil }}">{{ vo.leuteLabel }}</button></div>
               <div style="font-size: 13px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.leute_ed_hinweis }}</div>
-            </div>
+            </sc-if></div>
 
             <div style="display: grid; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-md); background: var(--color-neutral-100);">
-              <div style="display: flex; align-items: baseline; gap: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--color-divider);"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.ga }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.ga_titel }}</span></div>
+              <button onClick="{{ vo.klapp.ga.um }}" aria-expanded="{{ vo.klapp.ga.text }}" style="display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--color-text); font: inherit; text-align: left; cursor: pointer;"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.ga }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.ga_titel }}</span><span style="flex: 1;"></span><span style="{{ vo.klapp.ga.zeichen }}">▸</span></button><sc-if value="{{ vo.klapp.ga.auf }}" hint-placeholder-val="{{ false }}">
               <div style="font-size: 13px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.ga_hinweis }}</div>
               <div><button onClick="{{ vo.gaUm }}" style="{{ vo.gaStil }}">{{ vo.gaLabel }}</button></div>
               <sc-if value="{{ vo.gaAn }}" hint-placeholder-val="{{ false }}">
@@ -2718,6 +2732,14 @@
                           </div>
                         </div>
                       </sc-if>
+                      <sc-if value="{{ vo.hatSpTische }}" hint-placeholder-val="{{ false }}">
+                        <div style="display: grid; gap: 6px;">
+                          <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.sp_tisch_waehlen }}</div>
+                          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                            <sc-for list="{{ vo.spTischChips }}" as="tc" hint-placeholder-count="0"><button onClick="{{ tc.klick }}" style="{{ tc.stil }}">{{ tc.label }}</button></sc-for>
+                          </div>
+                        </div>
+                      </sc-if>
                       <sc-if value="{{ vo.spp.an }}" hint-placeholder-val="{{ false }}">
                         <div style="display: grid; gap: var(--space-2); padding: 12px; border-radius: var(--radius-md); background: var(--color-bg); box-shadow: var(--shadow-md);">
                           <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
@@ -2725,6 +2747,23 @@
                             <select class="input" value="{{ vo.spp.form }}" onChange="{{ vo.spp.onForm }}" style="flex: 0 1 150px; width: auto; min-width: 0; font-size: 16px;">
                               <sc-for list="{{ vo.spp.formWahl }}" as="o" hint-placeholder-count="0"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
                             </select>
+                          </div>
+                          <div style="display: grid; gap: 8px; padding: 10px; border-radius: var(--radius-md); background: var(--color-neutral-100);">
+                            <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.sp_tisch_deko }}</div>
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;"><span style="font-size: 13px; min-width: 70px;">{{ L.spm_farbe }}</span>
+                              <sc-for list="{{ vo.spp.farbChips }}" as="fc" hint-placeholder-count="0"><button onClick="{{ fc.klick }}" style="{{ fc.stil }}">{{ fc.label }}</button></sc-for>
+                            </div>
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;"><span style="font-size: 13px; min-width: 70px;">{{ L.spm_rand }}</span>
+                              <sc-for list="{{ vo.spp.randChips }}" as="fc" hint-placeholder-count="0"><button onClick="{{ fc.klick }}" style="{{ fc.stil }}">{{ fc.label }}</button></sc-for>
+                            </div>
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                              <sc-for list="{{ vo.spp.motivChips }}" as="mc" hint-placeholder-count="0"><button onClick="{{ mc.klick }}" style="{{ mc.stil }}">{{ mc.label }}</button></sc-for>
+                            </div>
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                              <button class="btn btn-secondary" style="min-height: 40px;" onClick="{{ vo.spp.alsVorlage }}">{{ L.sp_als_vorlage }}</button>
+                              <button class="btn btn-ghost" style="min-height: 40px;" onClick="{{ vo.spp.aufAlle }}">{{ L.sp_auf_alle }}</button>
+                              <sc-if value="{{ vo.spp.hatVorlage }}" hint-placeholder-val="{{ false }}"><button class="btn btn-ghost" style="min-height: 40px;" onClick="{{ vo.spp.vorlageWeg }}">{{ L.sp_vorlage_weg }}</button></sc-if>
+                            </div>
                           </div>
                           <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                             <span style="font-size: 14px;">{{ L.sp_drehen }}</span>
@@ -2749,23 +2788,6 @@
                               </sc-for>
                             </div>
                           </sc-if>
-                          <div style="display: grid; gap: 8px; padding: 10px; border-radius: var(--radius-md); background: var(--color-neutral-100);">
-                            <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.sp_tisch_deko }}</div>
-                            <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;"><span style="font-size: 13px; min-width: 70px;">{{ L.spm_farbe }}</span>
-                              <sc-for list="{{ vo.spp.farbChips }}" as="fc" hint-placeholder-count="0"><button onClick="{{ fc.klick }}" style="{{ fc.stil }}">{{ fc.label }}</button></sc-for>
-                            </div>
-                            <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;"><span style="font-size: 13px; min-width: 70px;">{{ L.spm_rand }}</span>
-                              <sc-for list="{{ vo.spp.randChips }}" as="fc" hint-placeholder-count="0"><button onClick="{{ fc.klick }}" style="{{ fc.stil }}">{{ fc.label }}</button></sc-for>
-                            </div>
-                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                              <sc-for list="{{ vo.spp.motivChips }}" as="mc" hint-placeholder-count="0"><button onClick="{{ mc.klick }}" style="{{ mc.stil }}">{{ mc.label }}</button></sc-for>
-                            </div>
-                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                              <button class="btn btn-secondary" style="min-height: 40px;" onClick="{{ vo.spp.alsVorlage }}">{{ L.sp_als_vorlage }}</button>
-                              <button class="btn btn-ghost" style="min-height: 40px;" onClick="{{ vo.spp.aufAlle }}">{{ L.sp_auf_alle }}</button>
-                              <sc-if value="{{ vo.spp.hatVorlage }}" hint-placeholder-val="{{ false }}"><button class="btn btn-ghost" style="min-height: 40px;" onClick="{{ vo.spp.vorlageWeg }}">{{ L.sp_vorlage_weg }}</button></sc-if>
-                            </div>
-                          </div>
                           <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(210px, 100%), 1fr)); gap: 6px;">
                             <sc-for list="{{ vo.spp.sitze }}" as="si" hint-placeholder-count="0">
                               <label style="display: flex; align-items: center; gap: 6px; font-size: 14px;"><span style="display: inline-grid; place-items: center; min-width: 26px; height: 26px; border-radius: 50%; background: var(--color-neutral-200); font-size: 12px; font-weight: 700;">{{ si.nr }}</span><input class="input" list="sp-kontakte" value="{{ si.name }}" onChange="{{ si.onName }}" placeholder="{{ L.sp_name_ph }}" style="flex: 1; min-width: 0; font-size: 16px;"></label>
@@ -2839,13 +2861,20 @@
                               </svg>
                             </div>
                           </div>
+                          <sc-if value="{{ vo.sp.hatNamensListe }}" hint-placeholder-val="{{ false }}">
+                            <div style="display: grid; gap: 4px; font-size: 13.5px; line-height: 1.45;">
+                              <sc-for list="{{ vo.sp.namensListe }}" as="nl" hint-placeholder-count="0">
+                                <div style="overflow-wrap: anywhere;"><strong style="font-weight: 700;">{{ nl.tisch }}:</strong> {{ nl.namen }}</div>
+                              </sc-for>
+                            </div>
+                          </sc-if>
                         </div>
                       </sc-if>
                     </div>
                   </sc-if>
                 </div>
               </sc-if>
-            </div>
+            </sc-if></div>
           </div>
         </sc-if>
 
@@ -4191,7 +4220,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 100) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 101) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -4521,7 +4550,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 100 · 2026-10-07";
+const BAU_STAND = "Bau 101 · 2026-10-07";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -6828,12 +6857,24 @@ class Component extends DCLogic {
       gaPruefen: () => this.gaPruefen(), gaPruef: st.gaPruef || "", hatGaPruef: !!st.gaPruef,
       spKeineWahl: !!o.sitz && this.spTische(o.tische || []).length > 0 && !st.spSel && !st.spObjSel,
       spo: this.spObjPanel(),
+      spTischChips: this.spTische(o.tische || []).map((t) => ({ key: t.i, label: t.name, stil: this.voPill(st.spSel === t.i), klick: () => this.setState({ spSel: st.spSel === t.i ? "" : t.i, spObjSel: "" }) })),
+      hatSpTische: this.spTische(o.tische || []).length > 0,
       spDekoChips: (function (self) { const m = self.spMeta(o.tische || []); return self.spDekos().map((x) => ({ key: x.k, label: x.l, klick: () => self.spMetaSetzen({ deko: x.k }),
         stil: { display: "flex", alignItems: "center", gap: "8px", font: "inherit", fontSize: "13px", padding: "6px 12px 6px 6px", minHeight: "40px", cursor: "pointer", borderRadius: "99px", background: x.bg, color: x.ink, border: m.deko === x.k ? "2px solid var(--color-accent)" : "1px solid var(--color-divider)" },
         dot: { width: "24px", height: "24px", borderRadius: "50%", display: "grid", placeItems: "center", background: x.tisch, color: x.akz, boxShadow: "inset 0 0 0 2px " + x.rand, fontSize: "12px" }, orn: x.orn || "○" })); })(this),
       spObjWahl: [{ key: "-", value: "", label: tx("sp_element_neu") }].concat(this.spObjTypen().map((t) => ({ key: t.k, value: t.k, label: t.g + "  " + t.l }))),
       onSpObj: (ev) => { const v = ev.target.value; try { ev.target.value = ""; } catch (x) { /* egal */ } this.spObjNeu(v); },
       cdZukunft: !!d.date && String(d.date) >= new Date().toISOString().slice(0, 10),
+      klapp: (function (self) {
+        const auf = st.voKlapp || {};
+        const o2 = {};
+        ["cd", "nf", "lp", "leute", "ga"].forEach((k) => {
+          const a = !!auf[k];
+          o2[k] = { auf: a, text: a ? "true" : "false", um: () => self.setState({ voKlapp: Object.assign({}, st.voKlapp, { [k]: !a }) }),
+            zeichen: { display: "inline-block", fontSize: "12px", color: "var(--color-accent-700)", transform: a ? "rotate(90deg)" : "none", transition: "transform 160ms ease" } };
+        });
+        return o2;
+      })(this),
       nr: (function () { const z = !!d.date && String(d.date) >= new Date().toISOString().slice(0, 10); const s = z ? 1 : 0; const f = (n) => ("0" + n).slice(-2); return { cd: "01", nf: f(1 + s), lp: f(2 + s), leute: f(3 + s), ga: f(4 + s) }; })(),
       gaDesignAuf: !!st.gaDesignAuf, gaDesignAufText: st.gaDesignAuf ? "true" : "false",
       gaDesignUm: () => this.setState({ gaDesignAuf: !st.gaDesignAuf }),
@@ -7337,7 +7378,7 @@ class Component extends DCLogic {
             name: namenAn || hit ? nn.txt : "",
             hitStil: { fill: "transparent", cursor: "pointer", pointerEvents: "all" },
             info: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.setState({ spInfo: { k: key, i: t.i, n: k } }); },
-            nameStil: { fontSize: nn.fs.toFixed(1) + "px", textAnchor: links ? "end" : "start", dominantBaseline: "central", fill: hit ? D.akz : D.ink, fontWeight: hit ? 700 : 400, pointerEvents: "none", fontFamily: "var(--font-body)" }
+            nameStil: { fontSize: nn.fs.toFixed(1) + "px", textAnchor: links ? "end" : "start", dominantBaseline: "central", fill: hit ? D.akz : D.ink, fontWeight: hit ? 700 : 400, pointerEvents: "none", fontFamily: "var(--font-body)", paintOrder: "stroke", stroke: D.bg, strokeWidth: 3, strokeLinejoin: "round" }
           };
         })
       };
@@ -7420,6 +7461,9 @@ class Component extends DCLogic {
       tische: view, objekte: objekte, orn: orn,
       innenStil: { position: "relative", width: Math.round(W * z) + "px", height: Math.round(H * z) + "px" },
       boxStil: { width: "100%", maxHeight: "70vh", overflow: "auto", borderRadius: "14px", backgroundColor: D.bg, boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.10)", WebkitOverflowScrolling: "touch" },
+      hatNamensListe: namenAn && tische.some((t) => t.sitze.some(Boolean)),
+      namensListe: tische.filter((t) => t.sitze.some(Boolean)).map((t) => ({ key: t.i, tisch: t.name,
+        namen: t.sitze.map((n, k) => (n ? (k + 1) + " " + n : "")).filter(Boolean).join(" · ") })),
       hatInfo: !!info, info: info || { name: "", ini: "", ort: "", zeilen: [], zu: () => {} },
       namenText: namenAn ? tx("sp_namen_aus") : tx("sp_namen_ein"),
       namenUm: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.setState({ spNamen: Object.assign({}, nMap, { [key]: !namenAn }) }); },
