@@ -19,8 +19,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Chronik">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js?v=b99"></script>
-<script src="supabase-bridge.js?v=b99"></script>
+<script src="chronik-config.js?v=b100"></script>
+<script src="supabase-bridge.js?v=b100"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
@@ -281,11 +281,12 @@
                               <sc-if value="{{ t.istEckig }}" hint-placeholder-val="{{ false }}"><rect x="{{ t.x0 }}" y="{{ t.y0 }}" width="{{ t.w }}" height="{{ t.h }}" rx="6" style="{{ t.formStil }}"></rect></sc-if>
                               </g>
                               <sc-if value="{{ t.hatMotiv }}" hint-placeholder-val="{{ false }}"><text x="0" y="-12" style="{{ t.motivStil }}">{{ t.motiv }}</text></sc-if><text x="0" y="{{ t.labelY }}" style="{{ t.labelStil }}">{{ t.name }}</text>
-                              <sc-for list="{{ t.sitze }}" as="s" hint-placeholder-count="0">
+                              <sc-for list="{{ t.deko }}" as="dz" hint-placeholder-count="0"><text x="{{ dz.x }}" y="{{ dz.y }}" style="{{ dz.stil }}">{{ dz.g }}</text></sc-for><sc-for list="{{ t.sitze }}" as="s" hint-placeholder-count="0">
                                 <circle cx="{{ s.x }}" cy="{{ s.y }}" r="9" style="{{ s.stil }}"></circle>
                                 <text x="{{ s.x }}" y="{{ s.y }}" style="{{ s.nrStil }}">{{ s.nr }}</text>
                                 <text x="{{ s.tx }}" y="{{ s.ty }}" transform="{{ s.rot }}" style="{{ s.nameStil }}">{{ s.name }}</text><circle cx="{{ s.x }}" cy="{{ s.y }}" r="16" style="{{ s.hitStil }}" onClick="{{ s.info }}"></circle>
                               </sc-for>
+                              <sc-if value="{{ t.griff }}" hint-placeholder-val="{{ false }}"><circle cx="{{ t.gx }}" cy="{{ t.gx }}" r="11" style="{{ t.griffStil }}" onPointerDown="{{ t.groesse }}"></circle></sc-if>
                             </g>
                           </sc-for>
                         </g>
@@ -1410,11 +1411,12 @@
                                                 <sc-if value="{{ t.istEckig }}" hint-placeholder-val="{{ false }}"><rect x="{{ t.x0 }}" y="{{ t.y0 }}" width="{{ t.w }}" height="{{ t.h }}" rx="6" style="{{ t.formStil }}"></rect></sc-if>
                                                 </g>
                                                 <sc-if value="{{ t.hatMotiv }}" hint-placeholder-val="{{ false }}"><text x="0" y="-12" style="{{ t.motivStil }}">{{ t.motiv }}</text></sc-if><text x="0" y="{{ t.labelY }}" style="{{ t.labelStil }}">{{ t.name }}</text>
-                                                <sc-for list="{{ t.sitze }}" as="s" hint-placeholder-count="0">
+                                                <sc-for list="{{ t.deko }}" as="dz" hint-placeholder-count="0"><text x="{{ dz.x }}" y="{{ dz.y }}" style="{{ dz.stil }}">{{ dz.g }}</text></sc-for><sc-for list="{{ t.sitze }}" as="s" hint-placeholder-count="0">
                                                   <circle cx="{{ s.x }}" cy="{{ s.y }}" r="9" style="{{ s.stil }}"></circle>
                                                   <text x="{{ s.x }}" y="{{ s.y }}" style="{{ s.nrStil }}">{{ s.nr }}</text>
                                                   <text x="{{ s.tx }}" y="{{ s.ty }}" transform="{{ s.rot }}" style="{{ s.nameStil }}">{{ s.name }}</text><circle cx="{{ s.x }}" cy="{{ s.y }}" r="16" style="{{ s.hitStil }}" onClick="{{ s.info }}"></circle>
                                                 </sc-for>
+                                                <sc-if value="{{ t.griff }}" hint-placeholder-val="{{ false }}"><circle cx="{{ t.gx }}" cy="{{ t.gx }}" r="11" style="{{ t.griffStil }}" onPointerDown="{{ t.groesse }}"></circle></sc-if>
                                               </g>
                                             </sc-for>
                                           </g>
@@ -2731,6 +2733,12 @@
                             <button class="btn btn-secondary btn-icon" title="+15°" aria-label="+15°" style="width: 40px; height: 40px;" onClick="{{ vo.spp.drehRechts }}">↻</button>
                             <span style="font-size: 13px; min-width: 40px; font-variant-numeric: tabular-nums;">{{ vo.spp.drehText }}</span>
                           </div>
+                          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                            <span style="font-size: 14px;">{{ L.sp_groesse }}</span>
+                            <input type="range" min="50" max="250" step="5" value="{{ vo.spp.gross }}" onChange="{{ vo.spp.onGross }}" style="flex: 1 1 160px; min-width: 120px; accent-color: var(--color-accent);">
+                            <span style="font-size: 13px; min-width: 48px; font-variant-numeric: tabular-nums;">{{ vo.spp.grossText }}</span>
+                          </div>
+                          <div style="font-size: 12.5px; color: var(--color-neutral-700);">{{ L.sp_griff_hinweis }}</div>
                           <sc-if value="{{ vo.spp.istRundOval }}" hint-placeholder-val="{{ false }}">
                             <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">{{ L.sp_plaetze }}<input class="input" type="number" min="1" max="40" value="{{ vo.spp.plaetze }}" onChange="{{ vo.spp.onPlaetze }}" style="width: 90px; font-size: 16px;"></label>
                           </sc-if>
@@ -2819,11 +2827,12 @@
                                       <sc-if value="{{ t.istEckig }}" hint-placeholder-val="{{ false }}"><rect x="{{ t.x0 }}" y="{{ t.y0 }}" width="{{ t.w }}" height="{{ t.h }}" rx="6" style="{{ t.formStil }}"></rect></sc-if>
                                       </g>
                                       <sc-if value="{{ t.hatMotiv }}" hint-placeholder-val="{{ false }}"><text x="0" y="-12" style="{{ t.motivStil }}">{{ t.motiv }}</text></sc-if><text x="0" y="{{ t.labelY }}" style="{{ t.labelStil }}">{{ t.name }}</text>
-                                      <sc-for list="{{ t.sitze }}" as="s" hint-placeholder-count="0">
+                                      <sc-for list="{{ t.deko }}" as="dz" hint-placeholder-count="0"><text x="{{ dz.x }}" y="{{ dz.y }}" style="{{ dz.stil }}">{{ dz.g }}</text></sc-for><sc-for list="{{ t.sitze }}" as="s" hint-placeholder-count="0">
                                         <circle cx="{{ s.x }}" cy="{{ s.y }}" r="9" style="{{ s.stil }}"></circle>
                                         <text x="{{ s.x }}" y="{{ s.y }}" style="{{ s.nrStil }}">{{ s.nr }}</text>
                                         <text x="{{ s.tx }}" y="{{ s.ty }}" transform="{{ s.rot }}" style="{{ s.nameStil }}">{{ s.name }}</text><circle cx="{{ s.x }}" cy="{{ s.y }}" r="16" style="{{ s.hitStil }}" onClick="{{ s.info }}"></circle>
                                       </sc-for>
+                                      <sc-if value="{{ t.griff }}" hint-placeholder-val="{{ false }}"><circle cx="{{ t.gx }}" cy="{{ t.gx }}" r="11" style="{{ t.griffStil }}" onPointerDown="{{ t.groesse }}"></circle></sc-if>
                                     </g>
                                   </sc-for>
                                 </g>
@@ -4182,7 +4191,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 99) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 100) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -4512,7 +4521,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 99 · 2026-10-07";
+const BAU_STAND = "Bau 100 · 2026-10-07";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -7154,7 +7163,7 @@ class Component extends DCLogic {
       return {
         i: t.i || "t" + k, name: t.name || tx("gast_tisch") + " " + (k + 1), form: form, plaetze: n, n: n, seiten: seiten, sitze: sitze,
         dreh: ((Math.round(Number(t.dreh) || 0) % 360) + 360) % 360,
-        farbe: t.farbe || "", rand: t.rand || "", motiv: t.motiv || "",
+        farbe: t.farbe || "", rand: t.rand || "", motiv: t.motiv || "", gross: Number(t.gross) || 1,
         x: t.x != null && isFinite(x) ? x : 180 + (k % 4) * 290, y: t.y != null && isFinite(y) ? y : 180 + Math.floor(k / 4) * 290
       };
     });
@@ -7163,15 +7172,16 @@ class Component extends DCLogic {
   spGeo(t) {
     const out = { sitze: [] };
     const push = (x, y, nx, ny, sp) => out.sitze.push({ x: x, y: y, nx: nx, ny: ny, sp: sp });
+    const sk = Math.max(0.5, Math.min(2.5, Number(t.gross) || 1));
     if (t.form === "rund") {
-      const R = Math.max(34, (t.n * 30) / (2 * Math.PI));
+      const R = Math.max(34, (t.n * 30) / (2 * Math.PI)) * sk;
       out.r = R; out.ext = R + 160;
       for (let k = 0; k < t.n; k++) {
         const a = -Math.PI / 2 + (2 * Math.PI * k) / t.n;
         push(Math.cos(a) * (R + 13), Math.sin(a) * (R + 13), Math.cos(a), Math.sin(a), (2 * Math.PI * (R + 40)) / t.n);
       }
     } else if (t.form === "oval") {
-      const ry = Math.max(30, (t.n * 22) / (2 * Math.PI)), rx = ry * 1.7;
+      const ry = Math.max(30, (t.n * 22) / (2 * Math.PI)) * sk, rx = ry * 1.7;
       out.rx = rx; out.ry = ry; out.ext = rx + 160;
       const a0 = rx + 40, b0 = ry + 40;
       const per = Math.PI * (3 * (a0 + b0) - Math.sqrt((3 * a0 + b0) * (a0 + 3 * b0)));
@@ -7184,8 +7194,8 @@ class Component extends DCLogic {
       }
     } else {
       const s = t.seiten, c = 36;
-      const W = Math.max(70, Math.max(s.o, s.u) * c);
-      const H = Math.max(56, Math.max(s.l, s.r) * c);
+      const W = Math.max(70, Math.max(s.o, s.u) * c) * sk;
+      const H = Math.max(56, Math.max(s.l, s.r) * c) * sk;
       out.w = W; out.h = H; out.ext = Math.max(W, H) / 2 + 160;
       for (let j = 0; j < s.o; j++) push(-W / 2 + ((j + 0.5) * W) / s.o, -H / 2 - 13, 0, -1, W / s.o);
       for (let j = 0; j < s.r; j++) push(W / 2 + 13, -H / 2 + ((j + 0.5) * H) / s.r, 1, 0, H / s.r);
@@ -7252,7 +7262,8 @@ class Component extends DCLogic {
     const treffer = [];
     let W = 900, H = 600;
     const geos = tische.map((t0) => {
-      const t = drag && drag.k === key && !drag.obj && drag.i === t0.i ? Object.assign({}, t0, { x: drag.x, y: drag.y }) : t0;
+      let t = drag && drag.k === key && !drag.obj && drag.i === t0.i ? Object.assign({}, t0, { x: drag.x, y: drag.y }) : t0;
+      if (st.spTGr && st.spTGr.k === key && st.spTGr.i === t0.i) t = Object.assign({}, t, { gross: st.spTGr.s });
       const g = this.spGeo(t);
       W = Math.max(W, t.x + g.ext); H = Math.max(H, t.y + g.ext);
       return { t: t, g: g };
@@ -7270,9 +7281,10 @@ class Component extends DCLogic {
     const fit = Math.max(0.3, Math.min(1, ((window.innerWidth || 800) - (opt.edit ? 90 : 56)) / W));
     const z = zMap[key] || fit;
     const sel = opt.edit ? (st.spSel || "") : "";
+    this._spZ = Object.assign(this._spZ || {}, { [key]: z });
     const oSel = opt.edit ? (st.spObjSel || "") : "";
     const nMap = st.spNamen || {};
-    const namenAn = nMap[key] != null ? !!nMap[key] : !!opt.edit;
+    const namenAn = nMap[key] != null ? !!nMap[key] : true;
     const view = geos.map((gt) => {
       const t = gt.t, g0 = gt.g;
       const rad = ((t.dreh || 0) * Math.PI) / 180, co = Math.cos(rad), si = Math.sin(rad);
@@ -7286,8 +7298,25 @@ class Component extends DCLogic {
         r: +(g.r || 0).toFixed(1), rx: +(g.rx || 0).toFixed(1), ry: +(g.ry || 0).toFixed(1),
         w: g.w || 0, h: g.h || 0, x0: -(g.w || 0) / 2, y0: -(g.h || 0) / 2,
         formStil: { fill: t.farbe || D.tisch, stroke: aktiv ? D.akz : (t.rand || D.rand), strokeWidth: aktiv ? 3 : (t.rand ? 2.4 : 1.6) },
-        hatMotiv: !!t.motiv, motiv: t.motiv || "", labelY: t.motiv ? 11 : 0,
+        hatMotiv: !!(t.motiv || D.orn), motiv: t.motiv || D.orn, labelY: (t.motiv || D.orn) ? 11 : 0,
         motivStil: { fontSize: "18px", textAnchor: "middle", dominantBaseline: "central", fill: t.rand || D.akz, pointerEvents: "none" },
+        deko: (function () {
+          const gl = t.motiv || D.orn;
+          if (!gl || g.sitze.length < 2) return [];
+          const out = [];
+          const farben = t.rand ? [t.rand] : (D.ornF.length ? D.ornF : [D.akz]);
+          for (let k = 0; k < g.sitze.length; k++) {
+            const a = g.sitze[k], b = g.sitze[(k + 1) % g.sitze.length];
+            if (Math.hypot(a.x - b.x, a.y - b.y) > 90) continue;
+            out.push({ key: "d" + k, g: gl, x: +((a.x + b.x) / 2).toFixed(1), y: +((a.y + b.y) / 2).toFixed(1),
+              stil: { fontSize: "10px", textAnchor: "middle", dominantBaseline: "central", fill: farben[k % farben.length], opacity: 0.85, pointerEvents: "none" } });
+          }
+          return out;
+        })(),
+        griff: !!opt.edit && t.i === sel,
+        gx: +(Math.max(g0.r || g0.rx || (g0.w || 0) / 2, g0.r || g0.ry || (g0.h || 0) / 2) * 0.72 + 10).toFixed(1),
+        griffStil: { fill: D.akz, stroke: "#fff", strokeWidth: 2, cursor: "nwse-resize", pointerEvents: "all", touchAction: "none" },
+        groesse: (ev) => this.spTischGroesse(key, t, ev, z, Math.max(30, g0.r || g0.rx || (g0.w || 0) / 2, g0.r || g0.ry || (g0.h || 0) / 2)),
         name: this.spName(t.name, 40).txt,
         labelStil: { fontSize: "12.5px", fontWeight: 700, textAnchor: "middle", dominantBaseline: "central", fill: D.tischInk, fontFamily: "var(--font-heading)", pointerEvents: "none" },
         ziehen: opt.edit ? (ev) => this.spZiehen(key, t, ev, z, false) : undefined,
@@ -7345,7 +7374,7 @@ class Component extends DCLogic {
       };
     });
     const orn = [];
-    if (D.orn) {
+    if (opt.randDeko && D.orn) {
       const schritt = 150;
       let n = 0;
       const add = (x, y, s) => { orn.push({ key: "o" + n, x: Math.round(x), y: Math.round(y), g: D.orn, stil: { fontSize: s + "px", textAnchor: "middle", dominantBaseline: "central", fill: D.ornF[n % D.ornF.length], opacity: 0.55, pointerEvents: "none" } }); n++; };
@@ -7390,7 +7419,7 @@ class Component extends DCLogic {
       hat: tische.length > 0 || objekte.length > 0,
       tische: view, objekte: objekte, orn: orn,
       innenStil: { position: "relative", width: Math.round(W * z) + "px", height: Math.round(H * z) + "px" },
-      boxStil: { width: "100%", maxHeight: "70vh", overflow: "auto", borderRadius: "14px", backgroundColor: D.bg, backgroundImage: D.muster, backgroundSize: D.gr || "auto", boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.10)", WebkitOverflowScrolling: "touch" },
+      boxStil: { width: "100%", maxHeight: "70vh", overflow: "auto", borderRadius: "14px", backgroundColor: D.bg, boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.10)", WebkitOverflowScrolling: "touch" },
       hatInfo: !!info, info: info || { name: "", ini: "", ort: "", zeilen: [], zu: () => {} },
       namenText: namenAn ? tx("sp_namen_aus") : tx("sp_namen_ein"),
       namenUm: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.setState({ spNamen: Object.assign({}, nMap, { [key]: !namenAn }) }); },
@@ -7400,6 +7429,7 @@ class Component extends DCLogic {
       minus: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); setZ(Math.max(0.25, z / 1.25)); },
       einpassen: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); setZ(null); },
       boxRef: (el) => {
+        if (el) { this._spBox = this._spBox || {}; this._spBox[key] = el; }
         if (!el || !this._spZiel || this._spZiel.k !== key) return;
         const zi = this._spZiel;
         this._spZiel = null;
@@ -7456,6 +7486,36 @@ class Component extends DCLogic {
     window.addEventListener("pointercancel", up);
   }
 
+  spTischGroesse(key, t, ev, z, basis) {
+    if (ev.button != null && ev.button > 0) return;
+    ev.stopPropagation();
+    if (ev.preventDefault) ev.preventDefault();
+    const s0 = Number(t.gross) || 1, cx = ev.clientX, cy = ev.clientY;
+    const move = (e) => {
+      if (e.cancelable) e.preventDefault();
+      const d = ((e.clientX - cx) + (e.clientY - cy)) / 2 / z;
+      this.setState({ spTGr: { k: key, i: t.i, s: Math.max(0.5, Math.min(2.5, Math.round(s0 * (basis + d) / basis * 100) / 100)) } });
+    };
+    const up = () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", up);
+      const g = this.state.spTGr;
+      if (g && g.i === t.i) this.spTischAendern(t.i, { gross: g.s });
+      this.setState({ spTGr: null, spSel: t.i });
+    };
+    window.addEventListener("pointermove", move, { passive: false });
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
+  }
+
+  spMitte(k) {
+    const el = (this._spBox || {}).ed, z = (this._spZ || {}).ed || 1;
+    if (!el) return null;
+    const j = (k % 4) * 24;
+    return { x: Math.round((el.scrollLeft + el.clientWidth / 2) / z) + j, y: Math.round((el.scrollTop + el.clientHeight / 2) / z) + j };
+  }
+
   spRoh() { return ((this.exOf(this.state.draft).offen || {}).tische || []); }
   spSchreiben(tische, meta) { this.voSet("offen.tische", [meta || this.spMeta(this.spRoh())].concat(tische)); }
   spTischAendern(i, patch) {
@@ -7465,7 +7525,7 @@ class Component extends DCLogic {
     const alle = this.spTische(this.spRoh());
     const k = alle.length;
     const v = this.spMeta(this.spRoh()).tischVorlage || {};
-    const t = Object.assign({ i: "t" + uid(), name: tx("gast_tisch") + " " + (k + 1), form: form, x: 180 + (k % 4) * 290, y: 180 + Math.floor(k / 4) * 290 },
+    const t = Object.assign({ i: "t" + uid(), name: tx("gast_tisch") + " " + (k + 1), form: form }, this.spMitte(k) || { x: 180 + (k % 4) * 290, y: 180 + Math.floor(k / 4) * 290 },
       { farbe: v.farbe || "", rand: v.rand || "", motiv: v.motiv || "", dreh: v.dreh || 0 }, v.form === form ? { plaetze: v.plaetze, seiten: v.seiten } : {});
     this.spSchreiben(alle.concat([t]));
     this.setState({ spSel: t.i, spObjSel: "" });
@@ -7479,7 +7539,7 @@ class Component extends DCLogic {
     const m = this.spMeta(this.spRoh());
     const T = this.spObjTyp(art);
     const k = m.objekte.length;
-    const o = { i: "o" + uid(), art: art, text: T.art === "text" ? tx("spo_text_neu") : "", x: 140 + (k % 5) * 170, y: 70 + Math.floor(k / 5) * 90, farbe: (m.objVorlage || {}).farbe || "" };
+    const o = { i: "o" + uid(), art: art, text: T.art === "text" ? tx("spo_text_neu") : "", ...(this.spMitte(k) || { x: 140 + (k % 5) * 170, y: 70 + Math.floor(k / 5) * 90 }), farbe: (m.objVorlage || {}).farbe || "" };
     if (T.art === "flaeche") { o.w = T.w; o.h = T.h; }
     this.spMetaSetzen({ objekte: m.objekte.concat([o]) });
     this.setState({ spObjSel: o.i, spSel: "" });
@@ -7542,6 +7602,8 @@ class Component extends DCLogic {
       onForm: (ev) => aend({ form: ev.target.value, seiten: null }),
       istRundOval: t.form === "rund" || t.form === "oval",
       istEckig: t.form === "eckig" || t.form === "tafel",
+      gross: String(Math.round((t.gross || 1) * 100)), grossText: Math.round((t.gross || 1) * 100) + " %",
+      onGross: (ev) => aend({ gross: Math.max(0.5, Math.min(2.5, (Number(ev.target.value) || 100) / 100)) }),
       dreh: String(t.dreh || 0), drehText: (t.dreh || 0) + "°",
       onDreh: (ev) => aend({ dreh: Number(ev.target.value) || 0 }),
       drehLinks: () => aend({ dreh: (t.dreh || 0) - 15 }),

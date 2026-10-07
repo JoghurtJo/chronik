@@ -1059,6 +1059,8 @@ window.CHRONIK_SPRACHEN.de = {
     tt_abbrechen: "Abbrechen",
     tt_loeschen: "Timetable löschen",
     tt_leer_tag: "Tag 1",
+    sp_groesse: "Größe",
+    sp_griff_hinweis: "Tipp: Ausgewählte Tische lassen sich auch am runden Griff direkt vergrößern oder verkleinern.",
     tt_markiert_von: "Markiert von",
     tt_alle_anderen: "Alle anderen",
     spo_wc: "Toiletten",
