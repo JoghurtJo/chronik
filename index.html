@@ -19,8 +19,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Chronik">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js?v=b97"></script>
-<script src="supabase-bridge.js?v=b97"></script>
+<script src="chronik-config.js?v=b98"></script>
+<script src="supabase-bridge.js?v=b98"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
 <style>
@@ -256,13 +256,21 @@
                         <button onClick="{{ gv.sp.info.zu }}" title="{{ L.schliessen }}" aria-label="{{ L.schliessen }}" style="width: 40px; height: 40px; border-radius: 50%; border: 0; background: transparent; color: inherit; font-size: 18px; cursor: pointer;">✕</button>
                       </div>
                       <sc-for list="{{ gv.sp.info.zeilen }}" as="iz" hint-placeholder-count="0">
-                        <div style="font-size: 14px; line-height: 1.45; overflow-wrap: anywhere;"><span style="opacity: 0.65;">{{ iz.k }}</span> {{ iz.v }}</div>
+                        <div style="display: grid; gap: 2px; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.08);"><span style="font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.6;">{{ iz.k }}</span><span style="font-size: 15px; line-height: 1.45; overflow-wrap: anywhere;">{{ iz.v }}</span></div>
                       </sc-for>
                     </div>
                   </sc-if>
-                  <div ref="{{ gv.sp.boxRef }}" style="width: 100%; max-height: 70vh; overflow: auto; border-radius: 14px; background: #fff; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--g-ink) 14%, transparent);">
+                  <div ref="{{ gv.sp.boxRef }}" style="{{ gv.sp.boxStil }}">
                     <svg width="{{ gv.sp.bw }}" height="{{ gv.sp.bh }}" style="display: block;">
                       <g transform="{{ gv.sp.skala }}">
+                        <sc-for list="{{ gv.sp.orn }}" as="on" hint-placeholder-count="0"><text x="{{ on.x }}" y="{{ on.y }}" style="{{ on.stil }}">{{ on.g }}</text></sc-for>
+                        <sc-for list="{{ gv.sp.objekte }}" as="ob" hint-placeholder-count="0">
+                          <g transform="{{ ob.tf }}" onPointerDown="{{ ob.ziehen }}" style="{{ ob.gStil }}">
+                            <sc-if value="{{ ob.istText }}" hint-placeholder-val="{{ false }}"><text x="0" y="0" style="{{ ob.textStil }}">{{ ob.text }}</text></sc-if>
+                            <sc-if value="{{ ob.istFlaeche }}" hint-placeholder-val="{{ false }}"><rect x="{{ ob.x0 }}" y="{{ ob.y0 }}" width="{{ ob.w }}" height="{{ ob.h }}" rx="8" style="{{ ob.rectStil }}"></rect><text x="0" y="{{ ob.gy }}" style="{{ ob.gStilT }}">{{ ob.g }}</text><text x="0" y="{{ ob.ly }}" style="{{ ob.labelStil }}">{{ ob.text }}</text></sc-if>
+                            <sc-if value="{{ ob.istSymbol }}" hint-placeholder-val="{{ false }}"><rect x="{{ ob.px0 }}" y="-16" width="{{ ob.pw }}" height="32" rx="16" style="{{ ob.pillStil }}"></rect><circle cx="0" cy="0" r="12" style="{{ ob.kreisStil }}"></circle><text x="0" y="0" style="{{ ob.symStil }}">{{ ob.g }}</text><text x="20" y="0" style="{{ ob.symLabelStil }}">{{ ob.text }}</text></sc-if>
+                          </g>
+                        </sc-for>
                         <sc-for list="{{ gv.sp.tische }}" as="t" hint-placeholder-count="0">
                           <g transform="{{ t.tf }}" style="{{ t.gStil }}">
                             <g transform="{{ t.drehTf }}">
@@ -1191,11 +1199,12 @@
 
                       <sc-if value="{{ c.ttZeigen }}" hint-placeholder-val="{{ false }}">
                         <div onClick="{{ stop }}" style="display: grid; gap: 10px;">
-                          <button onClick="{{ c.ttUm }}" aria-expanded="{{ c.ttAufText }}" style="display: flex; align-items: center; gap: 8px; width: 100%; min-height: 40px; padding: 4px 0; border: 0; background: transparent; cursor: pointer; font: inherit; color: inherit; text-align: left;">
-                            <span style="font-size: 13px; opacity: 0.6;">{{ c.ttZeichen }}</span>
-                            <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t-accent, #0088b0);">{{ L.tt_titel }}</span>
-                            <span style="flex: 1; height: 1px; background: var(--t-border, rgba(32, 30, 29, 0.16));"></span>
-                            <span style="font-size: 12px; white-space: nowrap; color: color-mix(in srgb, var(--t-ink, #201e1d) 62%, var(--t-card, #eae9e9));">{{ c.ttInfo }}</span>
+                          <button onClick="{{ c.ttUm }}" aria-expanded="{{ c.ttAufText }}" style="display: flex; align-items: center; gap: 10px; width: 100%; min-height: 50px; padding: 8px 18px; border: 0; border-radius: 999px; background: var(--t-accent, #0088b0); color: var(--t-card, #eae9e9); cursor: pointer; font: inherit; text-align: left; box-shadow: var(--shadow-md);" style-hover="background: var(--t-accent2, #d6006c);">
+                            <span style="font-size: 15px;">▦</span>
+                            <span style="font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;">{{ L.tt_titel }}</span>
+                            <span style="flex: 1;"></span>
+                            <span style="font-size: 12.5px; white-space: nowrap; opacity: 0.9;">{{ c.ttInfo }}</span>
+                            <span style="font-size: 15px;">{{ c.ttZeichen }}</span>
                           </button>
                           <sc-if value="{{ c.ttAuf }}" hint-placeholder-val="{{ false }}">
                             <div style="display: grid; gap: 8px;">
@@ -1362,13 +1371,21 @@
                                           <button onClick="{{ c.sp.info.zu }}" title="{{ L.schliessen }}" aria-label="{{ L.schliessen }}" style="width: 40px; height: 40px; border-radius: 50%; border: 0; background: transparent; color: inherit; font-size: 18px; cursor: pointer;">✕</button>
                                         </div>
                                         <sc-for list="{{ c.sp.info.zeilen }}" as="iz" hint-placeholder-count="0">
-                                          <div style="font-size: 14px; line-height: 1.45; overflow-wrap: anywhere;"><span style="opacity: 0.65;">{{ iz.k }}</span> {{ iz.v }}</div>
+                                          <div style="display: grid; gap: 2px; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.08);"><span style="font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.6;">{{ iz.k }}</span><span style="font-size: 15px; line-height: 1.45; overflow-wrap: anywhere;">{{ iz.v }}</span></div>
                                         </sc-for>
                                       </div>
                                     </sc-if>
-                                    <div ref="{{ c.sp.boxRef }}" style="width: 100%; max-height: 70vh; overflow: auto; border-radius: var(--radius-md); background: var(--color-neutral-100); box-shadow: inset 0 0 0 1px var(--color-divider); -webkit-overflow-scrolling: touch;">
+                                    <div ref="{{ c.sp.boxRef }}" style="{{ c.sp.boxStil }}">
                                       <svg width="{{ c.sp.bw }}" height="{{ c.sp.bh }}" style="display: block;">
                                         <g transform="{{ c.sp.skala }}">
+                                          <sc-for list="{{ c.sp.orn }}" as="on" hint-placeholder-count="0"><text x="{{ on.x }}" y="{{ on.y }}" style="{{ on.stil }}">{{ on.g }}</text></sc-for>
+                                          <sc-for list="{{ c.sp.objekte }}" as="ob" hint-placeholder-count="0">
+                                            <g transform="{{ ob.tf }}" onPointerDown="{{ ob.ziehen }}" style="{{ ob.gStil }}">
+                                              <sc-if value="{{ ob.istText }}" hint-placeholder-val="{{ false }}"><text x="0" y="0" style="{{ ob.textStil }}">{{ ob.text }}</text></sc-if>
+                                              <sc-if value="{{ ob.istFlaeche }}" hint-placeholder-val="{{ false }}"><rect x="{{ ob.x0 }}" y="{{ ob.y0 }}" width="{{ ob.w }}" height="{{ ob.h }}" rx="8" style="{{ ob.rectStil }}"></rect><text x="0" y="{{ ob.gy }}" style="{{ ob.gStilT }}">{{ ob.g }}</text><text x="0" y="{{ ob.ly }}" style="{{ ob.labelStil }}">{{ ob.text }}</text></sc-if>
+                                              <sc-if value="{{ ob.istSymbol }}" hint-placeholder-val="{{ false }}"><rect x="{{ ob.px0 }}" y="-16" width="{{ ob.pw }}" height="32" rx="16" style="{{ ob.pillStil }}"></rect><circle cx="0" cy="0" r="12" style="{{ ob.kreisStil }}"></circle><text x="0" y="0" style="{{ ob.symStil }}">{{ ob.g }}</text><text x="20" y="0" style="{{ ob.symLabelStil }}">{{ ob.text }}</text></sc-if>
+                                            </g>
+                                          </sc-for>
                                           <sc-for list="{{ c.sp.tische }}" as="t" hint-placeholder-count="0">
                                             <g transform="{{ t.tf }}" onPointerDown="{{ t.ziehen }}" style="{{ t.gStil }}">
                                               <g transform="{{ t.drehTf }}">
@@ -1392,8 +1409,8 @@
                               </sc-if>
                               <sc-if value="{{ c.hatGFotos }}" hint-placeholder-val="{{ false }}">
                                 <div style="display: grid; gap: 6px;">
-                                  <div style="font-family: var(--t-font-head, var(--font-heading)); font-weight: 600; font-size: 15px;">{{ L.gast_fotowand }}</div>
-                                  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px;">
+                                  <button onClick="{{ c.gfotoUm }}" aria-expanded="{{ c.gfotoAufText }}" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 0; min-height: 36px; border: 0; background: transparent; cursor: pointer; font: inherit; font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t-accent, #0088b0);"><span style="{{ c.gfotoSign }}">▸</span>{{ L.gast_fotowand }}</button>
+                                  <sc-if value="{{ c.gfotoAuf }}" hint-placeholder-val="{{ true }}"><div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px;">
                                     <sc-for list="{{ c.gFotos }}" as="gf" hint-placeholder-count="0">
                                       <div style="position: relative; display: grid; gap: 2px; min-width: 0;">
                                         <img ref="{{ gf.bildRef }}" alt="" loading="lazy" style="width: 100%; aspect-ratio: 1; object-fit: cover; display: block; border-radius: var(--t-radius, 2px); background: var(--color-neutral-200);">
@@ -1401,20 +1418,20 @@
                                         <sc-if value="{{ gf.darfWeg }}" hint-placeholder-val="{{ false }}"><button onClick="{{ gf.weg }}" title="{{ L.entfernen }}" style="position: absolute; right: 4px; top: 4px; width: 28px; height: 28px; border-radius: 50%; border: 0; cursor: pointer; background: var(--color-bg); color: var(--color-text); box-shadow: var(--shadow-sm);">✕</button></sc-if>
                                       </div>
                                     </sc-for>
-                                  </div>
+                                  </div></sc-if>
                                 </div>
                               </sc-if>
                               <sc-if value="{{ c.hatGBuch }}" hint-placeholder-val="{{ false }}">
                                 <div style="display: grid; gap: 6px;">
-                                  <div style="font-family: var(--t-font-head, var(--font-heading)); font-weight: 600; font-size: 15px;">{{ L.gast_buch }}</div>
-                                  <sc-for list="{{ c.gBuch }}" as="gb" hint-placeholder-count="0">
+                                  <button onClick="{{ c.gbuchUm }}" aria-expanded="{{ c.gbuchAufText }}" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 0; min-height: 36px; border: 0; background: transparent; cursor: pointer; font: inherit; font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t-accent, #0088b0);"><span style="{{ c.gbuchSign }}">▸</span>{{ L.gast_buch }}</button>
+                                  <sc-if value="{{ c.gbuchAuf }}" hint-placeholder-val="{{ true }}"><sc-for list="{{ c.gBuch }}" as="gb" hint-placeholder-count="0">
                                     <div style="display: grid; gap: 2px; font-size: 14px; line-height: 1.45;">
                                       <div style="display: flex; gap: 8px; align-items: baseline;"><strong style="font-weight: 600;">{{ gb.name }}</strong><span style="font-size: 12px; opacity: 0.6;">{{ gb.wann }}</span>
                                         <sc-if value="{{ gb.darfWeg }}" hint-placeholder-val="{{ false }}"><button onClick="{{ gb.weg }}" title="{{ L.entfernen }}" style="margin-left: auto; cursor: pointer; font: inherit; border: 0; background: transparent; color: inherit; opacity: 0.55; min-height: 32px;">✕</button></sc-if>
                                       </div>
                                       <div style="white-space: pre-wrap; overflow-wrap: anywhere;">{{ gb.text }}</div>
                                     </div>
-                                  </sc-for>
+                                  </sc-for></sc-if>
                                 </div>
                               </sc-if>
                             </div>
@@ -1540,7 +1557,7 @@
                       <sc-if value="{{ c.hasImages }}" hint-placeholder-val="{{ true }}">
                         <div data-tour="k-bilder">
                           <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 6px;">
-                            <span style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t-accent, #0088b0);">{{ L.bilder }}</span>
+                            <button onClick="{{ c.bilderUm }}" aria-expanded="{{ c.bilderAufText }}" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 0; min-height: 36px; border: 0; background: transparent; cursor: pointer; font: inherit; font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t-accent, #0088b0);"><span style="{{ c.bilderSign }}">▸</span>{{ L.bilder }}</button>
                             <span style="display: flex; gap: 5px; align-items: center; flex-wrap: wrap;">
                                                           <a href="{{ c.showHref }}" target="chronikMusik" onClick="{{ c.showStart }}" title="{{ L.alle_bilder_dieses_ereignisses_gross_zeige }}" style="font: inherit; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 13px; cursor: pointer; white-space: nowrap; text-decoration: none; border: 0; border-radius: 999px; background: var(--t-accent, #0088b0); color: var(--t-card, #eae9e9); box-shadow: var(--shadow-sm);">▦ {{ L.fotoshow }}</a>
                               <sc-if value="{{ c.hatAlbenShow }}" hint-placeholder-val="{{ false }}">
@@ -1551,7 +1568,7 @@
                               </sc-if>
                             </span>
                           </div>
-                          <sc-for list="{{ c.bildGruppen }}" as="g" hint-placeholder-count="1">
+                          <sc-if value="{{ c.bilderAuf }}" hint-placeholder-val="{{ true }}"><sc-for list="{{ c.bildGruppen }}" as="g" hint-placeholder-count="1">
                           <div style="display: grid; gap: 6px; margin-bottom: 10px;">
                             <sc-if value="{{ g.hatEtKopf }}" hint-placeholder-val="{{ false }}">
                               <div style="display: flex; align-items: center; gap: 8px;">
@@ -1632,7 +1649,7 @@
                             </sc-for>
                           </div>
                           </div>
-                          </sc-for>
+                          </sc-for></sc-if>
                         </div>
                       </sc-if>
 
@@ -2421,8 +2438,9 @@
           <div style="display: grid; gap: var(--space-4); padding-bottom: var(--space-4);">
             <div style="font-size: 13.5px; line-height: 1.5; color: var(--color-neutral-700);">{{ L.vo_intro }}</div>
 
+            <sc-if value="{{ vo.cdZukunft }}" hint-placeholder-val="{{ false }}">
             <div style="display: grid; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-md); background: var(--color-neutral-100);">
-              <div style="display: flex; align-items: baseline; gap: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--color-divider);"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">01</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.cd_titel }}</span></div>
+              <div style="display: flex; align-items: baseline; gap: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--color-divider);"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.cd }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.cd_titel }}</span></div>
               <div style="font-size: 13px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.cd_sub }}</div>
               <div style="display: flex; gap: var(--space-2); flex-wrap: wrap; align-items: center;">
                 <button onClick="{{ vo.cdUm }}" style="{{ vo.cdStil }}">{{ vo.cdLabel }}</button>
@@ -2433,8 +2451,9 @@
               </div>
             </div>
 
+            </sc-if>
             <div style="display: grid; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-md); background: var(--color-neutral-100);">
-              <div style="display: flex; align-items: baseline; gap: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--color-divider);"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">02</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.nf_titel }}</span></div>
+              <div style="display: flex; align-items: baseline; gap: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--color-divider);"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.nf }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.nf_titel }}</span></div>
               <div style="font-size: 13px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.nf_sub }}</div>
               <div><button onClick="{{ vo.nfUm }}" style="{{ vo.nfStil }}">{{ vo.nfLabel }}</button></div>
               <sc-if value="{{ vo.nfAn }}" hint-placeholder-val="{{ false }}">
@@ -2450,7 +2469,7 @@
             </div>
 
             <div style="display: grid; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-md); background: var(--color-neutral-100);">
-              <div style="display: flex; align-items: baseline; gap: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--color-divider);"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">03</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.lp_titel }}</span></div>
+              <div style="display: flex; align-items: baseline; gap: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--color-divider);"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.lp }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.lp_titel }}</span></div>
               <div style="font-size: 13px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.lp_hinweis }}</div>
               <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
                 <button class="btn btn-secondary" style="min-height: 44px;" onClick="{{ vo.karteAn }}">{{ L.lp_karte_nutzen }}</button>
@@ -2539,13 +2558,13 @@
             </div>
 
             <div style="display: grid; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-md); background: var(--color-neutral-100);">
-              <div style="display: flex; align-items: baseline; gap: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--color-divider);"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">04</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.leute_titel }}</span></div>
+              <div style="display: flex; align-items: baseline; gap: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--color-divider);"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.leute }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.leute_titel }}</span></div>
               <div><button onClick="{{ vo.leuteUm }}" style="{{ vo.leuteStil }}">{{ vo.leuteLabel }}</button></div>
               <div style="font-size: 13px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.leute_ed_hinweis }}</div>
             </div>
 
             <div style="display: grid; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-md); background: var(--color-neutral-100);">
-              <div style="display: flex; align-items: baseline; gap: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--color-divider);"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">05</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.ga_titel }}</span></div>
+              <div style="display: flex; align-items: baseline; gap: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--color-divider);"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.ga }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.ga_titel }}</span></div>
               <div style="font-size: 13px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.ga_hinweis }}</div>
               <div><button onClick="{{ vo.gaUm }}" style="{{ vo.gaStil }}">{{ vo.gaLabel }}</button></div>
               <sc-if value="{{ vo.gaAn }}" hint-placeholder-val="{{ false }}">
@@ -2635,6 +2654,43 @@
                           <button class="btn btn-secondary" style="min-height: 40px;" onClick="{{ sf.klick }}">＋ {{ sf.label }}</button>
                         </sc-for>
                       </div>
+                      <div style="display: grid; gap: 6px;">
+                        <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.sp_deko }}</div>
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                          <sc-for list="{{ vo.spDekoChips }}" as="dk" hint-placeholder-count="0">
+                            <button onClick="{{ dk.klick }}" style="{{ dk.stil }}"><span style="{{ dk.dot }}">{{ dk.orn }}</span>{{ dk.label }}</button>
+                          </sc-for>
+                        </div>
+                      </div>
+                      <select class="input" value="" onChange="{{ vo.onSpObj }}" style="font-size: 16px;">
+                        <sc-for list="{{ vo.spObjWahl }}" as="o" hint-placeholder-count="0"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+                      </select>
+                      <sc-if value="{{ vo.spo.an }}" hint-placeholder-val="{{ false }}">
+                        <div style="display: grid; gap: var(--space-2); padding: 12px; border-radius: var(--radius-md); background: var(--color-bg); box-shadow: var(--shadow-md);">
+                          <div style="display: flex; gap: 8px; align-items: center;"><span style="display: inline-grid; place-items: center; min-width: 30px; height: 30px; border-radius: 50%; background: var(--color-accent); color: #fff; font-weight: 700;">{{ vo.spo.g }}</span><strong style="font-size: 16px;">{{ vo.spo.titel }}</strong></div>
+                          <input class="input" value="{{ vo.spo.text }}" onChange="{{ vo.spo.onText }}" placeholder="{{ vo.spo.textPh }}" style="font-size: 16px;">
+                          <sc-if value="{{ vo.spo.istText }}" hint-placeholder-val="{{ false }}">
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">{{ L.spo_groesse }}<input class="input" type="number" min="10" max="60" value="{{ vo.spo.gr }}" onChange="{{ vo.spo.onGr }}" style="width: 90px; font-size: 16px;"></label>
+                          </sc-if>
+                          <sc-if value="{{ vo.spo.istFlaeche }}" hint-placeholder-val="{{ false }}">
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                              <label style="display: flex; align-items: center; gap: 6px; font-size: 14px;">{{ L.spo_breite }}<input class="input" type="number" min="30" max="800" step="10" value="{{ vo.spo.w }}" onChange="{{ vo.spo.onW }}" style="width: 90px; font-size: 16px;"></label>
+                              <label style="display: flex; align-items: center; gap: 6px; font-size: 14px;">{{ L.spo_hoehe }}<input class="input" type="number" min="30" max="800" step="10" value="{{ vo.spo.h }}" onChange="{{ vo.spo.onH }}" style="width: 90px; font-size: 16px;"></label>
+                            </div>
+                          </sc-if>
+                          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                            <span style="font-size: 14px;">{{ L.sp_drehen }}</span>
+                            <button class="btn btn-secondary btn-icon" title="−15°" aria-label="−15°" style="width: 40px; height: 40px;" onClick="{{ vo.spo.drehLinks }}">↺</button>
+                            <input type="range" min="0" max="345" step="15" value="{{ vo.spo.dreh }}" onChange="{{ vo.spo.onDreh }}" style="flex: 1 1 140px; min-width: 100px; accent-color: var(--color-accent);">
+                            <button class="btn btn-secondary btn-icon" title="+15°" aria-label="+15°" style="width: 40px; height: 40px;" onClick="{{ vo.spo.drehRechts }}">↻</button>
+                            <span style="font-size: 13px; min-width: 40px;">{{ vo.spo.drehText }}</span>
+                          </div>
+                          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="btn btn-ghost" style="min-height: 40px; color: var(--color-accent-2-700);" onClick="{{ vo.spo.weg }}">{{ L.spo_weg }}</button>
+                            <button class="btn btn-primary" style="min-height: 40px; margin-left: auto;" onClick="{{ vo.spo.zu }}">{{ L.sp_fertig }}</button>
+                          </div>
+                        </div>
+                      </sc-if>
                       <sc-if value="{{ vo.spp.an }}" hint-placeholder-val="{{ false }}">
                         <div style="display: grid; gap: var(--space-2); padding: 12px; border-radius: var(--radius-md); background: var(--color-bg); box-shadow: var(--shadow-md);">
                           <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
@@ -2697,13 +2753,21 @@
                                 <button onClick="{{ vo.sp.info.zu }}" title="{{ L.schliessen }}" aria-label="{{ L.schliessen }}" style="width: 40px; height: 40px; border-radius: 50%; border: 0; background: transparent; color: inherit; font-size: 18px; cursor: pointer;">✕</button>
                               </div>
                               <sc-for list="{{ vo.sp.info.zeilen }}" as="iz" hint-placeholder-count="0">
-                                <div style="font-size: 14px; line-height: 1.45; overflow-wrap: anywhere;"><span style="opacity: 0.65;">{{ iz.k }}</span> {{ iz.v }}</div>
+                                <div style="display: grid; gap: 2px; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.08);"><span style="font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.6;">{{ iz.k }}</span><span style="font-size: 15px; line-height: 1.45; overflow-wrap: anywhere;">{{ iz.v }}</span></div>
                               </sc-for>
                             </div>
                           </sc-if>
-                          <div ref="{{ vo.sp.boxRef }}" style="width: 100%; max-height: 70vh; overflow: auto; border-radius: var(--radius-md); background: var(--color-neutral-100); box-shadow: inset 0 0 0 1px var(--color-divider); -webkit-overflow-scrolling: touch;">
+                          <div ref="{{ vo.sp.boxRef }}" style="{{ vo.sp.boxStil }}">
                             <svg width="{{ vo.sp.bw }}" height="{{ vo.sp.bh }}" style="display: block;">
                               <g transform="{{ vo.sp.skala }}">
+                                <sc-for list="{{ vo.sp.orn }}" as="on" hint-placeholder-count="0"><text x="{{ on.x }}" y="{{ on.y }}" style="{{ on.stil }}">{{ on.g }}</text></sc-for>
+                                <sc-for list="{{ vo.sp.objekte }}" as="ob" hint-placeholder-count="0">
+                                  <g transform="{{ ob.tf }}" onPointerDown="{{ ob.ziehen }}" style="{{ ob.gStil }}">
+                                    <sc-if value="{{ ob.istText }}" hint-placeholder-val="{{ false }}"><text x="0" y="0" style="{{ ob.textStil }}">{{ ob.text }}</text></sc-if>
+                                    <sc-if value="{{ ob.istFlaeche }}" hint-placeholder-val="{{ false }}"><rect x="{{ ob.x0 }}" y="{{ ob.y0 }}" width="{{ ob.w }}" height="{{ ob.h }}" rx="8" style="{{ ob.rectStil }}"></rect><text x="0" y="{{ ob.gy }}" style="{{ ob.gStilT }}">{{ ob.g }}</text><text x="0" y="{{ ob.ly }}" style="{{ ob.labelStil }}">{{ ob.text }}</text></sc-if>
+                                    <sc-if value="{{ ob.istSymbol }}" hint-placeholder-val="{{ false }}"><rect x="{{ ob.px0 }}" y="-16" width="{{ ob.pw }}" height="32" rx="16" style="{{ ob.pillStil }}"></rect><circle cx="0" cy="0" r="12" style="{{ ob.kreisStil }}"></circle><text x="0" y="0" style="{{ ob.symStil }}">{{ ob.g }}</text><text x="20" y="0" style="{{ ob.symLabelStil }}">{{ ob.text }}</text></sc-if>
+                                  </g>
+                                </sc-for>
                                 <sc-for list="{{ vo.sp.tische }}" as="t" hint-placeholder-count="0">
                                   <g transform="{{ t.tf }}" onPointerDown="{{ t.ziehen }}" style="{{ t.gStil }}">
                                     <g transform="{{ t.drehTf }}">
@@ -4074,7 +4138,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 97) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 98) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -4404,7 +4468,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 97 · 2026-10-07";
+const BAU_STAND = "Bau 98 · 2026-10-07";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -5598,7 +5662,7 @@ class Component extends DCLogic {
     };
     if (!hat) return Object.assign(basis, { ttAuf: false, ttTage: [], ttTagChips: [], ttBuehnenChips: [] });
     const LEER = { tage: [], buehnen: [], ab: "", bis: "", meine: false };
-    const auf = (st.ttAuf || {})[e.id] !== false;
+    const auf = (st.ttAuf || {})[e.id] === true;
     const fl = Object.assign({}, LEER, (st.ttFilter || {})[e.id] || {});
     const meine = ((st.ttMarks || {})[e.id]) || [];
     const setF = (patch) => this.setState((s) => ({ ttFilter: Object.assign({}, s.ttFilter || {}, { [e.id]: Object.assign({}, LEER, (s.ttFilter || {})[e.id] || {}, typeof patch === "function" ? patch(Object.assign({}, LEER, (s.ttFilter || {})[e.id] || {})) : patch) }) }));
@@ -6509,6 +6573,13 @@ class Component extends DCLogic {
     const st = this.state;
     const cd = this.cdText(e);
     const out = { hatCd: !!cd, cdText: cd, voZeigen: false };
+    const kl = st.zuKlapp || {};
+    ["bilder", "gfoto", "gbuch"].forEach((k) => {
+      const id = e.id + ":" + k, auf = !kl[id];
+      out[k + "Auf"] = auf; out[k + "AufText"] = auf ? "true" : "false";
+      out[k + "Sign"] = { display: "inline-block", fontSize: "9px", width: "10px", transform: auf ? "rotate(90deg)" : "none", transition: "transform 160ms ease" };
+      out[k + "Um"] = (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.setState((s) => ({ zuKlapp: Object.assign({}, s.zuKlapp, { [id]: auf }) })); };
+    });
     if (!isOpen) return out;
     const nf = this.notfallVals(ex.notfall);
     const me = this.me() || {};
@@ -6680,7 +6751,15 @@ class Component extends DCLogic {
       })(this),
       keinSichtTreffer: !!String(st.sichtSuche || "").trim() && !(st.users || []).some((u) => fids.indexOf(u.id) >= 0 && sicht.indexOf(u.id) < 0 && String(u.username || "").toLowerCase().indexOf(String(st.sichtSuche).trim().toLowerCase()) >= 0),
       gaPruefen: () => this.gaPruefen(), gaPruef: st.gaPruef || "", hatGaPruef: !!st.gaPruef,
-      spKeineWahl: !!o.sitz && (o.tische || []).length > 0 && !st.spSel,
+      spKeineWahl: !!o.sitz && this.spTische(o.tische || []).length > 0 && !st.spSel && !st.spObjSel,
+      spo: this.spObjPanel(),
+      spDekoChips: (function (self) { const m = self.spMeta(o.tische || []); return self.spDekos().map((x) => ({ key: x.k, label: x.l, klick: () => self.spMetaSetzen({ deko: x.k }),
+        stil: { display: "flex", alignItems: "center", gap: "8px", font: "inherit", fontSize: "13px", padding: "6px 12px 6px 6px", minHeight: "40px", cursor: "pointer", borderRadius: "99px", background: x.bg, color: x.ink, border: m.deko === x.k ? "2px solid var(--color-accent)" : "1px solid var(--color-divider)" },
+        dot: { width: "24px", height: "24px", borderRadius: "50%", display: "grid", placeItems: "center", background: x.tisch, color: x.akz, boxShadow: "inset 0 0 0 2px " + x.rand, fontSize: "12px" }, orn: x.orn || "○" })); })(this),
+      spObjWahl: [{ key: "-", value: "", label: tx("sp_element_neu") }].concat(this.spObjTypen().map((t) => ({ key: t.k, value: t.k, label: t.g + "  " + t.l }))),
+      onSpObj: (ev) => { const v = ev.target.value; try { ev.target.value = ""; } catch (x) { /* egal */ } this.spObjNeu(v); },
+      cdZukunft: !!d.date && String(d.date) >= new Date().toISOString().slice(0, 10),
+      nr: (function () { const z = !!d.date && String(d.date) >= new Date().toISOString().slice(0, 10); const s = z ? 1 : 0; const f = (n) => ("0" + n).slice(-2); return { cd: "01", nf: f(1 + s), lp: f(2 + s), leute: f(3 + s), ga: f(4 + s) }; })(),
       gaDesignAuf: !!st.gaDesignAuf, gaDesignAufText: st.gaDesignAuf ? "true" : "false",
       gaDesignUm: () => this.setState({ gaDesignAuf: !st.gaDesignAuf }),
       gaDesignSign: { display: "inline-block", fontSize: "10px", width: "12px", color: "var(--color-accent-700)", transform: st.gaDesignAuf ? "rotate(90deg)" : "none", transition: "transform 160ms ease" },
@@ -6986,7 +7065,7 @@ class Component extends DCLogic {
 
   /* ---- Sitzplan: Tische mit Form, nummerierten Plätzen und Namen ---- */
   spTische(liste) {
-    return (liste || []).map((t, k) => {
+    return (liste || []).filter((t) => t && !t.meta).map((t, k) => {
       const form = ["rund", "oval", "eckig", "tafel"].indexOf(t.form) >= 0 ? t.form : "rund";
       const alt = String(t.gaeste || "").split(/\n|,/).map((s) => s.trim()).filter(Boolean);
       let seiten = null, n;
@@ -7061,24 +7140,69 @@ class Component extends DCLogic {
     return { txt: txt, fs: fs };
   }
 
+  spDekos() {
+    return [
+      { k: "schlicht", l: tx("spd_schlicht"), bg: "#ffffff", muster: "none", tisch: "#f1efeb", tischInk: "#201e1d", rand: "#8a8580", ink: "#201e1d", sitz: "#ffffff", sitzInk: "#5c5752", akz: "#0088b0", orn: "", ornF: [] },
+      { k: "hochzeit", l: tx("spd_hochzeit"), bg: "#fbf7f1", muster: "radial-gradient(rgba(176,138,62,0.20) 1px, transparent 1.5px)", gr: "22px 22px", tisch: "#ffffff", tischInk: "#3a2f2a", rand: "#b08a3e", ink: "#3a2f2a", sitz: "#fdf3e4", sitzInk: "#7a5d24", akz: "#b08a3e", orn: "❦", ornF: ["#c98b8b", "#b08a3e"] },
+      { k: "geburtstag", l: tx("spd_geburtstag"), bg: "#fff8ec", muster: "radial-gradient(rgba(255,90,31,0.28) 1.6px, transparent 2px), radial-gradient(rgba(0,163,163,0.24) 1.4px, transparent 1.8px)", gr: "41px 37px, 29px 53px", tisch: "#ffffff", tischInk: "#1e1a16", rand: "#ff5a1f", ink: "#1e1a16", sitz: "#fff1dc", sitzInk: "#8a3a10", akz: "#ff3ea5", orn: "★", ornF: ["#ff5a1f", "#00a3a3", "#ff3ea5", "#ffc21a"] },
+      { k: "party", l: tx("spd_party"), bg: "#130d24", muster: "radial-gradient(rgba(255,62,165,0.30) 1px, transparent 1.6px)", gr: "30px 30px", tisch: "#221a3e", tischInk: "#f7f2ff", rand: "#3ef0ff", ink: "#f7f2ff", sitz: "#2d2350", sitzInk: "#d9d2ff", akz: "#ff3ea5", orn: "✦", ornF: ["#3ef0ff", "#ff3ea5"] },
+      { k: "weihnachten", l: tx("spd_weihnachten"), bg: "#16301f", muster: "radial-gradient(rgba(255,255,255,0.18) 1.2px, transparent 1.7px)", gr: "34px 34px", tisch: "#fdf8ee", tischInk: "#16301f", rand: "#c9a227", ink: "#fdf8ee", sitz: "#fdf8ee", sitzInk: "#7a1f1f", akz: "#b3262b", orn: "✶", ornF: ["#c9a227", "#e7e1d1"] },
+      { k: "garten", l: tx("spd_garten"), bg: "#eef1e6", muster: "radial-gradient(rgba(125,138,100,0.22) 1.2px, transparent 1.7px)", gr: "26px 26px", tisch: "#fbf7f1", tischInk: "#2f3527", rand: "#7d8a64", ink: "#2f3527", sitz: "#ffffff", sitzInk: "#5b6447", akz: "#a5643f", orn: "❀", ornF: ["#a5643f", "#7d8a64"] },
+      { k: "gala", l: tx("spd_gala"), bg: "#0e0d0b", muster: "linear-gradient(90deg, rgba(212,175,55,0.06) 1px, transparent 1px)", gr: "60px 60px", tisch: "#1c1a15", tischInk: "#f2ead8", rand: "#d4af37", ink: "#f2ead8", sitz: "#1c1a15", sitzInk: "#d4af37", akz: "#d4af37", orn: "◆", ornF: ["#d4af37"] },
+      { k: "festival", l: tx("spd_festival"), bg: "#fff6e0", muster: "repeating-linear-gradient(135deg, rgba(255,90,31,0.08) 0 14px, transparent 14px 28px)", gr: "auto", tisch: "#ffffff", tischInk: "#1e1a16", rand: "#1e1a16", ink: "#1e1a16", sitz: "#ffffff", sitzInk: "#1e1a16", akz: "#ff5a1f", orn: "✸", ornF: ["#ff5a1f", "#00a3a3"] }
+    ];
+  }
+  spDeko(k) { const a = this.spDekos(); return a.filter((x) => x.k === k)[0] || a[0]; }
+
+  spObjTypen() {
+    return [
+      { k: "text", g: "T", art: "text" },
+      { k: "eingang", g: "→", art: "symbol" }, { k: "ausgang", g: "←", art: "symbol" }, { k: "notausgang", g: "⇥", art: "symbol", not: true },
+      { k: "wc_d", g: "♀", art: "symbol" }, { k: "wc_h", g: "♂", art: "symbol" }, { k: "wc_x", g: "⚥", art: "symbol" },
+      { k: "wc_b", g: "♿\uFE0E", art: "symbol" }, { k: "wickel", g: "WT", art: "symbol" }, { k: "erstehilfe", g: "+", art: "symbol", not: true },
+      { k: "buehne", g: "♪", art: "flaeche", w: 260, h: 110 }, { k: "tanz", g: "◇", art: "flaeche", w: 220, h: 220 },
+      { k: "buffet", g: "≡", art: "flaeche", w: 260, h: 70 }, { k: "bar", g: "▭", art: "flaeche", w: 180, h: 70 },
+      { k: "dj", g: "♫", art: "flaeche", w: 130, h: 80 }, { k: "fotobox", g: "◉", art: "flaeche", w: 110, h: 110 },
+      { k: "geschenke", g: "□", art: "flaeche", w: 150, h: 70 }, { k: "garderobe", g: "⌂", art: "flaeche", w: 160, h: 60 },
+      { k: "kinder", g: "☺", art: "flaeche", w: 170, h: 120 }, { k: "torte", g: "◎", art: "flaeche", w: 100, h: 100 }
+    ].map((t) => Object.assign(t, { l: tx("spo_" + t.k) }));
+  }
+  spObjTyp(k) { const a = this.spObjTypen(); return a.filter((x) => x.k === k)[0] || a[0]; }
+
+  spMeta(liste) {
+    const m = (liste || []).filter((t) => t && t.meta)[0] || {};
+    return { meta: true, deko: m.deko || "schlicht", objekte: Array.isArray(m.objekte) ? m.objekte : [] };
+  }
+
   sitzplanVals(key, liste, opt) {
     opt = opt || {};
     const st = this.state;
     const tische = this.spTische(liste);
+    const meta = this.spMeta(liste);
+    const D = this.spDeko(meta.deko);
     const drag = st.spPos;
     const such = String(opt.suche || "").trim().toLowerCase();
     const treffer = [];
     let W = 900, H = 600;
     const geos = tische.map((t0) => {
-      const t = drag && drag.k === key && drag.i === t0.i ? Object.assign({}, t0, { x: drag.x, y: drag.y }) : t0;
+      const t = drag && drag.k === key && !drag.obj && drag.i === t0.i ? Object.assign({}, t0, { x: drag.x, y: drag.y }) : t0;
       const g = this.spGeo(t);
       W = Math.max(W, t.x + g.ext); H = Math.max(H, t.y + g.ext);
       return { t: t, g: g };
+    });
+    const objs = meta.objekte.map((o0, k) => {
+      const o = drag && drag.k === key && drag.obj && drag.i === o0.i ? Object.assign({}, o0, { x: drag.x, y: drag.y }) : o0;
+      const T = this.spObjTyp(o.art);
+      const w = Number(o.w) || T.w || 0, hh = Number(o.h) || T.h || 0;
+      const x = Number(o.x) || 120 + k * 40, y = Number(o.y) || 80;
+      W = Math.max(W, x + Math.max(w, 160) / 2 + 60); H = Math.max(H, y + Math.max(hh, 60) / 2 + 60);
+      return { o: o, T: T, w: w, h: hh, x: x, y: y };
     });
     const zMap = st.spZoom || {};
     const fit = Math.max(0.3, Math.min(1, ((window.innerWidth || 800) - (opt.edit ? 90 : 56)) / W));
     const z = zMap[key] || fit;
     const sel = opt.edit ? (st.spSel || "") : "";
+    const oSel = opt.edit ? (st.spObjSel || "") : "";
     const nMap = st.spNamen || {};
     const namenAn = nMap[key] != null ? !!nMap[key] : !!opt.edit;
     const view = geos.map((gt) => {
@@ -7093,10 +7217,10 @@ class Component extends DCLogic {
         istRund: t.form === "rund", istOval: t.form === "oval", istEckig: t.form === "eckig" || t.form === "tafel",
         r: +(g.r || 0).toFixed(1), rx: +(g.rx || 0).toFixed(1), ry: +(g.ry || 0).toFixed(1),
         w: g.w || 0, h: g.h || 0, x0: -(g.w || 0) / 2, y0: -(g.h || 0) / 2,
-        formStil: { fill: aktiv ? "var(--color-accent-100)" : "var(--color-neutral-100)", stroke: aktiv ? "var(--color-accent)" : "var(--color-neutral-500)", strokeWidth: aktiv ? 2.5 : 1.5 },
+        formStil: { fill: D.tisch, stroke: aktiv ? D.akz : D.rand, strokeWidth: aktiv ? 3 : 1.6 },
         name: this.spName(t.name, 40).txt,
-        labelStil: { fontSize: "12.5px", fontWeight: 700, textAnchor: "middle", dominantBaseline: "central", fill: "var(--color-text)", fontFamily: "var(--font-heading)", pointerEvents: "none" },
-        ziehen: opt.edit ? (ev) => this.spZiehen(key, t, ev, z) : undefined,
+        labelStil: { fontSize: "12.5px", fontWeight: 700, textAnchor: "middle", dominantBaseline: "central", fill: D.tischInk, fontFamily: "var(--font-heading)", pointerEvents: "none" },
+        ziehen: opt.edit ? (ev) => this.spZiehen(key, t, ev, z, false) : undefined,
         sitze: g.sitze.map((s, k) => {
           const nm = t.sitze[k] || "";
           const hit = !!such && !!nm && nm.toLowerCase().indexOf(such) >= 0;
@@ -7107,18 +7231,51 @@ class Component extends DCLogic {
           const nn = this.spName(nm, s.sp);
           return {
             key: "s" + k, x: +s.x.toFixed(1), y: +s.y.toFixed(1), nr: String(k + 1),
-            stil: { fill: hit ? "var(--color-accent)" : (nm ? "var(--color-bg)" : "var(--color-neutral-200)"), stroke: hit ? "var(--color-accent-700)" : "var(--color-neutral-500)", strokeWidth: 1.2 },
-            nrStil: { fontSize: "8.5px", textAnchor: "middle", dominantBaseline: "central", fill: hit ? "#fff" : "var(--color-neutral-700)", pointerEvents: "none", fontFamily: "var(--font-body)" },
+            stil: { fill: hit ? D.akz : (nm ? D.sitz : "transparent"), stroke: hit ? D.akz : D.rand, strokeWidth: 1.2 },
+            nrStil: { fontSize: "8.5px", textAnchor: "middle", dominantBaseline: "central", fill: hit ? "#fff" : (nm ? D.sitzInk : D.ink), pointerEvents: "none", fontFamily: "var(--font-body)" },
             tx: +tx0.toFixed(1), ty: +ty0.toFixed(1),
             rot: "rotate(" + (links ? deg + 180 : deg).toFixed(1) + " " + tx0.toFixed(1) + " " + ty0.toFixed(1) + ")",
             name: namenAn || hit ? nn.txt : "",
             hitStil: { fill: "transparent", cursor: "pointer" },
             info: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.setState({ spInfo: { k: key, i: t.i, n: k } }); },
-            nameStil: { fontSize: nn.fs.toFixed(1) + "px", textAnchor: links ? "end" : "start", dominantBaseline: "central", fill: hit ? "var(--color-accent-700)" : "var(--color-text)", fontWeight: hit ? 700 : 400, pointerEvents: "none", fontFamily: "var(--font-body)" }
+            nameStil: { fontSize: nn.fs.toFixed(1) + "px", textAnchor: links ? "end" : "start", dominantBaseline: "central", fill: hit ? D.akz : D.ink, fontWeight: hit ? 700 : 400, pointerEvents: "none", fontFamily: "var(--font-body)" }
           };
         })
       };
     });
+    const objekte = objs.map((q) => {
+      const o = q.o, T = q.T;
+      const label = String(o.text != null && o.text !== "" ? o.text : T.l);
+      const aktiv = o.i === oSel;
+      const farbe = T.not ? "#c4003f" : D.akz;
+      const pw = 44 + Math.min(220, label.length * 7.4);
+      const gr = Math.max(10, Math.min(60, Number(o.gr) || 20));
+      return {
+        key: o.i, tf: "translate(" + Math.round(q.x) + " " + Math.round(q.y) + ") rotate(" + (Number(o.dreh) || 0) + ")",
+        gStil: { cursor: opt.edit ? "grab" : "default", touchAction: opt.edit ? "none" : "auto" },
+        ziehen: opt.edit ? (ev) => this.spZiehen(key, { i: o.i, x: q.x, y: q.y }, ev, z, true) : undefined,
+        istText: T.art === "text", istFlaeche: T.art === "flaeche", istSymbol: T.art === "symbol",
+        text: label, textStil: { fontSize: gr + "px", fontFamily: "var(--font-heading)", fontWeight: 600, textAnchor: "middle", dominantBaseline: "central", fill: D.ink, pointerEvents: "none", stroke: aktiv ? D.akz : "none", strokeWidth: aktiv ? 0.6 : 0 },
+        x0: -q.w / 2, y0: -q.h / 2, w: q.w, h: q.h,
+        rectStil: { fill: "color-mix(in srgb, " + farbe + " 16%, " + D.bg + ")", stroke: aktiv ? D.akz : farbe, strokeWidth: aktiv ? 3 : 1.6, strokeDasharray: T.k === "tanz" ? "8 6" : "none" },
+        g: T.g, gy: -8, ly: 14,
+        gStilT: { fontSize: "20px", textAnchor: "middle", dominantBaseline: "central", fill: farbe, pointerEvents: "none", fontFamily: "var(--font-body)" },
+        labelStil: { fontSize: "13px", fontWeight: 600, textAnchor: "middle", dominantBaseline: "central", fill: D.ink, pointerEvents: "none", fontFamily: "var(--font-body)" },
+        pw: pw, px0: -16,
+        pillStil: { fill: D.bg, stroke: aktiv ? D.akz : farbe, strokeWidth: aktiv ? 2.5 : 1.4 },
+        kreisStil: { fill: farbe },
+        symStil: { fontSize: T.g.length > 1 ? "10px" : "15px", fontWeight: 700, textAnchor: "middle", dominantBaseline: "central", fill: "#fff", pointerEvents: "none", fontFamily: "var(--font-body)" },
+        symLabelStil: { fontSize: "13px", fontWeight: 600, textAnchor: "start", dominantBaseline: "central", fill: D.ink, pointerEvents: "none", fontFamily: "var(--font-body)" }
+      };
+    });
+    const orn = [];
+    if (D.orn) {
+      const schritt = 150;
+      let n = 0;
+      const add = (x, y, s) => { orn.push({ key: "o" + n, x: Math.round(x), y: Math.round(y), g: D.orn, stil: { fontSize: s + "px", textAnchor: "middle", dominantBaseline: "central", fill: D.ornF[n % D.ornF.length], opacity: 0.55, pointerEvents: "none" } }); n++; };
+      for (let x = 30; x < W; x += schritt) { add(x, 22, 16); add(x + schritt / 2, H - 22, 16); }
+      for (let y = 30 + schritt / 2; y < H - 40; y += schritt) { add(22, y, 16); add(W - 22, y + schritt / 2 > H - 40 ? y : y + schritt / 2, 16); }
+    }
     if (this._spSucheNeu === key && treffer[0]) { this._spSucheNeu = null; this._spZiel = { k: key, x: treffer[0].x, y: treffer[0].y }; }
     const inf = st.spInfo && st.spInfo.k === key ? st.spInfo : null;
     const infT = inf ? tische.filter((x) => x.i === inf.i)[0] : null;
@@ -7127,28 +7284,36 @@ class Component extends DCLogic {
       const nm = infT.sitze[inf.n] || "";
       const zeilen = [];
       const nach = [infT.sitze[(inf.n - 1 + infT.n) % infT.n], infT.sitze[(inf.n + 1) % infT.n]].filter((x, j, a) => x && x !== nm && a.indexOf(x) === j);
-      if (nach.length) zeilen.push({ k: tx("sp_neben"), v: nach.join(", ") });
+      if (nach.length) zeilen.push({ key: "n", k: tx("sp_i_nachbarn"), v: nach.join(tx("sp_und_trenner")) });
       const ich = this.me();
       const u = ich && nm ? (st.users || []).filter((x) => String(x.username || "").toLowerCase() === nm.trim().toLowerCase())[0] : null;
       if (u) {
         const fids = this.friendIds();
-        zeilen.push({ k: tx("sp_konto"), v: u.id === ich.id ? tx("sp_das_bist_du") : (fids.indexOf(u.id) >= 0 ? tx("sp_ist_kontakt") : tx("sp_kein_kontakt")) });
+        zeilen.push({ key: "k", k: tx("sp_i_konto"), v: u.id === ich.id ? tx("sp_das_bist_du") : (fids.indexOf(u.id) >= 0 ? tx("sp_ist_kontakt") : tx("sp_kein_kontakt")) });
         const gem = (st.events || []).filter((e) => e && !e.lose && (e.by === u.id || (e.who || []).indexOf(u.id) >= 0) && this.levelFor(e) >= 1);
-        if (gem.length) zeilen.push({ k: tx("sp_gemeinsam"), v: plural(gem.length, tx("ereignis_1"), tx("ereignisse_1")) + " · " + gem.slice(0, 3).map((e) => e.name).join(", ") + (gem.length > 3 ? " …" : "") });
-        if (u.created) zeilen.push({ k: tx("sp_dabei_seit"), v: fmtDate(String(u.created).slice(0, 10)) });
+        if (gem.length) zeilen.push({ key: "g", k: tx("sp_i_gemeinsam"), v: gem.slice(0, 3).map((e) => e.name).join(", ") + (gem.length > 3 ? " " + tx("sp_und_weitere").replace("{n}", gem.length - 3) : "") });
+        if (u.created) zeilen.push({ key: "s", k: tx("sp_i_seit"), v: fmtDate(String(u.created).slice(0, 10)) });
       }
       if (opt.evId && nm) {
         const r = ((st.gastDaten || {})[opt.evId] || []).filter((x) => x.kind === "rsvp" && String(x.name || "").trim().toLowerCase() === nm.trim().toLowerCase())[0];
-        if (r) { const d0 = r.data || {}; zeilen.push({ k: tx("gast_rsvp") + ":", v: [d0.kommt === "nein" ? tx("gast_absage") : tx("gast_zusage"), d0.plus ? "+" + d0.plus : "", d0.essen || "", r.text || ""].filter(Boolean).join(" · ") }); }
+        if (r) {
+          const d0 = r.data || {};
+          const ja = d0.kommt !== "nein";
+          zeilen.push({ key: "r", k: tx("sp_i_antwort"), v: ja ? tx("sp_kommt") : tx("sp_kommt_nicht") });
+          if (ja && d0.plus) zeilen.push({ key: "b", k: tx("sp_i_begleitung"), v: (Number(d0.plus) === 1 ? tx("sp_eine_person") : tx("sp_personen_n").replace("{n}", d0.plus)) + (d0.plusNamen ? ": " + d0.plusNamen : "") });
+          if (ja && d0.essen) zeilen.push({ key: "e", k: tx("sp_i_essen"), v: d0.essen });
+          if (r.text) zeilen.push({ key: "t", k: tx("sp_i_nachricht"), v: r.text });
+        }
       }
-      if (!nm) zeilen.push({ k: "", v: tx("sp_frei") });
+      if (!nm) zeilen.push({ key: "f", k: "", v: tx("sp_frei") });
       info = { name: nm || tx("sp_freier_platz"), ini: nm ? nm.trim().split(/\s+/).slice(0, 2).map((w) => w[0] || "").join("").toUpperCase() : String(inf.n + 1),
-        ort: infT.name + " · " + tx("sp_platz") + " " + (inf.n + 1), zeilen: zeilen, zu: () => this.setState({ spInfo: null }) };
+        ort: tx("sp_tisch_platz").replace("{t}", infT.name).replace("{p}", inf.n + 1), zeilen: zeilen, zu: () => this.setState({ spInfo: null }) };
     }
     const setZ = (v) => { const n = Object.assign({}, zMap); if (v == null) delete n[key]; else n[key] = v; this.setState({ spZoom: n }); };
     return {
-      hat: tische.length > 0,
-      tische: view,
+      hat: tische.length > 0 || objekte.length > 0,
+      tische: view, objekte: objekte, orn: orn,
+      boxStil: { width: "100%", maxHeight: "70vh", overflow: "auto", borderRadius: "14px", backgroundColor: D.bg, backgroundImage: D.muster, backgroundSize: D.gr || "auto", boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.10)", WebkitOverflowScrolling: "touch" },
       hatInfo: !!info, info: info || { name: "", ini: "", ort: "", zeilen: [], zu: () => {} },
       namenText: namenAn ? tx("sp_namen_aus") : tx("sp_namen_ein"),
       namenUm: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.setState({ spNamen: Object.assign({}, nMap, { [key]: !namenAn }) }); },
@@ -7163,12 +7328,12 @@ class Component extends DCLogic {
         this._spZiel = null;
         window.setTimeout(() => { try { el.scrollTo({ left: zi.x * z - el.clientWidth / 2, top: zi.y * z - el.clientHeight / 2, behavior: "smooth" }); } catch (x) { /* egal */ } }, 60);
       },
-      treffer: treffer.slice(0, 6).map((r, k) => ({ key: "h" + k, text: r.name + ": " + r.tisch + " · " + tx("sp_platz") + " " + r.platz })),
+      treffer: treffer.slice(0, 6).map((r, k) => ({ key: "h" + k, text: r.name + ": " + tx("sp_tisch_platz").replace("{t}", r.tisch).replace("{p}", r.platz) })),
       hatTreffer: treffer.length > 0, keinTreffer: !!such && !treffer.length
     };
   }
 
-  spZiehen(key, t, ev, z) {
+  spZiehen(key, t, ev, z, obj) {
     if (ev.button != null && ev.button > 0) return;
     ev.stopPropagation();
     const s = { cx: ev.clientX, cy: ev.clientY, moved: false };
@@ -7177,15 +7342,15 @@ class Component extends DCLogic {
       if (!s.moved && Math.abs(dx) + Math.abs(dy) < 4) return;
       s.moved = true;
       if (e.cancelable) e.preventDefault();
-      this.setState({ spPos: { k: key, i: t.i, x: Math.max(70, Math.round(t.x + dx)), y: Math.max(70, Math.round(t.y + dy)) } });
+      this.setState({ spPos: { k: key, i: t.i, obj: !!obj, x: Math.max(20, Math.round(t.x + dx)), y: Math.max(20, Math.round(t.y + dy)) } });
     };
     const up = () => {
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", up);
       window.removeEventListener("pointercancel", up);
       const p = this.state.spPos;
-      if (s.moved && p && p.i === t.i) this.spTischAendern(t.i, { x: p.x, y: p.y });
-      this.setState({ spPos: null, spSel: t.i });
+      if (s.moved && p && p.i === t.i) { if (obj) this.spObjAendern(t.i, { x: p.x, y: p.y }); else this.spTischAendern(t.i, { x: p.x, y: p.y }); }
+      this.setState(obj ? { spPos: null, spObjSel: t.i, spSel: "" } : { spPos: null, spSel: t.i, spObjSel: "" });
     };
     window.addEventListener("pointermove", move, { passive: false });
     window.addEventListener("pointerup", up);
@@ -7193,15 +7358,56 @@ class Component extends DCLogic {
   }
 
   spRoh() { return ((this.exOf(this.state.draft).offen || {}).tische || []); }
+  spSchreiben(tische, meta) { this.voSet("offen.tische", [meta || this.spMeta(this.spRoh())].concat(tische)); }
   spTischAendern(i, patch) {
-    this.voSet("offen.tische", this.spTische(this.spRoh()).map((t) => (t.i === i ? Object.assign({}, t, patch) : t)));
+    this.spSchreiben(this.spTische(this.spRoh()).map((t) => (t.i === i ? Object.assign({}, t, patch) : t)));
   }
   spNeu(form) {
     const alle = this.spTische(this.spRoh());
     const k = alle.length;
     const t = { i: "t" + uid(), name: tx("gast_tisch") + " " + (k + 1), form: form, x: 180 + (k % 4) * 290, y: 180 + Math.floor(k / 4) * 290 };
-    this.voSet("offen.tische", alle.concat([t]));
-    this.setState({ spSel: t.i });
+    this.spSchreiben(alle.concat([t]));
+    this.setState({ spSel: t.i, spObjSel: "" });
+  }
+  spMetaSetzen(patch) {
+    const roh = this.spRoh();
+    this.spSchreiben(this.spTische(roh), Object.assign(this.spMeta(roh), patch));
+  }
+  spObjNeu(art) {
+    if (!art) return;
+    const m = this.spMeta(this.spRoh());
+    const T = this.spObjTyp(art);
+    const k = m.objekte.length;
+    const o = { i: "o" + uid(), art: art, text: T.art === "text" ? tx("spo_text_neu") : "", x: 140 + (k % 5) * 170, y: 70 + Math.floor(k / 5) * 90 };
+    if (T.art === "flaeche") { o.w = T.w; o.h = T.h; }
+    this.spMetaSetzen({ objekte: m.objekte.concat([o]) });
+    this.setState({ spObjSel: o.i, spSel: "" });
+  }
+  spObjAendern(i, patch) {
+    const m = this.spMeta(this.spRoh());
+    this.spMetaSetzen({ objekte: m.objekte.map((o) => (o.i === i ? Object.assign({}, o, patch) : o)) });
+  }
+  spObjPanel() {
+    const st = this.state;
+    const m = this.spMeta(this.spRoh());
+    const o = m.objekte.filter((x) => x.i === st.spObjSel)[0];
+    if (!o) return { an: false };
+    const T = this.spObjTyp(o.art);
+    const a = (p) => this.spObjAendern(o.i, p);
+    const dreh = Number(o.dreh) || 0;
+    return {
+      an: true, titel: T.l, g: T.g,
+      text: o.text || "", textPh: T.art === "text" ? tx("spo_text_ph") : T.l, onText: (ev) => a({ text: ev.target.value }),
+      istText: T.art === "text", istFlaeche: T.art === "flaeche",
+      gr: String(Number(o.gr) || 20), onGr: (ev) => a({ gr: Math.max(10, Math.min(60, Number(ev.target.value) || 20)) }),
+      w: String(Number(o.w) || T.w || 0), onW: (ev) => a({ w: Math.max(30, Math.min(800, Number(ev.target.value) || 30)) }),
+      h: String(Number(o.h) || T.h || 0), onH: (ev) => a({ h: Math.max(30, Math.min(800, Number(ev.target.value) || 30)) }),
+      dreh: String(((dreh % 360) + 360) % 360), drehText: (((dreh % 360) + 360) % 360) + "°",
+      onDreh: (ev) => a({ dreh: Number(ev.target.value) || 0 }),
+      drehLinks: () => a({ dreh: dreh - 15 }), drehRechts: () => a({ dreh: dreh + 15 }),
+      weg: () => { this.spMetaSetzen({ objekte: m.objekte.filter((x) => x.i !== o.i) }); this.setState({ spObjSel: "" }); },
+      zu: () => this.setState({ spObjSel: "" })
+    };
   }
 
   spPanel() {
@@ -7229,7 +7435,7 @@ class Component extends DCLogic {
         key: "s" + k, nr: String(k + 1), name: nm,
         onName: (ev) => { const s = t.sitze.slice(); s[k] = ev.target.value; aend({ sitze: s }); }
       })),
-      weg: () => { if (window.confirm(tx("sp_weg_frage"))) { this.voSet("offen.tische", this.spTische(this.spRoh()).filter((x) => x.i !== t.i)); this.setState({ spSel: "" }); } },
+      weg: () => { if (window.confirm(tx("sp_weg_frage"))) { this.spSchreiben(this.spTische(this.spRoh()).filter((x) => x.i !== t.i)); this.setState({ spSel: "" }); } },
       zu: () => this.setState({ spSel: "" })
     };
   }
