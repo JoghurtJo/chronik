@@ -19,8 +19,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Chronik">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js?v=b103"></script>
-<script src="supabase-bridge.js?v=b103"></script>
+<script src="chronik-config.js?v=b104"></script>
+<script src="supabase-bridge.js?v=b104"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
@@ -187,6 +187,14 @@
             <div style="font-size: 15px; text-align: center; padding: 12px 16px; border-radius: 999px; background: color-mix(in srgb, var(--g-accent) 14%, var(--g-card));">{{ gv.info }}</div>
           </sc-if>
 
+          <sc-if value="{{ gv.istGesperrt }}" hint-placeholder-val="{{ false }}">
+            <section style="display: grid; gap: 10px; justify-items: center; text-align: center; padding: 32px 20px; border-radius: calc(var(--g-radius) + 6px); background: var(--g-card); box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 12px 32px -18px rgba(0,0,0,0.28);">
+              <div style="font-size: 34px; color: var(--g-accent);">◷</div>
+              <h2 style="margin: 0; font-family: var(--g-head); font-weight: var(--g-hw); font-size: 26px;">{{ gv.sperrTitel }}</h2>
+              <p style="margin: 0; font-size: 16px; line-height: 1.5;">{{ L.gast_noch_zu }} {{ gv.sperrText }}</p>
+            </section>
+          </sc-if>
+
           <sc-if value="{{ gv.istFoto }}" hint-placeholder-val="{{ false }}">
             <section style="display: grid; gap: 16px; padding: clamp(18px, 4vw, 28px); border-radius: calc(var(--g-radius) + 6px); background: var(--g-card); box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 12px 32px -18px rgba(0,0,0,0.28);">
               <h2 style="margin: 0; font-family: var(--g-head); font-weight: var(--g-hw); font-size: clamp(24px, 5vw, 32px); line-height: 1.1; text-transform: var(--g-ht);">{{ L.gast_fotowand }}</h2>
@@ -324,11 +332,18 @@
                 </div>
                 <sc-if value="{{ gv.kommtJa }}" hint-placeholder-val="{{ true }}">
                   <label style="display: grid; gap: 8px;"><span style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: color-mix(in srgb, var(--g-ink) 62%, transparent);">{{ L.gast_begleitung }}</span><input type="number" min="0" max="20" value="{{ gv.plus }}" onChange="{{ gv.onPlus }}" style="width: 100%; box-sizing: border-box; padding: 13px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px; max-width: 140px;"></label>
-                  <sc-if value="{{ gv.hatPlus }}" hint-placeholder-val="{{ false }}">
-                    <label style="display: grid; gap: 8px;"><span style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: color-mix(in srgb, var(--g-ink) 62%, transparent);">{{ L.gast_begleitung_namen }}</span><input value="{{ gv.plusNamen }}" onChange="{{ gv.onPlusNamen }}" style="width: 100%; box-sizing: border-box; padding: 13px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px;"></label>
-                  </sc-if>
+                  <sc-for list="{{ gv.plusFelder }}" as="pf" hint-placeholder-count="0">
+                    <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: end;">
+                      <label style="display: grid; gap: 6px;"><span style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.65;">{{ pf.titel }}</span><input value="{{ pf.name }}" onChange="{{ pf.onName }}" placeholder="{{ L.name }}" style="width: 100%; box-sizing: border-box; padding: 12px 14px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px;"></label>
+                      <sc-if value="{{ gv.hatEssenWahl }}" hint-placeholder-val="{{ false }}">
+                        <select value="{{ pf.essen }}" onChange="{{ pf.onEssen }}" aria-label="{{ L.gast_essen }}" style="width: 100%; box-sizing: border-box; padding: 12px 14px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px;">
+                          <sc-for list="{{ gv.essenWahl }}" as="o" hint-placeholder-count="0"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+                        </select>
+                      </sc-if>
+                    </div>
+                  </sc-for>
                   <sc-if value="{{ gv.hatEssen }}" hint-placeholder-val="{{ false }}">
-                    <label style="display: grid; gap: 8px;"><span style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: color-mix(in srgb, var(--g-ink) 62%, transparent);">{{ L.gast_essen }}</span>
+                    <label style="display: grid; gap: 8px;"><span style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: color-mix(in srgb, var(--g-ink) 62%, transparent);">{{ L.gast_dein_essen }}</span>
                       <select value="{{ gv.essen }}" onChange="{{ gv.onEssen }}" style="width: 100%; box-sizing: border-box; padding: 13px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px;">
                         <sc-for list="{{ gv.essenWahl }}" as="o" hint-placeholder-count="0"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
                       </select>
@@ -1049,7 +1064,7 @@
                     <sc-if value="{{ c.visTag }}" hint-placeholder-val="{{ false }}">
                       <span style="{{ c.visStyle }}">{{ c.visTag }}</span>
                     </sc-if>
-                    <sc-if value="{{ c.hatCd }}" hint-placeholder-val="{{ false }}">
+                    <sc-if value="{{ c.cdKlein }}" hint-placeholder-val="{{ false }}">
                       <span style="font-size: 10.5px; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 99px; background: var(--t-accent, #0088b0); color: var(--t-card, #eae9e9); white-space: nowrap;">⏳ {{ c.cdText }}</span>
                     </sc-if>
 
@@ -1079,6 +1094,19 @@
                         <span style="{{ ch.style }}">{{ ch.c }}</span>
                       </sc-for>
                     </h3>
+                  </sc-if>
+                  <sc-if value="{{ c.cdGross }}" hint-placeholder-val="{{ false }}">
+                    <div onClick="{{ stop }}" style="display: grid; justify-items: center; gap: 8px; margin: 14px 0 6px; padding: 16px 10px; border-radius: var(--t-radius, 2px); background: color-mix(in srgb, var(--t-accent, #0088b0) 9%, var(--t-card, #eae9e9));">
+                      <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--t-accent, #0088b0);">{{ L.cd_bis_beginn }}</div>
+                      <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                        <sc-for list="{{ c.cdTeile }}" as="ct" hint-placeholder-count="3">
+                          <div style="display: grid; justify-items: center; min-width: 72px; padding: 10px 8px 8px; border-radius: 12px; background: var(--t-card, #eae9e9); box-shadow: var(--shadow-sm);">
+                            <span style="font-family: var(--t-font-head, var(--font-heading)); font-size: clamp(30px, 8vw, 44px); line-height: 1; font-variant-numeric: tabular-nums; color: var(--t-accent, #0088b0);">{{ ct.zahl }}</span>
+                            <span style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.75;">{{ ct.einheit }}</span>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
                   </sc-if>
                   <sc-if value="{{ c.place }}" hint-placeholder-val="{{ true }}">
                     <div style="margin-top: 3px; font-size: 13px; line-height: 1.5; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: color-mix(in srgb, var(--t-ink, #201e1d) 62%, var(--t-card, #eae9e9));">{{ c.place }}</div>
@@ -1375,15 +1403,27 @@
                                 <button class="btn btn-secondary" style="justify-self: start; min-height: 40px;" onClick="{{ c.gastTeilen }}">{{ c.gastKopiertText }}</button>
                               </sc-if>
                               <sc-if value="{{ c.hatGRsvp }}" hint-placeholder-val="{{ false }}">
-                                <div style="display: grid; gap: 4px;">
+                                <div style="display: grid; gap: 8px;">
                                   <div style="font-family: var(--t-font-head, var(--font-heading)); font-weight: 600; font-size: 15px;">{{ L.gast_rsvp }}</div>
-                                  <div style="font-size: 13px; opacity: 0.8;">{{ c.gRsvpSumme }}</div>
-                                  <sc-for list="{{ c.gRsvp }}" as="gr" hint-placeholder-count="0">
-                                    <div style="display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; font-size: 14px; padding: 3px 0; border-bottom: 1px solid var(--t-border, rgba(32, 30, 29, 0.12));">
-                                      <strong style="font-weight: 600;">{{ gr.name }}</strong><span style="{{ gr.stil }}">{{ gr.kommt }}</span><span style="flex: 1 1 140px; opacity: 0.75; overflow-wrap: anywhere;">{{ gr.info }}</span>
-                                      <sc-if value="{{ gr.darfWeg }}" hint-placeholder-val="{{ false }}"><button onClick="{{ gr.weg }}" title="{{ L.entfernen }}" style="cursor: pointer; font: inherit; border: 0; background: transparent; color: inherit; opacity: 0.55; min-height: 32px;">✕</button></sc-if>
-                                    </div>
-                                  </sc-for>
+                                  <input type="search" value="{{ c.rSuche }}" onChange="{{ c.rOnSuche }}" placeholder="{{ L.rf_suchen }}" style="font: inherit; font-size: 15px; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--t-border, rgba(32,30,29,0.2)); background: transparent; color: inherit; max-width: 320px;">
+                                  <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;"><span style="font-size: 12px; opacity: 0.7; min-width: 70px;">{{ L.sp_i_antwort }}</span><sc-for list="{{ c.rAntwortChips }}" as="x" hint-placeholder-count="0"><button onClick="{{ x.klick }}" style="{{ x.stil }}">{{ x.label }}</button></sc-for></div>
+                                  <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;"><span style="font-size: 12px; opacity: 0.7; min-width: 70px;">{{ L.sp_i_begleitung }}</span><sc-for list="{{ c.rPlusChips }}" as="x" hint-placeholder-count="0"><button onClick="{{ x.klick }}" style="{{ x.stil }}">{{ x.label }}</button></sc-for></div>
+                                  <sc-if value="{{ c.rHatEssen }}" hint-placeholder-val="{{ false }}"><div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;"><span style="font-size: 12px; opacity: 0.7; min-width: 70px;">{{ L.sp_i_essen }}</span><sc-for list="{{ c.rEssenChips }}" as="x" hint-placeholder-count="0"><button onClick="{{ x.klick }}" style="{{ x.stil }}">{{ x.label }}</button></sc-for></div></sc-if>
+                                  <div style="font-size: 12.5px; font-weight: 600; opacity: 0.8;">{{ c.rZahl }}</div>
+                                  <div style="display: grid; gap: 0;">
+                                    <sc-for list="{{ c.rZeilen }}" as="gr" hint-placeholder-count="0">
+                                      <div style="display: grid; gap: 3px; padding: 8px 0; border-bottom: 1px solid var(--t-border, rgba(32, 30, 29, 0.12)); font-size: 14px; line-height: 1.4;">
+                                        <div style="display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap;"><strong style="font-weight: 700; font-size: 15px;">{{ gr.name }}</strong><span style="{{ gr.stil }}">{{ gr.kommt }}</span>
+                                          <sc-if value="{{ gr.darfWeg }}" hint-placeholder-val="{{ false }}"><button onClick="{{ gr.weg }}" title="{{ L.entfernen }}" style="margin-left: auto; cursor: pointer; font: inherit; border: 0; background: transparent; color: inherit; opacity: 0.55; min-height: 32px;">✕</button></sc-if>
+                                        </div>
+                                        <sc-if value="{{ gr.hatEssen }}" hint-placeholder-val="{{ false }}"><div><span style="opacity: 0.65;">{{ L.sp_i_essen }}:</span> {{ gr.essen }}</div></sc-if>
+                                        <sc-if value="{{ gr.hatBegl }}" hint-placeholder-val="{{ false }}"><div style="overflow-wrap: anywhere;"><span style="opacity: 0.65;">{{ L.sp_i_begleitung }}:</span> {{ gr.begl }}</div></sc-if>
+                                        <sc-if value="{{ gr.hatText }}" hint-placeholder-val="{{ false }}"><div style="font-style: italic; overflow-wrap: anywhere;">„{{ gr.text }}“</div></sc-if>
+                                      </div>
+                                    </sc-for>
+                                  </div>
+                                  <sc-if value="{{ c.rLeer }}" hint-placeholder-val="{{ false }}"><div style="font-size: 13.5px; font-style: italic; opacity: 0.7;">{{ L.rf_leer }}</div></sc-if>
+                                  <div style="font-size: 12.5px; font-weight: 600; opacity: 0.8;">{{ c.rZahl }}</div>
                                 </div>
                               </sc-if>
                               <sc-if value="{{ c.sp.hat }}" hint-placeholder-val="{{ false }}">
@@ -2053,6 +2093,7 @@
         </div>
         <div class="field" style="margin-top: var(--space-2);"><label>{{ L.beschreibung }}</label><textarea class="input" value="{{ form.note }}" onChange="{{ form.onNote }}" placeholder="{{ L.ein_paar_saetze_dazu }}"></textarea></div>
 
+        <div style="margin: var(--space-6) 0 2px; font-family: var(--font-heading); font-size: 18px; font-weight: 600;">{{ L.ed_g_inhalt }}</div>
         <button data-sec="infos" onClick="{{ form.sec.infos.toggle }}" style="{{ form.sec.head }}">
           <span style="{{ form.sec.infos.sign }}">▸</span>
           <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.infos }}</span>
@@ -2080,8 +2121,8 @@
         </button>
         <sc-if value="{{ form.sec.personen.on }}" hint-placeholder-val="{{ false }}">
         <div style="display: grid; gap: 6px; padding-bottom: var(--space-3);">
-          <button class="btn btn-ghost" style="white-space: nowrap; justify-self: start;" onClick="{{ form.addPerson }}">＋ {{ L.person }}</button>
           <div style="font-size: 11.5px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.ordne_die_person_einem_konto_zu }}</div>
+          <datalist id="pk-konten"><sc-for list="{{ form.kontoListe }}" as="kl" hint-placeholder-count="0"><option value="{{ kl.name }}"></option></sc-for></datalist>
           <sc-for list="{{ form.people }}" as="r" hint-placeholder-count="2">
             <div style="display: grid; gap: 4px; padding-bottom: 4px;">
               <div style="{{ lay.rowTwo }}">
@@ -2089,19 +2130,13 @@
                 <input class="input" type="text" value="{{ r.role }}" onChange="{{ r.onRole }}" placeholder="{{ L.rolle }}">
                 <button class="btn btn-secondary btn-icon" onClick="{{ r.remove }}">✕</button>
               </div>
-              <div style="display: grid; gap: 4px;">
-                <input class="input" type="search" value="{{ r.suche }}" onChange="{{ r.onSuche }}" placeholder="{{ L.kontakte_durchsuchen }}" style="font-size: 12.5px; padding-top: 4px; padding-bottom: 4px;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <select class="input" value="{{ r.uid }}" onChange="{{ r.onAccount }}" style="flex: 1; font-size: 12.5px; padding-top: 4px; padding-bottom: 4px;">
-                    <sc-for list="{{ r.accounts }}" as="a" hint-placeholder-count="3">
-                      <option value="{{ a.value }}" disabled="{{ a.disabled }}">{{ a.label }}</option>
-                    </sc-for>
-                  </select>
-                  <span style="{{ r.linkStyle }}">{{ r.linkLabel }}</span>
-                </div>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <input class="input" type="search" list="pk-konten" value="{{ r.kontoText }}" onChange="{{ r.onKonto }}" placeholder="{{ L.pk_konto_ph }}" style="flex: 0 1 240px; min-width: 0; font-size: 14px; padding-top: 6px; padding-bottom: 6px;">
+                <span style="{{ r.linkStyle }}">{{ r.linkLabel }}</span>
               </div>
             </div>
           </sc-for>
+          <button class="btn btn-ghost" style="white-space: nowrap; justify-self: start;" onClick="{{ form.addPerson }}">＋ {{ L.person }}</button>
         </div>
 
         </sc-if>
@@ -2278,115 +2313,13 @@
           </div>
         </sc-if>
 
-        <button data-sec="deko" onClick="{{ form.sec.deko.toggle }}" style="{{ form.sec.head }}">
-          <span style="{{ form.sec.deko.sign }}">▸</span>
-          <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.deko }}</span>
+        <div style="margin: var(--space-6) 0 2px; font-family: var(--font-heading); font-size: 18px; font-weight: 600;">{{ L.ed_g_programm }}</div>
+        <button data-sec="timetable" onClick="{{ ttFormOeffnen }}" style="{{ form.sec.head }}">
+          <span style="font-size: 15px; opacity: 0.6;">▦</span>
+          <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">{{ ttFormKnopf }}</span>
           <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
-          <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">{{ form.sec.deko.badge }}</span>
+          <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">{{ ttFormBadge }}</span>
         </button>
-        <sc-if value="{{ form.sec.deko.on }}" hint-placeholder-val="{{ false }}">
-        <div class="field" style="max-width: 340px;"><label>{{ L.design_dieses_ereignisses }}</label>
-          <select class="input" value="{{ form.look.themeId }}" onChange="{{ form.look.onTheme }}">
-            <sc-for list="{{ form.look.wahl }}" as="o" hint-placeholder-count="6">
-              <option value="{{ o.value }}">{{ o.label }}</option>
-            </sc-for>
-          </select>
-        </div>
-        <div style="font-size: 11.5px; line-height: 1.5; color: var(--color-neutral-700); padding-bottom: var(--space-3);">{{ L.nur_diese_kachel_traegt_dann_das }}</div>
-        <button class="btn btn-secondary" style="white-space: nowrap; justify-self: start; margin-bottom: var(--space-3);" onClick="{{ form.look.vorschauUm }}">◱ {{ form.look.vorschauLabel }}</button>
-        <sc-if value="{{ form.look.vorschauAn }}" hint-placeholder-val="{{ false }}">
-          <div style="{{ form.look.vorschauStil }}">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="{{ form.look.vorschauMarke }}"></span>
-              <span style="{{ form.look.vorschauKicker }}">{{ L.vorschau }}</span>
-            </div>
-            <h3 style="{{ form.look.vorschauTitel }}">{{ form.look.vorschauName }}</h3>
-            <div style="{{ form.look.vorschauBild }}"></div>
-            <p style="{{ form.look.vorschauText }}">{{ L.so_sieht_die_kachel_mit_diesem }}</p>
-          </div>
-        </sc-if>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--space-2); padding-bottom: var(--space-3);">
-          <sc-for list="{{ form.look.fein }}" as="fe" hint-placeholder-count="4">
-            <div class="field" style="margin: 0;"><label>{{ fe.label }}</label>
-              <select class="input" value="{{ fe.wert }}" onChange="{{ fe.onWahl }}">
-                <sc-for list="{{ fe.wahl }}" as="o" hint-placeholder-count="4">
-                  <option value="{{ o.value }}">{{ o.label }}</option>
-                </sc-for>
-              </select>
-            </div>
-          </sc-for>
-        </div>
-        <div style="font-size: 11px; color: var(--color-neutral-700); padding-bottom: var(--space-2);">{{ L.sticker_antippen_dann_in_der_vorschau }}</div>
-        <div style="{{ lay.decoGrid }}">
-          <div style="display: grid; gap: var(--space-3);">
-            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-              <sc-for list="{{ form.deco.fx }}" as="x" hint-placeholder-count="5">
-                <button onClick="{{ x.toggle }}" style="{{ x.style }}">{{ x.label }}</button>
-              </sc-for>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-            <div class="field" style="margin: 0;"><label>{{ L.machart }}</label>
-              <select class="input" value="{{ form.deco.stil }}" onChange="{{ form.deco.onStil }}">
-                <sc-for list="{{ form.deco.stile }}" as="o" hint-placeholder-count="5">
-                  <option value="{{ o.value }}">{{ o.label }}</option>
-                </sc-for>
-              </select>
-            </div>
-            <div class="field" style="margin: 0;"><label>{{ L.farbwelt }}</label>
-              <select class="input" value="{{ form.deco.pal }}" onChange="{{ form.deco.onPal }}">
-                <sc-for list="{{ form.deco.pals }}" as="o" hint-placeholder-count="6">
-                  <option value="{{ o.value }}">{{ o.label }}</option>
-                </sc-for>
-              </select>
-            </div>
-            </div>
-            <div style="{{ lay.sheetGrid }}">
-              <sc-for list="{{ form.deco.sheet }}" as="s" hint-placeholder-count="18">
-                <button onClick="{{ s.add }}" title="{{ s.label }}" style="{{ s.chip }}"><span style="{{ s.style }}">{{ s.glyph }}</span></button>
-              </sc-for>
-            </div>
-          </div>
-          <div style="display: grid; gap: var(--space-2);">
-            <div onPointerDown="{{ form.deco.onStageDown }}" onPointerMove="{{ form.deco.onMove }}" onPointerUp="{{ form.deco.onUp }}" onPointerLeave="{{ form.deco.onUp }}" style="{{ form.deco.stageStyle }}">
-              <div style="{{ form.deco.labelStyle }}">{{ form.deco.labelText }}</div>
-              <sc-for list="{{ form.deco.pieces }}" as="p" hint-placeholder-count="0">
-                <div style="{{ p.style }}"></div>
-              </sc-for>
-              <sc-for list="{{ form.deco.glyphs }}" as="g" hint-placeholder-count="0">
-                <div style="{{ g.style }}">{{ g.glyph }}</div>
-              </sc-for>
-              <sc-for list="{{ form.deco.stickers }}" as="s" hint-placeholder-count="0">
-                <div onPointerDown="{{ s.onDown }}" style="{{ s.style }}">{{ s.glyph }}</div>
-              </sc-for>
-            </div>
-            <sc-if value="{{ form.deco.hasSel }}" hint-placeholder-val="{{ false }}">
-              <div style="display: grid; gap: 7px;">
-                <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700);">
-                  <span>{{ form.deco.selLabel }}</span>
-                  <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ form.deco.removeSel }}">{{ L.entfernen }}</button>
-                </div>
-                <label style="display: grid; gap: 3px; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.groesse }}
-                  <input type="range" min="0.4" max="2.6" step="0.05" value="{{ form.deco.selScale }}" onChange="{{ form.deco.onScale }}" style="accent-color: var(--color-accent);">
-                </label>
-                <label style="display: grid; gap: 3px; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.drehung }}
-                  <input type="range" min="-60" max="60" step="1" value="{{ form.deco.selRot }}" onChange="{{ form.deco.onRot }}" style="accent-color: var(--color-accent);">
-                </label>
-                <div style="display: flex; gap: 6px; align-items: center;">
-                  <sc-for list="{{ form.deco.swatches }}" as="w" hint-placeholder-count="5">
-                    <button onClick="{{ w.pick }}" style="{{ w.style }}"></button>
-                  </sc-for>
-                </div>
-              </div>
-            </sc-if>
-            <sc-if value="{{ form.deco.noSel }}" hint-placeholder-val="{{ true }}">
-              <div style="font-size: 11.5px; line-height: 1.45; color: var(--color-neutral-700);">{{ form.deco.hint }}</div>
-            </sc-if>
-            <sc-if value="{{ form.deco.any }}" hint-placeholder-val="{{ false }}">
-              <button class="btn btn-ghost" style="white-space: nowrap; justify-self: start;" onClick="{{ form.deco.clear }}">{{ L.ganze_deko_entfernen }}</button>
-            </sc-if>
-          </div>
-        </div>
-        </sc-if>
 
         <button data-sec="etappen" onClick="{{ form.sec.etappen.toggle }}" style="{{ form.sec.head }}">
           <span style="{{ form.sec.etappen.sign }}">▸</span>
@@ -2470,13 +2403,104 @@
           </div>
         </sc-if>
 
-        <button data-sec="timetable" onClick="{{ ttFormOeffnen }}" style="{{ form.sec.head }}">
-          <span style="font-size: 15px; opacity: 0.6;">▦</span>
-          <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">{{ ttFormKnopf }}</span>
+        <button data-sec="polls" onClick="{{ form.sec.polls.toggle }}" style="{{ form.sec.head }}">
+          <span style="{{ form.sec.polls.sign }}">▸</span>
+          <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.abstimmungen_ranglisten }}</span>
           <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
-          <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">{{ ttFormBadge }}</span>
+          <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">{{ form.sec.polls.badge }}</span>
         </button>
+        <sc-if value="{{ form.sec.polls.on }}" hint-placeholder-val="{{ false }}">
+          <div style="display: grid; gap: var(--space-3); padding-bottom: var(--space-3);">
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ form.polls.neueWahl }}">＋ {{ L.abstimmung }}</button>
+              <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ form.polls.neueRang }}">＋ {{ L.rangliste }}</button>
+              <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ form.polls.neueListe }}">＋ {{ L.liste_zum_eintragen }}</button>
+            </div>
+            <sc-for list="{{ form.polls.liste }}" as="p" hint-placeholder-count="0">
+              <div style="display: grid; gap: 7px; padding: 11px 12px; border-radius: var(--radius-md); background: var(--color-surface);">
+                <div style="display: flex; align-items: baseline; gap: 8px;">
+                  <span style="font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-accent-700);">{{ p.art }}</span>
+                  <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
+                  <button onClick="{{ p.weg }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-accent-2-700); text-decoration: underline; white-space: nowrap;">{{ L.entfernen }}</button>
+                </div>
+                <div class="field" style="margin: 0;"><label>{{ L.frage }}</label><input class="input" type="text" value="{{ p.frage }}" onChange="{{ p.onFrage }}" placeholder="{{ p.platzhalter }}"></div>
+                <div style="display: grid; grid-template-columns: 1fr 110px; gap: 6px;">
+                  <div class="field" style="margin: 0;"><label>{{ L.musik }}</label><input class="input" type="url" value="{{ p.musik }}" onChange="{{ p.onMusik }}" placeholder="{{ L.titel_album_oder_interpret_spotify_deezer }}"></div>
+                  <div class="field" style="margin: 0;"><label>{{ L.start }}</label><input class="input" type="text" value="{{ p.musikAb }}" onChange="{{ p.onMusikAb }}" placeholder="0:00"></div>
+                </div>
+                <sc-if value="{{ p.istListe }}" hint-placeholder-val="{{ false }}">
+                  <div style="display: grid; gap: 7px;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.freie_plaetze }}
+                      <input type="number" min="1" max="24" value="{{ p.plaetze }}" onChange="{{ p.onPlaetze }}" class="input" style="width: 78px;">
+                    </label>
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                      <button onClick="{{ p.offenUm }}" style="{{ p.offenStil }}">{{ p.offenLabel }}</button>
+                      <button onClick="{{ p.stimmenUm }}" style="{{ p.stimmenStil }}">{{ p.stimmenLabel }}</button>
+                    </div>
+                    <div style="font-size: 11.5px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.die_plaetze_bleiben_leer_wer_mitmacht }}</div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ p.zeigeOpts }}" hint-placeholder-val="{{ true }}">
+                <div style="display: grid; gap: 5px;">
+                  <div style="font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-700);">{{ p.optLabel }}</div>
+                  <sc-for list="{{ p.opts }}" as="o" hint-placeholder-count="2">
+                    <div style="display: flex; gap: 6px;">
+                      <input class="input" type="text" value="{{ o.label }}" onChange="{{ o.onLabel }}" placeholder="{{ o.platzhalter }}" style="flex: 1;">
+                      <button class="btn btn-secondary btn-icon" onClick="{{ o.weg }}">✕</button>
+                    </div>
+                  </sc-for>
+                  <button class="btn btn-ghost" style="white-space: nowrap; justify-self: start;" onClick="{{ p.optNeu }}">＋ {{ L.eintrag }}</button>
+                </div>
+                </sc-if>
+                <sc-if value="{{ form.et.hat }}" hint-placeholder-val="{{ false }}">
+                  <div class="field" style="margin: 0;"><label>{{ L.gehoert_zur_etappe }}</label>
+                    <select class="input" value="{{ p.et }}" onChange="{{ p.onEt }}">
+                      <sc-for list="{{ form.et.wahl }}" as="o" hint-placeholder-count="2">
+                        <option value="{{ o.value }}">{{ o.label }}</option>
+                      </sc-for>
+                    </select>
+                  </div>
+                </sc-if>
+                <div class="field" style="margin: 0;"><label>{{ L.wer_darf_mitmachen }}</label>
+                  <select class="input" value="{{ p.wer }}" onChange="{{ p.onWer }}">
+                    <sc-for list="{{ p.werOpts }}" as="w" hint-placeholder-count="3">
+                      <option value="{{ w.value }}">{{ w.label }}</option>
+                    </sc-for>
+                  </select>
+                </div>
+                <sc-if value="{{ p.zeigeGruppen }}" hint-placeholder-val="{{ false }}">
+                  <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    <sc-for list="{{ p.gruppen }}" as="g" hint-placeholder-count="2">
+                      <button onClick="{{ g.toggle }}" style="{{ g.style }}">{{ g.label }}</button>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ p.zeigePersonen }}" hint-placeholder-val="{{ false }}">
+                  <div style="max-height: 170px; overflow-y: auto; display: grid; gap: 2px;">
+                    <sc-for list="{{ p.personen }}" as="k" hint-placeholder-count="3">
+                      <button onClick="{{ k.toggle }}" style="{{ k.style }}">
+                        <span style="{{ k.box }}">{{ k.mark }}</span>
+                        <span style="font-size: 13px;">{{ k.name }}</span>
+                      </button>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ p.istWahl }}" hint-placeholder-val="{{ false }}">
+                  <div style="display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap;">
+                    <button onClick="{{ p.onMehr }}" style="{{ p.mehrStyle }}">{{ p.mehrLabel }}</button>
+                    <sc-if value="{{ p.mehr }}" hint-placeholder-val="{{ false }}">
+                      <label style="display: flex; align-items: center; gap: 7px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.hoechstens }}
+                        <input type="number" min="2" max="12" value="{{ p.max }}" onChange="{{ p.onMax }}" class="input" style="width: 74px;">
+                      </label>
+                    </sc-if>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
 
+        <div style="margin: var(--space-6) 0 2px; font-family: var(--font-heading); font-size: 18px; font-weight: 600;">{{ L.ed_g_vorort }}</div>
         <button data-sec="vorort" onClick="{{ vo.toggle }}" style="{{ form.sec.head }}">
           <span style="{{ vo.sign }}">▸</span>
           <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.vo_titel }}</span>
@@ -2655,6 +2679,25 @@
                     </sc-if>
                     <div class="field" style="margin: 6px 0 0;"><label>{{ L.ga_gruss }}</label><textarea class="input" value="{{ vo.gaGruss }}" onChange="{{ vo.onGaGruss }}" rows="3" placeholder="{{ L.ga_gruss_ph }}" style="font-size: 16px;"></textarea></div>
                   </div>
+                  <sc-if value="{{ vo.hatFrei }}" hint-placeholder-val="{{ false }}">
+                    <div style="display: grid; gap: 8px; padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-bg);">
+                      <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.ga_frei_titel }}</div>
+                      <div style="font-size: 12.5px; color: var(--color-neutral-700);">{{ L.ga_frei_hinweis }}</div>
+                      <sc-for list="{{ vo.freiZeilen }}" as="fz" hint-placeholder-count="0">
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                          <span style="flex: 0 0 110px; font-size: 14px; font-weight: 600;">{{ fz.label }}</span>
+                          <select class="input" value="{{ fz.art }}" onChange="{{ fz.onArt }}" style="flex: 1 1 180px; width: auto; min-width: 0; font-size: 15px;">
+                            <option value="">{{ L.ga_frei_sofort }}</option>
+                            <option value="cd">{{ L.ga_frei_nach_cd }}</option>
+                            <option value="zeit">{{ L.ga_frei_ab_zeit }}</option>
+                          </select>
+                          <sc-if value="{{ fz.istZeit }}" hint-placeholder-val="{{ false }}">
+                            <input class="input" type="datetime-local" value="{{ fz.zeit }}" onChange="{{ fz.onZeit }}" style="flex: 1 1 200px; width: auto; min-width: 0; font-size: 15px;">
+                          </sc-if>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </sc-if>
                   <sc-if value="{{ vo.hatGaHinweis }}" hint-placeholder-val="{{ false }}">
                     <div style="font-size: 13px; color: var(--color-accent-2-700);">{{ vo.gaHinweis }}</div>
                   </sc-if>
@@ -2673,26 +2716,6 @@
                   </sc-if>
                   <sc-if value="{{ vo.gaRsvp }}" hint-placeholder-val="{{ false }}">
                     <div class="field" style="margin: 0;"><label>{{ L.ga_essen }}</label><input class="input" value="{{ vo.gaEssen }}" onChange="{{ vo.onGaEssen }}" placeholder="{{ L.ga_essen_ph }}" style="font-size: 16px;"></div>
-                    <div style="display: grid; gap: 6px;">
-                      <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.ga_sicht }}</div>
-                      <div style="font-size: 13px; color: var(--color-neutral-700);">{{ L.ga_sicht_hinweis }}</div>
-                      <sc-if value="{{ vo.hatSichtGewaehlt }}" hint-placeholder-val="{{ false }}">
-                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                          <sc-for list="{{ vo.sichtGewaehlt }}" as="sc" hint-placeholder-count="0">
-                            <button onClick="{{ sc.klick }}" title="{{ L.entfernen }}" style="{{ sc.stil }}">{{ sc.label }}</button>
-                          </sc-for>
-                        </div>
-                      </sc-if>
-                      <input class="input" type="search" value="{{ vo.sichtSuche }}" onChange="{{ vo.onSichtSuche }}" placeholder="{{ L.ga_kontakt_suchen }}" style="font-size: 16px;">
-                      <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                        <sc-for list="{{ vo.sichtTreffer }}" as="sc" hint-placeholder-count="0">
-                          <button onClick="{{ sc.klick }}" style="{{ sc.stil }}">{{ sc.label }}</button>
-                        </sc-for>
-                      </div>
-                      <sc-if value="{{ vo.keinSichtTreffer }}" hint-placeholder-val="{{ false }}">
-                        <div style="font-size: 13px; font-style: italic; color: var(--color-neutral-700);">{{ L.ga_kein_kontakt }}</div>
-                      </sc-if>
-                    </div>
                   </sc-if>
                   <sc-if value="{{ vo.gaSitz }}" hint-placeholder-val="{{ false }}">
                     <div style="display: grid; gap: var(--space-2);">
@@ -2896,104 +2919,119 @@
           </div>
         </sc-if>
 
-        <button data-sec="polls" onClick="{{ form.sec.polls.toggle }}" style="{{ form.sec.head }}">
-          <span style="{{ form.sec.polls.sign }}">▸</span>
-          <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.abstimmungen_ranglisten }}</span>
+        <div style="margin: var(--space-6) 0 2px; font-family: var(--font-heading); font-size: 18px; font-weight: 600;">{{ L.ed_g_aussehen }}</div>
+        <button data-sec="deko" onClick="{{ form.sec.deko.toggle }}" style="{{ form.sec.head }}">
+          <span style="{{ form.sec.deko.sign }}">▸</span>
+          <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.deko }}</span>
           <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
-          <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">{{ form.sec.polls.badge }}</span>
+          <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">{{ form.sec.deko.badge }}</span>
         </button>
-        <sc-if value="{{ form.sec.polls.on }}" hint-placeholder-val="{{ false }}">
-          <div style="display: grid; gap: var(--space-3); padding-bottom: var(--space-3);">
-            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-              <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ form.polls.neueWahl }}">＋ {{ L.abstimmung }}</button>
-              <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ form.polls.neueRang }}">＋ {{ L.rangliste }}</button>
-              <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ form.polls.neueListe }}">＋ {{ L.liste_zum_eintragen }}</button>
-            </div>
-            <sc-for list="{{ form.polls.liste }}" as="p" hint-placeholder-count="0">
-              <div style="display: grid; gap: 7px; padding: 11px 12px; border-radius: var(--radius-md); background: var(--color-surface);">
-                <div style="display: flex; align-items: baseline; gap: 8px;">
-                  <span style="font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-accent-700);">{{ p.art }}</span>
-                  <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
-                  <button onClick="{{ p.weg }}" style="font: inherit; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-accent-2-700); text-decoration: underline; white-space: nowrap;">{{ L.entfernen }}</button>
-                </div>
-                <div class="field" style="margin: 0;"><label>{{ L.frage }}</label><input class="input" type="text" value="{{ p.frage }}" onChange="{{ p.onFrage }}" placeholder="{{ p.platzhalter }}"></div>
-                <div style="display: grid; grid-template-columns: 1fr 110px; gap: 6px;">
-                  <div class="field" style="margin: 0;"><label>{{ L.musik }}</label><input class="input" type="url" value="{{ p.musik }}" onChange="{{ p.onMusik }}" placeholder="{{ L.titel_album_oder_interpret_spotify_deezer }}"></div>
-                  <div class="field" style="margin: 0;"><label>{{ L.start }}</label><input class="input" type="text" value="{{ p.musikAb }}" onChange="{{ p.onMusikAb }}" placeholder="0:00"></div>
-                </div>
-                <sc-if value="{{ p.istListe }}" hint-placeholder-val="{{ false }}">
-                  <div style="display: grid; gap: 7px;">
-                    <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.freie_plaetze }}
-                      <input type="number" min="1" max="24" value="{{ p.plaetze }}" onChange="{{ p.onPlaetze }}" class="input" style="width: 78px;">
-                    </label>
-                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                      <button onClick="{{ p.offenUm }}" style="{{ p.offenStil }}">{{ p.offenLabel }}</button>
-                      <button onClick="{{ p.stimmenUm }}" style="{{ p.stimmenStil }}">{{ p.stimmenLabel }}</button>
-                    </div>
-                    <div style="font-size: 11.5px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.die_plaetze_bleiben_leer_wer_mitmacht }}</div>
-                  </div>
-                </sc-if>
-                <sc-if value="{{ p.zeigeOpts }}" hint-placeholder-val="{{ true }}">
-                <div style="display: grid; gap: 5px;">
-                  <div style="font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-700);">{{ p.optLabel }}</div>
-                  <sc-for list="{{ p.opts }}" as="o" hint-placeholder-count="2">
-                    <div style="display: flex; gap: 6px;">
-                      <input class="input" type="text" value="{{ o.label }}" onChange="{{ o.onLabel }}" placeholder="{{ o.platzhalter }}" style="flex: 1;">
-                      <button class="btn btn-secondary btn-icon" onClick="{{ o.weg }}">✕</button>
-                    </div>
-                  </sc-for>
-                  <button class="btn btn-ghost" style="white-space: nowrap; justify-self: start;" onClick="{{ p.optNeu }}">＋ {{ L.eintrag }}</button>
-                </div>
-                </sc-if>
-                <sc-if value="{{ form.et.hat }}" hint-placeholder-val="{{ false }}">
-                  <div class="field" style="margin: 0;"><label>{{ L.gehoert_zur_etappe }}</label>
-                    <select class="input" value="{{ p.et }}" onChange="{{ p.onEt }}">
-                      <sc-for list="{{ form.et.wahl }}" as="o" hint-placeholder-count="2">
-                        <option value="{{ o.value }}">{{ o.label }}</option>
-                      </sc-for>
-                    </select>
-                  </div>
-                </sc-if>
-                <div class="field" style="margin: 0;"><label>{{ L.wer_darf_mitmachen }}</label>
-                  <select class="input" value="{{ p.wer }}" onChange="{{ p.onWer }}">
-                    <sc-for list="{{ p.werOpts }}" as="w" hint-placeholder-count="3">
-                      <option value="{{ w.value }}">{{ w.label }}</option>
-                    </sc-for>
-                  </select>
-                </div>
-                <sc-if value="{{ p.zeigeGruppen }}" hint-placeholder-val="{{ false }}">
-                  <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                    <sc-for list="{{ p.gruppen }}" as="g" hint-placeholder-count="2">
-                      <button onClick="{{ g.toggle }}" style="{{ g.style }}">{{ g.label }}</button>
-                    </sc-for>
-                  </div>
-                </sc-if>
-                <sc-if value="{{ p.zeigePersonen }}" hint-placeholder-val="{{ false }}">
-                  <div style="max-height: 170px; overflow-y: auto; display: grid; gap: 2px;">
-                    <sc-for list="{{ p.personen }}" as="k" hint-placeholder-count="3">
-                      <button onClick="{{ k.toggle }}" style="{{ k.style }}">
-                        <span style="{{ k.box }}">{{ k.mark }}</span>
-                        <span style="font-size: 13px;">{{ k.name }}</span>
-                      </button>
-                    </sc-for>
-                  </div>
-                </sc-if>
-                <sc-if value="{{ p.istWahl }}" hint-placeholder-val="{{ false }}">
-                  <div style="display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap;">
-                    <button onClick="{{ p.onMehr }}" style="{{ p.mehrStyle }}">{{ p.mehrLabel }}</button>
-                    <sc-if value="{{ p.mehr }}" hint-placeholder-val="{{ false }}">
-                      <label style="display: flex; align-items: center; gap: 7px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.hoechstens }}
-                        <input type="number" min="2" max="12" value="{{ p.max }}" onChange="{{ p.onMax }}" class="input" style="width: 74px;">
-                      </label>
-                    </sc-if>
-                  </div>
-                </sc-if>
-              </div>
+        <sc-if value="{{ form.sec.deko.on }}" hint-placeholder-val="{{ false }}">
+        <div class="field" style="max-width: 340px;"><label>{{ L.design_dieses_ereignisses }}</label>
+          <select class="input" value="{{ form.look.themeId }}" onChange="{{ form.look.onTheme }}">
+            <sc-for list="{{ form.look.wahl }}" as="o" hint-placeholder-count="6">
+              <option value="{{ o.value }}">{{ o.label }}</option>
             </sc-for>
+          </select>
+        </div>
+        <div style="font-size: 11.5px; line-height: 1.5; color: var(--color-neutral-700); padding-bottom: var(--space-3);">{{ L.nur_diese_kachel_traegt_dann_das }}</div>
+        <button class="btn btn-secondary" style="white-space: nowrap; justify-self: start; margin-bottom: var(--space-3);" onClick="{{ form.look.vorschauUm }}">◱ {{ form.look.vorschauLabel }}</button>
+        <sc-if value="{{ form.look.vorschauAn }}" hint-placeholder-val="{{ false }}">
+          <div style="{{ form.look.vorschauStil }}">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="{{ form.look.vorschauMarke }}"></span>
+              <span style="{{ form.look.vorschauKicker }}">{{ L.vorschau }}</span>
+            </div>
+            <h3 style="{{ form.look.vorschauTitel }}">{{ form.look.vorschauName }}</h3>
+            <div style="{{ form.look.vorschauBild }}"></div>
+            <p style="{{ form.look.vorschauText }}">{{ L.so_sieht_die_kachel_mit_diesem }}</p>
           </div>
+        </sc-if>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--space-2); padding-bottom: var(--space-3);">
+          <sc-for list="{{ form.look.fein }}" as="fe" hint-placeholder-count="4">
+            <div class="field" style="margin: 0;"><label>{{ fe.label }}</label>
+              <select class="input" value="{{ fe.wert }}" onChange="{{ fe.onWahl }}">
+                <sc-for list="{{ fe.wahl }}" as="o" hint-placeholder-count="4">
+                  <option value="{{ o.value }}">{{ o.label }}</option>
+                </sc-for>
+              </select>
+            </div>
+          </sc-for>
+        </div>
+        <div style="font-size: 11px; color: var(--color-neutral-700); padding-bottom: var(--space-2);">{{ L.sticker_antippen_dann_in_der_vorschau }}</div>
+        <div style="{{ lay.decoGrid }}">
+          <div style="display: grid; gap: var(--space-3);">
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <sc-for list="{{ form.deco.fx }}" as="x" hint-placeholder-count="5">
+                <button onClick="{{ x.toggle }}" style="{{ x.style }}">{{ x.label }}</button>
+              </sc-for>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+            <div class="field" style="margin: 0;"><label>{{ L.machart }}</label>
+              <select class="input" value="{{ form.deco.stil }}" onChange="{{ form.deco.onStil }}">
+                <sc-for list="{{ form.deco.stile }}" as="o" hint-placeholder-count="5">
+                  <option value="{{ o.value }}">{{ o.label }}</option>
+                </sc-for>
+              </select>
+            </div>
+            <div class="field" style="margin: 0;"><label>{{ L.farbwelt }}</label>
+              <select class="input" value="{{ form.deco.pal }}" onChange="{{ form.deco.onPal }}">
+                <sc-for list="{{ form.deco.pals }}" as="o" hint-placeholder-count="6">
+                  <option value="{{ o.value }}">{{ o.label }}</option>
+                </sc-for>
+              </select>
+            </div>
+            </div>
+            <div style="{{ lay.sheetGrid }}">
+              <sc-for list="{{ form.deco.sheet }}" as="s" hint-placeholder-count="18">
+                <button onClick="{{ s.add }}" title="{{ s.label }}" style="{{ s.chip }}"><span style="{{ s.style }}">{{ s.glyph }}</span></button>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display: grid; gap: var(--space-2);">
+            <div onPointerDown="{{ form.deco.onStageDown }}" onPointerMove="{{ form.deco.onMove }}" onPointerUp="{{ form.deco.onUp }}" onPointerLeave="{{ form.deco.onUp }}" style="{{ form.deco.stageStyle }}">
+              <div style="{{ form.deco.labelStyle }}">{{ form.deco.labelText }}</div>
+              <sc-for list="{{ form.deco.pieces }}" as="p" hint-placeholder-count="0">
+                <div style="{{ p.style }}"></div>
+              </sc-for>
+              <sc-for list="{{ form.deco.glyphs }}" as="g" hint-placeholder-count="0">
+                <div style="{{ g.style }}">{{ g.glyph }}</div>
+              </sc-for>
+              <sc-for list="{{ form.deco.stickers }}" as="s" hint-placeholder-count="0">
+                <div onPointerDown="{{ s.onDown }}" style="{{ s.style }}">{{ s.glyph }}</div>
+              </sc-for>
+            </div>
+            <sc-if value="{{ form.deco.hasSel }}" hint-placeholder-val="{{ false }}">
+              <div style="display: grid; gap: 7px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700);">
+                  <span>{{ form.deco.selLabel }}</span>
+                  <button class="btn btn-ghost" style="white-space: nowrap;" onClick="{{ form.deco.removeSel }}">{{ L.entfernen }}</button>
+                </div>
+                <label style="display: grid; gap: 3px; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.groesse }}
+                  <input type="range" min="0.4" max="2.6" step="0.05" value="{{ form.deco.selScale }}" onChange="{{ form.deco.onScale }}" style="accent-color: var(--color-accent);">
+                </label>
+                <label style="display: grid; gap: 3px; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.drehung }}
+                  <input type="range" min="-60" max="60" step="1" value="{{ form.deco.selRot }}" onChange="{{ form.deco.onRot }}" style="accent-color: var(--color-accent);">
+                </label>
+                <div style="display: flex; gap: 6px; align-items: center;">
+                  <sc-for list="{{ form.deco.swatches }}" as="w" hint-placeholder-count="5">
+                    <button onClick="{{ w.pick }}" style="{{ w.style }}"></button>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ form.deco.noSel }}" hint-placeholder-val="{{ true }}">
+              <div style="font-size: 11.5px; line-height: 1.45; color: var(--color-neutral-700);">{{ form.deco.hint }}</div>
+            </sc-if>
+            <sc-if value="{{ form.deco.any }}" hint-placeholder-val="{{ false }}">
+              <button class="btn btn-ghost" style="white-space: nowrap; justify-self: start;" onClick="{{ form.deco.clear }}">{{ L.ganze_deko_entfernen }}</button>
+            </sc-if>
+          </div>
+        </div>
         </sc-if>
 
         <sc-if value="{{ form.vis.mine }}" hint-placeholder-val="{{ true }}">
+          <div style="margin: var(--space-6) 0 2px; font-family: var(--font-heading); font-size: 18px; font-weight: 600;">{{ L.ed_g_freigabe }}</div>
           <button data-sec="sicht" onClick="{{ form.sec.sicht.toggle }}" style="{{ form.sec.head }}">
             <span style="{{ form.sec.sicht.sign }}">▸</span>
             <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.wer_darf_dieses_ereignis_sehen }}</span>
@@ -4238,7 +4276,7 @@
         zu.setAttribute("style", "float:right;border:0;background:none;font-size:16px;cursor:pointer;color:inherit");
         zu.onclick = function () { box.parentNode && box.parentNode.removeChild(box); };
         var kopf = document.createElement("div");
-        kopf.textContent = "Fehler gefunden (Bau 103) — bitte den ganzen Text markieren, kopieren und schicken:";
+        kopf.textContent = "Fehler gefunden (Bau 104) — bitte den ganzen Text markieren, kopieren und schicken:";
         kopf.setAttribute("style", "font-weight:600;margin-bottom:6px");
         var p = document.createElement("div");
         p.id = "chronik-fehlertext";
@@ -4568,7 +4606,7 @@ const uid = function () { return Math.random().toString(36).slice(2, 9); };
 /* Bauzeichen: bei jeder Änderung hochzählen. Steht unten rechts auf der
    Seite, damit sich erkennen lässt, welcher Stand wirklich geladen ist —
    ein alter Zwischenspeicher verrät sich damit sofort. */
-const BAU_STAND = "Bau 103 · 2026-10-07";
+const BAU_STAND = "Bau 104 · 2026-10-07";
 /* Lose Bilder: Aufnahmezeit und Standort stehen meist in den EXIF-Daten.
    Gesucht wird die Marke „Exif\0\0“ mit folgendem TIFF-Kopf — so finden
    sich die Daten in JPEG und HEIC; PNG trägt sie im Block „eXIf“. */
@@ -6347,6 +6385,19 @@ class Component extends DCLogic {
     return tx("cd_noch") + " " + (d ? plural(d, tx("cd_tag"), tx("cd_tage")) + " · " : "") + (d || h ? h + " " + tx("cd_std") + " · " : "") + m + " " + tx("cd_min");
   }
 
+  cdZielMs(date, zeit) {
+    if (!date) return 0;
+    const z = /^\d\d:\d\d$/.test(zeit || "") ? zeit : "00:00";
+    const p = String(date).split("-").map(Number);
+    return new Date(p[0], (p[1] || 1) - 1, p[2] || 1, Number(z.slice(0, 2)), Number(z.slice(3, 5))).getTime();
+  }
+  cdTeileFuer(date, zeit) {
+    const ms = this.cdZielMs(date, zeit) - Date.now();
+    if (!(ms > 0)) return [];
+    const min = Math.floor(ms / 60000);
+    return [[Math.floor(min / 1440), tx("gast_cd_t")], [Math.floor((min % 1440) / 60), tx("gast_cd_s")], [min % 60, tx("gast_cd_m")]].map((x, k) => ({ key: "c" + k, zahl: String(x[0]), einheit: x[1] }));
+  }
+
   voPill(an) {
     return {
       font: "inherit", fontSize: "12.5px", letterSpacing: "0.03em", padding: "6px 12px", cursor: "pointer", whiteSpace: "nowrap",
@@ -6694,7 +6745,8 @@ class Component extends DCLogic {
     const ex = this.exOf(e);
     const st = this.state;
     const cd = this.cdText(e);
-    const out = { hatCd: !!cd, cdText: cd, voZeigen: false };
+    const out = { hatCd: !!cd, cdText: cd, voZeigen: false, cdKlein: !!cd && !isOpen, cdGross: !!cd && isOpen, cdTeile: cd ? this.cdTeileFuer(e.date, ex.cdZeit) : [] };
+    if (!isOpen && this._gastOffen === e.id) this._gastOffen = null;
     const kl = st.zuKlapp || {};
     ["bilder", "gfoto", "gbuch"].forEach((k) => {
       const id = e.id + ":" + k, auf = !kl[id];
@@ -6719,12 +6771,53 @@ class Component extends DCLogic {
       leuteAn ? leute.concat(meinPos ? [{ lat: meinPos.lat, lon: meinPos.lon, name: tx("leute_ich"), ich: true }] : []) : null, e.place);
     const o = ex.offen || {};
     const gastAn = !!o.an && !!o.token && !!st.cloud;
+    if (gastAn && this._gastOffen !== e.id) { this._gastOffen = e.id; this.gastDatenLaden(e.id); }
     const rows = (st.gastDaten || {})[e.id];
     if (gastAn && !rows && !(this._gastL || {})[e.id]) this.gastDatenLaden(e.id);
     const alle = rows || [];
     const darfWeg = lvl >= 4 || e.by === me.id;
     const weg = (r) => (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.gastEintragWeg(e.id, r); };
-    const rsvp = alle.filter((r) => r.kind === "rsvp");
+    const rsvp = lvl >= 3 ? alle.filter((r) => r.kind === "rsvp") : [];
+    const rf = Object.assign({ antwort: "", essen: "", suche: "", plus: "" }, (st.rsvpF || {})[e.id] || {});
+    const setRf = (p) => this.setState((s) => ({ rsvpF: Object.assign({}, s.rsvpF, { [e.id]: Object.assign({}, rf, p) }) }));
+    const essenVon = (r) => { const d0 = r.data || {}; return [d0.essen].concat((d0.plusListe || []).map((p) => p && p.essen)).filter(Boolean); };
+    const alleEssen = Array.from(new Set([].concat.apply([], rsvp.map(essenVon))));
+    const passtR = (r) => {
+      const d0 = r.data || {};
+      if (rf.antwort === "ja" && d0.kommt === "nein") return false;
+      if (rf.antwort === "nein" && d0.kommt !== "nein") return false;
+      if (rf.essen && essenVon(r).indexOf(rf.essen) < 0) return false;
+      if (rf.plus === "mit" && !(Number(d0.plus) > 0)) return false;
+      if (rf.plus === "ohne" && Number(d0.plus) > 0) return false;
+      const q = String(rf.suche || "").trim().toLowerCase();
+      if (q && (r.name + " " + (d0.plusNamen || "") + " " + (r.text || "")).toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    };
+    const gefiltert = rsvp.filter(passtR);
+    const pers = (l) => l.filter((r) => (r.data || {}).kommt !== "nein").reduce((s, r) => s + 1 + (Number((r.data || {}).plus) || 0), 0);
+    const rChip = (an) => ({ font: "inherit", fontSize: "12.5px", padding: "4px 11px", minHeight: "34px", borderRadius: "99px", cursor: "pointer", whiteSpace: "nowrap",
+      border: "1px solid " + (an ? "var(--t-accent, #0088b0)" : "var(--t-border, rgba(32,30,29,0.2))"), background: an ? "var(--t-accent, #0088b0)" : "transparent", color: an ? "var(--t-card, #eae9e9)" : "inherit" });
+    const rsvpVals = {
+      rAntwortChips: [["", tx("rf_alle")], ["ja", tx("sp_kommt")], ["nein", tx("sp_kommt_nicht")]].map((x) => ({ key: "a" + x[0], label: x[1], stil: rChip(rf.antwort === x[0]), klick: (ev) => { ev.stopPropagation(); setRf({ antwort: x[0] }); } })),
+      rPlusChips: [["", tx("rf_alle")], ["mit", tx("rf_mit_begl")], ["ohne", tx("rf_ohne_begl")]].map((x) => ({ key: "p" + x[0], label: x[1], stil: rChip(rf.plus === x[0]), klick: (ev) => { ev.stopPropagation(); setRf({ plus: x[0] }); } })),
+      rEssenChips: [""].concat(alleEssen).map((x) => ({ key: "e" + x, label: x || tx("rf_alle"), stil: rChip(rf.essen === x), klick: (ev) => { ev.stopPropagation(); setRf({ essen: x }); } })),
+      rHatEssen: alleEssen.length > 0,
+      rSuche: rf.suche, rOnSuche: (ev) => setRf({ suche: ev.target.value }),
+      rZahl: tx("rf_zahl").replace("{n}", gefiltert.length).replace("{g}", rsvp.length).replace("{p}", pers(gefiltert)).replace("{pg}", pers(rsvp)),
+      rZeilen: gefiltert.map((r) => {
+        const d0 = r.data || {};
+        const nein = d0.kommt === "nein";
+        const pl = (d0.plusListe || []).filter((p) => p && (p.name || p.essen));
+        return { key: r.id, name: r.name, kommt: nein ? tx("sp_kommt_nicht") : tx("sp_kommt"),
+          stil: { color: nein ? "var(--t-accent2, #d6006c)" : "var(--t-accent, #0088b0)", fontWeight: 600 },
+          hatEssen: !nein && !!d0.essen, essen: d0.essen || "",
+          hatBegl: !nein && (pl.length > 0 || Number(d0.plus) > 0),
+          begl: pl.length ? pl.map((p) => (p.name || tx("rf_ohne_name")) + (p.essen ? " (" + p.essen + ")" : "")).join(", ") : (d0.plusNamen || ("+" + d0.plus)),
+          hatText: !!r.text, text: r.text || "",
+          darfWeg: lvl >= 4 || e.by === me.id, weg: weg(r) };
+      }),
+      rLeer: rsvp.length > 0 && !gefiltert.length
+    };
     const ja = rsvp.filter((r) => (r.data || {}).kommt !== "nein");
     const personen = ja.reduce((s, r) => s + 1 + (Number((r.data || {}).plus) || 0), 0);
     const essen = {};
@@ -6760,6 +6853,7 @@ class Component extends DCLogic {
           darfWeg: darfWeg, weg: weg(r) };
       }),
       hatGRsvp: rsvp.length > 0,
+      ...rsvpVals,
       gRsvpSumme: plural(ja.length, tx("gast_zusage"), tx("gast_zusagen")) + " · " + plural(rsvp.length - ja.length, tx("gast_absage"), tx("gast_absagen")) + " · " + plural(personen, tx("person"), tx("personen")) +
         (Object.keys(essen).length ? " · " + Object.keys(essen).map((k) => essen[k] + "× " + k).join(", ") : ""),
       gTische: (o.sitz ? (o.tische || []) : []).map((t, n) => ({ key: t.i || "t" + n, name: t.name || tx("gast_tisch") + " " + (n + 1), namen: String(t.gaeste || "").split(/\n|,/).map((s) => s.trim()).filter(Boolean).join(", ") })),
@@ -6872,6 +6966,12 @@ class Component extends DCLogic {
           .map((u) => ({ key: u.id, label: "＋ " + (u.username || tx("jemand")), stil: self.voPill(false), klick: () => { self.voSet("offen.sicht", sicht.concat([u.id])); self.setState({ sichtSuche: "" }); } }));
       })(this),
       keinSichtTreffer: !!String(st.sichtSuche || "").trim() && !(st.users || []).some((u) => fids.indexOf(u.id) >= 0 && sicht.indexOf(u.id) < 0 && String(u.username || "").toLowerCase().indexOf(String(st.sichtSuche).trim().toLowerCase()) >= 0),
+      hatFrei: !!o.an && ["foto", "buch", "sitz"].some((k) => o[k]),
+      freiZeilen: [["foto", tx("gast_fotowand")], ["buch", tx("gast_buch")], ["sitz", tx("gast_sitz")], ["lage", tx("lp_titel")]]
+        .filter((x) => x[0] === "lage" ? !!(lage.bild || lage.karte || (lage.punkte || []).length) : !!o[x[0]])
+        .map((x) => { const f = (o.frei || {})[x[0]] || {}; return { key: x[0], label: x[1], art: f.art || "", istZeit: f.art === "zeit", zeit: f.zeit || "",
+          onArt: (ev) => this.voSet("offen.frei." + x[0], { art: ev.target.value, zeit: f.zeit || "" }),
+          onZeit: (ev) => this.voSet("offen.frei." + x[0], { art: "zeit", zeit: ev.target.value }) }; }),
       gaPruefen: () => this.gaPruefen(), gaPruef: st.gaPruef || "", hatGaPruef: !!st.gaPruef,
       spKeineWahl: !!o.sitz && this.spTische(o.tische || []).length > 0 && !st.spSel && !st.spObjSel,
       spo: this.spObjPanel(),
@@ -7029,6 +7129,18 @@ class Component extends DCLogic {
       this.gastSet({ laden: false, err: e && e.code === "D-28" ? tx("gast_f_sql") : tx("gast_f_link") + " (" + ((e && (e.code || e.message)) || "?") + ")" });
     }
   }
+  gastSperre(d, k) {
+    const f = (((d && d.cfg) || {}).frei || {})[k] || {};
+    if (f.art === "cd") {
+      const ziel = this.cdZielMs(d.date, d.start || (d.countdown || {}).zeit || "");
+      return ziel > Date.now() ? tx("gast_frei_cd") : "";
+    }
+    if (f.art === "zeit" && f.zeit) {
+      const t = Date.parse(f.zeit);
+      if (t > Date.now()) return tx("gast_frei_ab") + " " + new Intl.DateTimeFormat(window.CHRONIK_LOCALE || "de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }).format(new Date(t));
+    }
+    return "";
+  }
   gastTabs(d) {
     const c = (d && d.cfg) || {};
     const out = [];
@@ -7087,7 +7199,10 @@ class Component extends DCLogic {
     if (!name) { this.gastSet({ info: tx("gast_name_fehlt") }); return; }
     const r = g.rsvp || {};
     const ja = r.kommt !== "nein";
-    const data = { kommt: ja ? "ja" : "nein", plus: ja ? Math.max(0, Math.min(20, Number(r.plus) || 0)) : 0, plusNamen: ja ? String(r.plusNamen || "").slice(0, 300) : "", essen: ja ? String(r.essen || "").slice(0, 80) : "" };
+    const n = ja ? Math.max(0, Math.min(20, Number(r.plus) || 0)) : 0;
+    const liste = (r.plusListe || []).slice(0, n).map((p) => ({ name: String((p || {}).name || "").slice(0, 60), essen: String((p || {}).essen || "").slice(0, 60) }));
+    while (liste.length < n) liste.push({ name: "", essen: "" });
+    const data = { kommt: ja ? "ja" : "nein", plus: n, plusListe: liste, plusNamen: liste.map((p) => p.name).filter(Boolean).join(", "), essen: ja ? String(r.essen || "").slice(0, 80) : "" };
     this.gastSet({ busy: tx("gast_sendet"), info: "" });
     try {
       await window.ChronikCloud.gastAdd(g.ev, g.tk, "rsvp", name, String(r.notiz || "").slice(0, 800), data, null);
@@ -7137,7 +7252,7 @@ class Component extends DCLogic {
         try { history.replaceState(null, "", location.pathname + location.search); } catch (x) { location.hash = ""; }
         this.setState({ gast: null });
       },
-      tabs: tabs.map((t) => ({ key: t.k, label: t.l, g: t.g, d: t.d, klick: () => this.gastSet({ tab: t.k, info: "" }),
+      tabs: tabs.map((t) => ({ key: t.k, label: t.l, g: t.g, d: this.gastSperre(d, t.k) ? "◷ " + this.gastSperre(d, t.k) : t.d, klick: () => this.gastSet({ tab: t.k, info: "" }),
         stil: { display: "grid", gap: "6px", justifyItems: "start", alignContent: "start", textAlign: "left", padding: "16px", minHeight: "112px", cursor: "pointer", font: "inherit",
           borderRadius: "calc(var(--g-radius) + 6px)", border: 0, color: g.tab === t.k ? "var(--g-bg)" : "var(--g-ink)",
           background: g.tab === t.k ? "var(--g-accent)" : "var(--g-card)",
@@ -7177,7 +7292,10 @@ class Component extends DCLogic {
       nameKurz: !kontoName && !!String(g.name || "").trim() && !g.nameEdit,
       nameAendern: () => this.gastSet({ nameEdit: true }),
       nameFertig: () => { this.gastName(); this.gastSet({ nameEdit: false }); },
-      istFoto: g.tab === "foto", istBuch: g.tab === "buch", istSitz: g.tab === "sitz", istRsvp: g.tab === "rsvp", istLage: g.tab === "lage",
+      istFoto: g.tab === "foto" && !this.gastSperre(d, "foto"), istBuch: g.tab === "buch" && !this.gastSperre(d, "buch"), istSitz: g.tab === "sitz" && !this.gastSperre(d, "sitz"), istRsvp: g.tab === "rsvp", istLage: g.tab === "lage" && !this.gastSperre(d, "lage"),
+      istGesperrt: !!g.tab && g.tab !== "rsvp" && !!this.gastSperre(d, g.tab),
+      sperrText: g.tab ? this.gastSperre(d, g.tab) : "",
+      sperrTitel: (tabs.filter((t) => t.k === g.tab)[0] || {}).l || "",
       busy: g.busy || "", hatBusy: !!g.busy, info: g.info || "", hatInfo: !!g.info && !g.busy,
       fotos: eintr.filter((x) => x.kind === "foto" && x.img).map((x) => { const u = url(x.img); return { key: x.id, name: x.name, bildRef: (el) => { if (el && u && el.getAttribute("src") !== u) el.setAttribute("src", u); } }; }),
       keineFotos: !eintr.some((x) => x.kind === "foto"),
@@ -7196,6 +7314,13 @@ class Component extends DCLogic {
       hatPlus: ja && Number(r.plus) > 0,
       plusNamen: r.plusNamen || "", onPlusNamen: (ev) => this.gastRsvpSet({ plusNamen: ev.target.value }),
       hatEssen: ja && essen.length > 0,
+      hatEssenWahl: essen.length > 0,
+      plusFelder: !ja ? [] : Array.from({ length: Math.max(0, Math.min(20, Number(r.plus) || 0)) }, (x, k) => {
+        const p = (r.plusListe || [])[k] || {};
+        const setP = (patch) => this.gastSet((g2) => { const l = (g2.rsvp.plusListe || []).slice(); l[k] = Object.assign({}, l[k] || {}, patch); return { rsvp: Object.assign({}, g2.rsvp, { plusListe: l }) }; });
+        return { key: "p" + k, titel: tx("gast_begleitung_n").replace("{n}", k + 1), name: p.name || "", essen: p.essen || "",
+          onName: (ev) => setP({ name: ev.target.value }), onEssen: (ev) => setP({ essen: ev.target.value }) };
+      }),
       essenWahl: [{ key: "-", value: "", label: "—" }].concat(essen.map((x) => ({ key: x, value: x, label: x }))),
       essen: r.essen || "", onEssen: (ev) => this.gastRsvpSet({ essen: ev.target.value }),
       notiz: r.notiz || "", onNotiz: (ev) => this.gastRsvpSet({ notiz: ev.target.value }),
@@ -13777,6 +13902,17 @@ class Component extends DCLogic {
               .concat(rest > 0 ? [{ key: "nmehr", value: "__hinweis", label: "… " + rest + (" " + tx("weitere")), disabled: true }] : [])
               .concat(kreis.length === 0 ? [{ key: "nleer", value: "__hinweis", label: ("— " + tx("noch_keine_kontakte") + " —"), disabled: true }] : []);
           })(this),
+          kontoText: (st.pSuche || {})["p" + i] != null ? (st.pSuche || {})["p" + i] : ((st.users.filter((u) => u.id === r.uid)[0] || {}).username || ""),
+          onKonto: (ev) => {
+            const v = ev.target.value;
+            const q = Object.assign({}, st.pSuche || {});
+            const erlaubt = this.friendIds();
+            const u = st.users.filter((x) => String(x.username || "").toLowerCase() === v.trim().toLowerCase() && ((me && x.id === me.id) || erlaubt.indexOf(x.id) >= 0) && this.darfZuordnen(x.id))[0];
+            const rows = (this.state.draft.people || []).slice();
+            if (u) { delete q["p" + i]; rows[i] = Object.assign({}, rows[i], { uid: u.id, name: String(rows[i].name || "").trim() ? rows[i].name : u.username }); }
+            else { q["p" + i] = v; if (!v.trim()) { delete q["p" + i]; rows[i] = Object.assign({}, rows[i], { uid: "" }); } }
+            this.setState({ pSuche: q, draft: Object.assign({}, this.state.draft, { people: rows }) });
+          },
           onAccount: (ev) => {
             const id = ev.target.value;
             if (id === "__hinweis") return;
@@ -13789,6 +13925,7 @@ class Component extends DCLogic {
       }),
       /* Mehrere Bilder markieren und gemeinsam zuordnen — sonst müsste
          man dieselbe Etappe an dreißig Zeilen einzeln einstellen. */
+      kontoListe: (st.users || []).filter((u) => (this.me() && u.id === this.me().id) || (this.friendIds().indexOf(u.id) >= 0 && this.darfZuordnen(u.id))).map((u) => ({ key: u.id, name: u.username || "" })),
       bildWahl: (function (self) {
         const markiert = st.bildSel || [];
         const gesamt = (d0.images || []).length;
