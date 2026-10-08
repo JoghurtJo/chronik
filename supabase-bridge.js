@@ -266,9 +266,12 @@
     return u;
   }
 
-  async function sendReset(email) {
+  /* Mit Cloudflare-Schutz verlangt Supabase auch hier den Nachweis. */
+  async function sendReset(email, captchaToken) {
     var c = await client();
-    var r = await c.auth.resetPasswordForEmail(email, { redirectTo: backHere() });
+    var opts = { redirectTo: backHere() };
+    if (captchaToken) opts.captchaToken = captchaToken;
+    var r = await c.auth.resetPasswordForEmail(email, opts);
     if (r.error) throw fail(code(r.error));
     bump({ p_emails: 1 });
     return true;
