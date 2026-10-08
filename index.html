@@ -356,17 +356,6 @@
                   <button onClick="{{ gv.setNein }}" style="{{ gv.neinStil }}">{{ L.gast_ich_komme_nicht }}</button>
                 </div></sc-if>
                 <sc-if value="{{ gv.kommtJa }}" hint-placeholder-val="{{ true }}">
-                  <label style="display: grid; gap: 8px;"><span style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: color-mix(in srgb, var(--g-ink) 62%, transparent);">{{ L.gast_begleitung }}</span><input type="number" min="0" max="20" value="{{ gv.plus }}" onChange="{{ gv.onPlus }}" style="width: 100%; box-sizing: border-box; padding: 13px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px; max-width: 140px;"></label>
-                  <sc-for list="{{ gv.plusFelder }}" as="pf" hint-placeholder-count="0">
-                    <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: end;">
-                      <label style="display: grid; gap: 6px;"><span style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.65;">{{ pf.titel }}</span><input value="{{ pf.name }}" onChange="{{ pf.onName }}" placeholder="{{ L.name }}" style="width: 100%; box-sizing: border-box; padding: 12px 14px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px;"></label>
-                      <sc-if value="{{ gv.hatEssenWahl }}" hint-placeholder-val="{{ false }}">
-                        <select value="{{ pf.essen }}" onChange="{{ pf.onEssen }}" aria-label="{{ L.gast_essen }}" style="width: 100%; box-sizing: border-box; padding: 12px 14px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px;">
-                          <sc-for list="{{ gv.essenWahl }}" as="o" hint-placeholder-count="0"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
-                        </select>
-                      </sc-if>
-                    </div>
-                  </sc-for>
                   <sc-if value="{{ gv.hatEssen }}" hint-placeholder-val="{{ false }}">
                     <label style="display: grid; gap: 8px;"><span style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: color-mix(in srgb, var(--g-ink) 62%, transparent);">{{ L.gast_dein_essen }}</span>
                       <select value="{{ gv.essen }}" onChange="{{ gv.onEssen }}" style="width: 100%; box-sizing: border-box; padding: 13px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px;">
@@ -374,6 +363,20 @@
                       </select>
                     </label>
                   </sc-if>
+                  <label style="display: grid; gap: 8px;"><span style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: color-mix(in srgb, var(--g-ink) 62%, transparent);">{{ L.gast_begleitung }}</span><input type="number" min="0" max="20" value="{{ gv.plus }}" onChange="{{ gv.onPlus }}" placeholder="00" style="width: 100%; box-sizing: border-box; padding: 13px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px; max-width: 140px;"></label>
+                  <sc-for list="{{ gv.plusFelder }}" as="pf" hint-placeholder-count="0">
+                    <div style="display: grid; gap: 8px;">
+                      <div style="font-size: 13px; font-weight: 600;">{{ pf.titel }}</div>
+                      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; align-items: end;">
+                        <label style="display: grid; gap: 6px;"><span style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.65;">{{ L.name }}</span><input value="{{ pf.name }}" onChange="{{ pf.onName }}" placeholder="{{ L.name }}" style="width: 100%; box-sizing: border-box; padding: 12px 14px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px;"></label>
+                        <sc-if value="{{ gv.hatEssenWahl }}" hint-placeholder-val="{{ false }}">
+                          <label style="display: grid; gap: 6px;"><span style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.65;">{{ L.gast_essen }}</span><select value="{{ pf.essen }}" onChange="{{ pf.onEssen }}" style="width: 100%; box-sizing: border-box; padding: 12px 14px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px;">
+                            <sc-for list="{{ gv.essenWahl }}" as="o" hint-placeholder-count="0"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+                          </select></label>
+                        </sc-if>
+                      </div>
+                    </div>
+                  </sc-for>
                 </sc-if>
                 <label style="display: grid; gap: 8px;"><span style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: color-mix(in srgb, var(--g-ink) 62%, transparent);">{{ L.gast_notiz }}</span><textarea value="{{ gv.notiz }}" onChange="{{ gv.onNotiz }}" rows="2" placeholder="{{ L.gast_notiz_ph }}" style="width: 100%; box-sizing: border-box; padding: 13px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px; resize: vertical;"></textarea></label>
                 <button style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 24px; border-radius: 999px; border: 0; background: var(--g-accent); color: var(--g-bg); font: inherit; font-size: 16px; font-weight: 600; cursor: pointer; justify-self: start;" onClick="{{ gv.rsvpSenden }}">{{ L.gast_absenden }}</button>
@@ -458,7 +461,8 @@
 <sc-if value="{{ locked }}" hint-placeholder-val="{{ true }}">
   <div data-noprint="" data-screen-label="Anmeldung" style="{{ lay.loginWrap }}">
     {{ loginFx }}
-    <div data-bewegt="" style="{{ lay.loginPitch }}">
+    <sc-if value="{{ lay.loginKlein }}" hint-placeholder-val="{{ false }}">
+    <div data-bewegt="" style="order: 0; min-width: 0; position: relative; z-index: 1;">
       <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.was_ihr_erlebt_habt_in_einer }}</div>
       <h1 aria-label="{{ L.chronik }}" style="{{ lay.loginTitle }}"><svg viewBox="96 80 310 352" aria-hidden="true" style="{{ lay.loginC }}"><defs><linearGradient id="wmC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c4ad8"></stop><stop offset="0.42" stop-color="#3d63d9"></stop><stop offset="0.62" stop-color="#1f84cf"></stop><stop offset="0.82" stop-color="#10a0a8"></stop><stop offset="1" stop-color="#13a77c"></stop></linearGradient><linearGradient id="wmS" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity="0.3"></stop><stop offset="0.5" stop-color="#ffffff" stop-opacity="0"></stop><stop offset="1" stop-color="#0a0a28" stop-opacity="0.22"></stop></linearGradient><radialGradient id="wmP" cx="0.35" cy="0.3" r="0.75"><stop offset="0" stop-color="#ffffff"></stop><stop offset="0.7" stop-color="#f1f1f8"></stop><stop offset="1" stop-color="#d4d4e2"></stop></radialGradient><radialGradient id="wmK" cx="0.35" cy="0.3" r="0.8"><stop offset="0" stop-color="#a77bf0"></stop><stop offset="1" stop-color="#5d38c4"></stop></radialGradient></defs><path d="M 368.4 145.8 A 147 147 0 1 0 368.4 364.2" fill="none" stroke="url(#wmC)" stroke-width="46" stroke-linecap="round"></path><path d="M 368.4 145.8 A 147 147 0 1 0 368.4 364.2" fill="none" stroke="url(#wmS)" stroke-width="46" stroke-linecap="round"></path><path d="M 148.8 325 A 140 140 0 0 1 240.9 118.1" fill="none" stroke="#ffffff" stroke-opacity="0.55" stroke-width="7" stroke-linecap="round"></path><circle cx="160.8" cy="156.6" r="10.5" fill="url(#wmP)"></circle><circle cx="152.6" cy="343.5" r="10.5" fill="url(#wmP)"></circle><circle cx="368.4" cy="145.8" r="33" fill="url(#wmP)"></circle><circle cx="368.4" cy="145.8" r="27" fill="none" stroke="#7446d6" stroke-width="8"></circle><circle cx="368.4" cy="145.8" r="14" fill="url(#wmK)"></circle></svg><span style="{{ lay.loginWort }}">{{ wortRest }}</span></h1>
       <div style="height: 4px; border-radius: 4px; background: linear-gradient(90deg, #7c4ad8, #3d63d9 40%, #1f84cf 65%, #13a77c); margin-top: var(--space-5);"></div>
@@ -467,6 +471,19 @@
         <span>{{ today }}</span>
       </div>
       <div style="height: 1px; background: var(--color-divider);"></div>
+    </div>
+    </sc-if>
+    <div data-bewegt="" style="{{ lay.loginPitch }}">
+      <sc-if value="{{ lay.loginGross }}" hint-placeholder-val="{{ true }}">
+      <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.was_ihr_erlebt_habt_in_einer }}</div>
+      <h1 aria-label="{{ L.chronik }}" style="{{ lay.loginTitle }}"><svg viewBox="96 80 310 352" aria-hidden="true" style="{{ lay.loginC }}"><defs><linearGradient id="wmC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c4ad8"></stop><stop offset="0.42" stop-color="#3d63d9"></stop><stop offset="0.62" stop-color="#1f84cf"></stop><stop offset="0.82" stop-color="#10a0a8"></stop><stop offset="1" stop-color="#13a77c"></stop></linearGradient><linearGradient id="wmS" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity="0.3"></stop><stop offset="0.5" stop-color="#ffffff" stop-opacity="0"></stop><stop offset="1" stop-color="#0a0a28" stop-opacity="0.22"></stop></linearGradient><radialGradient id="wmP" cx="0.35" cy="0.3" r="0.75"><stop offset="0" stop-color="#ffffff"></stop><stop offset="0.7" stop-color="#f1f1f8"></stop><stop offset="1" stop-color="#d4d4e2"></stop></radialGradient><radialGradient id="wmK" cx="0.35" cy="0.3" r="0.8"><stop offset="0" stop-color="#a77bf0"></stop><stop offset="1" stop-color="#5d38c4"></stop></radialGradient></defs><path d="M 368.4 145.8 A 147 147 0 1 0 368.4 364.2" fill="none" stroke="url(#wmC)" stroke-width="46" stroke-linecap="round"></path><path d="M 368.4 145.8 A 147 147 0 1 0 368.4 364.2" fill="none" stroke="url(#wmS)" stroke-width="46" stroke-linecap="round"></path><path d="M 148.8 325 A 140 140 0 0 1 240.9 118.1" fill="none" stroke="#ffffff" stroke-opacity="0.55" stroke-width="7" stroke-linecap="round"></path><circle cx="160.8" cy="156.6" r="10.5" fill="url(#wmP)"></circle><circle cx="152.6" cy="343.5" r="10.5" fill="url(#wmP)"></circle><circle cx="368.4" cy="145.8" r="33" fill="url(#wmP)"></circle><circle cx="368.4" cy="145.8" r="27" fill="none" stroke="#7446d6" stroke-width="8"></circle><circle cx="368.4" cy="145.8" r="14" fill="url(#wmK)"></circle></svg><span style="{{ lay.loginWort }}">{{ wortRest }}</span></h1>
+      <div style="height: 4px; border-radius: 4px; background: linear-gradient(90deg, #7c4ad8, #3d63d9 40%, #1f84cf 65%, #13a77c); margin-top: var(--space-5);"></div>
+      <div style="display: flex; justify-content: space-between; gap: var(--space-4); padding: 7px 0; font-size: 11.5px; letter-spacing: 0.13em; text-transform: uppercase;">
+        <span>{{ L.ereignisse_bilder_menschen }}</span>
+        <span>{{ today }}</span>
+      </div>
+      <div style="height: 1px; background: var(--color-divider);"></div>
+      </sc-if>
 
       <sc-if value="{{ auth.configFault }}" hint-placeholder-val="{{ false }}">
         <div style="margin-top: var(--space-6); padding: 12px 15px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700); font-size: 15px; max-width: 40ch;">{{ auth.configFault }}</div>
@@ -558,6 +575,12 @@
           <div style="display: grid; gap: 7px;">
             <sc-if value="{{ auth.hasTurnstile }}" hint-placeholder-val="{{ false }}">
               <div ref="{{ auth.tsRef }}"></div>
+              <sc-if value="{{ auth.tsHaengt }}" hint-placeholder-val="{{ false }}">
+                <div style="display: grid; gap: 8px; padding: 10px 12px; border-radius: var(--radius-md); background: var(--color-accent-100); color: var(--color-accent-800); font-size: 13.5px; line-height: 1.45;">
+                  <span>{{ auth.tsHinweis }}</span>
+                  <button type="button" class="btn btn-secondary" style="justify-self: start; min-height: 40px; white-space: nowrap;" onClick="{{ auth.tsNeu }}">{{ L.ts_neu }}</button>
+                </div>
+              </sc-if>
             </sc-if>
             <sc-if value="{{ auth.hasQuiz }}" hint-placeholder-val="{{ true }}">
               <div class="field" style="margin: 0;"><label>{{ auth.quizLabel }}</label><input class="input" type="text" inputMode="numeric" autoComplete="off" value="{{ auth.quizAnswer }}" onChange="{{ auth.onQuiz }}" onKeyDown="{{ auth.onKey }}" placeholder="{{ L.ergebnis }}" style="max-width: 150px;"></div>
@@ -2740,11 +2763,13 @@
                   <div style="display: grid; gap: var(--space-2); border-top: 2px solid var(--color-text); padding-top: var(--space-3);">
                     <div style="font-family: var(--font-heading); font-weight: 600; font-size: 17px; line-height: 1.2;">{{ L.ga_g_look }}</div>
                   <div style="display: grid; gap: var(--space-2); padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-bg);">
-                    <button onClick="{{ vo.gaDesignUm }}" aria-expanded="{{ vo.gaDesignAufText }}" style="display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 4px 0; border: 0; background: transparent; color: var(--color-text); font: inherit; text-align: left; cursor: pointer;">
-                      <span style="{{ vo.gaDesignSign }}">▸</span>
-                      <span style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.ga_design }}</span>
-                      <span style="flex: 1;"></span>
-                      <span style="{{ vo.gaDesignAktivStil }}">{{ vo.gaDesignAktiv }}</span>
+                    <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.ga_design }}</div>
+                    <button onClick="{{ vo.gaDesignUm }}" aria-expanded="{{ vo.gaDesignAufText }}" style="{{ vo.gaDesignKachel.stil }}">
+                      <span style="display: grid; gap: 8px; min-width: 0;">
+                        <span style="{{ vo.gaDesignKachel.titelStil }}">{{ vo.gaDesignAktiv }}</span>
+                        <span style="display: flex; gap: 5px;"><span style="{{ vo.gaDesignKachel.dot1 }}"></span><span style="{{ vo.gaDesignKachel.dot2 }}"></span></span>
+                      </span>
+                      <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; white-space: nowrap;">{{ L.ga_design_aendern }}<span style="{{ vo.gaDesignSign }}">▸</span></span>
                     </button>
                     <sc-if value="{{ vo.gaDesignAuf }}" hint-placeholder-val="{{ false }}">
                       <input class="input" type="search" value="{{ vo.gaDesignSuche }}" onChange="{{ vo.onGaDesignSuche }}" placeholder="{{ L.ga_design_suchen }}" style="font-size: 16px;">
@@ -2762,12 +2787,16 @@
                     <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700); margin-top: 6px;">{{ L.ga_titelbild }}</div>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
                       <button onClick="{{ vo.gaOhneTitel }}" style="{{ vo.gaOhneTitelStil }}">{{ L.ga_kein_titel }}</button>
+                      <sc-if value="{{ vo.gaKamera }}" hint-placeholder-val="{{ false }}">
+                        <label class="btn btn-secondary" style="min-height: 44px; cursor: pointer; white-space: nowrap;"><i class="ph-duotone ph-camera"></i> {{ L.foto_aufnehmen }}<input type="file" accept="image/*" capture="environment" onChange="{{ vo.onGaTitelDatei }}" style="display: none;"></label>
+                      </sc-if>
+                      <label class="btn btn-secondary" style="min-height: 44px; cursor: pointer; white-space: nowrap;"><i class="ph-duotone ph-upload-simple"></i> {{ L.ga_titel_hochladen }}<input type="file" accept="image/*,.heic,.heif" onChange="{{ vo.onGaTitelDatei }}" style="display: none;"></label>
                       <sc-for list="{{ vo.gaTitelBilder }}" as="tb" hint-placeholder-count="0">
                         <button onClick="{{ tb.klick }}" style="{{ tb.stil }}"><img ref="{{ tb.bildRef }}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;"></button>
                       </sc-for>
                     </div>
-                    <sc-if value="{{ vo.gaKeineTitelBilder }}" hint-placeholder-val="{{ false }}">
-                      <div style="font-size: 12.5px; color: var(--color-neutral-700);">{{ L.ga_titel_leer }}</div>
+                    <sc-if value="{{ vo.gaTitelBusy }}" hint-placeholder-val="{{ false }}">
+                      <div style="font-size: 12.5px; color: var(--color-accent-700);">{{ vo.gaTitelBusy }}</div>
                     </sc-if>
                     <div class="field" style="margin: 6px 0 0;"><label>{{ L.ga_gruss }}</label><textarea class="input" value="{{ vo.gaGruss }}" onChange="{{ vo.onGaGruss }}" rows="3" placeholder="{{ L.ga_gruss_ph }}" style="font-size: 16px;"></textarea></div>
                   </div>
@@ -3005,12 +3034,18 @@
           <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">{{ form.sec.deko.badge }}</span>
         </button>
         <sc-if value="{{ form.sec.deko.on }}" hint-placeholder-val="{{ false }}">
-        <div class="field" style="max-width: 340px;"><label>{{ L.design_dieses_ereignisses }}</label>
-          <select class="input" value="{{ form.look.themeId }}" onChange="{{ form.look.onTheme }}">
-            <sc-for list="{{ form.look.wahl }}" as="o" hint-placeholder-count="6">
-              <option value="{{ o.value }}">{{ o.label }}</option>
-            </sc-for>
-          </select>
+        <div class="field" style="max-width: 340px; position: relative;"><label>{{ L.design_dieses_ereignisses }}</label>
+          <div style="position: relative;">
+            <input class="input" type="text" role="combobox" aria-expanded="{{ form.look.auf }}" value="{{ form.look.suche }}" placeholder="{{ form.look.suchePh }}" onChange="{{ form.look.onSuche }}" onFocus="{{ form.look.onFokus }}" onBlur="{{ form.look.onBlur }}" style="font-size: 16px; padding-right: 44px; width: 100%; box-sizing: border-box;">
+            <button type="button" aria-label="{{ L.design_dieses_ereignisses }}" onMouseDown="{{ form.look.umschalten }}" style="position: absolute; right: 2px; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border: 0; background: transparent; color: var(--color-neutral-700); cursor: pointer; font-size: 12px;">▾</button>
+          </div>
+          <sc-if value="{{ form.look.auf }}" hint-placeholder-val="{{ false }}">
+            <div style="position: absolute; left: 0; right: 0; top: 100%; z-index: 30; margin-top: 4px; max-height: 280px; overflow-y: auto; padding: 4px; border-radius: var(--radius-md); background: var(--color-bg); box-shadow: var(--shadow-lg);">
+              <sc-for list="{{ form.look.treffer }}" as="t" hint-placeholder-count="0">
+                <button type="button" onMouseDown="{{ t.klick }}" style="{{ t.stil }}">{{ t.name }}</button>
+              </sc-for>
+            </div>
+          </sc-if>
         </div>
         <div style="font-size: 11.5px; line-height: 1.5; color: var(--color-neutral-700); padding-bottom: var(--space-3);">{{ L.nur_diese_kachel_traegt_dann_das }}</div>
         <button class="btn btn-secondary" style="white-space: nowrap; justify-self: start; margin-bottom: var(--space-3);" onClick="{{ form.look.vorschauUm }}">◱ {{ form.look.vorschauLabel }}</button>
@@ -7233,6 +7268,18 @@ class Component extends DCLogic {
           stil: { width: "64px", height: "64px", padding: 0, borderRadius: "10px", overflow: "hidden", cursor: "pointer", background: "var(--color-neutral-200)", border: an ? "3px solid var(--color-accent)" : "1px solid var(--color-divider)" } };
       }),
       gaKeineTitelBilder: !(d.images || []).some((im) => im && im.key && im.src),
+      gaKamera: isTouch(),
+      gaTitelBusy: st.imgBusy || "",
+      onGaTitelDatei: (ev) => { const f = Array.prototype.slice.call(ev.target.files || []).slice(0, 1); ev.target.value = ""; this.addFiles(f, (rows) => { if (rows[0] && rows[0].key) this.voSet("offen.titel", rows[0].key); }); },
+      gaDesignKachel: (function (self) {
+        const lk = self.gastLookAus(o.design || "", d);
+        return {
+          stil: { display: "grid", gridTemplateColumns: "minmax(0, 1fr) auto", alignItems: "center", gap: "12px", width: "100%", boxSizing: "border-box", padding: "16px 18px", minHeight: "84px", cursor: "pointer", textAlign: "left", font: "inherit", borderRadius: "14px", background: lk.bg, color: lk.ink, border: "2px solid var(--color-accent)", boxShadow: "var(--shadow-sm)" },
+          titelStil: { fontFamily: '"' + lk.fontHead + '", Georgia, serif', fontSize: "20px", fontWeight: lk.headWeight, textTransform: lk.headTransform, lineHeight: 1.1 },
+          dot1: { width: "18px", height: "18px", borderRadius: "50%", background: lk.accent },
+          dot2: { width: "18px", height: "18px", borderRadius: "50%", background: lk.accent2 }
+        };
+      })(this),
       gaOhneTitel: () => this.voSet("offen.titel", ""),
       gaOhneTitelStil: this.voPill(!o.titel),
       gaGruss: o.gruss || "", onGaGruss: set("offen.gruss"),
@@ -7634,7 +7681,7 @@ class Component extends DCLogic {
             boxStil: { display: "grid", placeItems: "center", flex: "0 0 24px", width: "24px", height: "24px", boxSizing: "border-box", borderRadius: f.mehr ? "6px" : "50%", fontSize: "14px", fontWeight: 700, color: "var(--g-bg)",
               border: "2px solid " + (an ? "var(--g-accent)" : "color-mix(in srgb, var(--g-ink) 40%, transparent)"), background: an ? "var(--g-accent)" : "transparent" } };
         }) })),
-      plus: String(r.plus || "0"), onPlus: (ev) => this.gastRsvpSet({ plus: ev.target.value }),
+      plus: Number(r.plus) > 0 ? String(r.plus) : "", onPlus: (ev) => this.gastRsvpSet({ plus: ev.target.value }),
       hatPlus: ja && Number(r.plus) > 0,
       plusNamen: r.plusNamen || "", onPlusNamen: (ev) => this.gastRsvpSet({ plusNamen: ev.target.value }),
       hatEssen: ja && essen.length > 0,
@@ -9375,7 +9422,7 @@ class Component extends DCLogic {
     if (mode === "newpw") return "";
     /* Cloudflare-Häkchen: jedes Mal nötig, weil Supabase den Nachweis
        bei jeder Anfrage neu prüft. */
-    if (hasTS) return this.state.tsToken ? "" : "turnstile";
+    if (hasTS) return this.tsAktuell() ? "" : "turnstile";
     if (this.botFertig()) return "";
     if (String(this.state.honey || "").trim()) return "bot";
     if (Date.now() - (this.state.formAt || 0) < 900) return "schnell";
@@ -9384,9 +9431,30 @@ class Component extends DCLogic {
     return "";
   }
 
+  /* Falls der Rückruf verloren ging (z. B. Brave), das Ticket direkt beim Widget abholen. */
+  tsAktuell() {
+    if (this.state.tsToken) return this.state.tsToken;
+    try { if (window.turnstile && this.tsWidget != null) return window.turnstile.getResponse(this.tsWidget) || ""; } catch (e) { /* egal */ }
+    return "";
+  }
+
+  /* Hängt die Prüfung, einen Hinweis zeigen — Brave blockiert sie mit den Shields gern. */
+  tsWache() {
+    window.clearTimeout(this._tsWache);
+    this._tsWache = window.setTimeout(() => { if (this.tsBox && !this.tsAktuell()) this.setState({ tsHaengt: true }); }, 12000);
+  }
+
+  tsNeu = () => {
+    this.setState({ tsHaengt: false, tsToken: "" });
+    try { if (window.turnstile && this.tsWidget != null) window.turnstile.remove(this.tsWidget); } catch (e) { /* egal */ }
+    this.tsWidget = null;
+    this.renderTurnstile();
+  };
+
   /* Turnstile-Tickets gelten nur einmal — nach jedem Versuch neu holen. */
   resetTurnstile = () => {
     this.setState({ tsToken: "" });
+    this.tsWache();
     try { if (window.turnstile && this.tsWidget != null) window.turnstile.reset(this.tsWidget); } catch (e) { /* egal */ }
   };
 
@@ -9414,10 +9482,14 @@ class Component extends DCLogic {
     this.tsWidget = window.turnstile.render(this.tsBox, {
       sitekey: CC.turnstileKey,
       language: "de",
-      callback: (t) => this.setState({ tsToken: t, authError: "" }),
-      "expired-callback": () => this.setState({ tsToken: "" }),
-      "error-callback": () => this.setState({ tsToken: "" })
+      retry: "auto",
+      "retry-interval": 4000,
+      "refresh-expired": "auto",
+      callback: (t) => { window.clearTimeout(this._tsWache); this.setState({ tsToken: t, tsHaengt: false, authError: "" }); },
+      "expired-callback": () => { this.setState({ tsToken: "" }); this.tsWache(); },
+      "error-callback": () => { this.setState({ tsToken: "", tsHaengt: true }); return true; }
     });
+    this.tsWache();
   };
 
   tsRef = (el) => {
@@ -9977,7 +10049,7 @@ class Component extends DCLogic {
         const pwBad = pwProblem(f.pw);
         if (pwBad) throw new Error(pwBad);
         if (f.pw !== f.pw2) throw new Error("A-09");
-        const r = await CC.signUp(id, f.pw, name, this.state.tsToken);
+        const r = await CC.signUp(id, f.pw, name, this.tsAktuell());
         this.resetTurnstile();
         this.setState({
           authBusy: false,
@@ -10050,7 +10122,7 @@ class Component extends DCLogic {
         return;
       }
 
-      const sess = await CC.signIn(id, f.pw, this.state.tsToken);
+      const sess = await CC.signIn(id, f.pw, this.tsAktuell());
       this.resetTurnstile();
       if (sess) await this.cloudSignedIn(sess);
       else this.setState({ authBusy: false });
@@ -10343,11 +10415,20 @@ class Component extends DCLogic {
     this.setState({ tour: n }, () => this.tourSchrittAn(n));
   };
 
+  /* Gemerkt am Gerät UND im Konto — so fragt die Seite auf keinem Gerät ein zweites Mal. */
   tourGesehen() {
     try { window.localStorage.setItem("chronik.tour.v1", "1"); } catch (e) { /* egal */ }
+    const n = this.meineNotify();
+    if (n.tourGesehen) return;
+    const neu = Object.assign({}, n, { tourGesehen: true });
+    this.setState({ notify: neu });
+    if (this.state.cloud && window.ChronikCloud && window.ChronikCloud.saveNotify) {
+      window.ChronikCloud.saveNotify(neu).catch(() => {});
+    }
   }
 
   tourSchonGesehen() {
+    if (this.meineNotify().tourGesehen) return true;
     try { return window.localStorage.getItem("chronik.tour.v1") === "1"; } catch (e) { return true; }
   }
 
@@ -10356,10 +10437,13 @@ class Component extends DCLogic {
   tourFragen() {
     if (this.tourGefragt) return;
     if (!this.me() || this.state.booting) return;
-    if (this.tourSchonGesehen()) { this.tourGefragt = true; return; }
+    /* Erst fragen, wenn das eigene Profil geladen ist — sonst fehlt der Merker aus dem Konto. */
+    if (this.state.cloud && !this.state.users.some((u) => u.id === this.me().id)) return;
+    if (this.tourSchonGesehen() || this.state.events.some((e) => (e.by || "") === this.me().id)) { this.tourGefragt = true; return; }
     if (this.state.tourFrage || this.state.tour != null) return;
     this.tourGefragt = true;
     this.setState({ tourFrage: true });
+    this.tourGesehen();
   }
 
   tourZielBox() {
@@ -12569,7 +12653,7 @@ class Component extends DCLogic {
     }
   }
 
-  addFiles = async (files) => {
+  addFiles = async (files, fertig) => {
     const all = Array.prototype.slice.call(files || []);
     const list = all.filter((f) => this.looksLikeImage(f)).slice(0, 40);
     this.setState({ dragOver: false, imgErr: "" });
@@ -12625,7 +12709,7 @@ class Component extends DCLogic {
     this.setState({
       draft: d, imgBusy: "", imgPct: 0, cloudBusy: false,
       imgErr: failed ? (DEBUG ? failed + "/" + list.length + " · " + errLabel(this.lastImgError) : failed + "/" + list.length) : ""
-    });
+    }, () => { if (fertig && rows.length) fertig(rows); });
   };
 
   setOv(key, kind) {
@@ -14959,6 +15043,22 @@ class Component extends DCLogic {
           const id = ev.target.value;
           this.setState({ draft: Object.assign({}, this.state.draft, { themeId: id, themeSnap: this.themeSnapFor(id) }) });
         },
+        /* Suchfeld mit Liste: tippen filtert, antippen übernimmt. */
+        suche: st.lookSuche != null ? st.lookSuche : ((this.allThemes().filter((p) => p.id === (d0.themeId || ""))[0] || {}).name || ""),
+        suchePh: "— " + tx("mein_eigenes_design") + " —",
+        auf: !!st.lookAuf,
+        onSuche: (ev) => this.setState({ lookSuche: ev.target.value, lookAuf: true }),
+        onFokus: (ev) => { try { ev.target.select(); } catch (x) { /* egal */ } this.setState({ lookAuf: true, lookSuche: "" }); },
+        onBlur: () => window.setTimeout(() => this.setState({ lookAuf: false, lookSuche: null }), 180),
+        umschalten: () => this.setState({ lookAuf: !st.lookAuf, lookSuche: st.lookAuf ? null : "" }),
+        treffer: (function (self) {
+          const q = String(st.lookSuche || "").trim().toLowerCase();
+          return [{ id: "", name: "— " + tx("mein_eigenes_design") + " —" }].concat(self.allThemes().map((p) => ({ id: p.id, name: p.name })))
+            .filter((p) => !q || String(p.name || "").toLowerCase().indexOf(q) >= 0)
+            .map((p) => { const an = (d0.themeId || "") === p.id; return { key: p.id || "t0", name: p.name,
+              stil: { display: "block", width: "100%", textAlign: "left", padding: "10px 12px", minHeight: "40px", border: 0, borderRadius: "var(--radius-sm)", font: "inherit", fontSize: "15px", cursor: "pointer", background: an ? "var(--color-accent-100)" : "transparent", color: an ? "var(--color-accent-800)" : "var(--color-text)", fontWeight: an ? 600 : 400 },
+              klick: (ev) => { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ lookAuf: false, lookSuche: null, draft: Object.assign({}, self.state.draft, { themeId: p.id, themeSnap: self.themeSnapFor(p.id) }) }); } }; });
+        })(this),
         /* Vorschau: die Kachel im gewählten Design, direkt im Editor.
            Sonst müsste man speichern, um zu sehen, was man gewählt hat. */
         vorschauAn: !!st.lookVorschau,
@@ -15535,6 +15635,7 @@ class Component extends DCLogic {
         gap: phone ? "var(--space-6)" : "var(--space-8)",
         alignItems: "start", padding: pad
       },
+      loginKlein: !!small, loginGross: !small,
       loginPitch: { order: small ? 2 : 1, minWidth: 0, position: "relative", zIndex: 1, animation: "tl-rise 900ms cubic-bezier(0.16, 1, 0.3, 1) both" },
       loginForm: { order: small ? 1 : 2, width: "100%", maxWidth: phone ? "none" : "430px", justifySelf: tablet ? "start" : "auto", position: "relative", zIndex: 1, boxSizing: "border-box",
         padding: phone ? "var(--space-4)" : "var(--space-6)", borderRadius: "var(--radius-lg)", background: "color-mix(in srgb, var(--color-bg) 74%, transparent)",
@@ -16497,6 +16598,9 @@ class Component extends DCLogic {
         hasTurnstile: !!(st.cloud && window.ChronikCloud && window.ChronikCloud.turnstileKey),
         hasQuiz: !st.botOk && !(st.cloud && window.ChronikCloud && window.ChronikCloud.turnstileKey),
         tsRef: this.tsRef,
+        tsHaengt: !!st.tsHaengt,
+        tsHinweis: (navigator.brave ? tx("ts_brave") : tx("ts_haengt")),
+        tsNeu: this.tsNeu,
         quizLabel: st.quiz ? (tx("sicherheitsfrage_wie_viel_ist") + " ") + st.quiz.a + " + " + st.quiz.b + "?" : tx("sicherheitsfrage"),
         quizAnswer: st.quizAnswer,
         onQuiz: (ev) => this.setState({ quizAnswer: ev.target.value, authError: "" }),
