@@ -144,7 +144,7 @@
               <button onClick="{{ gv.nameAendern }}" style="justify-self: start; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: transparent; color: var(--g-ink); font: inherit; font-size: 14px; cursor: pointer; white-space: nowrap;">{{ L.gast_name_aendern }}</button>
             </sc-if>
             <sc-if value="{{ gv.nameZeigen }}" hint-placeholder-val="{{ true }}">
-            <label style="display: grid; gap: 8px;"><span style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: color-mix(in srgb, var(--g-ink) 62%, transparent);">{{ L.gast_wie_heisst }}</span><input value="{{ gv.name }}" onChange="{{ gv.onName }}" onBlur="{{ gv.nameFertig }}" placeholder="{{ L.gast_name_ph }}" autocomplete="name" enterkeyhint="done" style="width: 100%; box-sizing: border-box; padding: 13px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px;"></label>
+            <label style="display: grid; gap: 8px;"><span style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: color-mix(in srgb, var(--g-ink) 62%, transparent);">{{ L.gast_wie_heisst }}</span><div style="display: flex; gap: 8px; flex-wrap: wrap;"><input value="{{ gv.nameEntwurf }}" onChange="{{ gv.onName }}" onKeyDown="{{ gv.nameTaste }}" placeholder="{{ L.gast_name_ph }}" autocomplete="name" enterkeyhint="done" style="flex: 1 1 200px; min-width: 0; box-sizing: border-box; padding: 13px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px;"><button onClick="{{ gv.nameFertig }}" style="flex: 0 0 auto; min-height: 50px; padding: 0 22px; border-radius: 999px; border: 0; background: var(--g-accent); color: var(--g-bg); font: inherit; font-size: 16px; font-weight: 600; cursor: pointer;">{{ L.gast_name_ok }}</button></div></label>
             <div style="font-size: 13.5px; opacity: 0.7;">{{ L.gast_name_hinweis }}</div>
             <sc-if value="{{ gv.kannAnmelden }}" hint-placeholder-val="{{ false }}">
               <button onClick="{{ gv.anmelden }}" style="justify-self: start; min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1.5px solid var(--g-accent); background: transparent; color: var(--g-accent); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;">{{ L.gast_mit_konto }}</button>
@@ -207,6 +207,14 @@
                   <figure style="margin: 0 0 10px; break-inside: avoid; display: grid; gap: 4px;">
                     <img ref="{{ f.bildRef }}" alt="" loading="lazy" style="width: 100%; height: auto; display: block; border-radius: calc(var(--g-radius) + 2px); background: color-mix(in srgb, var(--g-ink) 8%, transparent); min-height: 80px;">
                     <figcaption style="font-size: 12.5px; opacity: 0.7; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ f.name }}</figcaption>
+                    <button onClick="{{ f.komUm }}" style="justify-self: start; min-height: 36px; padding: 0; border: 0; background: transparent; color: var(--g-accent); font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; text-align: left;">{{ f.komLabel }}</button>
+                    <sc-if value="{{ f.komAuf }}" hint-placeholder-val="{{ false }}">
+                      <div style="display: grid; gap: 8px; padding: 10px 12px; border-radius: calc(var(--g-radius) + 2px); background: var(--g-bg);">
+                        <sc-for list="{{ f.kommentare }}" as="k" hint-placeholder-count="0"><div style="font-size: 14px; line-height: 1.4; overflow-wrap: anywhere;"><strong style="font-weight: 700;">{{ k.name }}</strong> {{ k.text }}</div></sc-for>
+                        <textarea value="{{ f.komText }}" onChange="{{ f.onKomText }}" rows="2" placeholder="{{ L.kom_ph }}" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-card); color: var(--g-ink); font: inherit; font-size: 16px; resize: vertical;"></textarea>
+                        <button onClick="{{ f.komSenden }}" style="justify-self: start; min-height: 44px; padding: 0 18px; border-radius: 999px; border: 0; background: var(--g-accent); color: var(--g-bg); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;">{{ L.kom_senden }}</button>
+                      </div>
+                    </sc-if>
                   </figure>
                 </sc-for>
               </div>
@@ -1491,12 +1499,27 @@
                                   <sc-if value="{{ c.gfotoAuf }}" hint-placeholder-val="{{ true }}"><div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px;">
                                     <sc-for list="{{ c.gFotos }}" as="gf" hint-placeholder-count="0">
                                       <div style="position: relative; display: grid; gap: 2px; min-width: 0;">
-                                        <img ref="{{ gf.bildRef }}" alt="" loading="lazy" style="width: 100%; aspect-ratio: 1; object-fit: cover; display: block; border-radius: var(--t-radius, 2px); background: var(--color-neutral-200);">
+                                        <button onClick="{{ gf.waehle }}" title="{{ L.kom_oeffnen }}" aria-label="{{ L.kom_oeffnen }}" style="{{ gf.knopfStil }}"><img ref="{{ gf.bildRef }}" alt="" loading="lazy" style="width: 100%; aspect-ratio: 1; object-fit: cover; display: block; border-radius: var(--t-radius, 2px); background: var(--color-neutral-200);"></button>
                                         <span style="font-size: 11.5px; opacity: 0.7; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ gf.name }}</span>
+                                        <sc-if value="{{ gf.hatKom }}" hint-placeholder-val="{{ false }}"><span style="font-size: 11px; color: var(--t-accent, #0088b0);">{{ gf.komText }}</span></sc-if>
                                         <sc-if value="{{ gf.darfWeg }}" hint-placeholder-val="{{ false }}"><button onClick="{{ gf.weg }}" title="{{ L.entfernen }}" style="position: absolute; right: 4px; top: 4px; width: 28px; height: 28px; border-radius: 50%; border: 0; cursor: pointer; background: var(--color-bg); color: var(--color-text); box-shadow: var(--shadow-sm);">✕</button></sc-if>
                                       </div>
                                     </sc-for>
-                                  </div></sc-if>
+                                  </div>
+                                  <sc-if value="{{ c.gfSel.an }}" hint-placeholder-val="{{ false }}">
+                                    <div style="display: grid; gap: 10px; padding: 12px; border-radius: var(--t-radius, 2px); background: color-mix(in srgb, var(--t-ink, #201e1d) 5%, var(--t-card, #eae9e9));">
+                                      <img ref="{{ c.gfSel.bildRef }}" alt="" style="width: 100%; max-height: 60vh; object-fit: contain; display: block; border-radius: var(--t-radius, 2px); background: var(--color-neutral-200);">
+                                      <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;"><strong style="font-size: 15px; font-weight: 600;">{{ c.gfSel.name }}</strong><span style="font-size: 12px; opacity: 0.6;">{{ c.gfSel.wann }}</span><span style="flex: 1;"></span>
+                                        <sc-if value="{{ c.gfSel.darfWeg }}" hint-placeholder-val="{{ false }}"><button class="btn btn-ghost" style="min-height: 40px; color: var(--t-accent2, #d6006c);" onClick="{{ c.gfSel.weg }}">{{ L.kom_bild_loeschen }}</button></sc-if>
+                                        <button class="btn btn-ghost btn-icon" title="{{ L.schliessen }}" aria-label="{{ L.schliessen }}" style="min-height: 40px;" onClick="{{ c.gfSel.zu }}">✕</button>
+                                      </div>
+                                      <div style="font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t-accent, #0088b0);">{{ L.kom_titel }}</div>
+                                      <sc-for list="{{ c.gfSel.kommentare }}" as="gk" hint-placeholder-count="0"><div style="display: flex; gap: 8px; align-items: baseline; font-size: 14px; line-height: 1.45;"><div style="flex: 1; min-width: 0; overflow-wrap: anywhere;"><strong style="font-weight: 700;">{{ gk.name }}</strong> {{ gk.text }}</div><sc-if value="{{ gk.darfWeg }}" hint-placeholder-val="{{ false }}"><button onClick="{{ gk.weg }}" title="{{ L.entfernen }}" style="cursor: pointer; font: inherit; border: 0; background: transparent; color: inherit; opacity: 0.55; min-height: 32px;">✕</button></sc-if></div></sc-for>
+                                      <sc-if value="{{ c.gfSel.keineKom }}" hint-placeholder-val="{{ false }}"><div style="font-size: 13px; font-style: italic; opacity: 0.7;">{{ L.kom_leer }}</div></sc-if>
+                                      <sc-if value="{{ c.gfSel.kannSchreiben }}" hint-placeholder-val="{{ false }}"><div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end;"><textarea value="{{ c.gfSel.text }}" onChange="{{ c.gfSel.onText }}" rows="2" placeholder="{{ L.kom_ph }}" style="flex: 1 1 220px; min-width: 0; font: inherit; font-size: 16px; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--t-border, rgba(32,30,29,0.2)); background: transparent; color: inherit; resize: vertical;"></textarea><button class="btn btn-primary" style="min-height: 44px;" onClick="{{ c.gfSel.senden }}">{{ L.kom_senden }}</button></div></sc-if>
+                                      <sc-if value="{{ c.gfSel.hatErr }}" hint-placeholder-val="{{ false }}"><div style="font-size: 13px; color: var(--t-accent2, #d6006c);">{{ c.gfSel.err }}</div></sc-if>
+                                    </div>
+                                  </sc-if></sc-if>
                                 </div>
                               </sc-if>
                               <sc-if value="{{ c.hatGBuch }}" hint-placeholder-val="{{ false }}">
@@ -6648,10 +6671,14 @@ class Component extends DCLogic {
         return;
       }
     }
-    const e = st.openId ? (st.events || []).filter((x) => x.id === st.openId)[0] : null;
     const m = Math.floor(Date.now() / 60000);
     if (m !== this._cdMin) {
       this._cdMin = m;
+      if (st.gast && st.gast.d && !st.gast.laden) {
+        const fm = ((st.gast.d.cfg || {}).freiMs) || {};
+        const jetzt = Date.now();
+        if (Object.keys(fm).some((k) => fm[k] <= jetzt && fm[k] > (this._gastAm || 0))) { this._gastAm = jetzt; this.gastLaden(); }
+      }
       if (st.gast || (st.events || []).some((x) => this.exOf(x).countdown)) this.forceUpdate();
     }
   }
@@ -6676,8 +6703,21 @@ class Component extends DCLogic {
     try {
       await CC.gastWeg(row.id);
       if (row.img && CC.deleteImages) { try { await CC.deleteImages([row.img]); } catch (x) { /* Datei bleibt */ } }
-    } catch (x) { /* egal */ }
+      if (row.kind === "foto") this.setState((s) => ({ gfSel: Object.assign({}, s.gfSel, { [eid]: "" }) }));
+    } catch (x) { window.alert(tx("gast_weg_f")); }
     this.gastDatenLaden(eid);
+  }
+  async gastKomKonto(e, fid) {
+    const o = this.exOf(e).offen || {};
+    const CC = window.ChronikCloud;
+    const me = this.me() || {};
+    const text = String((this.state.gfKomText || {})[fid] || "").trim().slice(0, 800);
+    if (!text || !CC || !CC.gastAdd || !o.token) return;
+    try {
+      await CC.gastAdd(e.id, o.token, "kom", String(me.username || tx("jemand")).slice(0, 60), text, { zu: fid }, null);
+      this.setState((s) => ({ gfKomText: Object.assign({}, s.gfKomText, { [fid]: "" }), gfKomErr: "" }));
+      this.gastDatenLaden(e.id);
+    } catch (x) { this.setState({ gfKomErr: tx("kom_f_senden") }); }
   }
   gastLinkFuer(e) {
     const o = this.exOf(e).offen || {};
@@ -6727,8 +6767,11 @@ class Component extends DCLogic {
     const rows = (st.gastDaten || {})[e.id];
     if (gastAn && !rows && !(this._gastL || {})[e.id]) this.gastDatenLaden(e.id);
     const alle = rows || [];
-    const darfWeg = lvl >= 4 || e.by === me.id;
+    const darfWeg = lvl >= 3 || e.by === me.id;
     const weg = (r) => (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.gastEintragWeg(e.id, r); };
+    const kom = alle.filter((r) => r.kind === "kom");
+    const komZu = (id) => kom.filter((k) => (k.data || {}).zu === id).sort((a, b) => String(a.created || "").localeCompare(String(b.created || "")));
+    const selId = (st.gfSel || {})[e.id] || "";
     const rsvp = lvl >= 3 ? alle.filter((r) => r.kind === "rsvp") : [];
     const rf = Object.assign({ antwort: "", essen: "", suche: "", plus: "", q: {}, sort: "" }, (st.rsvpF || {})[e.id] || {});
     const setRf = (p) => this.setState((s) => ({ rsvpF: Object.assign({}, s.rsvpF, { [e.id]: Object.assign({}, rf, p) }) }));
@@ -6785,7 +6828,7 @@ class Component extends DCLogic {
           begl: pl.length ? pl.map((p) => (p.name || tx("rf_ohne_name")) + (p.essen ? " (" + p.essen + ")" : "")).join(", ") : (d0.plusNamen || ("+" + d0.plus)),
           antw: fragen.map((f) => ({ key: f.i, frage: f.frage, text: antwVon(r, f.i).join(", ") })).filter((x) => x.text),
           hatText: !!r.text, text: r.text || "",
-          darfWeg: lvl >= 4 || e.by === me.id, weg: weg(r) };
+          darfWeg: darfWeg, weg: weg(r) };
       }),
       rLeer: rsvp.length > 0 && !gefiltert.length
     };
@@ -6805,8 +6848,26 @@ class Component extends DCLogic {
       gastNeu: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this._gastL = Object.assign({}, this._gastL, { [e.id]: false }); this.gastDatenLaden(e.id); },
       gFotos: alle.filter((r) => r.kind === "foto" && r.img).map((r) => {
         const u = this.urlFuer(r.img, "");
-        return { key: r.id, name: r.name, darfWeg: darfWeg, weg: weg(r), bildRef: (el) => { if (el && u && el.getAttribute("src") !== u) el.setAttribute("src", u); } };
+        const nk = komZu(r.id).length;
+        return { key: r.id, name: r.name, darfWeg: darfWeg, weg: weg(r), bildRef: (el) => { if (el && u && el.getAttribute("src") !== u) el.setAttribute("src", u); },
+          hatKom: nk > 0, komText: plural(nk, tx("kom_einer"), tx("kom_mehrere")),
+          waehle: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.setState((s) => ({ gfSel: Object.assign({}, s.gfSel, { [e.id]: selId === r.id ? "" : r.id }) })); },
+          knopfStil: { display: "block", width: "100%", padding: 0, border: 0, background: "transparent", cursor: "pointer", borderRadius: "var(--t-radius, 2px)", outline: selId === r.id ? "3px solid var(--t-accent, #0088b0)" : "none", outlineOffset: "2px" } };
       }),
+      gfSel: (() => {
+        const r = alle.filter((x) => x.id === selId && x.kind === "foto")[0];
+        if (!r) return { an: false };
+        const u = this.urlFuer(r.img, "");
+        const ks = komZu(r.id);
+        const zu = (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.setState((s) => ({ gfSel: Object.assign({}, s.gfSel, { [e.id]: "" }) })); };
+        return { an: true, name: r.name, wann: fmtDate(String(r.created || "").slice(0, 10)), darfWeg: darfWeg, weg: weg(r), zu: zu,
+          bildRef: (el) => { if (el && u && el.getAttribute("src") !== u) el.setAttribute("src", u); },
+          kommentare: ks.map((k) => ({ key: k.id, name: k.name, text: k.text, darfWeg: darfWeg, weg: weg(k) })), keineKom: !ks.length,
+          kannSchreiben: !!o.token && !!me.id,
+          text: (st.gfKomText || {})[r.id] || "", onText: (ev) => { const v = ev.target.value; this.setState((s) => ({ gfKomText: Object.assign({}, s.gfKomText, { [r.id]: v }) })); },
+          senden: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.gastKomKonto(e, r.id); },
+          hatErr: !!st.gfKomErr, err: st.gfKomErr || "" };
+      })(),
       hatGFotos: alle.some((r) => r.kind === "foto"),
       gBuch: alle.filter((r) => r.kind === "buch").map((r) => ({ key: r.id, name: r.name, text: r.text, wann: fmtDate(String(r.created || "").slice(0, 10)), darfWeg: darfWeg, weg: weg(r) })),
       hatGBuch: alle.some((r) => r.kind === "buch"),
@@ -7096,6 +7157,7 @@ class Component extends DCLogic {
     try {
       const d = await CC.gastSicht(g.ev, g.tk);
       if (!d) { this.gastSet({ laden: false, err: tx("gast_f_link") }); return; }
+      this._gastAm = Date.now();
       this.gastSet((x) => ({ laden: false, err: "", d: d, tab: x.tab || "" }));
     } catch (e) {
       this.gastSet({ laden: false, err: e && e.code === "D-28" ? tx("gast_f_sql") : tx("gast_f_link") + " (" + ((e && (e.code || e.message)) || "?") + ")" });
@@ -7110,6 +7172,11 @@ class Component extends DCLogic {
   }
   gastSperre(d, k) {
     const f = (((d && d.cfg) || {}).frei || {})[k] || {};
+    const fm = ((((d && d.cfg) || {}).freiMs) || {})[k];
+    if (typeof fm === "number" && fm > 0) {
+      if (fm <= Date.now()) return "";
+      return f.art === "cd" ? tx("gast_frei_cd") : tx("gast_frei_ab") + " " + new Intl.DateTimeFormat(window.CHRONIK_LOCALE || "de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }).format(new Date(fm));
+    }
     if (f.art === "cd") {
       const ziel = this.cdZielMs(d.date, d.start || (d.countdown || {}).zeit || "");
       return ziel > Date.now() ? tx("gast_frei_cd") : "";
@@ -7129,12 +7196,22 @@ class Component extends DCLogic {
     if (c.sitz) out.push({ k: "sitz", l: tx("gast_sitz"), g: "◎", d: tx("gast_d_sitz") });
     const L0 = (d && d.lage) || {};
     if ((L0.punkte || []).length || L0.bild || L0.karte) out.push({ k: "lage", l: tx("lp_titel"), g: "⌖", d: tx("gast_d_lage") });
-    return out;
+    /* Noch nicht freigegebene Bereiche sehen Gäste gar nicht. */
+    return out.filter((t) => t.k === "rsvp" || !this.gastSperre(d, t.k));
+  }
+  gastNameFest() {
+    const g = this.state.gast || {};
+    const n = String(g.nameEntwurf != null ? g.nameEntwurf : g.name || "").trim().slice(0, 60);
+    if (!n) return;
+    this.gastSet({ name: n, nameEntwurf: null, nameEdit: false, info: "" });
+    try { localStorage.setItem("chronik-gast-name", n); } catch (x) { /* privat */ }
   }
   gastName() {
     const ich = this.me();
     if (ich && ich.username) return String(ich.username).slice(0, 60);
-    const n = String((this.state.gast || {}).name || "").trim().slice(0, 60);
+    const g0 = this.state.gast || {};
+    const n = String(g0.name || g0.nameEntwurf || "").trim().slice(0, 60);
+    if (n && !String(g0.name || "").trim()) this.gastSet({ name: n, nameEntwurf: null });
     if (n) { try { localStorage.setItem("chronik-gast-name", n); } catch (x) { /* privat */ } }
     return n;
   }
@@ -7159,6 +7236,17 @@ class Component extends DCLogic {
     }
     this.gastSet({ busy: "", info: ok ? plural(ok, tx("bild"), tx("bilder")) + " " + tx("gast_hochgeladen") + (fehler ? " · " + fehler : "") : fehler });
     if (ok) this.gastLaden();
+  }
+  async gastKomSenden(fid) {
+    const g = this.state.gast;
+    if (!g) return;
+    const name = this.gastName();
+    const text = String(g.komText || "").trim().slice(0, 800);
+    if (!name) { this.gastSet({ info: tx("gast_name_fehlt") }); return; }
+    if (!text) return;
+    this.gastSet({ busy: tx("gast_sendet"), info: "" });
+    try { await window.ChronikCloud.gastAdd(g.ev, g.tk, "kom", name, text, { zu: fid }, null); this.gastSet({ busy: "", komText: "" }); this.gastLaden(); }
+    catch (e) { this.gastSet({ busy: "", info: tx("kom_f_senden") }); }
   }
   async gastBuchSenden() {
     const g = this.state.gast;
@@ -7226,7 +7314,9 @@ class Component extends DCLogic {
       kicker: d.kicker || "", hatKicker: !!d.kicker, titel: d.name || "",
       wann: [d.date ? fmtDate(d.date) : "", d.place || ""].filter(Boolean).join(" · "),
       cd: cd, hatCd: !!cd,
-      name: g.name || "", onName: (ev) => this.gastSet({ name: ev.target.value }),
+      name: g.name || "", nameEntwurf: g.nameEntwurf != null ? g.nameEntwurf : (g.name || ""),
+      onName: (ev) => this.gastSet({ nameEntwurf: ev.target.value }),
+      nameTaste: (ev) => { if (ev && ev.key === "Enter") { ev.preventDefault(); this.gastNameFest(); } },
       konto: !!kontoName, ohneKonto: !kontoName,
       kontoText: tx("gast_angemeldet_als") + " " + (kontoName || ""),
       kannAnmelden: !kontoName && !!(CC && CC.enabled),
@@ -7273,14 +7363,24 @@ class Component extends DCLogic {
           background: (g.tab || "") === t.k ? "color-mix(in srgb, var(--g-accent) 16%, transparent)" : "transparent", color: (g.tab || "") === t.k ? "var(--g-accent)" : "var(--g-ink)" } })),
       nameZeigen: !kontoName && (!String(g.name || "").trim() || !!g.nameEdit),
       nameKurz: !kontoName && !!String(g.name || "").trim() && !g.nameEdit,
-      nameAendern: () => this.gastSet({ nameEdit: true }),
-      nameFertig: () => { this.gastName(); this.gastSet({ nameEdit: false }); },
+      nameAendern: () => this.gastSet({ nameEdit: true, nameEntwurf: g.name || "" }),
+      nameFertig: () => this.gastNameFest(),
       istFoto: g.tab === "foto" && !this.gastSperre(d, "foto"), istBuch: g.tab === "buch" && !this.gastSperre(d, "buch"), istSitz: g.tab === "sitz" && !this.gastSperre(d, "sitz"), istRsvp: g.tab === "rsvp", istLage: g.tab === "lage" && !this.gastSperre(d, "lage"),
       istGesperrt: !!g.tab && g.tab !== "rsvp" && !!this.gastSperre(d, g.tab),
       sperrText: g.tab ? this.gastSperre(d, g.tab) : "",
       sperrTitel: (tabs.filter((t) => t.k === g.tab)[0] || {}).l || "",
       busy: g.busy || "", hatBusy: !!g.busy, info: g.info || "", hatInfo: !!g.info && !g.busy,
-      fotos: eintr.filter((x) => x.kind === "foto" && x.img).map((x) => { const u = url(x.img); return { key: x.id, name: x.name, bildRef: (el) => { if (el && u && el.getAttribute("src") !== u) el.setAttribute("src", u); } }; }),
+      fotos: eintr.filter((x) => x.kind === "foto" && x.img).map((x) => {
+        const u = url(x.img);
+        const ks = eintr.filter((k) => k.kind === "kom" && k.zu === x.id).sort((a, b) => String(a.created || "").localeCompare(String(b.created || "")));
+        const auf = g.komAuf === x.id;
+        return { key: x.id, name: x.name, bildRef: (el) => { if (el && u && el.getAttribute("src") !== u) el.setAttribute("src", u); },
+          komLabel: ks.length ? tx("kom_titel") + " (" + ks.length + ")" : tx("kom_schreiben"), komAuf: auf,
+          komUm: () => this.gastSet({ komAuf: auf ? "" : x.id, komText: "" }),
+          kommentare: ks.map((k) => ({ key: k.id, name: k.name, text: k.text })),
+          komText: auf ? g.komText || "" : "", onKomText: (ev) => this.gastSet({ komText: ev.target.value }),
+          komSenden: () => this.gastKomSenden(x.id) };
+      }),
       keineFotos: !eintr.some((x) => x.kind === "foto"),
       onFotos: (ev) => this.gastFotos(ev),
       buch: eintr.filter((x) => x.kind === "buch").map((x) => ({ key: x.id, name: x.name, text: x.text, wann: fmtDate(String(x.created || "").slice(0, 10)) })),
@@ -7830,7 +7930,16 @@ class Component extends DCLogic {
   }
   gastLookFest(ex, d) {
     if (!ex || !ex.offen) return ex;
-    return Object.assign({}, ex, { offen: Object.assign({}, ex.offen, { look: this.gastLookAus(ex.offen.design || "", d) }) });
+    /* Freigaben als fester Zeitpunkt (ms) — so prüfen Gästeseite und Server dasselbe, unabhängig von der Zeitzone. */
+    const fm = {};
+    Object.keys(ex.offen.frei || {}).forEach((k) => {
+      const f = ex.offen.frei[k] || {};
+      let ms = 0;
+      if (f.art === "cd") ms = this.cdZielMs(d && d.date, ex.cdZeit || "");
+      else if (f.art === "zeit" && f.zeit) ms = Date.parse(f.zeit) || 0;
+      if (ms > 0) fm[k] = ms;
+    });
+    return Object.assign({}, ex, { offen: Object.assign({}, ex.offen, { look: this.gastLookAus(ex.offen.design || "", d), freiMs: fm }) });
   }
 
   async gaPruefen() {

@@ -929,8 +929,9 @@
   }
   async function gastWeg(id) {
     var c = await client();
-    var r = await c.from("guest_entries").delete().eq("id", id);
+    var r = await c.from("guest_entries").delete().eq("id", id).select("id");
     if (r.error) throw fail(code(r.error));
+    if (!r.data || !r.data.length) throw fail("D-30");
   }
   /* Timetable-Foto von der KI im eigenen Worker lesen lassen. */
   async function ttKi(bild) {

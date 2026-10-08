@@ -1495,6 +1495,18 @@ window.CHRONIK_SPRACHEN.en = {
     h_sitz: "Add tables, move and rotate them, name the seats. Guests find themselves via search and see their seat highlighted.",
     h_frei: "Photo wall, guest book, seating and site plan can appear immediately, after the countdown or from a set time.",
     h_rueck_titel: "Reviewing responses",
-    h_rueck: "In the event you see all guest answers – only you and co-editors. Filter by yes/no, companions, meal and each question, and sort by name or by a question."
+    h_rueck: "In the event you see all guest answers – only you and co-editors. Filter by yes/no, companions, meal and each question, and sort by name or by a question.",
+    gast_name_ok: "OK",
+    kom_titel: "Comments",
+    kom_schreiben: "Comment",
+    kom_ph: "Write a comment …",
+    kom_senden: "Send",
+    kom_leer: "No comments yet.",
+    kom_oeffnen: "Open image and comment",
+    kom_bild_loeschen: "Delete image",
+    kom_einer: "comment",
+    kom_mehrere: "comments",
+    kom_f_senden: "Couldn't send the comment (was supabase-update-29.sql run?).",
+    gast_weg_f: "Deleting failed – missing permission, or supabase-update-29.sql not run yet?"
   }
 };

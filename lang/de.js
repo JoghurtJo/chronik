@@ -1495,6 +1495,18 @@ window.CHRONIK_SPRACHEN.de = {
     h_sitz: "Tische hinzufügen, verschieben, drehen und Plätze benennen. Gäste finden sich über das Suchfeld und sehen ihren Platz hervorgehoben.",
     h_frei: "Fotowand, Gästebuch, Sitzordnung und Lageplan können sofort, nach Ablauf des Countdowns oder ab einer bestimmten Uhrzeit sichtbar werden.",
     h_rueck_titel: "Rückmeldungen auswerten",
-    h_rueck: "Im Ereignis siehst du alle Antworten der Gäste – nur du und wer mitbearbeiten darf. Filtere nach Zu- oder Absage, Begleitung, Essen und nach jeder Abfrage, und sortiere nach Name oder nach einer Abfrage."
+    h_rueck: "Im Ereignis siehst du alle Antworten der Gäste – nur du und wer mitbearbeiten darf. Filtere nach Zu- oder Absage, Begleitung, Essen und nach jeder Abfrage, und sortiere nach Name oder nach einer Abfrage.",
+    gast_name_ok: "Übernehmen",
+    kom_titel: "Kommentare",
+    kom_schreiben: "Kommentieren",
+    kom_ph: "Schreib einen Kommentar …",
+    kom_senden: "Senden",
+    kom_leer: "Noch keine Kommentare.",
+    kom_oeffnen: "Bild öffnen und kommentieren",
+    kom_bild_loeschen: "Bild löschen",
+    kom_einer: "Kommentar",
+    kom_mehrere: "Kommentare",
+    kom_f_senden: "Der Kommentar ließ sich nicht senden (supabase-update-29.sql ausgeführt?).",
+    gast_weg_f: "Löschen hat nicht geklappt – fehlt die Berechtigung, oder wurde supabase-update-29.sql noch nicht ausgeführt?"
   }
 };
