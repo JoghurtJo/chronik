@@ -30,7 +30,8 @@
   [data-handy-offen="1"] * { min-width: 0; overflow-wrap: anywhere; }
   a { color: var(--color-accent-700); text-decoration: none; }
   a:hover { color: var(--color-accent); text-decoration: underline; }
-  @keyframes tl-float { from { transform: translateY(0); } to { transform: translateY(-7px); } }
+  @keyframes tl-dreh { to { transform: rotate(360deg); } }
+@keyframes tl-float { from { transform: translateY(0); } to { transform: translateY(-7px); } }
 @keyframes tl-drift { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(5%, -4%) scale(1.08); } 100% { transform: translate(-4%, 5%) scale(0.95); } }
 @media (prefers-reduced-motion: reduce) { [data-bewegt] { animation: none !important; } }
 @keyframes tl-glide { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
@@ -449,13 +450,13 @@
     {{ loginFx }}
     <div data-bewegt="" style="{{ lay.loginPitch }}">
       <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.was_ihr_erlebt_habt_in_einer }}</div>
-      <h1 style="{{ lay.loginTitle }}">{{ L.chronik }}</h1>
-      <div style="height: 5px; background: var(--color-text); margin-top: var(--space-4);"></div>
+      <h1 aria-label="{{ L.chronik }}" style="{{ lay.loginTitle }}"><svg viewBox="96 80 310 352" aria-hidden="true" style="{{ lay.loginC }}"><defs><linearGradient id="wmC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c4ad8"></stop><stop offset="0.42" stop-color="#3d63d9"></stop><stop offset="0.62" stop-color="#1f84cf"></stop><stop offset="0.82" stop-color="#10a0a8"></stop><stop offset="1" stop-color="#13a77c"></stop></linearGradient><linearGradient id="wmS" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity="0.3"></stop><stop offset="0.5" stop-color="#ffffff" stop-opacity="0"></stop><stop offset="1" stop-color="#0a0a28" stop-opacity="0.22"></stop></linearGradient><radialGradient id="wmP" cx="0.35" cy="0.3" r="0.75"><stop offset="0" stop-color="#ffffff"></stop><stop offset="0.7" stop-color="#f1f1f8"></stop><stop offset="1" stop-color="#d4d4e2"></stop></radialGradient><radialGradient id="wmK" cx="0.35" cy="0.3" r="0.8"><stop offset="0" stop-color="#a77bf0"></stop><stop offset="1" stop-color="#5d38c4"></stop></radialGradient></defs><path d="M 368.4 145.8 A 147 147 0 1 0 368.4 364.2" fill="none" stroke="url(#wmC)" stroke-width="46" stroke-linecap="round"></path><path d="M 368.4 145.8 A 147 147 0 1 0 368.4 364.2" fill="none" stroke="url(#wmS)" stroke-width="46" stroke-linecap="round"></path><path d="M 148.8 325 A 140 140 0 0 1 240.9 118.1" fill="none" stroke="#ffffff" stroke-opacity="0.55" stroke-width="7" stroke-linecap="round"></path><circle cx="160.8" cy="156.6" r="10.5" fill="url(#wmP)"></circle><circle cx="152.6" cy="343.5" r="10.5" fill="url(#wmP)"></circle><circle cx="368.4" cy="145.8" r="33" fill="url(#wmP)"></circle><circle cx="368.4" cy="145.8" r="27" fill="none" stroke="#7446d6" stroke-width="8"></circle><circle cx="368.4" cy="145.8" r="14" fill="url(#wmK)"></circle></svg><span style="{{ lay.loginWort }}">{{ wortRest }}</span></h1>
+      <div style="height: 4px; border-radius: 4px; background: linear-gradient(90deg, #7c4ad8, #3d63d9 40%, #1f84cf 65%, #13a77c); margin-top: var(--space-5);"></div>
       <div style="display: flex; justify-content: space-between; gap: var(--space-4); padding: 7px 0; font-size: 11.5px; letter-spacing: 0.13em; text-transform: uppercase;">
         <span>{{ L.ereignisse_bilder_menschen }}</span>
         <span>{{ today }}</span>
       </div>
-      <div style="height: 1px; background: var(--color-text);"></div>
+      <div style="height: 1px; background: var(--color-divider);"></div>
 
       <sc-if value="{{ auth.configFault }}" hint-placeholder-val="{{ false }}">
         <div style="margin-top: var(--space-6); padding: 12px 15px; border-radius: var(--radius-md); background: var(--color-accent-2-100); color: var(--color-accent-2-700); font-size: 15px; max-width: 40ch;">{{ auth.configFault }}</div>
@@ -6468,12 +6469,12 @@ class Component extends DCLogic {
       background: "radial-gradient(circle at 40% 40%, " + farbe + " 0%, transparent 68%)", filter: "blur(30px)", opacity: 0.9,
       animation: "tl-drift " + dauer + "s " + verz + "s ease-in-out infinite alternate" } });
     this._loginFx = h("div", { key: "lfx", "aria-hidden": "true", style: { position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none", zIndex: 0 } },
-      blob("b1", "-12%", "-18%", "min(70vw, 760px)", "color-mix(in srgb, var(--color-accent) 30%, transparent)", 22, 0),
-      blob("b2", "52%", "38%", "min(62vw, 680px)", "color-mix(in srgb, var(--color-accent-2) 24%, transparent)", 26, -6),
-      blob("b3", "30%", "-24%", "min(44vw, 460px)", "color-mix(in srgb, #f2c500 26%, transparent)", 30, -12),
-      h("div", { key: "dots", style: { position: "absolute", right: 0, top: 0, width: "58%", height: "100%",
-        backgroundImage: "radial-gradient(color-mix(in srgb, var(--color-text) 16%, transparent) 1.1px, transparent 1.5px)", backgroundSize: "14px 14px",
-        WebkitMaskImage: "radial-gradient(ellipse at 85% 20%, #000 0%, transparent 65%)", maskImage: "radial-gradient(ellipse at 85% 20%, #000 0%, transparent 65%)" } }));
+      blob("b1", "-12%", "-18%", "min(70vw, 760px)", "rgba(124, 74, 216, 0.22)", 22, 0),
+      blob("b2", "52%", "38%", "min(62vw, 680px)", "rgba(19, 167, 124, 0.2)", 26, -6),
+      blob("b3", "30%", "-24%", "min(44vw, 460px)", "rgba(31, 132, 207, 0.22)", 30, -12),
+      h("svg", { key: "ring", viewBox: "-220 -220 440 440", "data-bewegt": "", style: { position: "absolute", right: "-14vmin", top: "-10vmin", width: "78vmin", height: "78vmin", opacity: 0.5, animation: "tl-dreh 160s linear infinite" } },
+        Array.from({ length: 30 }, (x, i) => { const a = i * 12 * Math.PI / 180, lang = i % 5 === 0, r0 = lang ? 170 : 180, r1 = lang ? 214 : 202;
+          return h("line", { key: i, x1: r0 * Math.cos(a), y1: r0 * Math.sin(a), x2: r1 * Math.cos(a), y2: r1 * Math.sin(a), stroke: "var(--color-neutral-500)", strokeWidth: lang ? 6 : 4, strokeLinecap: "round" }); })));
     return this._loginFx;
   }
   /* Tickende Countdown-Anzeige: ab unter einem Tag mit Sekunden, unter
@@ -15210,9 +15211,12 @@ class Component extends DCLogic {
         animation: "tl-rise 900ms 140ms cubic-bezier(0.16, 1, 0.3, 1) both" },
       loginTitle: {
         margin: "8px 0 0", fontSize: phone ? "54px" : tablet ? "72px" : "92px",
-        lineHeight: 0.88, letterSpacing: "-0.038em",
-        textShadow: "0.045em 0.03em 0 color-mix(in srgb, var(--color-accent) 55%, transparent), -0.03em -0.02em 0 color-mix(in srgb, var(--color-accent-2) 45%, transparent)"
+        lineHeight: 0.9, letterSpacing: "-0.045em", display: "flex", alignItems: "baseline", flexWrap: "nowrap",
+        fontFamily: "\"Space Grotesk\", system-ui, sans-serif", fontWeight: 700
       },
+      loginC: { height: "0.8em", width: "auto", flex: "0 0 auto", overflow: "visible", filter: "drop-shadow(0 0.06em 0.08em rgba(60, 40, 140, 0.28))", marginRight: "-0.01em" },
+      loginWort: { background: "linear-gradient(100deg, #5b55dc 0%, #1f84cf 48%, #13a77c 100%)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent",
+        filter: "drop-shadow(0 0.05em 0.07em rgba(60, 40, 140, 0.22))", paddingBottom: "0.06em" },
       loginClaim: {
         maxWidth: "26ch", fontSize: phone ? "26px" : tablet ? "32px" : "40px",
         lineHeight: 1.1, letterSpacing: "-0.02em", margin: "var(--space-6) 0 0", textWrap: "pretty"
@@ -15370,6 +15374,7 @@ class Component extends DCLogic {
         };
       })(this),
       loginFx: this.loginFxEl(),
+      wortRest: String(tx("chronik") || "Chronik").slice(1),
       gz: (function (self) {
         if (st.gastZurueck === undefined && !self._gzGelesen) { self._gzGelesen = true; try { const v = JSON.parse(sessionStorage.getItem("chronik-gast-zurueck") || "null"); if (v && v.hash) window.setTimeout(() => self.setState({ gastZurueck: v }), 0); } catch (x) { /* privat */ } }
         const v = st.gastZurueck;
@@ -16106,15 +16111,14 @@ class Component extends DCLogic {
           { y: "2026", up: true, w: 92, g: "", a: 0 }
         ].map((d, i) => {
           const left = 3 + i * 18;
-          const ac = d.a ? "var(--color-accent)" : "var(--color-neutral-500)";
+          const ac = ["#7c4ad8", "#3d63d9", "#1f84cf", "#10a0a8", "#13a77c"][i];
           return {
             key: "dm" + i,
             wrap: { position: "absolute", left: left + "%", top: "0", bottom: "0", width: "1px" },
             marker: {
               position: "absolute", left: "0", top: "106px", width: "11px", height: "11px",
-              marginLeft: "-5px", background: d.a ? ac : "var(--color-text)", boxShadow: d.a ? "0 0 0 5px color-mix(in srgb, " + ac + " 22%, transparent)" : "none",
-              transform: i % 2 ? "rotate(45deg)" : "none",
-              borderRadius: i % 2 ? "1px" : "50%"
+              marginLeft: "-5px", background: "radial-gradient(circle at 35% 30%, #ffffff, #e2e2ee)", boxShadow: "0 0 0 3px " + ac + ", 0 3px 8px rgba(40, 30, 90, 0.35)",
+              borderRadius: "50%"
             },
             card: {
               position: "absolute", left: "0", width: d.w + "px",
@@ -16133,7 +16137,7 @@ class Component extends DCLogic {
               : { display: "none" }
           };
         }),        spur: { position: "absolute", left: 0, right: 0, top: "112px", height: "3px", borderRadius: "2px", transformOrigin: "left center",
-          background: "linear-gradient(90deg, var(--color-text), var(--color-accent) 55%, var(--color-accent-2))", animation: "tl-draw 1200ms 200ms cubic-bezier(0.16, 1, 0.3, 1) both" },
+          background: "linear-gradient(90deg, #7c4ad8, #3d63d9 40%, #1f84cf 65%, #13a77c)", animation: "tl-draw 1200ms 200ms cubic-bezier(0.16, 1, 0.3, 1) both" },
         rules: pwRules(st.authForm.pw).map((r) => ({
           key: r.key, label: r.label, mark: r.ok ? "✓" : "·",
           style: { fontSize: "11.5px", letterSpacing: "0.02em", color: r.ok ? "var(--color-accent-700)" : "var(--color-neutral-600)" }
