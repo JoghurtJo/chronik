@@ -23,7 +23,7 @@
 <script src="supabase-bridge.js?v=b104"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&family=Fredoka:wght@500;600;700&family=Amiri:wght@400;700&display=swap">
 <style>
   body { margin: 0; overscroll-behavior-x: none; }
   [data-handy-offen="1"] img, [data-handy-offen="1"] iframe, [data-handy-offen="1"] video, [data-handy-offen="1"] canvas, [data-handy-offen="1"] table, [data-handy-offen="1"] input, [data-handy-offen="1"] textarea, [data-handy-offen="1"] select { max-width: 100%; }
@@ -4502,6 +4502,23 @@ const PRESETS = [
   T({ id: "gala", name: tx("p_gala"), kicker: tx("p_gala_k"), bg: "#0e0d0b", ink: "#f2ead8", card: "#1a1814", accent: "#d4af37", accent2: "#8fa3b8", line: "#d4af37", fontHead: "Playfair Display", fontBody: "Source Serif 4", headWeight: 600, headTransform: "uppercase", headTracking: 0.08, radius: 2, shadow: "lg", lineWidth: 1, lineStyle: "double", marker: "diamond", pattern: "none", anim: "rise", animDur: 860, density: 1.25, imgShape: "rect", skin: "gala" }),
   T({ id: "festival", name: tx("p_festival"), kicker: tx("p_festival_k"), bg: "#fff6e0", ink: "#1e1a16", card: "#ffffff", accent: "#ff5a1f", accent2: "#00a3a3", line: "#1e1a16", fontHead: "Bebas Neue", fontBody: "DM Sans", headWeight: 400, headTransform: "uppercase", headTracking: 0.03, radius: 8, shadow: "hard", lineWidth: 4, marker: "bar", pattern: "none", anim: "pop", animDur: 320, density: 1, imgShape: "polaroid", skin: "wristband" }),
   T({ id: "silvester", name: tx("p_silvester"), kicker: tx("p_silvester_k"), bg: "#0a0e1c", ink: "#eef1ff", card: "#141a30", accent: "#ffd166", accent2: "#c0c7ff", line: "#ffd166", fontHead: "Cormorant Garamond", fontBody: "DM Sans", headWeight: 700, radius: 10, shadow: "lg", lineWidth: 2, marker: "circle", pattern: "none", anim: "rise", animDur: 700, density: 1.15, imgShape: "round", skin: "fireworks" }),
+  T({ id: "weihnachten", name: tx("f_weihnachten"), kicker: tx("f_weihnachten_k"), bg: "#123a29", ink: "#fbf5e6", card: "#1a4733", accent: "#e0b04c", accent2: "#d2343c", line: "#e0b04c", fontHead: "Playfair Display", fontBody: "Source Serif 4", headWeight: 700, radius: 12, shadow: "lg", lineWidth: 3, marker: "circle", pattern: "none", anim: "rise", animDur: 760, density: 1.15, imgShape: "polaroid", skin: "xmas" }),
+  T({ id: "ostern", name: tx("f_ostern"), kicker: tx("f_ostern_k"), bg: "#fbf7ee", ink: "#3b3346", card: "#ffffff", accent: "#8a6ad6", accent2: "#f2a541", line: "#8a6ad6", fontHead: "Fredoka", fontBody: "DM Sans", headWeight: 600, radius: 22, shadow: "sm", lineWidth: 4, lineStyle: "dashed", marker: "circle", pattern: "none", anim: "bounce", animDur: 640, density: 1.15, imgShape: "round", skin: "easter" }),
+  T({ id: "cinco", name: tx("f_cinco"), kicker: tx("f_cinco_k"), bg: "#fff8ec", ink: "#2b1a10", card: "#ffffff", accent: "#d6336c", accent2: "#12a37f", line: "#d6336c", fontHead: "Bebas Neue", fontBody: "DM Sans", headWeight: 400, headTransform: "uppercase", headTracking: 0.03, radius: 10, shadow: "hard", lineWidth: 5, marker: "diamond", pattern: "none", anim: "pop", animDur: 340, density: 1.05, imgShape: "polaroid", skin: "picado" }),
+  T({ id: "chanukka", name: tx("f_chanukka"), kicker: tx("f_chanukka_k"), bg: "#0d1b3d", ink: "#f1f5ff", card: "#142652", accent: "#5aa9ff", accent2: "#e8c35a", line: "#5aa9ff", fontHead: "Cormorant Garamond", fontBody: "DM Sans", headWeight: 700, radius: 12, shadow: "lg", lineWidth: 2, lineStyle: "double", marker: "ring", pattern: "none", anim: "rise", animDur: 820, density: 1.2, imgShape: "round", skin: "chanukka" }),
+  T({ id: "ramadan", name: tx("f_ramadan"), kicker: tx("f_ramadan_k"), bg: "#10213a", ink: "#f7efd9", card: "#182d4d", accent: "#e3b75c", accent2: "#3fb6a8", line: "#e3b75c", fontHead: "Amiri", fontBody: "DM Sans", headWeight: 700, radius: 16, shadow: "lg", lineWidth: 2, marker: "diamond", pattern: "none", anim: "rise", animDur: 860, density: 1.2, imgShape: "round", skin: "ramadan" }),
+  T({ id: "diwali", name: tx("f_diwali"), kicker: tx("f_diwali_k"), bg: "#2a0f2e", ink: "#fff1e0", card: "#3a1640", accent: "#ffb238", accent2: "#ff4f8b", line: "#ffb238", fontHead: "Playfair Display", fontBody: "DM Sans", headWeight: 700, radius: 18, shadow: "lg", lineWidth: 3, marker: "circle", pattern: "none", anim: "pop", animDur: 520, density: 1.15, imgShape: "round", skin: "diwali" }),
+  T({ id: "mondneujahr", name: tx("f_mondneujahr"), kicker: tx("f_mondneujahr_k"), bg: "#8f0f12", ink: "#fff3d6", card: "#a3161a", accent: "#f6c453", accent2: "#ffe9b0", line: "#f6c453", fontHead: "Playfair Display", fontBody: "DM Sans", headWeight: 700, radius: 8, shadow: "lg", lineWidth: 3, marker: "diamond", pattern: "none", anim: "rise", animDur: 700, density: 1.1, imgShape: "round", skin: "lunar" }),
+  T({ id: "halloween", name: tx("f_halloween"), kicker: tx("f_halloween_k"), bg: "#16110c", ink: "#f6ead8", card: "#221a12", accent: "#ff7a1a", accent2: "#8b5cf6", line: "#ff7a1a", fontHead: "Bebas Neue", fontBody: "DM Sans", headWeight: 400, headTransform: "uppercase", headTracking: 0.04, radius: 10, shadow: "lg", lineWidth: 3, lineStyle: "dashed", marker: "diamond", pattern: "none", anim: "tilt", animDur: 560, density: 1.05, imgShape: "polaroid", skin: "halloween" }),
+  T({ id: "oktoberfest", name: tx("f_oktoberfest"), kicker: tx("f_oktoberfest_k"), bg: "#f5f9ff", ink: "#1b2b45", card: "#ffffff", accent: "#1f6fc5", accent2: "#c8963e", line: "#1f6fc5", fontHead: "Playfair Display", fontBody: "DM Sans", headWeight: 700, radius: 8, shadow: "md", lineWidth: 4, marker: "diamond", pattern: "none", anim: "pop", animDur: 420, density: 1.05, imgShape: "rect", skin: "rauten" }),
+  T({ id: "babyparty", name: tx("f_babyparty"), kicker: tx("f_babyparty_k"), bg: "#f4f8fb", ink: "#34404c", card: "#ffffff", accent: "#6aa9d8", accent2: "#f2a7b8", line: "#6aa9d8", fontHead: "Fredoka", fontBody: "DM Sans", headWeight: 600, radius: 24, shadow: "sm", lineWidth: 4, lineStyle: "dotted", marker: "circle", pattern: "none", anim: "glide", animDur: 720, density: 1.2, imgShape: "circle", skin: "babyparty" }),
+  T({ id: "kindergeburtstag", name: tx("f_kindergeburtstag"), kicker: tx("f_kindergeburtstag_k"), bg: "#fffaf0", ink: "#2a2340", card: "#ffffff", accent: "#ff5d8f", accent2: "#29b6f6", line: "#2a2340", fontHead: "Fredoka", fontBody: "DM Sans", headWeight: 700, radius: 20, shadow: "hard", lineWidth: 5, marker: "circle", pattern: "none", anim: "bounce", animDur: 620, density: 1.1, imgShape: "round", skin: "konfetti" }),
+  T({ id: "rundergeburtstag", name: tx("f_rundergeburtstag"), kicker: tx("f_rundergeburtstag_k"), bg: "#111111", ink: "#f5efe3", card: "#1c1b19", accent: "#e2b857", accent2: "#c9c2b4", line: "#e2b857", fontHead: "Bebas Neue", fontBody: "DM Sans", headWeight: 400, headTransform: "uppercase", headTracking: 0.06, radius: 4, shadow: "lg", lineWidth: 2, marker: "bar", pattern: "none", anim: "rise", animDur: 760, density: 1.15, imgShape: "rect", skin: "goldkonfetti" }),
+  T({ id: "geburtstagklassisch", name: tx("f_geburtstagklassisch"), kicker: tx("f_geburtstagklassisch_k"), bg: "#f7f0e6", ink: "#3a2a22", card: "#fffaf3", accent: "#9c4f3c", accent2: "#6f8a5a", line: "#9c4f3c", fontHead: "Playfair Display", fontBody: "Source Serif 4", headWeight: 600, radius: 10, shadow: "md", lineWidth: 2, marker: "circle", pattern: "none", anim: "glide", animDur: 780, density: 1.25, imgShape: "polaroid", skin: "blumen" }),
+  T({ id: "kommunion", name: tx("f_kommunion"), kicker: tx("f_kommunion_k"), bg: "#fbfaf7", ink: "#2f3a2e", card: "#ffffff", accent: "#b89a4d", accent2: "#8aa37b", line: "#b89a4d", fontHead: "Cormorant Garamond", fontBody: "Source Serif 4", headWeight: 600, headTracking: 0.02, radius: 10, shadow: "sm", lineWidth: 1, lineStyle: "double", marker: "ring", pattern: "none", anim: "rise", animDur: 900, density: 1.3, imgShape: "round", skin: "kommunion" }),
+  T({ id: "taufe", name: tx("f_taufe"), kicker: tx("f_taufe_k"), bg: "#f5f9fc", ink: "#24364a", card: "#ffffff", accent: "#5d9bcf", accent2: "#a9b8c6", line: "#5d9bcf", fontHead: "Cormorant Garamond", fontBody: "DM Sans", headWeight: 600, radius: 18, shadow: "sm", lineWidth: 2, marker: "circle", pattern: "none", anim: "glide", animDur: 820, density: 1.25, imgShape: "circle", skin: "taufe" }),
+  T({ id: "abschluss", name: tx("f_abschluss"), kicker: tx("f_abschluss_k"), bg: "#0f1b33", ink: "#f2f4fa", card: "#17264a", accent: "#f2c14e", accent2: "#8fb3ff", line: "#f2c14e", fontHead: "Bebas Neue", fontBody: "DM Sans", headWeight: 400, headTransform: "uppercase", headTracking: 0.04, radius: 6, shadow: "lg", lineWidth: 3, marker: "square", pattern: "none", anim: "pop", animDur: 420, density: 1.05, imgShape: "rect", skin: "abschluss" }),
+  T({ id: "goldhochzeit", name: tx("f_goldhochzeit"), kicker: tx("f_goldhochzeit_k"), bg: "#fbf6ea", ink: "#3a2e1a", card: "#fffdf6", accent: "#c9a227", accent2: "#8c6d2f", line: "#c9a227", fontHead: "Cormorant Garamond", fontBody: "Source Serif 4", headWeight: 600, headTracking: 0.03, radius: 6, shadow: "md", lineWidth: 1, lineStyle: "double", marker: "ring", pattern: "none", anim: "rise", animDur: 900, density: 1.3, imgShape: "round", skin: "gold" }),
   T({ id: "regenbogen", name: tx("regenbogen"), kicker: tx("farbrad"), bg: "#fdfcff", ink: "#231c33", card: "#ffffff", accent: "#e5006e", accent2: "#009fe3", line: "#e5006e", fontHead: "Space Grotesk", fontBody: "DM Sans", headWeight: 700, radius: 14, shadow: "md", lineWidth: 5, marker: "square", pattern: "none", anim: "pop", animDur: 380, density: 1.1, imgShape: "rect", skin: "rainbow" })
 ];
 
@@ -8301,6 +8318,48 @@ class Component extends DCLogic {
           "linear-gradient(96deg, " + t.accent + "1e 0%, " + t.accent2 + "1a 34%, " + t.accent + "16 68%, " + t.accent2 + "12 100%)"
         ]);
 
+        if (id === "xmas") return rasterUndVoll(
+          "radial-gradient(rgba(255,255,255,0.8) 1.3px, transparent 1.7px), radial-gradient(rgba(255,255,255,0.45) 0.9px, transparent 1.2px)", "53px 61px, 31px 37px",
+          ["linear-gradient(to bottom, " + t.accent + "26 0%, transparent 28%)", "radial-gradient(ellipse at 50% 115%, rgba(255,255,255,0.2) 0%, transparent 50%)"]);
+        if (id === "easter") return rasterUndVoll(
+          "radial-gradient(#f7a8c4 2px, transparent 2.6px), radial-gradient(#8fd6b9 1.8px, transparent 2.3px), radial-gradient(#ffd66b 1.6px, transparent 2.1px)", "67px 59px, 43px 71px, 89px 47px",
+          ["linear-gradient(to top, #9bd77a40 0%, transparent 16%)", "radial-gradient(ellipse at 18% 0%, " + t.accent + "22 0%, transparent 45%)"], { opacity: 0.85 });
+        if (id === "picado") return Object.assign({}, base, {
+          backgroundImage: "repeating-linear-gradient(90deg, #e8336f 0 70px, #ff9f1c 70px 140px, #12a37f 140px 210px, #2e86de 210px 280px, #9b5de5 280px 350px), radial-gradient(circle at 50% 0, transparent 9px, " + t.bg + " 9.5px), radial-gradient(" + t.accent + "18 1.5px, transparent 2px)",
+          backgroundSize: "100% 44px, 22px 22px, 24px 24px", backgroundRepeat: "no-repeat, repeat-x, repeat", backgroundPosition: "0 0, 0 33px, 0 0" });
+        if (id === "chanukka") return rasterUndVoll("radial-gradient(rgba(255,255,255,0.5) 0.8px, transparent 1px)", "79px 83px",
+          Array.from({ length: 9 }, (x, k) => "radial-gradient(circle at " + (10 + k * 10) + "% " + (k === 4 ? 88 : 91) + "%, " + t.accent2 + (k === 4 ? "88" : "55") + " 0%, transparent 2.6%)")
+            .concat(["linear-gradient(to top, " + t.accent + "26 0%, transparent 32%)"]));
+        if (id === "ramadan") return rasterUndVoll("radial-gradient(rgba(255,240,200,0.55) 0.9px, transparent 1.2px)", "71px 67px",
+          ["radial-gradient(circle at 85% 13%, " + t.bg + " 0 50px, transparent 51px)", "radial-gradient(circle at 81% 15%, " + t.accent + " 0 56px, " + t.accent + "33 60px, transparent 130px)",
+           "linear-gradient(to bottom, " + t.accent2 + "1c 0%, transparent 40%)"]);
+        if (id === "diwali") return voll(["radial-gradient(circle at 8% 92%, " + t.accent + "66 0%, transparent 7%)", "radial-gradient(circle at 26% 96%, " + t.accent2 + "55 0%, transparent 6%)",
+          "radial-gradient(circle at 74% 96%, " + t.accent + "55 0%, transparent 6%)", "radial-gradient(circle at 92% 92%, " + t.accent2 + "66 0%, transparent 7%)",
+          "radial-gradient(circle at 50% 42%, transparent 0 24%, " + t.accent + "14 24.5%, transparent 25.5%, transparent 31%, " + t.accent2 + "12 31.5%, transparent 32.5%)",
+          "linear-gradient(to top, " + t.accent + "22 0%, transparent 30%)"]);
+        if (id === "lunar") return voll(["radial-gradient(ellipse 30px 40px at 10% 9%, #ffd36e 0%, " + t.accent + "88 35%, transparent 100%)", "radial-gradient(ellipse 30px 40px at 90% 9%, #ffd36e 0%, " + t.accent + "88 35%, transparent 100%)",
+          "radial-gradient(ellipse 24px 32px at 22% 5%, " + t.accent + "77 0%, transparent 100%)", "radial-gradient(ellipse 24px 32px at 78% 5%, " + t.accent + "77 0%, transparent 100%)",
+          "repeating-linear-gradient(45deg, " + t.accent + "10 0 2px, transparent 2px 24px)", "repeating-linear-gradient(-45deg, " + t.accent + "10 0 2px, transparent 2px 24px)"]);
+        if (id === "halloween") return voll(["radial-gradient(circle at 84% 11%, #fff3c4 0 30px, #ffd77a55 36px, transparent 110px)", "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 20%)",
+          "radial-gradient(ellipse at 8% 100%, " + t.accent + "3a 0%, transparent 40%)", "radial-gradient(ellipse at 92% 100%, " + t.accent2 + "30 0%, transparent 38%)"]);
+        if (id === "rauten") return Object.assign({}, base, {
+          backgroundImage: "linear-gradient(60deg, " + t.accent + "1a 25%, transparent 25.5%, transparent 75%, " + t.accent + "1a 75.5%), linear-gradient(-60deg, " + t.accent + "1a 25%, transparent 25.5%, transparent 75%, " + t.accent + "1a 75.5%)",
+          backgroundSize: "40px 70px" });
+        if (id === "babyparty") return rasterUndVoll("radial-gradient(circle, " + t.accent + "1f 0 7px, transparent 7.5px), radial-gradient(circle, " + t.accent2 + "26 0 4px, transparent 4.5px)", "130px 120px, 90px 70px",
+          ["radial-gradient(ellipse at 0% 0%, " + t.accent + "30 0%, transparent 50%)", "radial-gradient(ellipse at 100% 100%, " + t.accent2 + "30 0%, transparent 50%)"]);
+        if (id === "konfetti") return rasterUndVoll(
+          "radial-gradient(#ff5d8f 2.4px, transparent 2.9px), radial-gradient(#29b6f6 2.2px, transparent 2.7px), radial-gradient(#ffc93c 2.4px, transparent 2.9px), radial-gradient(#7bd389 2px, transparent 2.5px)",
+          "61px 53px, 47px 71px, 83px 59px, 37px 43px", ["linear-gradient(160deg, " + t.accent + "1e 0%, transparent 40%)"], { opacity: 0.8 });
+        if (id === "goldkonfetti") return rasterUndVoll("radial-gradient(" + t.accent + "aa 1.4px, transparent 1.9px), radial-gradient(" + t.accent + "55 1px, transparent 1.4px)", "57px 63px, 29px 41px",
+          ["linear-gradient(125deg, " + t.accent + "26 0%, transparent 30%, transparent 70%, " + t.accent + "1a 100%)"]);
+        if (id === "blumen") return voll(["radial-gradient(circle at 0% 0%, " + t.accent + "26 0 8%, transparent 22%)", "radial-gradient(circle at 6% 14%, " + t.accent2 + "22 0 5%, transparent 14%)",
+          "radial-gradient(circle at 100% 100%, " + t.accent + "22 0 8%, transparent 22%)", "radial-gradient(circle at 93% 86%, " + t.accent2 + "22 0 5%, transparent 14%)"]);
+        if (id === "kommunion") return voll(["repeating-conic-gradient(from 180deg at 50% -10%, " + t.accent + "12 0deg 3deg, transparent 3deg 12deg)", "radial-gradient(ellipse at 50% 0%, " + t.card + " 0%, transparent 55%)",
+          "linear-gradient(to bottom, " + t.accent + "14 0%, transparent 35%)"]);
+        if (id === "taufe") return voll(["repeating-radial-gradient(ellipse at 50% 110%, " + t.accent + "14 0 2px, transparent 2px 26px)", "radial-gradient(ellipse at 50% 0%, " + t.accent2 + "26 0%, transparent 50%)"]);
+        if (id === "abschluss") return rasterUndVoll("radial-gradient(" + t.accent + "99 1.6px, transparent 2px), radial-gradient(" + t.accent2 + "77 1.3px, transparent 1.7px)", "67px 71px, 43px 53px",
+          ["linear-gradient(to bottom, " + t.accent + "22 0%, transparent 26%)"]);
+        if (id === "gold") return voll(["linear-gradient(115deg, transparent 0%, " + t.accent + "1e 30%, transparent 46%, " + t.accent + "14 64%, transparent 80%)", "radial-gradient(ellipse at 50% 0%, " + t.accent + "1c 0%, transparent 50%)"]);
         return { display: "none" };
       }
   shellFuer(t, id) {
@@ -8342,6 +8401,23 @@ class Component extends DCLogic {
         if (id === "matte") return { padding: "12px", borderRadius: "4px", background: t.ink + "12" };
         if (id === "blocks") return { padding: "8px", borderRadius: "0", background: t.accent };
         if (id === "ruled" || id === "vintage") return { padding: "9px", borderRadius: "6px", background: t.ink + "10", boxShadow: inner };
+        if (id === "xmas") return { padding: "11px", borderRadius: "16px", background: "repeating-linear-gradient(135deg, " + t.accent2 + " 0 12px, #fbf5e6 12px 24px)", boxShadow: "0 16px 34px -18px rgba(0,0,0,0.6)" };
+        if (id === "easter") return { padding: "12px", borderRadius: "26px", background: "linear-gradient(135deg, #f7c6d9, #fff0b3 50%, #c4ecd8)" };
+        if (id === "picado") return { padding: "10px", borderRadius: "14px", background: "repeating-linear-gradient(90deg, #e8336f 0 18px, #ff9f1c 18px 36px, #12a37f 36px 54px, #2e86de 54px 72px, #9b5de5 72px 90px)", boxShadow: "5px 5px 0 0 " + t.ink };
+        if (id === "chanukka") return { padding: "12px", borderRadius: "18px", background: "linear-gradient(150deg, " + t.accent + "66, rgba(255,255,255,0.18) 50%, " + t.accent2 + "55)" };
+        if (id === "ramadan") return { padding: "12px", borderRadius: "20px", background: "linear-gradient(160deg, " + t.accent + "77, " + t.accent2 + "44)", boxShadow: "inset 0 0 0 1px " + t.accent + "99" };
+        if (id === "diwali") return { padding: "11px", borderRadius: "20px", background: "conic-gradient(from 20deg, " + t.accent + ", " + t.accent2 + ", #ffd36e, " + t.accent + ")" };
+        if (id === "lunar") return { padding: "11px", borderRadius: "6px", background: "linear-gradient(" + t.accent + ", #b8862b)", boxShadow: "inset 0 0 0 2px " + t.accent2 };
+        if (id === "halloween") return { padding: "11px", borderRadius: "14px", background: "linear-gradient(135deg, " + t.accent + ", " + t.accent2 + ")" };
+        if (id === "rauten") return { padding: "10px", borderRadius: "6px", background: "repeating-linear-gradient(60deg, " + t.accent + " 0 14px, #ffffff 14px 28px)" };
+        if (id === "babyparty") return { padding: "12px", borderRadius: "28px", background: "linear-gradient(135deg, " + t.accent + "66, " + t.accent2 + "66)" };
+        if (id === "konfetti") return { padding: "10px", borderRadius: "20px", background: "linear-gradient(110deg, #ff5d8f, #ffc93c 35%, #7bd389 65%, #29b6f6)", boxShadow: "6px 6px 0 0 " + t.ink };
+        if (id === "goldkonfetti") return { padding: "10px", borderRadius: "4px", background: "linear-gradient(135deg, #f6dc8c, " + t.accent + " 40%, #8a6a1f 70%, #f0d27a)" };
+        if (id === "blumen") return { padding: "11px", borderRadius: "14px", background: "linear-gradient(135deg, " + t.accent + "40, " + t.accent2 + "38)" };
+        if (id === "kommunion") return { padding: "12px", borderRadius: "10px", background: "linear-gradient(" + t.card + ", " + t.bg + ")", boxShadow: "inset 0 0 0 1px " + t.accent + "99, inset 0 0 0 4px " + t.bg + ", inset 0 0 0 5px " + t.accent + "55" };
+        if (id === "taufe") return { padding: "12px", borderRadius: "22px", background: "linear-gradient(160deg, " + t.accent + "40, " + t.accent2 + "44)" };
+        if (id === "abschluss") return { padding: "10px", borderRadius: "6px", background: "linear-gradient(135deg, " + t.accent + ", #b8862b)" };
+        if (id === "gold") return { padding: "11px", borderRadius: "6px", background: "linear-gradient(135deg, #f3dd8d, " + t.accent + " 45%, #8c6d2f 75%, #f0d27a)" };
         return { padding: "0", borderRadius: "var(--radius-md)", background: "transparent" };
       }
   gastLookAus(id, d) {

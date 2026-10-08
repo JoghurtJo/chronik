@@ -1,4 +1,4 @@
-/* Chronik · Deutsch */
+/* Chronik · Deutsch  */
 window.CHRONIK_SPRACHEN = window.CHRONIK_SPRACHEN || {};
 window.CHRONIK_SPRACHEN.de = {
   name: "Deutsch",
@@ -1528,6 +1528,40 @@ window.CHRONIK_SPRACHEN.de = {
     cd_sekunden: "Sekunden",
     cd_millis: "Millisek.",
     ga_checkbox: "Gästelink freischalten",
-    gast_zurueck: "Zurück zur Gästeseite"
+    gast_zurueck: "Zurück zur Gästeseite",
+    f_weihnachten: "Weihnachten",
+    f_weihnachten_k: "Festtage",
+    f_ostern: "Ostern",
+    f_ostern_k: "Frühling",
+    f_cinco: "Cinco de Mayo",
+    f_cinco_k: "Fiesta",
+    f_chanukka: "Chanukka",
+    f_chanukka_k: "Lichterfest",
+    f_ramadan: "Ramadan & Eid",
+    f_ramadan_k: "Fastenmonat",
+    f_diwali: "Diwali",
+    f_diwali_k: "Lichter",
+    f_mondneujahr: "Mondneujahr",
+    f_mondneujahr_k: "Laternen",
+    f_halloween: "Halloween",
+    f_halloween_k: "Gruselnacht",
+    f_oktoberfest: "Oktoberfest",
+    f_oktoberfest_k: "Wiesn",
+    f_babyparty: "Babyparty",
+    f_babyparty_k: "Willkommen",
+    f_kindergeburtstag: "Kindergeburtstag",
+    f_kindergeburtstag_k: "Konfetti",
+    f_rundergeburtstag: "Runder Geburtstag",
+    f_rundergeburtstag_k: "30 · 40 · 50",
+    f_geburtstagklassisch: "Geburtstag klassisch",
+    f_geburtstagklassisch_k: "60 · 70 · 80",
+    f_kommunion: "Kommunion & Konfirmation",
+    f_kommunion_k: "Fest des Glaubens",
+    f_taufe: "Taufe",
+    f_taufe_k: "Ein neuer Name",
+    f_abschluss: "Abschluss",
+    f_abschluss_k: "Geschafft",
+    f_goldhochzeit: "Goldene Hochzeit",
+    f_goldhochzeit_k: "Jubiläum"
   }
 };
