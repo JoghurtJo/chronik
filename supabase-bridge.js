@@ -932,26 +932,6 @@
     var r = await c.from("guest_entries").delete().eq("id", id);
     if (r.error) throw fail(code(r.error));
   }
-  async function meinId() { var s = await session(); return (s && s.user && s.user.id) || ""; }
-  async function posSet(ev, lat, lon, acc) {
-    var c = await client();
-    var id = await meinId();
-    if (!id) throw fail("D-09");
-    var r = await c.from("event_pos").upsert({ event_id: ev, user_id: id, lat: lat, lon: lon, acc: acc || null, at: new Date().toISOString() }, { onConflict: "event_id,user_id" });
-    if (r.error) throw fail(code(r.error));
-  }
-  async function posList(ev) {
-    var c = await client();
-    var r = await c.from("event_pos").select("user_id,lat,lon,acc,at").eq("event_id", ev).gte("at", new Date(Date.now() - 3 * 3600000).toISOString());
-    if (r.error) throw fail(code(r.error));
-    return r.data || [];
-  }
-  async function posDel(ev) {
-    var c = await client();
-    var id = await meinId();
-    if (id) await c.from("event_pos").delete().eq("event_id", ev).eq("user_id", id);
-  }
-
   /* Timetable-Foto von der KI im eigenen Worker lesen lassen. */
   async function ttKi(bild) {
     if (!R2) { var e0 = new Error("kein worker"); e0.code = "D-20"; throw e0; }
@@ -985,7 +965,7 @@
     groups: groups, saveGroup: saveGroup, removeGroup: removeGroup, leaveGroup: leaveGroup, saveLook: saveLook,
     saveNotify: saveNotify, notify: notify,
     friends: friends, askFriend: askFriend, answerFriend: answerFriend, unfriend: unfriend,
-    loadEvents: loadEvents, imageUrls: imageUrls, ttKi: ttKi, gastSicht: gastSicht, gastAdd: gastAdd, gastUpload: gastUpload, gastBildUrl: gastBildUrl, gastListe: gastListe, gastWeg: gastWeg, posSet: posSet, posList: posList, posDel: posDel, saveEvent: saveEvent, removeEvent: removeEvent,
+    loadEvents: loadEvents, imageUrls: imageUrls, ttKi: ttKi, gastSicht: gastSicht, gastAdd: gastAdd, gastUpload: gastUpload, gastBildUrl: gastBildUrl, gastListe: gastListe, gastWeg: gastWeg, saveEvent: saveEvent, removeEvent: removeEvent,
     addComment: addComment, removeComment: removeComment, reactComment: reactComment,
     deleteMe: deleteMe, sweepUnconfirmed: sweepUnconfirmed, deleteImages: deleteImages, setPolls: setPolls, moveComments: moveComments, uploadImage: uploadImage, imageUrl: imageUrl, storeCheck: storeCheck, onChange: onChange,
     snapshot: snapshot, budget: budget, guard: guard,

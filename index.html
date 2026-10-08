@@ -320,16 +320,16 @@
 
           <sc-if value="{{ gv.istRsvp }}" hint-placeholder-val="{{ false }}">
             <section style="display: grid; gap: 16px; padding: clamp(18px, 4vw, 28px); border-radius: calc(var(--g-radius) + 6px); background: var(--g-card); box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 12px 32px -18px rgba(0,0,0,0.28);">
-              <h2 style="margin: 0; font-family: var(--g-head); font-weight: var(--g-hw); font-size: clamp(24px, 5vw, 32px); line-height: 1.1; text-transform: var(--g-ht);">{{ L.gast_rsvp }}</h2>
+              <h2 style="margin: 0; font-family: var(--g-head); font-weight: var(--g-hw); font-size: clamp(24px, 5vw, 32px); line-height: 1.1; text-transform: var(--g-ht);">{{ gv.rsvpTitel }}</h2>
               <sc-if value="{{ gv.rsvpFertig }}" hint-placeholder-val="{{ false }}">
                 <p style="margin: 0; font-family: var(--g-head); font-size: 22px; line-height: 1.4;">{{ L.gast_danke_rsvp }}</p>
                 <button style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 22px; border-radius: 999px; border: 1.5px solid var(--g-accent); background: transparent; color: var(--g-accent); font: inherit; font-size: 16px; font-weight: 600; cursor: pointer; justify-self: start;" onClick="{{ gv.rsvpNeu }}">{{ L.gast_nochmal }}</button>
               </sc-if>
               <sc-if value="{{ gv.rsvpOffen }}" hint-placeholder-val="{{ true }}">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <sc-if value="{{ gv.mitRsvp }}" hint-placeholder-val="{{ true }}"><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                   <button onClick="{{ gv.setJa }}" style="{{ gv.jaStil }}">✓ {{ L.gast_ich_komme }}</button>
                   <button onClick="{{ gv.setNein }}" style="{{ gv.neinStil }}">{{ L.gast_ich_komme_nicht }}</button>
-                </div>
+                </div></sc-if>
                 <sc-if value="{{ gv.kommtJa }}" hint-placeholder-val="{{ true }}">
                   <label style="display: grid; gap: 8px;"><span style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: color-mix(in srgb, var(--g-ink) 62%, transparent);">{{ L.gast_begleitung }}</span><input type="number" min="0" max="20" value="{{ gv.plus }}" onChange="{{ gv.onPlus }}" style="width: 100%; box-sizing: border-box; padding: 13px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px; max-width: 140px;"></label>
                   <sc-for list="{{ gv.plusFelder }}" as="pf" hint-placeholder-count="0">
@@ -350,6 +350,12 @@
                     </label>
                   </sc-if>
                 </sc-if>
+                <sc-for list="{{ gv.fragen }}" as="fq" hint-placeholder-count="0">
+                  <div style="display: grid; gap: 10px;">
+                    <div style="display: grid; gap: 2px;"><span style="font-family: var(--g-head); font-weight: var(--g-hw); font-size: 20px; line-height: 1.25; overflow-wrap: anywhere;">{{ fq.frage }}</span><span style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: color-mix(in srgb, var(--g-ink) 62%, transparent);">{{ fq.art }}</span></div>
+                    <div style="display: grid; gap: 8px;"><sc-for list="{{ fq.opts }}" as="fo" hint-placeholder-count="0"><button onClick="{{ fo.klick }}" aria-pressed="{{ fo.an }}" style="{{ fo.stil }}"><span style="{{ fo.boxStil }}">{{ fo.zeichen }}</span><span style="overflow-wrap: anywhere;">{{ fo.label }}</span></button></sc-for></div>
+                  </div>
+                </sc-for>
                 <label style="display: grid; gap: 8px;"><span style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: color-mix(in srgb, var(--g-ink) 62%, transparent);">{{ L.gast_notiz }}</span><textarea value="{{ gv.notiz }}" onChange="{{ gv.onNotiz }}" rows="2" placeholder="{{ L.gast_notiz_ph }}" style="width: 100%; box-sizing: border-box; padding: 13px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px; resize: vertical;"></textarea></label>
                 <button style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 24px; border-radius: 999px; border: 0; background: var(--g-accent); color: var(--g-bg); font: inherit; font-size: 16px; font-weight: 600; cursor: pointer; justify-self: start;" onClick="{{ gv.rsvpSenden }}">{{ L.gast_absenden }}</button>
               </sc-if>
@@ -1341,14 +1347,15 @@
                           <sc-if value="{{ c.lp.hatLage }}" hint-placeholder-val="{{ false }}">
                             <div style="display: grid; gap: 8px; min-width: 0;">
                               <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                                <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t-accent, #0088b0);">{{ L.lp_titel }}</span>
+                                <button onClick="{{ c.lpkUm }}" aria-expanded="{{ c.lpkAufText }}" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 0; min-height: 40px; border: 0; background: transparent; cursor: pointer; font: inherit; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t-accent, #0088b0);"><span style="{{ c.lpkSign }}">▸</span>{{ L.lp_titel }}</button>
                                 <span style="flex: 1; height: 1px; background: var(--t-border, rgba(32, 30, 29, 0.16));"></span>
-                                <sc-if value="{{ c.lp.hatBeide }}" hint-placeholder-val="{{ false }}">
+                                <sc-if value="{{ c.lpkChips }}" hint-placeholder-val="{{ false }}">
                                   <sc-for list="{{ c.lp.artChips }}" as="ac" hint-placeholder-count="0">
                                     <button onClick="{{ ac.klick }}" style="{{ ac.stil }}">{{ ac.label }}</button>
                                   </sc-for>
                                 </sc-if>
                               </div>
+                              <sc-if value="{{ c.lpkAuf }}" hint-placeholder-val="{{ false }}">
                               <sc-if value="{{ c.lp.zeigKarte }}" hint-placeholder-val="{{ false }}">
                                 <iframe ref="{{ c.lp.karteRef }}" src="karte.html" title="{{ L.lp_karte }}" style="width: 100%; height: 320px; border: 0; border-radius: var(--t-radius, 2px); background: var(--color-neutral-100);"></iframe>
                               </sc-if>
@@ -1367,38 +1374,17 @@
                                   </sc-for>
                                 </div>
                               </sc-if>
-                            </div>
-                          </sc-if>
-
-                          <sc-if value="{{ c.leuteAn }}" hint-placeholder-val="{{ false }}">
-                            <div style="display: grid; gap: 8px;">
-                              <div style="display: flex; align-items: center; gap: 8px;">
-                                <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t-accent, #0088b0);">{{ L.leute_titel }}</span>
-                                <span style="flex: 1; height: 1px; background: var(--t-border, rgba(32, 30, 29, 0.16));"></span>
-                              </div>
-                              <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                                <button class="{{ c.leuteKlasse }}" style="min-height: 44px;" onClick="{{ c.leuteUm }}">{{ c.leuteKnopf }}</button>
-                                <span style="flex: 1 1 200px; font-size: 13px; line-height: 1.45; opacity: 0.75;">{{ c.leuteHinweis }}</span>
-                              </div>
-                              <sc-if value="{{ c.hatLeuteErr }}" hint-placeholder-val="{{ false }}">
-                                <div style="font-size: 13px; color: var(--t-accent2, #d6006c);">{{ c.leuteErr }}</div>
-                              </sc-if>
-                              <sc-for list="{{ c.leute }}" as="lu" hint-placeholder-count="0">
-                                <div style="display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; font-size: 14px;"><strong style="font-weight: 600;">{{ lu.name }}</strong><span style="opacity: 0.7;">{{ lu.info }}</span></div>
-                              </sc-for>
-                              <sc-if value="{{ c.keineLeute }}" hint-placeholder-val="{{ true }}">
-                                <div style="font-size: 13px; font-style: italic; opacity: 0.7;">{{ L.leute_niemand }}</div>
-                              </sc-if>
-                            </div>
+                            </sc-if></div>
                           </sc-if>
 
                           <sc-if value="{{ c.gastAn }}" hint-placeholder-val="{{ false }}">
                             <div style="display: grid; gap: 10px; min-width: 0;">
                               <div style="display: flex; align-items: center; gap: 8px;">
-                                <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t-accent, #0088b0);">{{ L.ga_titel }}</span>
+                                <button onClick="{{ c.gakUm }}" aria-expanded="{{ c.gakAufText }}" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 0; min-height: 40px; border: 0; background: transparent; cursor: pointer; font: inherit; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t-accent, #0088b0);"><span style="{{ c.gakSign }}">▸</span>{{ L.ga_titel }}</button>
                                 <span style="flex: 1; height: 1px; background: var(--t-border, rgba(32, 30, 29, 0.16));"></span>
                                 <button onClick="{{ c.gastNeu }}" title="{{ L.ga_neu_laden }}" style="cursor: pointer; font: inherit; font-size: 15px; min-width: 36px; min-height: 36px; border: 0; background: transparent; color: inherit;">↻</button>
                               </div>
+                              <sc-if value="{{ c.gakAuf }}" hint-placeholder-val="{{ false }}">
                               <sc-if value="{{ c.hatGastLink }}" hint-placeholder-val="{{ false }}">
                                 <button class="btn btn-secondary" style="justify-self: start; min-height: 40px;" onClick="{{ c.gastTeilen }}">{{ c.gastKopiertText }}</button>
                               </sc-if>
@@ -1409,6 +1395,8 @@
                                   <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;"><span style="font-size: 12px; opacity: 0.7; min-width: 70px;">{{ L.sp_i_antwort }}</span><sc-for list="{{ c.rAntwortChips }}" as="x" hint-placeholder-count="0"><button onClick="{{ x.klick }}" style="{{ x.stil }}">{{ x.label }}</button></sc-for></div>
                                   <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;"><span style="font-size: 12px; opacity: 0.7; min-width: 70px;">{{ L.sp_i_begleitung }}</span><sc-for list="{{ c.rPlusChips }}" as="x" hint-placeholder-count="0"><button onClick="{{ x.klick }}" style="{{ x.stil }}">{{ x.label }}</button></sc-for></div>
                                   <sc-if value="{{ c.rHatEssen }}" hint-placeholder-val="{{ false }}"><div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;"><span style="font-size: 12px; opacity: 0.7; min-width: 70px;">{{ L.sp_i_essen }}</span><sc-for list="{{ c.rEssenChips }}" as="x" hint-placeholder-count="0"><button onClick="{{ x.klick }}" style="{{ x.stil }}">{{ x.label }}</button></sc-for></div></sc-if>
+                                  <sc-for list="{{ c.rFragen }}" as="rq" hint-placeholder-count="0"><div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;"><span style="font-size: 12px; opacity: 0.7; min-width: 70px; max-width: 100%; overflow-wrap: anywhere;">{{ rq.frage }}</span><sc-for list="{{ rq.chips }}" as="rx" hint-placeholder-count="0"><button onClick="{{ rx.klick }}" style="{{ rx.stil }}">{{ rx.label }}</button></sc-for></div></sc-for>
+                                  <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;"><span style="font-size: 12px; opacity: 0.7; min-width: 70px;">{{ L.rf_sortieren }}</span><sc-for list="{{ c.rSortChips }}" as="sx" hint-placeholder-count="0"><button onClick="{{ sx.klick }}" style="{{ sx.stil }}">{{ sx.label }}</button></sc-for></div>
                                   <div style="font-size: 12.5px; font-weight: 600; opacity: 0.8;">{{ c.rZahl }}</div>
                                   <div style="display: grid; gap: 0;">
                                     <sc-for list="{{ c.rZeilen }}" as="gr" hint-placeholder-count="0">
@@ -1418,6 +1406,7 @@
                                         </div>
                                         <sc-if value="{{ gr.hatEssen }}" hint-placeholder-val="{{ false }}"><div><span style="opacity: 0.65;">{{ L.sp_i_essen }}:</span> {{ gr.essen }}</div></sc-if>
                                         <sc-if value="{{ gr.hatBegl }}" hint-placeholder-val="{{ false }}"><div style="overflow-wrap: anywhere;"><span style="opacity: 0.65;">{{ L.sp_i_begleitung }}:</span> {{ gr.begl }}</div></sc-if>
+                                        <sc-for list="{{ gr.antw }}" as="gx" hint-placeholder-count="0"><div style="overflow-wrap: anywhere;"><span style="opacity: 0.65;">{{ gx.frage }}:</span> {{ gx.text }}</div></sc-for>
                                         <sc-if value="{{ gr.hatText }}" hint-placeholder-val="{{ false }}"><div style="font-style: italic; overflow-wrap: anywhere;">„{{ gr.text }}“</div></sc-if>
                                       </div>
                                     </sc-for>
@@ -1522,6 +1511,7 @@
                                     </div>
                                   </sc-for></sc-if>
                                 </div>
+                              </sc-if>
                               </sc-if>
                             </div>
                           </sc-if>
@@ -2513,7 +2503,7 @@
 
             <sc-if value="{{ vo.cdZukunft }}" hint-placeholder-val="{{ false }}">
             <div style="display: grid; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-md); background: var(--color-neutral-100);">
-              <button onClick="{{ vo.klapp.cd.um }}" aria-expanded="{{ vo.klapp.cd.text }}" style="display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--color-text); font: inherit; text-align: left; cursor: pointer;"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.cd }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.cd_titel }}</span><span style="flex: 1;"></span><span style="{{ vo.klapp.cd.zeichen }}">▸</span></button><sc-if value="{{ vo.klapp.cd.auf }}" hint-placeholder-val="{{ false }}">
+              <button data-vo="cd" onClick="{{ vo.klapp.cd.um }}" aria-expanded="{{ vo.klapp.cd.text }}" style="display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--color-text); font: inherit; text-align: left; cursor: pointer;"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.cd }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.cd_titel }}</span><span style="flex: 1;"></span><span style="{{ vo.klapp.cd.zeichen }}">▸</span></button><sc-if value="{{ vo.klapp.cd.auf }}" hint-placeholder-val="{{ false }}">
               <div style="font-size: 13px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.cd_sub }}</div>
               <div style="display: flex; gap: var(--space-2); flex-wrap: wrap; align-items: center;">
                 <button onClick="{{ vo.cdUm }}" style="{{ vo.cdStil }}">{{ vo.cdLabel }}</button>
@@ -2526,7 +2516,7 @@
 
             </sc-if>
             <div style="display: grid; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-md); background: var(--color-neutral-100);">
-              <button onClick="{{ vo.klapp.nf.um }}" aria-expanded="{{ vo.klapp.nf.text }}" style="display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--color-text); font: inherit; text-align: left; cursor: pointer;"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.nf }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.nf_titel }}</span><span style="flex: 1;"></span><span style="{{ vo.klapp.nf.zeichen }}">▸</span></button><sc-if value="{{ vo.klapp.nf.auf }}" hint-placeholder-val="{{ false }}">
+              <button data-vo="nf" onClick="{{ vo.klapp.nf.um }}" aria-expanded="{{ vo.klapp.nf.text }}" style="display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--color-text); font: inherit; text-align: left; cursor: pointer;"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.nf }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.nf_titel }}</span><span style="flex: 1;"></span><span style="{{ vo.klapp.nf.zeichen }}">▸</span></button><sc-if value="{{ vo.klapp.nf.auf }}" hint-placeholder-val="{{ false }}">
               <div style="font-size: 13px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.nf_sub }}</div>
               <div><button onClick="{{ vo.nfUm }}" style="{{ vo.nfStil }}">{{ vo.nfLabel }}</button></div>
               <sc-if value="{{ vo.nfAn }}" hint-placeholder-val="{{ false }}">
@@ -2542,7 +2532,7 @@
             </sc-if></div>
 
             <div style="display: grid; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-md); background: var(--color-neutral-100);">
-              <button onClick="{{ vo.klapp.lp.um }}" aria-expanded="{{ vo.klapp.lp.text }}" style="display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--color-text); font: inherit; text-align: left; cursor: pointer;"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.lp }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.lp_titel }}</span><span style="flex: 1;"></span><span style="{{ vo.klapp.lp.zeichen }}">▸</span></button><sc-if value="{{ vo.klapp.lp.auf }}" hint-placeholder-val="{{ false }}">
+              <button data-vo="lp" onClick="{{ vo.klapp.lp.um }}" aria-expanded="{{ vo.klapp.lp.text }}" style="display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--color-text); font: inherit; text-align: left; cursor: pointer;"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.lp }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.lp_titel }}</span><span style="flex: 1;"></span><span style="{{ vo.klapp.lp.zeichen }}">▸</span></button><sc-if value="{{ vo.klapp.lp.auf }}" hint-placeholder-val="{{ false }}">
               <div style="font-size: 13px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.lp_hinweis }}</div>
               <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
                 <button class="btn btn-secondary" style="min-height: 44px;" onClick="{{ vo.karteAn }}">{{ L.lp_karte_nutzen }}</button>
@@ -2631,13 +2621,7 @@
             </sc-if></div>
 
             <div style="display: grid; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-md); background: var(--color-neutral-100);">
-              <button onClick="{{ vo.klapp.leute.um }}" aria-expanded="{{ vo.klapp.leute.text }}" style="display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--color-text); font: inherit; text-align: left; cursor: pointer;"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.leute }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.leute_titel }}</span><span style="flex: 1;"></span><span style="{{ vo.klapp.leute.zeichen }}">▸</span></button><sc-if value="{{ vo.klapp.leute.auf }}" hint-placeholder-val="{{ false }}">
-              <div><button onClick="{{ vo.leuteUm }}" style="{{ vo.leuteStil }}">{{ vo.leuteLabel }}</button></div>
-              <div style="font-size: 13px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.leute_ed_hinweis }}</div>
-            </sc-if></div>
-
-            <div style="display: grid; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-md); background: var(--color-neutral-100);">
-              <button onClick="{{ vo.klapp.ga.um }}" aria-expanded="{{ vo.klapp.ga.text }}" style="display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--color-text); font: inherit; text-align: left; cursor: pointer;"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.ga }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.ga_titel }}</span><span style="flex: 1;"></span><span style="{{ vo.klapp.ga.zeichen }}">▸</span></button><sc-if value="{{ vo.klapp.ga.auf }}" hint-placeholder-val="{{ false }}">
+              <button data-vo="ga" onClick="{{ vo.klapp.ga.um }}" aria-expanded="{{ vo.klapp.ga.text }}" style="display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--color-text); font: inherit; text-align: left; cursor: pointer;"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.ga }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.ga_titel }}</span><span style="flex: 1;"></span><span style="{{ vo.klapp.ga.zeichen }}">▸</span></button><sc-if value="{{ vo.klapp.ga.auf }}" hint-placeholder-val="{{ false }}">
               <div style="font-size: 13px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.ga_hinweis }}</div>
               <div><button onClick="{{ vo.gaUm }}" style="{{ vo.gaStil }}">{{ vo.gaLabel }}</button></div>
               <sc-if value="{{ vo.gaAn }}" hint-placeholder-val="{{ false }}">
@@ -2717,6 +2701,18 @@
                   <sc-if value="{{ vo.gaRsvp }}" hint-placeholder-val="{{ false }}">
                     <div class="field" style="margin: 0;"><label>{{ L.ga_essen }}</label><input class="input" value="{{ vo.gaEssen }}" onChange="{{ vo.onGaEssen }}" placeholder="{{ L.ga_essen_ph }}" style="font-size: 16px;"></div>
                   </sc-if>
+                  <div style="display: grid; gap: var(--space-2); padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-bg);">
+                    <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.gf_titel }}</div>
+                    <div style="font-size: 12.5px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.gf_hinweis }}</div>
+                    <sc-for list="{{ vo.gFragen }}" as="gq" hint-placeholder-count="0">
+                      <div style="display: grid; gap: 6px; padding-top: var(--space-2);">
+                        <div style="display: flex; gap: 8px; align-items: center;"><input class="input" value="{{ gq.frage }}" onChange="{{ gq.onFrage }}" placeholder="{{ L.gf_frage_ph }}" style="flex: 1 1 200px; min-width: 0; font-size: 16px;"><button class="btn btn-ghost btn-icon" title="{{ L.entfernen }}" aria-label="{{ L.entfernen }}" style="min-height: 40px; color: var(--color-accent-2-700);" onClick="{{ gq.weg }}">✕</button></div>
+                        <textarea class="input" rows="3" value="{{ gq.antworten }}" onChange="{{ gq.onAntworten }}" placeholder="{{ L.gf_antw_ph }}" style="font-size: 16px;"></textarea>
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap;"><sc-for list="{{ gq.artChips }}" as="qa" hint-placeholder-count="0"><button onClick="{{ qa.klick }}" style="{{ qa.stil }}">{{ qa.label }}</button></sc-for></div>
+                      </div>
+                    </sc-for>
+                    <button class="btn btn-secondary" style="justify-self: start; min-height: 40px;" onClick="{{ vo.gFrageNeu }}">＋ {{ L.gf_neu }}</button>
+                  </div>
                   <sc-if value="{{ vo.gaSitz }}" hint-placeholder-val="{{ false }}">
                     <div style="display: grid; gap: var(--space-2);">
                       <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.gast_sitz }}</div>
@@ -3356,6 +3352,16 @@
         <button class="btn btn-ghost" style="white-space: nowrap; min-height: 40px;" onClick="{{ tour.wahlZu }}">‹ {{ L.zurueck }}</button>
       </div>
       <h2 style="margin: 0; font-size: 28px; line-height: 1.05;">{{ L.was_soll_ich_zeigen }}</h2>
+      <input class="input" type="search" value="{{ tour.suche }}" onChange="{{ tour.onSuche }}" placeholder="{{ L.hilfe_suchen }}" aria-label="{{ L.hilfe_suchen }}" style="font-size: 16px;">
+      <sc-if value="{{ tour.hatSuche }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; gap: 2px; max-height: 52vh; overflow-y: auto; margin: 0 calc(-1 * var(--space-2));">
+          <sc-for list="{{ tour.treffer }}" as="tr" hint-placeholder-count="0">
+            <button onClick="{{ tr.klick }}" style="display: grid; gap: 2px; width: 100%; text-align: left; padding: 10px var(--space-2); border: 0; border-radius: var(--radius-md); background: transparent; color: var(--color-text); font: inherit; cursor: pointer;" style-hover="background: var(--color-accent-100);"><span style="font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-accent-700);">{{ tr.art }}</span><span style="font-family: var(--font-heading); font-size: 17px; font-weight: 600; line-height: 1.2;">{{ tr.titel }}</span><span style="font-size: 12.5px; line-height: 1.45; color: var(--color-neutral-700);">{{ tr.auszug }}</span></button>
+          </sc-for>
+          <sc-if value="{{ tour.keinTreffer }}" hint-placeholder-val="{{ false }}"><div style="padding: 10px var(--space-2); font-size: 13.5px; font-style: italic; color: var(--color-neutral-700);">{{ L.hilfe_nichts }}</div></sc-if>
+        </div>
+      </sc-if>
+      <sc-if value="{{ tour.ohneSuche }}" hint-placeholder-val="{{ true }}">
       <div style="display: grid; gap: var(--space-2); margin-top: var(--space-2);">
         <button class="btn btn-secondary" style="text-align: left; display: grid; gap: 3px; padding: 13px 15px; height: auto; white-space: normal;" onClick="{{ tour.grund }}">
           <span style="font-size: 15px;">{{ L.aufbau_der_seite }}</span>
@@ -3366,6 +3372,7 @@
           <span style="font-size: 12px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.zeigt_ein_ereignis_im_bearbeitungsmodus_un }}</span>
         </button>
       </div>
+      </sc-if>
     </div>
   </div>
 </sc-if>
@@ -6356,7 +6363,7 @@ class Component extends DCLogic {
     }) });
   }
 
-  /* ===== Vor Ort & Gäste: Countdown, Notfall, Lageplan, Leute, offener Bereich ===== */
+  /* ===== Vor Ort & Gäste: Countdown, Notfall, Lageplan, offener Bereich ===== */
   exOf(e) { return (e && e.extras && typeof e.extras === "object") ? e.extras : {}; }
 
   voSet(pfad, wert) {
@@ -6443,14 +6450,6 @@ class Component extends DCLogic {
     if (!b) return "";
     return this.urlFuer(b.key || "", b.src || "");
   }
-
-  geoDist(a, b) {
-    const R = 6371000, r = Math.PI / 180;
-    const dLat = (b.lat - a.lat) * r, dLon = (b.lon - a.lon) * r;
-    const s = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLon / 2) ** 2;
-    return 2 * R * Math.asin(Math.sqrt(s));
-  }
-  fmtDist(m) { return m < 1000 ? Math.round(m / 5) * 5 + " m" : (m / 1000).toFixed(1).replace(".", ",") + " km"; }
 
   lpKarteRef(key, daten) {
     return (el) => {
@@ -6570,14 +6569,13 @@ class Component extends DCLogic {
   }
 
   /* Gemeinsame Anzeige eines Lageplans: Karte und/oder Bild mit Punkten. */
-  lageVals(key, lage, bildSrc, setzen, leute, ort) {
+  lageVals(key, lage, bildSrc, setzen, _frei, ort) {
     const st = this.state;
     const L0 = lage || {};
     const punkte = (L0.punkte || []);
     const geo = punkte.filter((p) => typeof p.lat === "number" && typeof p.lon === "number");
     const bild = punkte.filter((p) => typeof p.x === "number" && typeof p.y === "number");
-    const leuteGeo = (leute || []).filter((p) => typeof p.lat === "number");
-    const hatKarte = !!L0.karte || geo.length > 0 || leuteGeo.length > 0 || (key === "ed" && !!st.lpEdKarte);
+    const hatKarte = !!L0.karte || geo.length > 0 || (key === "ed" && !!st.lpEdKarte);
     const hatBild = !!bildSrc;
     const wahl = (st.lpArt || {})[key];
     const art = hatKarte && hatBild ? (wahl || "bild") : (hatBild ? "bild" : "karte");
@@ -6600,7 +6598,6 @@ class Component extends DCLogic {
       })),
       karteRef: this.lpKarteRef(key, {
         punkte: geo.map((p) => { const t = this.lpTyp(p.typ); return { lat: p.lat, lon: p.lon, g: t.g, name: p.name || t.l, typ: t.l, not: !!t.not, aktiv: p.i === aktiv }; }),
-        leute: leuteGeo.map((p) => ({ lat: p.lat, lon: p.lon, name: p.name, ich: !!p.ich })),
         bereich: L0.karte || null, setzen: !!setzen, ort: ort || "",
         farbe: "#0088b0", farbe2: "#d6006c",
         text: setzen ? tx("lp_karte_setzen") : (key === "ed" && !L0.karte ? tx("lp_karte_eingrenzen") : "")
@@ -6638,48 +6635,6 @@ class Component extends DCLogic {
     };
   }
 
-  /* ---- Wo sind meine Leute? ---- */
-  leuteTeilen(e) {
-    if (this._geo && this._geo.eid === e.id) { this.leuteStopp(true); return; }
-    const CC = window.ChronikCloud;
-    if (!navigator.geolocation || !CC || !CC.posSet) { this.setState({ leuteErr: tx("leute_kein_gps") }); return; }
-    this.leuteStopp(false);
-    const g = { eid: e.id, last: 0, pos: null, bis: Date.now() + 3 * 3600000 };
-    g.watch = navigator.geolocation.watchPosition((p) => {
-      const c = p.coords;
-      const jetzt = Date.now();
-      if (jetzt > g.bis) { this.leuteStopp(true); return; }
-      const neu = { lat: c.latitude, lon: c.longitude, acc: c.accuracy };
-      const weit = g.pos ? this.geoDist(g.pos, neu) : 1e9;
-      g.pos = neu;
-      if (jetzt - g.last > 20000 || weit > 25) {
-        g.last = jetzt;
-        CC.posSet(e.id, neu.lat, neu.lon, neu.acc).then(() => this.leuteLaden(e.id)).catch(() => this.setState({ leuteErr: tx("leute_f_speichern") }));
-      }
-      this.forceUpdate();
-    }, () => { this.setState({ leuteErr: tx("leute_kein_gps") }); this.leuteStopp(false); }, { enableHighAccuracy: true, maximumAge: 15000, timeout: 30000 });
-    this._geo = g;
-    this.setState({ leuteErr: "" });
-  }
-  leuteStopp(loeschen) {
-    const g = this._geo;
-    if (!g) return;
-    try { navigator.geolocation.clearWatch(g.watch); } catch (x) { /* egal */ }
-    this._geo = null;
-    const CC = window.ChronikCloud;
-    if (loeschen && CC && CC.posDel) CC.posDel(g.eid).then(() => this.leuteLaden(g.eid)).catch(() => {});
-    this.forceUpdate();
-  }
-  async leuteLaden(eid) {
-    const CC = window.ChronikCloud;
-    if (!CC || !CC.posList || !this.state.cloud) return;
-    this._leuteZeit = Date.now();
-    this._leuteFuer = eid;
-    try {
-      const rows = await CC.posList(eid);
-      this.setState((s) => ({ leute: Object.assign({}, s.leute, { [eid]: rows || [] }) }));
-    } catch (x) { /* später nochmal */ }
-  }
 
   voTick() {
     const st = this.state;
@@ -6694,7 +6649,6 @@ class Component extends DCLogic {
       }
     }
     const e = st.openId ? (st.events || []).filter((x) => x.id === st.openId)[0] : null;
-    if (e && this.exOf(e).leute && st.cloud && (this._leuteFuer !== e.id || Date.now() - (this._leuteZeit || 0) > 30000)) this.leuteLaden(e.id);
     const m = Math.floor(Date.now() / 60000);
     if (m !== this._cdMin) {
       this._cdMin = m;
@@ -6754,21 +6708,19 @@ class Component extends DCLogic {
       out[k + "Sign"] = { display: "inline-block", fontSize: "9px", width: "10px", transform: auf ? "rotate(90deg)" : "none", transition: "transform 160ms ease" };
       out[k + "Um"] = (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.setState((s) => ({ zuKlapp: Object.assign({}, s.zuKlapp, { [id]: auf }) })); };
     });
+    const ak = st.aufKlapp || {};
+    ["lpk", "gak"].forEach((k) => {
+      const id = e.id + ":" + k, auf = !!ak[id];
+      out[k + "Auf"] = auf; out[k + "AufText"] = auf ? "true" : "false";
+      out[k + "Sign"] = { display: "inline-block", fontSize: "9px", width: "10px", transform: auf ? "rotate(90deg)" : "none", transition: "transform 160ms ease" };
+      out[k + "Um"] = (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.setState((s) => ({ aufKlapp: Object.assign({}, s.aufKlapp, { [id]: !auf }) })); };
+    });
     if (!isOpen) return out;
     const nf = this.notfallVals(ex.notfall);
     const me = this.me() || {};
     const nameVon = (id) => ((st.users || []).filter((u) => u.id === id)[0] || {}).username || tx("jemand");
-    const leuteAn = !!ex.leute && !!st.cloud;
-    const ichTeile = !!(this._geo && this._geo.eid === e.id);
-    const meinPos = ichTeile ? this._geo.pos : null;
-    const leute = ((st.leute || {})[e.id] || []).filter((r) => r.user_id !== me.id).map((r) => {
-      const min = Math.max(0, Math.round((Date.now() - new Date(r.at).getTime()) / 60000));
-      const m = meinPos ? this.geoDist(meinPos, r) : null;
-      return { key: r.user_id, name: nameVon(r.user_id), lat: r.lat, lon: r.lon,
-        info: [m != null ? this.fmtDist(m) : "", min < 1 ? tx("leute_gerade") : tx("leute_vor") + " " + min + " " + tx("cd_min")].filter(Boolean).join(" · ") };
-    });
     const lv = this.lageVals("k" + e.id, ex.lage, this.lpBildSrc(e), false,
-      leuteAn ? leute.concat(meinPos ? [{ lat: meinPos.lat, lon: meinPos.lon, name: tx("leute_ich"), ich: true }] : []) : null, e.place);
+      null, e.place);
     const o = ex.offen || {};
     const gastAn = !!o.an && !!o.token && !!st.cloud;
     if (gastAn && this._gastOffen !== e.id) { this._gastOffen = e.id; this.gastDatenLaden(e.id); }
@@ -6778,10 +6730,12 @@ class Component extends DCLogic {
     const darfWeg = lvl >= 4 || e.by === me.id;
     const weg = (r) => (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.gastEintragWeg(e.id, r); };
     const rsvp = lvl >= 3 ? alle.filter((r) => r.kind === "rsvp") : [];
-    const rf = Object.assign({ antwort: "", essen: "", suche: "", plus: "" }, (st.rsvpF || {})[e.id] || {});
+    const rf = Object.assign({ antwort: "", essen: "", suche: "", plus: "", q: {}, sort: "" }, (st.rsvpF || {})[e.id] || {});
     const setRf = (p) => this.setState((s) => ({ rsvpF: Object.assign({}, s.rsvpF, { [e.id]: Object.assign({}, rf, p) }) }));
     const essenVon = (r) => { const d0 = r.data || {}; return [d0.essen].concat((d0.plusListe || []).map((p) => p && p.essen)).filter(Boolean); };
     const alleEssen = Array.from(new Set([].concat.apply([], rsvp.map(essenVon))));
+    const fragen = this.gfNorm(o.fragen);
+    const antwVon = (r, i) => { const a = (((r.data || {}).antw || {})[i]); return Array.isArray(a) ? a : []; };
     const passtR = (r) => {
       const d0 = r.data || {};
       if (rf.antwort === "ja" && d0.kommt === "nein") return false;
@@ -6789,30 +6743,47 @@ class Component extends DCLogic {
       if (rf.essen && essenVon(r).indexOf(rf.essen) < 0) return false;
       if (rf.plus === "mit" && !(Number(d0.plus) > 0)) return false;
       if (rf.plus === "ohne" && Number(d0.plus) > 0) return false;
+      for (let k = 0; k < fragen.length; k++) { const w = (rf.q || {})[fragen[k].i] || ""; if (w === "-" ? antwVon(r, fragen[k].i).length > 0 : (w && antwVon(r, fragen[k].i).indexOf(w) < 0)) return false; }
       const q = String(rf.suche || "").trim().toLowerCase();
       if (q && (r.name + " " + (d0.plusNamen || "") + " " + (r.text || "")).toLowerCase().indexOf(q) < 0) return false;
       return true;
     };
+    const sq = String(rf.sort || "");
     const gefiltert = rsvp.filter(passtR);
+    if (sq) gefiltert.sort((a, b) => {
+      if (sq === "name") return String(a.name || "").localeCompare(String(b.name || ""));
+      const f = fragen.filter((x) => "q:" + x.i === sq)[0];
+      if (!f) return 0;
+      const rk = (r) => { const l = antwVon(r, f.i).map((x) => f.opts.indexOf(x)).filter((n) => n >= 0); return l.length ? Math.min.apply(null, l) : 999; };
+      return rk(a) - rk(b) || String(a.name || "").localeCompare(String(b.name || ""));
+    });
     const pers = (l) => l.filter((r) => (r.data || {}).kommt !== "nein").reduce((s, r) => s + 1 + (Number((r.data || {}).plus) || 0), 0);
     const rChip = (an) => ({ font: "inherit", fontSize: "12.5px", padding: "4px 11px", minHeight: "34px", borderRadius: "99px", cursor: "pointer", whiteSpace: "nowrap",
+      maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis",
       border: "1px solid " + (an ? "var(--t-accent, #0088b0)" : "var(--t-border, rgba(32,30,29,0.2))"), background: an ? "var(--t-accent, #0088b0)" : "transparent", color: an ? "var(--t-card, #eae9e9)" : "inherit" });
     const rsvpVals = {
       rAntwortChips: [["", tx("rf_alle")], ["ja", tx("sp_kommt")], ["nein", tx("sp_kommt_nicht")]].map((x) => ({ key: "a" + x[0], label: x[1], stil: rChip(rf.antwort === x[0]), klick: (ev) => { ev.stopPropagation(); setRf({ antwort: x[0] }); } })),
       rPlusChips: [["", tx("rf_alle")], ["mit", tx("rf_mit_begl")], ["ohne", tx("rf_ohne_begl")]].map((x) => ({ key: "p" + x[0], label: x[1], stil: rChip(rf.plus === x[0]), klick: (ev) => { ev.stopPropagation(); setRf({ plus: x[0] }); } })),
       rEssenChips: [""].concat(alleEssen).map((x) => ({ key: "e" + x, label: x || tx("rf_alle"), stil: rChip(rf.essen === x), klick: (ev) => { ev.stopPropagation(); setRf({ essen: x }); } })),
       rHatEssen: alleEssen.length > 0,
+      rFragen: fragen.map((f) => ({ key: f.i, frage: f.frage,
+        chips: [["", tx("rf_alle")]].concat(f.opts.map((x) => [x, x + " · " + rsvp.filter((r) => antwVon(r, f.i).indexOf(x) >= 0).length])).concat([["-", tx("rf_keine_antw")]]).map((x) => ({
+          key: "q" + x[0], label: x[1], stil: rChip(((rf.q || {})[f.i] || "") === x[0]),
+          klick: (ev) => { ev.stopPropagation(); setRf({ q: Object.assign({}, rf.q, { [f.i]: x[0] }) }); } })) })),
+      rSortChips: [["", tx("rf_eingang")], ["name", tx("rf_name")]].concat(fragen.map((f) => ["q:" + f.i, f.frage.length > 36 ? f.frage.slice(0, 34) + " …" : f.frage])).map((x) => ({
+        key: "s" + x[0], label: x[1], stil: rChip(sq === x[0]), klick: (ev) => { ev.stopPropagation(); setRf({ sort: x[0] }); } })),
       rSuche: rf.suche, rOnSuche: (ev) => setRf({ suche: ev.target.value }),
       rZahl: tx("rf_zahl").replace("{n}", gefiltert.length).replace("{g}", rsvp.length).replace("{p}", pers(gefiltert)).replace("{pg}", pers(rsvp)),
       rZeilen: gefiltert.map((r) => {
         const d0 = r.data || {};
         const nein = d0.kommt === "nein";
         const pl = (d0.plusListe || []).filter((p) => p && (p.name || p.essen));
-        return { key: r.id, name: r.name, kommt: nein ? tx("sp_kommt_nicht") : tx("sp_kommt"),
+        return { key: r.id, name: r.name, kommt: !d0.kommt ? "" : nein ? tx("sp_kommt_nicht") : tx("sp_kommt"),
           stil: { color: nein ? "var(--t-accent2, #d6006c)" : "var(--t-accent, #0088b0)", fontWeight: 600 },
           hatEssen: !nein && !!d0.essen, essen: d0.essen || "",
           hatBegl: !nein && (pl.length > 0 || Number(d0.plus) > 0),
           begl: pl.length ? pl.map((p) => (p.name || tx("rf_ohne_name")) + (p.essen ? " (" + p.essen + ")" : "")).join(", ") : (d0.plusNamen || ("+" + d0.plus)),
+          antw: fragen.map((f) => ({ key: f.i, frage: f.frage, text: antwVon(r, f.i).join(", ") })).filter((x) => x.text),
           hatText: !!r.text, text: r.text || "",
           darfWeg: lvl >= 4 || e.by === me.id, weg: weg(r) };
       }),
@@ -6824,15 +6795,9 @@ class Component extends DCLogic {
     ja.forEach((r) => { const k = (r.data || {}).essen; if (k) essen[k] = (essen[k] || 0) + 1; });
     const link = this.gastLinkFuer(e);
     return Object.assign(out, nf, {
-      voZeigen: nf.nfAn || lv.hatLage || leuteAn || gastAn,
+      voZeigen: nf.nfAn || lv.hatLage || gastAn,
+      lpkChips: !!out.lpkAuf && !!lv.hatBeide,
       lp: lv,
-      leuteAn: leuteAn,
-      leuteKnopf: ichTeile ? tx("leute_stopp") : tx("leute_teilen"),
-      leuteKlasse: ichTeile ? "btn btn-primary" : "btn btn-secondary",
-      leuteUm: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.leuteTeilen(e); },
-      leute: leute, keineLeute: !leute.length,
-      leuteHinweis: ichTeile ? tx("leute_teile_hinweis") : tx("leute_hinweis"),
-      leuteErr: st.leuteErr || "", hatLeuteErr: !!st.leuteErr,
       gastAn: gastAn,
       gastLink: link, hatGastLink: !!link && lvl >= 3,
       gastTeilen: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.linkTeilen(link, e.name); },
@@ -6877,7 +6842,7 @@ class Component extends DCLogic {
     const typen = this.lpTypen();
     const fids = this.friendIds();
     const sicht = o.sicht || [];
-    const n = [ex.countdown, nf.an, (lage.punkte || []).length || lage.bild || lage.karte, ex.leute, o.an].filter(Boolean).length;
+    const n = [ex.countdown, nf.an, (lage.punkte || []).length || lage.bild || lage.karte, o.an].filter(Boolean).length;
     const link = this.gastLinkFuer(d);
     const setzI = st.lpSetz || "";
     return { vo: {
@@ -6929,7 +6894,6 @@ class Component extends DCLogic {
           weg: () => this.voSet("lage.punkte", (lage.punkte || []).filter((q) => q.i !== p.i))
         };
       }),
-      leuteStil: this.voPill(!!ex.leute), leuteLabel: (ex.leute ? "✓ " : "") + tx("leute_anbieten"), leuteUm: um("leute", !!ex.leute),
       gaStil: this.voPill(!!o.an), gaLabel: (o.an ? "✓ " : "") + tx("ga_anbieten"),
       gaUm: () => { if (!o.an && !o.token) this.voSet("offen.token", this.neuesToken()); this.voSet("offen.an", !o.an); },
       gaAn: !!o.an,
@@ -6938,6 +6902,14 @@ class Component extends DCLogic {
       })),
       gaSitz: !!o.sitz, gaRsvp: !!o.rsvp,
       gaEssen: o.essen || "", onGaEssen: set("offen.essen"),
+      gFragen: (o.fragen || []).map((q, k) => {
+        const setQ = (p) => this.voSet("offen.fragen", (o.fragen || []).map((x, j) => (j === k ? Object.assign({}, x, p) : x)));
+        return { key: q.i || "q" + k, frage: q.frage || "", antworten: q.antworten || "",
+          onFrage: (ev) => setQ({ frage: ev.target.value }), onAntworten: (ev) => setQ({ antworten: ev.target.value }),
+          artChips: [[false, tx("gf_eine")], [true, tx("gf_mehr")]].map((x) => ({ key: x[0] ? "m" : "e", label: (!!q.mehr === x[0] ? "✓ " : "") + x[1], stil: this.voPill(!!q.mehr === x[0]), klick: () => setQ({ mehr: x[0] }) })),
+          weg: () => this.voSet("offen.fragen", (o.fragen || []).filter((x, j) => j !== k)) };
+      }),
+      gFrageNeu: () => this.voSet("offen.fragen", (o.fragen || []).concat([{ i: "q" + Math.random().toString(36).slice(2, 8), frage: "", antworten: "", mehr: true }])),
       tische: (o.tische || []).map((t, k) => ({
         key: t.i || "t" + k, name: t.name || "", gaeste: t.gaeste || "",
         onName: (ev) => this.voSet("offen.tische", (o.tische || []).map((x, j) => (j === k ? Object.assign({}, x, { name: ev.target.value }) : x))),
@@ -6986,14 +6958,14 @@ class Component extends DCLogic {
       klapp: (function (self) {
         const auf = st.voKlapp || {};
         const o2 = {};
-        ["cd", "nf", "lp", "leute", "ga"].forEach((k) => {
+        ["cd", "nf", "lp", "ga"].forEach((k) => {
           const a = !!auf[k];
           o2[k] = { auf: a, text: a ? "true" : "false", um: () => self.setState({ voKlapp: Object.assign({}, st.voKlapp, { [k]: !a }) }),
             zeichen: { display: "inline-block", fontSize: "12px", color: "var(--color-accent-700)", transform: a ? "rotate(90deg)" : "none", transition: "transform 160ms ease" } };
         });
         return o2;
       })(this),
-      nr: (function () { const z = !!d.date && String(d.date) >= new Date().toISOString().slice(0, 10); const s = z ? 1 : 0; const f = (n) => ("0" + n).slice(-2); return { cd: "01", nf: f(1 + s), lp: f(2 + s), leute: f(3 + s), ga: f(4 + s) }; })(),
+      nr: (function () { const z = !!d.date && String(d.date) >= new Date().toISOString().slice(0, 10); const s = z ? 1 : 0; const f = (n) => ("0" + n).slice(-2); return { cd: "01", nf: f(1 + s), lp: f(2 + s), ga: f(3 + s) }; })(),
       gaDesignAuf: !!st.gaDesignAuf, gaDesignAufText: st.gaDesignAuf ? "true" : "false",
       gaDesignUm: () => this.setState({ gaDesignAuf: !st.gaDesignAuf }),
       gaDesignSign: { display: "inline-block", fontSize: "10px", width: "12px", color: "var(--color-accent-700)", transform: st.gaDesignAuf ? "rotate(90deg)" : "none", transition: "transform 160ms ease" },
@@ -7109,7 +7081,7 @@ class Component extends DCLogic {
     let name = "", fertig = false;
     try { name = localStorage.getItem("chronik-gast-name") || ""; fertig = !!localStorage.getItem("chronik-gast-rsvp-" + m[1]); } catch (x) { /* privat */ }
     this.setState({ gast: { ev: m[1], tk: m[2], laden: true, err: "", d: null, tab: "", name: name, text: "", busy: "", info: "",
-      rsvp: { kommt: "ja", plus: "0", plusNamen: "", essen: "", notiz: "" }, rsvpFertig: fertig, suche: null } });
+      rsvp: { kommt: "ja", plus: "0", plusNamen: "", essen: "", notiz: "", antw: {} }, rsvpFertig: fertig, suche: null } });
     this._gastSucheGesetzt = false;
     this.gastLaden();
   };
@@ -7129,6 +7101,13 @@ class Component extends DCLogic {
       this.gastSet({ laden: false, err: e && e.code === "D-28" ? tx("gast_f_sql") : tx("gast_f_link") + " (" + ((e && (e.code || e.message)) || "?") + ")" });
     }
   }
+  /* Eigene Abfragen des offenen Bereichs, bereinigt: nur mit Frage und mindestens einer Antwort. */
+  gfNorm(list) {
+    return (Array.isArray(list) ? list : []).slice(0, 12).map((q, k) => ({
+      i: String((q && q.i) || "q" + k).slice(0, 20), frage: String((q && q.frage) || "").trim().slice(0, 200), mehr: !!(q && q.mehr),
+      opts: Array.from(new Set(String((q && q.antworten) || "").split(/\n|,|;/).map((s) => s.trim().slice(0, 80)).filter(Boolean))).slice(0, 20)
+    })).filter((q) => q.frage && q.opts.length);
+  }
   gastSperre(d, k) {
     const f = (((d && d.cfg) || {}).frei || {})[k] || {};
     if (f.art === "cd") {
@@ -7144,7 +7123,7 @@ class Component extends DCLogic {
   gastTabs(d) {
     const c = (d && d.cfg) || {};
     const out = [];
-    if (c.rsvp) out.push({ k: "rsvp", l: tx("gast_rsvp"), g: "✓", d: tx("gast_d_rsvp") });
+    if (c.rsvp || this.gfNorm(c.fragen).length) out.push({ k: "rsvp", l: c.rsvp ? tx("gast_rsvp") : tx("gf_titel"), g: "✓", d: c.rsvp ? tx("gast_d_rsvp") : tx("gf_d") });
     if (c.foto) out.push({ k: "foto", l: tx("gast_fotowand"), g: "◫", d: tx("gast_d_foto") });
     if (c.buch) out.push({ k: "buch", l: tx("gast_buch"), g: "✎", d: tx("gast_d_buch") });
     if (c.sitz) out.push({ k: "sitz", l: tx("gast_sitz"), g: "◎", d: tx("gast_d_sitz") });
@@ -7198,11 +7177,15 @@ class Component extends DCLogic {
     const name = this.gastName();
     if (!name) { this.gastSet({ info: tx("gast_name_fehlt") }); return; }
     const r = g.rsvp || {};
-    const ja = r.kommt !== "nein";
+    const cfgR = (g.d || {}).cfg || {};
+    const mit = !!cfgR.rsvp;
+    const ja = mit && r.kommt !== "nein";
+    const antw = {};
+    this.gfNorm(cfgR.fragen).forEach((f) => { const l = (((r.antw || {})[f.i]) || []).filter((x) => f.opts.indexOf(x) >= 0).slice(0, 20); if (l.length) antw[f.i] = l; });
     const n = ja ? Math.max(0, Math.min(20, Number(r.plus) || 0)) : 0;
     const liste = (r.plusListe || []).slice(0, n).map((p) => ({ name: String((p || {}).name || "").slice(0, 60), essen: String((p || {}).essen || "").slice(0, 60) }));
     while (liste.length < n) liste.push({ name: "", essen: "" });
-    const data = { kommt: ja ? "ja" : "nein", plus: n, plusListe: liste, plusNamen: liste.map((p) => p.name).filter(Boolean).join(", "), essen: ja ? String(r.essen || "").slice(0, 80) : "" };
+    const data = { kommt: mit ? (ja ? "ja" : "nein") : "", antw: antw, plus: n, plusListe: liste, plusNamen: liste.map((p) => p.name).filter(Boolean).join(", "), essen: ja ? String(r.essen || "").slice(0, 80) : "" };
     this.gastSet({ busy: tx("gast_sendet"), info: "" });
     try {
       await window.ChronikCloud.gastAdd(g.ev, g.tk, "rsvp", name, String(r.notiz || "").slice(0, 800), data, null);
@@ -7309,7 +7292,19 @@ class Component extends DCLogic {
       rsvpFertig: !!g.rsvpFertig, rsvpOffen: !g.rsvpFertig, rsvpNeu: () => this.gastSet({ rsvpFertig: false }),
       jaStil: { minHeight: "64px", padding: "10px 14px", borderRadius: "calc(var(--g-radius) + 6px)", cursor: "pointer", font: "inherit", fontSize: "16px", fontWeight: 600, border: ja ? "2px solid var(--g-accent)" : "1px solid color-mix(in srgb, var(--g-ink) 18%, transparent)", background: ja ? "var(--g-accent)" : "var(--g-bg)", color: ja ? "var(--g-bg)" : "var(--g-ink)" },
       neinStil: { minHeight: "64px", padding: "10px 14px", borderRadius: "calc(var(--g-radius) + 6px)", cursor: "pointer", font: "inherit", fontSize: "16px", fontWeight: 600, border: !ja ? "2px solid var(--g-ink)" : "1px solid color-mix(in srgb, var(--g-ink) 18%, transparent)", background: !ja ? "var(--g-ink)" : "var(--g-bg)", color: !ja ? "var(--g-bg)" : "var(--g-ink)" }, setJa: () => this.gastRsvpSet({ kommt: "ja" }), setNein: () => this.gastRsvpSet({ kommt: "nein" }),
-      kommtJa: ja,
+      kommtJa: ja && !!c.rsvp,
+      mitRsvp: !!c.rsvp, rsvpTitel: c.rsvp ? tx("gast_rsvp") : tx("gf_titel"),
+      fragen: this.gfNorm(c.fragen).map((f) => ({ key: f.i, frage: f.frage, art: f.mehr ? tx("gf_mehr_moeglich") : tx("gf_eine_waehlen"),
+        opts: f.opts.map((x, j) => {
+          const sel = ((r.antw || {})[f.i]) || [];
+          const an = sel.indexOf(x) >= 0;
+          return { key: "o" + j, label: x, an: an ? "true" : "false", zeichen: an ? "✓" : "",
+            klick: () => this.gastSet((g2) => { const a0 = Object.assign({}, (g2.rsvp || {}).antw); const cur = a0[f.i] || []; a0[f.i] = f.mehr ? (cur.indexOf(x) >= 0 ? cur.filter((y) => y !== x) : cur.concat([x])) : (cur[0] === x ? [] : [x]); return { rsvp: Object.assign({}, g2.rsvp, { antw: a0 }) }; }),
+            stil: { display: "flex", alignItems: "center", gap: "12px", width: "100%", minHeight: "52px", padding: "10px 14px", boxSizing: "border-box", borderRadius: "14px", cursor: "pointer", font: "inherit", fontSize: "16px", textAlign: "left", color: "var(--g-ink)",
+              border: an ? "2px solid var(--g-accent)" : "1px solid color-mix(in srgb, var(--g-ink) 18%, transparent)", background: an ? "color-mix(in srgb, var(--g-accent) 12%, var(--g-bg))" : "var(--g-bg)" },
+            boxStil: { display: "grid", placeItems: "center", flex: "0 0 24px", width: "24px", height: "24px", boxSizing: "border-box", borderRadius: f.mehr ? "6px" : "50%", fontSize: "14px", fontWeight: 700, color: "var(--g-bg)",
+              border: "2px solid " + (an ? "var(--g-accent)" : "color-mix(in srgb, var(--g-ink) 40%, transparent)"), background: an ? "var(--g-accent)" : "transparent" } };
+        }) })),
       plus: String(r.plus || "0"), onPlus: (ev) => this.gastRsvpSet({ plus: ev.target.value }),
       hatPlus: ja && Number(r.plus) > 0,
       plusNamen: r.plusNamen || "", onPlusNamen: (ev) => this.gastRsvpSet({ plusNamen: ev.target.value }),
@@ -8389,7 +8384,6 @@ class Component extends DCLogic {
     window.removeEventListener("message", this.lpNachricht);
     window.removeEventListener("hashchange", this.gastStart);
     if (this._voTimer) window.clearInterval(this._voTimer);
-    if (this._geo) this.leuteStopp(false);
   }
 
   /* ---------- Cloud (Supabase) ---------- */
@@ -9353,6 +9347,17 @@ class Component extends DCLogic {
         text: tx("ein_album_buendelt_bilder_und_hat") },
       { k: "polls", sec: "polls", titel: tx("abstimmungen"),
         text: tx("drei_arten_eine_umfrage_fragt_nach") },
+      { k: "timetable", sec: "timetable", titel: tx("tt_titel"), text: tx("h_timetable") },
+      { k: "countdown", sec: "vorort", klapp: "cd", titel: tx("cd_titel"), text: tx("h_countdown") },
+      { k: "notfall", sec: "vorort", klapp: "nf", titel: tx("nf_titel"), text: tx("h_notfall") },
+      { k: "lage", sec: "vorort", klapp: "lp", titel: tx("lp_titel"), text: tx("h_lage") },
+      { k: "offen", sec: "vorort", klapp: "ga", titel: tx("ga_titel"), text: tx("h_offen") },
+      { k: "fotowand", sec: "vorort", klapp: "ga", titel: tx("gast_fotowand") + " & " + tx("gast_buch"), text: tx("h_fotowand") },
+      { k: "rsvp", sec: "vorort", klapp: "ga", titel: tx("gast_rsvp"), text: tx("h_rsvp") },
+      { k: "fragen", sec: "vorort", klapp: "ga", titel: tx("gf_titel"), text: tx("h_fragen") },
+      { k: "sitz", sec: "vorort", klapp: "ga", titel: tx("gast_sitz"), text: tx("h_sitz") },
+      { k: "frei", sec: "vorort", klapp: "ga", titel: tx("ga_frei_titel"), text: tx("h_frei") },
+      { k: "rueck", sec: "vorort", klapp: "ga", titel: tx("h_rueck_titel"), text: tx("h_rueck") },
       { k: "deko", sec: "deko", titel: tx("deko_und_design"),
         text: tx("sticker_ziehst_du_auf_die_vorschau") },
       { k: "sicht", sec: "sicht", titel: tx("sichtbarkeit"),
@@ -9365,7 +9370,7 @@ class Component extends DCLogic {
   /* Der Leitfaden benutzt den echten Editor: ein Beispielentwurf wird
      hineingelegt, daneben läuft die Erklärung mit. So sieht man genau
      die Vorlage, die beim Anlegen erscheint — keine Nachbildung. */
-  lehrAuf = () => {
+  lehrAuf = (nr) => {
     const d = this.demoEvent();
     this.setState({
       tourWahl: false, tourFrage: false, lehr: 0,
@@ -9385,7 +9390,7 @@ class Component extends DCLogic {
         by: (this.me() || {}).id || "", vis: "friends", who: [], gwho: [], perms: {},
         share: "comment", url: "", partial: false
       }
-    }, () => this.lehrSetzen(0));
+    }, () => this.lehrSetzen(typeof nr === "number" ? nr : 0));
   };
 
   lehrZu = () => this.setState({ lehr: null, draft: null, bildSel: [] });
@@ -9399,14 +9404,14 @@ class Component extends DCLogic {
     /* Den erklärten Abschnitt im Editor aufklappen und hinscrollen. */
     const sec = Object.assign({}, this.state.secOpen || {});
     if (t.sec) sec[t.sec] = true;
-    this.setState({ lehr: n, secOpen: sec });
+    this.setState({ lehr: n, secOpen: sec, voKlapp: t.klapp ? Object.assign({}, this.state.voKlapp, { [t.klapp]: true }) : this.state.voKlapp });
     window.setTimeout(() => {
       const dlg = document.querySelector('[data-screen-label="Ereignis bearbeiten"] > div');
       if (!dlg) return;
       /* Ohne Abschnitt: der erste Schritt zeigt den Kopf, der letzte den
          Fuß mit den Speicherknöpfen. */
       if (!t.sec) { dlg.scrollTop = t.k === "speichern" ? dlg.scrollHeight : 0; return; }
-      const ziel = dlg.querySelector('[data-sec="' + t.sec + '"]');
+      const ziel = (t.klapp && dlg.querySelector('[data-vo="' + t.klapp + '"]')) || dlg.querySelector('[data-sec="' + t.sec + '"]');
       if (!ziel) return;
       const y = dlg.scrollTop + (ziel.getBoundingClientRect().top - dlg.getBoundingClientRect().top) - 12;
       dlg.scrollTop = Math.max(0, y);
@@ -9423,7 +9428,7 @@ class Component extends DCLogic {
 
   /* Der Wahlzettel: welchen der beiden Leitfäden hätten Sie gern? */
   tourWahlAuf = () => this.setState({ tourWahl: true, tourFrage: false });
-  tourWahlZu = () => this.setState({ tourWahl: false });
+  tourWahlZu = () => this.setState({ tourWahl: false, hilfeQ: "" });
 
   tourStart = () => {
     this.setState({
@@ -14823,6 +14828,20 @@ class Component extends DCLogic {
           wahlZu: self.tourWahlZu,
           grund: self.tourGrund,
           ereignis: self.tourEreignis,
+          suche: st.hilfeQ || "", onSuche: (ev) => self.setState({ hilfeQ: ev.target.value }),
+          ...(function () {
+            const q = String(st.hilfeQ || "").trim().toLowerCase();
+            if (!st.tourWahl || !q) return { hatSuche: false, ohneSuche: true, treffer: [], keinTreffer: false };
+            const w = q.split(/\s+/).filter(Boolean);
+            const pool = self.schritteGrund().map((s, k) => ({ art: tx("aufbau_der_seite"), titel: s.titel, text: s.text,
+              go: () => { self.tourGesehen(); self.setState({ tour: k, tourFrage: false, tourWahl: false, hilfeQ: "", drawer: false, admin: false, konto: false, vgl: false }, () => self.tourSchrittAn(k)); } }))
+              .concat(self.lehrTeile().map((s, k) => ({ art: tx("ein_ereignis_anlegen"), titel: s.titel, text: s.text,
+                go: () => { self.tourGesehen(); self.setState({ hilfeQ: "" }); self.lehrAuf(k); } })));
+            const tr = pool.map((p, k) => { const h = (p.titel + " " + p.text).toLowerCase(); return w.every((x) => h.indexOf(x) >= 0) ? { p: p, k: k, s: p.titel.toLowerCase().indexOf(w[0]) >= 0 ? 0 : 1 } : null; })
+              .filter(Boolean).sort((a, b) => a.s - b.s).slice(0, 12);
+            return { hatSuche: true, ohneSuche: false, keinTreffer: !tr.length,
+              treffer: tr.map((x) => ({ key: "h" + x.k, art: x.p.art, titel: x.p.titel, auszug: x.p.text.length > 150 ? x.p.text.slice(0, 147) + " …" : x.p.text, klick: x.p.go })) };
+          })(),
           artLabel: tx("aufbau_der_seite"),
           offen: i != null,
           frage: !!st.tourFrage && i == null,

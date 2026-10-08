@@ -180,7 +180,7 @@ function lageplan(d) {
   hw.hidden = !d.text;
   ebene.clearLayers();
   var farbe = d.farbe || "#0088b0", farbe2 = d.farbe2 || "#d6006c";
-  var pk = d.punkte || [], lt = d.leute || [];
+  var pk = d.punkte || [];
   var alle = [];
   if (d.bereich) {
     L.rectangle([[d.bereich.s, d.bereich.w], [d.bereich.n, d.bereich.e]], { color: farbe, weight: 2, dashArray: "6 6", fill: true, fillOpacity: 0.04 }).addTo(ebene);
@@ -190,12 +190,6 @@ function lageplan(d) {
     var m = L.marker([p.lat, p.lon], { icon: ic, title: p.name || "", zIndexOffset: p.aktiv ? 1000 : 0 }).addTo(ebene);
     m.bindPopup("<strong>" + esc(p.name) + "</strong>" + (p.typ && p.typ !== p.name ? "<br>" + esc(p.typ) : ""));
     if (p.aktiv) karte.setView([p.lat, p.lon], Math.max(karte.getZoom(), 17));
-    alle.push([p.lat, p.lon]);
-  });
-  lt.forEach(function (p) {
-    var ini = String(p.name || "?").trim().split(/\s+/).slice(0, 2).map(function (w) { return w[0] || ""; }).join("").toUpperCase();
-    var ic = L.divIcon({ className: "", html: '<div class="person' + (p.ich ? " ich" : "") + '">' + esc(ini) + "</div>", iconSize: [24, 24], iconAnchor: [12, 12] });
-    L.marker([p.lat, p.lon], { icon: ic, title: p.name || "", zIndexOffset: 500 }).addTo(ebene).bindTooltip(esc(p.name), { direction: "right", offset: [12, 0] });
     alle.push([p.lat, p.lon]);
   });
   var bk = JSON.stringify(d.bereich || null);
