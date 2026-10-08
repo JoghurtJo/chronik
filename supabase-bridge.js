@@ -1,6 +1,10 @@
 /* Chronik ↔ Supabase */
 (function () {
   var CFG = window.CHRONIK_CONFIG || {};
+  /* Die Adresszeile sofort sichern: der Supabase-Client räumt den
+     Wiederherstellungs-Link beim Start weg, danach wäre er nicht mehr erkennbar. */
+  var START_HASH = String(location.hash || "");
+  var RECOVERY = /type=recovery/.test(START_HASH);
   var SDK = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
   var BUCKET = "bilder";
 
@@ -284,10 +288,11 @@
     return true;
   }
 
-  function recoveryPending() { return /type=recovery/.test(location.hash || ""); }
+  function recoveryPending() { return RECOVERY || /type=recovery/.test(location.hash || ""); }
+  function recoveryDone() { RECOVERY = false; START_HASH = ""; }
 
   function hashToken() {
-    var h = String(location.hash || "").replace(/^#/, "");
+    var h = String(location.hash || START_HASH || "").replace(/^#/, "");
     var m = h.match(/access_token=([^&]+)/);
     return m ? decodeURIComponent(m[1]) : "";
   }
@@ -459,7 +464,7 @@
       var res = await fetch(R2 + "/notify", {
         method: "POST",
         headers: { Authorization: "Bearer " + tk, "content-type": "application/json" },
-        body: JSON.stringify({ to: empfaengerId, kind: art, subject: betreff, text: text })
+        body: JSON.stringify({ to: empfaengerId, kind: art, subject: betreff, text: text, app: location.origin + location.pathname })
       });
       var out = await res.json().catch(function () { return {}; });
       return { ok: !!res.ok && !!out.ok && !out.skipped, reason: out.error || out.skipped || "", detail: out.detail || "", status: res.status };
@@ -967,7 +972,7 @@
     emailTaken: emailTaken, nameTaken: nameTaken, emailForName: emailForName,
     profiles: profiles, setBlocked: setBlocked, history: history, undo: undo,
     groups: groups, saveGroup: saveGroup, removeGroup: removeGroup, leaveGroup: leaveGroup, saveLook: saveLook,
-    saveNotify: saveNotify, notify: notify,
+    saveNotify: saveNotify, notify: notify, recoveryDone: recoveryDone,
     friends: friends, askFriend: askFriend, answerFriend: answerFriend, unfriend: unfriend,
     loadEvents: loadEvents, imageUrls: imageUrls, ttKi: ttKi, gastSicht: gastSicht, gastAdd: gastAdd, gastUpload: gastUpload, gastBildUrl: gastBildUrl, gastListe: gastListe, gastWeg: gastWeg, saveEvent: saveEvent, removeEvent: removeEvent,
     addComment: addComment, removeComment: removeComment, reactComment: reactComment,

@@ -510,9 +510,9 @@
       </div>
 
       <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: var(--space-6); font-size: 13.5px; line-height: 1.3;">
-        <span style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; background: color-mix(in srgb, var(--color-surface) 80%, transparent); box-shadow: inset 0 0 0 1px var(--color-divider), var(--shadow-sm); color: var(--color-text); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);"><i class="ph-duotone ph-users-three" style="font-size: 18px; color: var(--color-accent-700);"></i>{{ L.alle_schreiben_mit }}</span>
-        <span style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; background: color-mix(in srgb, var(--color-surface) 80%, transparent); box-shadow: inset 0 0 0 1px var(--color-divider), var(--shadow-sm); color: var(--color-text); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);"><i class="ph-duotone ph-lock-key" style="font-size: 18px; color: var(--color-accent-700);"></i>{{ L.du_gibst_frei_wer_was_sieht }}</span>
-        <span style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; background: color-mix(in srgb, var(--color-surface) 80%, transparent); box-shadow: inset 0 0 0 1px var(--color-divider), var(--shadow-sm); color: var(--color-text); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);"><i class="ph-duotone ph-palette" style="font-size: 18px; color: var(--color-accent-700);"></i>{{ L.achtzehn_gesichter_zur_wahl }}</span>
+        <span style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; background: color-mix(in srgb, var(--color-surface) 80%, transparent); box-shadow: inset 0 0 0 1px var(--color-divider), var(--shadow-sm); color: var(--color-text); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);"><i class="ph-duotone ph-user" style="font-size: 18px; color: var(--color-accent-700);"></i>{{ L.alle_schreiben_mit }}</span>
+        <span style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; background: color-mix(in srgb, var(--color-surface) 80%, transparent); box-shadow: inset 0 0 0 1px var(--color-divider), var(--shadow-sm); color: var(--color-text); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);"><i class="ph-duotone ph-users-three" style="font-size: 18px; color: var(--color-accent-700);"></i>{{ L.du_gibst_frei_wer_was_sieht }}</span>
+        <span style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; background: color-mix(in srgb, var(--color-surface) 80%, transparent); box-shadow: inset 0 0 0 1px var(--color-divider), var(--shadow-sm); color: var(--color-text); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);"><i class="ph-duotone ph-orange" style="font-size: 18px; color: var(--color-accent-700);"></i>{{ L.achtzehn_gesichter_zur_wahl }}</span>
       </div>
     </div>
 
@@ -9329,8 +9329,10 @@ class Component extends DCLogic {
         if (alt0 > PW_LINK_SEK) this.setState({ authMode: "reset", authError: "A-21", authNotice: "", pwConfirm: false });
         else this.setState({ authMode: "newpw", authNotice: tx("neues_passwort_setzen"), pwLinkAt: Date.now(), pwConfirm: false });
       }
+      /* Ein Rücksetz-Link meldet bei Supabase an — in die Chronik geht es
+         trotzdem erst, wenn das neue Passwort gesetzt und neu angemeldet ist. */
       const s = await CC.session();
-      if (s) await this.cloudSignedIn(s);
+      if (s && !CC.recoveryPending()) await this.cloudSignedIn(s);
       this.setState({ booting: false });
       /* Unbestätigte Konten nach 11 Minuten wegräumen — die Adresse wird
          damit wieder frei. Läuft im Hintergrund, ohne den Start zu bremsen. */
@@ -9340,9 +9342,10 @@ class Component extends DCLogic {
           const alt1 = CC.linkAge ? CC.linkAge() : -1;
           if (alt1 > PW_LINK_SEK) this.setState({ authMode: "reset", authError: "A-21", authNotice: "", pwConfirm: false });
           else this.setState({ authMode: "newpw", authNotice: tx("neues_passwort_setzen"), pwLinkAt: Date.now(), pwConfirm: false });
+          this.setState({ session: null, events: [], eingang: [], drawer: false, admin: false, konto: false, editing: null, open: null });
           return;
         }
-        if (evt === "SIGNED_IN" && sess && !this.state.session) await this.cloudSignedIn(sess);
+        if (evt === "SIGNED_IN" && sess && !this.state.session && !CC.recoveryPending() && this.state.authMode !== "newpw") await this.cloudSignedIn(sess);
         if (evt === "SIGNED_OUT") this.setState({ session: null, events: [], eingang: [], users: [] });
       });
     } catch (e) {
@@ -10106,6 +10109,7 @@ class Component extends DCLogic {
         /* Abmelden und den Link aus der Adresszeile entfernen, damit ein
            Neuladen nicht wieder im Passwortformular landet. */
         try { await CC.signOut(); } catch (e) { /* egal */ }
+        if (CC.recoveryDone) CC.recoveryDone();
         try {
           if (window.history && window.history.replaceState) {
             window.history.replaceState(null, "", location.pathname + location.search);
@@ -16583,7 +16587,15 @@ class Component extends DCLogic {
         toLogin: () => this.setState({ authMode: "login", authError: "" }),
         toRegister: () => this.setState({ authMode: "register", authError: "" }),
         canReset: !!st.cloud,
-        toggleReset: () => this.setState({ authMode: st.authMode === "reset" ? "login" : "reset", authError: "", authNotice: "" }),
+        toggleReset: () => {
+          /* Wer das Passwortformular verlässt, bleibt abgemeldet — der Link meldet nie an. */
+          if (st.authMode === "newpw" && window.ChronikCloud) {
+            try { window.ChronikCloud.signOut(); } catch (x) { /* egal */ }
+            if (window.ChronikCloud.recoveryDone) window.ChronikCloud.recoveryDone();
+            try { history.replaceState(null, "", location.pathname + location.search); } catch (x) { /* egal */ }
+          }
+          this.setState({ authMode: st.authMode === "reset" ? "login" : "reset", authError: "", authNotice: "", pwConfirm: false });
+        },
         resetLink: st.authMode === "reset" ? tx("zurueck_zur_anmeldung") : tx("passwort_vergessen"),
         title: st.authMode === "newpw" ? tx("neues_passwort_waehlen") : st.authMode === "reset" ? (st.cloud ? tx("passwort_zuruecksetzen") : tx("neues_passwort_setzen")) : st.authMode === "register" ? (st.users.length ? tx("konto_anlegen") : tx("chronik_einrichten")) : tx("willkommen_zurueck"),
         idLabel: st.authMode === "login" ? tx("e_mail_oder_benutzername") : "E-Mail",
