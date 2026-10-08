@@ -1513,6 +1513,20 @@ window.CHRONIK_SPRACHEN.en = {
     ga_g_look: "Guest page look",
     design_und_deko: "Design and decoration",
     gf_danke: "Thanks! Your answers have arrived.",
-    gf_keine_wahl: "Please tick at least one answer."
+    gf_keine_wahl: "Please tick at least one answer.",
+    ga_aktiv: "Guest link is active",
+    ga_aktiv_text: "Guests can open the link now. Untick to switch it off immediately.",
+    ga_aus: "Guest link is off",
+    ga_aus_text: "Guests see nothing. Prepare everything, then tick this box.",
+    ga_geplant: "Guest link opens on",
+    ga_geplant_text: "Until then guests only see when it starts.",
+    ga_aktiv_ab: "Activate",
+    ga_ab_sofort: "Immediately",
+    ga_ab_zeit: "From date & time",
+    ga_ab_cd: "After the countdown",
+    ga_oeffnet_am: "The guest area opens on",
+    cd_sekunden: "Seconds",
+    cd_millis: "Millisec.",
+    ga_checkbox: "Activate guest link"
   }
 };

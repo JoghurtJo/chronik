@@ -90,12 +90,13 @@
 
   <sc-if value="{{ gv.an }}" hint-placeholder-val="{{ false }}">
     <div data-screen-label="Gastbereich" style="{{ gv.rootStil }}">
+      <div aria-hidden="true" style="{{ gv.fxStil }}"></div>
       <sc-if value="{{ gv.laden }}" hint-placeholder-val="{{ true }}">
         <div style="min-height: 100vh; display: grid; place-items: center; font-size: 17px; opacity: 0.7;">{{ L.gast_laedt_seite }}</div>
       </sc-if>
       <sc-if value="{{ gv.hatErr }}" hint-placeholder-val="{{ false }}">
         <div style="min-height: 100vh; display: grid; place-items: center; padding: 24px; box-sizing: border-box;">
-          <div style="display: grid; gap: 16px; padding: clamp(18px, 4vw, 28px); border-radius: calc(var(--g-radius) + 6px); background: var(--g-card); box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 12px 32px -18px rgba(0,0,0,0.28); max-width: 460px; text-align: center; justify-items: center;">
+          <div style="display: grid; gap: 16px; padding: clamp(18px, 4vw, 28px); border-radius: calc(var(--g-radius) + 6px); background: var(--g-card-bg, var(--g-card)); box-shadow: var(--g-shadow); border: var(--g-rand, 0); max-width: 460px; text-align: center; justify-items: center;">
             <h1 style="margin: 0; font-family: var(--g-head); font-weight: var(--g-hw); font-size: clamp(24px, 5vw, 32px); line-height: 1.1; text-transform: var(--g-ht);">{{ L.ga_titel }}</h1>
             <p style="margin: 0; font-size: 16px; line-height: 1.55;">{{ gv.err }}</p>
             <button style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 22px; border-radius: 999px; border: 1.5px solid var(--g-accent); background: transparent; color: var(--g-accent); font: inherit; font-size: 16px; font-weight: 600; cursor: pointer;" onClick="{{ gv.zurChronik }}">{{ L.gast_zur_chronik }}</button>
@@ -103,7 +104,8 @@
         </div>
       </sc-if>
       <sc-if value="{{ gv.bereit }}" hint-placeholder-val="{{ false }}">
-        <header style="position: relative; overflow: hidden; display: grid; align-items: end; min-height: clamp(280px, 50vh, 560px); background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--g-accent2) 22%, var(--g-bg)) 0%, var(--g-bg) 70%);">
+        <header style="position: relative; overflow: hidden; display: grid; align-items: end; min-height: clamp(280px, 50vh, 560px); background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--g-accent2) 22%, transparent) 0%, transparent 70%);">
+          <div aria-hidden="true" style="position: absolute; left: 0; right: 0; top: 0; z-index: 1; height: var(--g-band-h, 0px); background: var(--g-band, none);"></div>
           <sc-if value="{{ gv.hatTitelbild }}" hint-placeholder-val="{{ false }}">
             <img ref="{{ gv.titelRef }}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;">
             <div style="position: absolute; inset: 0; background: linear-gradient(to top, var(--g-bg) 0%, color-mix(in srgb, var(--g-bg) 70%, transparent) 38%, color-mix(in srgb, var(--g-bg) 10%, transparent) 75%, transparent 100%);"></div>
@@ -113,27 +115,25 @@
               <div style="font-size: 13px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--g-accent2); font-weight: 600;">{{ gv.kicker }}</div>
             </sc-if>
             <div aria-hidden="true" style="display: flex; align-items: center; gap: 12px; color: var(--g-accent);"><span style="width: 44px; height: 1px; background: currentColor;"></span><span style="font-size: 14px;">✦</span><span style="width: 44px; height: 1px; background: currentColor;"></span></div>
-            <h1 style="margin: 0; font-family: var(--g-head); font-weight: var(--g-hw); text-transform: var(--g-ht); font-size: clamp(40px, 10vw, 84px); line-height: 0.98; letter-spacing: -0.01em; text-wrap: balance;">{{ gv.titel }}</h1>
+            <h1 style="margin: 0; font-family: var(--g-head); font-weight: var(--g-hw); text-transform: var(--g-ht); font-size: clamp(40px, 10vw, 84px); line-height: 0.98; letter-spacing: -0.01em; text-wrap: balance; background: var(--g-titel-bg, none); -webkit-background-clip: text; background-clip: text; color: var(--g-titel-farbe, inherit);">{{ gv.titel }}</h1>
             <div style="font-size: clamp(16px, 3.6vw, 20px); letter-spacing: 0.04em;">{{ gv.wann }}</div>
             <sc-if value="{{ gv.hatCdTeile }}" hint-placeholder-val="{{ false }}">
-              <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; justify-content: center;">
-                <sc-for list="{{ gv.cdTeile }}" as="ct" hint-placeholder-count="3">
-                  <div style="display: grid; justify-items: center; gap: 2px; min-width: 76px; padding: 12px 10px 10px; border-radius: calc(var(--g-radius) + 4px); background: color-mix(in srgb, var(--g-card) 88%, transparent); box-shadow: 0 8px 24px -16px rgba(0,0,0,0.4);">
-                    <span style="font-family: var(--g-head); font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; color: var(--g-accent);">{{ ct.zahl }}</span>
-                    <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.75;">{{ ct.einheit }}</span>
-                  </div>
-                </sc-for>
-              </div>
+              {{ gv.cdUhr }}
+            </sc-if>
+            <sc-if value="{{ gv.wartet }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top: 6px; font-size: clamp(17px, 4vw, 21px); line-height: 1.45; text-wrap: balance;">{{ gv.wartetText }}</div>
+              {{ gv.wartUhr }}
             </sc-if>
           </div>
         </header>
 
-        <main style="width: min(760px, 100%); margin: 0 auto; box-sizing: border-box; padding: 8px 14px calc(110px + env(safe-area-inset-bottom)); display: grid; gap: 18px;">
+        <sc-if value="{{ gv.offenJetzt }}" hint-placeholder-val="{{ true }}">
+        <main style="position: relative; width: min(760px, 100%); margin: 0 auto; box-sizing: border-box; padding: 8px 14px calc(110px + env(safe-area-inset-bottom)); display: grid; gap: 18px;">
           <sc-if value="{{ gv.hatGruss }}" hint-placeholder-val="{{ false }}">
             <p style="margin: 0 auto; max-width: 560px; text-align: center; font-family: var(--g-head); font-style: italic; font-size: clamp(18px, 4vw, 22px); line-height: 1.5; white-space: pre-wrap; text-wrap: pretty;">{{ gv.gruss }}</p>
           </sc-if>
 
-          <div style="display: grid; gap: 16px; padding: clamp(18px, 4vw, 28px); border-radius: calc(var(--g-radius) + 6px); background: var(--g-card); box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 12px 32px -18px rgba(0,0,0,0.28);">
+          <div style="display: grid; gap: 16px; padding: clamp(18px, 4vw, 28px); border-radius: calc(var(--g-radius) + 6px); background: var(--g-card-bg, var(--g-card)); box-shadow: var(--g-shadow); border: var(--g-rand, 0);">
             <sc-if value="{{ gv.hatHallo }}" hint-placeholder-val="{{ false }}">
               <div style="font-family: var(--g-head); font-size: 22px;">{{ gv.hallo }}</div>
             </sc-if>
@@ -188,7 +188,7 @@
           </sc-if>
 
           <sc-if value="{{ gv.istGesperrt }}" hint-placeholder-val="{{ false }}">
-            <section style="display: grid; gap: 10px; justify-items: center; text-align: center; padding: 32px 20px; border-radius: calc(var(--g-radius) + 6px); background: var(--g-card); box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 12px 32px -18px rgba(0,0,0,0.28);">
+            <section style="display: grid; gap: 10px; justify-items: center; text-align: center; padding: 32px 20px; border-radius: calc(var(--g-radius) + 6px); background: var(--g-card-bg, var(--g-card)); box-shadow: var(--g-shadow); border: var(--g-rand, 0);">
               <div style="font-size: 34px; color: var(--g-accent);">◷</div>
               <h2 style="margin: 0; font-family: var(--g-head); font-weight: var(--g-hw); font-size: 26px;">{{ gv.sperrTitel }}</h2>
               <p style="margin: 0; font-size: 16px; line-height: 1.5;">{{ L.gast_noch_zu }} {{ gv.sperrText }}</p>
@@ -196,7 +196,7 @@
           </sc-if>
 
           <sc-if value="{{ gv.istFoto }}" hint-placeholder-val="{{ false }}">
-            <section style="display: grid; gap: 16px; padding: clamp(18px, 4vw, 28px); border-radius: calc(var(--g-radius) + 6px); background: var(--g-card); box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 12px 32px -18px rgba(0,0,0,0.28);">
+            <section style="display: grid; gap: 16px; padding: clamp(18px, 4vw, 28px); border-radius: calc(var(--g-radius) + 6px); background: var(--g-card-bg, var(--g-card)); box-shadow: var(--g-shadow); border: var(--g-rand, 0);">
               <h2 style="margin: 0; font-family: var(--g-head); font-weight: var(--g-hw); font-size: clamp(24px, 5vw, 32px); line-height: 1.1; text-transform: var(--g-ht);">{{ L.gast_fotowand }}</h2>
               <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <label style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 24px; border-radius: 999px; border: 0; background: var(--g-accent); color: var(--g-bg); font: inherit; font-size: 16px; font-weight: 600; cursor: pointer;">{{ L.gast_foto_machen }}<input type="file" accept="image/*" capture="environment" onChange="{{ gv.onFotos }}" style="display: none;"></label>
@@ -225,7 +225,7 @@
           </sc-if>
 
           <sc-if value="{{ gv.istBuch }}" hint-placeholder-val="{{ false }}">
-            <section style="display: grid; gap: 16px; padding: clamp(18px, 4vw, 28px); border-radius: calc(var(--g-radius) + 6px); background: var(--g-card); box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 12px 32px -18px rgba(0,0,0,0.28);">
+            <section style="display: grid; gap: 16px; padding: clamp(18px, 4vw, 28px); border-radius: calc(var(--g-radius) + 6px); background: var(--g-card-bg, var(--g-card)); box-shadow: var(--g-shadow); border: var(--g-rand, 0);">
               <h2 style="margin: 0; font-family: var(--g-head); font-weight: var(--g-hw); font-size: clamp(24px, 5vw, 32px); line-height: 1.1; text-transform: var(--g-ht);">{{ L.gast_buch }}</h2>
               <textarea value="{{ gv.text }}" onChange="{{ gv.onText }}" rows="4" placeholder="{{ L.gast_buch_ph }}" style="width: 100%; box-sizing: border-box; padding: 13px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px; resize: vertical;"></textarea>
               <button style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 24px; border-radius: 999px; border: 0; background: var(--g-accent); color: var(--g-bg); font: inherit; font-size: 16px; font-weight: 600; cursor: pointer; justify-self: start;" onClick="{{ gv.buchSenden }}">{{ L.gast_eintragen }}</button>
@@ -244,7 +244,7 @@
           </sc-if>
 
           <sc-if value="{{ gv.istSitz }}" hint-placeholder-val="{{ false }}">
-            <section style="display: grid; gap: 16px; padding: clamp(18px, 4vw, 28px); border-radius: calc(var(--g-radius) + 6px); background: var(--g-card); box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 12px 32px -18px rgba(0,0,0,0.28);">
+            <section style="display: grid; gap: 16px; padding: clamp(18px, 4vw, 28px); border-radius: calc(var(--g-radius) + 6px); background: var(--g-card-bg, var(--g-card)); box-shadow: var(--g-shadow); border: var(--g-rand, 0);">
               <h2 style="margin: 0; font-family: var(--g-head); font-weight: var(--g-hw); font-size: clamp(24px, 5vw, 32px); line-height: 1.1; text-transform: var(--g-ht);">{{ L.gast_sitz }}</h2>
               <input type="search" value="{{ gv.suche }}" onChange="{{ gv.onSuche }}" placeholder="{{ L.gast_suche_ph }}" style="width: 100%; box-sizing: border-box; padding: 13px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px;">
               <sc-if value="{{ gv.sp.hatTreffer }}" hint-placeholder-val="{{ false }}">
@@ -327,7 +327,7 @@
           </sc-if>
 
           <sc-if value="{{ gv.istRsvp }}" hint-placeholder-val="{{ false }}">
-            <section style="display: grid; gap: 16px; padding: clamp(18px, 4vw, 28px); border-radius: calc(var(--g-radius) + 6px); background: var(--g-card); box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 12px 32px -18px rgba(0,0,0,0.28);">
+            <section style="display: grid; gap: 16px; padding: clamp(18px, 4vw, 28px); border-radius: calc(var(--g-radius) + 6px); background: var(--g-card-bg, var(--g-card)); box-shadow: var(--g-shadow); border: var(--g-rand, 0);">
               <h2 style="margin: 0; font-family: var(--g-head); font-weight: var(--g-hw); font-size: clamp(24px, 5vw, 32px); line-height: 1.1; text-transform: var(--g-ht);">{{ gv.rsvpTitel }}</h2>
               <sc-if value="{{ gv.rsvpFertig }}" hint-placeholder-val="{{ false }}">
                 <p style="margin: 0; font-family: var(--g-head); font-size: 22px; line-height: 1.4;">{{ L.gast_danke_rsvp }}</p>
@@ -365,7 +365,7 @@
           </sc-if>
 
           <sc-if value="{{ gv.istFragen }}" hint-placeholder-val="{{ false }}">
-            <section style="display: grid; gap: 16px; padding: clamp(18px, 4vw, 28px); border-radius: calc(var(--g-radius) + 6px); background: var(--g-card); box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 12px 32px -18px rgba(0,0,0,0.28);">
+            <section style="display: grid; gap: 16px; padding: clamp(18px, 4vw, 28px); border-radius: calc(var(--g-radius) + 6px); background: var(--g-card-bg, var(--g-card)); box-shadow: var(--g-shadow); border: var(--g-rand, 0);">
               <h2 style="margin: 0; font-family: var(--g-head); font-weight: var(--g-hw); font-size: clamp(24px, 5vw, 32px); line-height: 1.1; text-transform: var(--g-ht);">{{ L.gf_titel }}</h2>
               <sc-if value="{{ gv.fragenFertig }}" hint-placeholder-val="{{ false }}">
                 <p style="margin: 0; font-family: var(--g-head); font-size: 22px; line-height: 1.4;">{{ L.gf_danke }}</p>
@@ -384,7 +384,7 @@
           </sc-if>
 
           <sc-if value="{{ gv.istLage }}" hint-placeholder-val="{{ false }}">
-            <section style="display: grid; gap: 16px; padding: clamp(18px, 4vw, 28px); border-radius: calc(var(--g-radius) + 6px); background: var(--g-card); box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 12px 32px -18px rgba(0,0,0,0.28);">
+            <section style="display: grid; gap: 16px; padding: clamp(18px, 4vw, 28px); border-radius: calc(var(--g-radius) + 6px); background: var(--g-card-bg, var(--g-card)); box-shadow: var(--g-shadow); border: var(--g-rand, 0);">
               <h2 style="margin: 0; font-family: var(--g-head); font-weight: var(--g-hw); font-size: clamp(24px, 5vw, 32px); line-height: 1.1; text-transform: var(--g-ht);">{{ L.lp_titel }}</h2>
               <sc-if value="{{ gv.lp.hatBeide }}" hint-placeholder-val="{{ false }}">
                 <div style="display: flex; gap: 6px; flex-wrap: wrap;">
@@ -417,6 +417,7 @@
             <button onClick="{{ gv.zurChronik }}" style="min-height: 44px; border: 0; background: transparent; color: var(--g-ink); font: inherit; font-size: 14px; text-decoration: underline; cursor: pointer;">{{ L.gast_zur_chronik }}</button>
           </footer>
         </main>
+        </sc-if>
         <sc-if value="{{ gv.hatTabs }}" hint-placeholder-val="{{ false }}">
           <nav style="position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; display: flex; justify-content: center; padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); background: color-mix(in srgb, var(--g-card) 94%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 -8px 24px -18px rgba(0,0,0,0.5);">
             <div style="display: flex; gap: 2px; width: min(760px, 100%); overflow-x: auto;">
@@ -1092,7 +1093,7 @@
                       <span style="{{ c.visStyle }}">{{ c.visTag }}</span>
                     </sc-if>
                     <sc-if value="{{ c.cdKlein }}" hint-placeholder-val="{{ false }}">
-                      <span style="font-size: 10.5px; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 99px; background: var(--t-accent, #0088b0); color: var(--t-card, #eae9e9); white-space: nowrap;">⏳ {{ c.cdText }}</span>
+                      <span style="font-size: 10.5px; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 99px; background: var(--t-accent, #0088b0); color: var(--t-card, #eae9e9); white-space: nowrap;">⏳ {{ c.cdUhrText }}</span>
                     </sc-if>
 
                     <span style="flex: 1;"></span>
@@ -1125,14 +1126,7 @@
                   <sc-if value="{{ c.cdGross }}" hint-placeholder-val="{{ false }}">
                     <div onClick="{{ stop }}" style="display: grid; justify-items: center; gap: 8px; margin: 14px 0 6px; padding: 16px 10px; border-radius: var(--t-radius, 2px); background: color-mix(in srgb, var(--t-accent, #0088b0) 9%, var(--t-card, #eae9e9));">
                       <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--t-accent, #0088b0);">{{ L.cd_bis_beginn }}</div>
-                      <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                        <sc-for list="{{ c.cdTeile }}" as="ct" hint-placeholder-count="3">
-                          <div style="display: grid; justify-items: center; min-width: 72px; padding: 10px 8px 8px; border-radius: 12px; background: var(--t-card, #eae9e9); box-shadow: var(--shadow-sm);">
-                            <span style="font-family: var(--t-font-head, var(--font-heading)); font-size: clamp(30px, 8vw, 44px); line-height: 1; font-variant-numeric: tabular-nums; color: var(--t-accent, #0088b0);">{{ ct.zahl }}</span>
-                            <span style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.75;">{{ ct.einheit }}</span>
-                          </div>
-                        </sc-for>
-                      </div>
+                      {{ c.cdUhr }}
                     </div>
                   </sc-if>
                   <sc-if value="{{ c.place }}" hint-placeholder-val="{{ true }}">
@@ -2659,11 +2653,15 @@
             <div style="display: grid; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-md); background: var(--color-neutral-100);">
               <button data-vo="ga" onClick="{{ vo.klapp.ga.um }}" aria-expanded="{{ vo.klapp.ga.text }}" style="display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--color-text); font: inherit; text-align: left; cursor: pointer;"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.ga }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.ga_titel }}</span><span style="flex: 1;"></span><span style="{{ vo.klapp.ga.zeichen }}">▸</span></button><sc-if value="{{ vo.klapp.ga.auf }}" hint-placeholder-val="{{ false }}">
               <div style="font-size: 13px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.ga_hinweis }}</div>
-              <div><button onClick="{{ vo.gaUm }}" style="{{ vo.gaStil }}">{{ vo.gaLabel }}</button></div>
-              <sc-if value="{{ vo.gaAn }}" hint-placeholder-val="{{ false }}">
                 <div style="display: grid; gap: var(--space-5);">
-                  <div style="display: grid; gap: var(--space-2);">
+                  <div style="display: grid; gap: var(--space-2); border-top: 2px solid var(--color-text); padding-top: var(--space-3);">
                     <div style="font-family: var(--font-heading); font-weight: 600; font-size: 17px; line-height: 1.2;">{{ L.ga_g_link }}</div>
+                    <label style="{{ vo.gaAktivStil }}"><input type="checkbox" checked="{{ vo.gaAn }}" onChange="{{ vo.gaUm }}" aria-label="{{ L.ga_checkbox }}" style="width: 28px; height: 28px; flex: 0 0 28px; margin: 2px 0 0; accent-color: var(--color-accent); cursor: pointer;"><span style="display: grid; gap: 3px; min-width: 0;"><strong style="font-family: var(--font-heading); font-size: 19px; line-height: 1.2;">{{ vo.gaAktivTitel }}</strong><span style="font-size: 13.5px; line-height: 1.45;">{{ vo.gaAktivText }}</span></span></label>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                      <span style="flex: 0 0 110px; font-size: 14px; font-weight: 600;">{{ L.ga_aktiv_ab }}</span>
+                      <select class="input" value="{{ vo.gaAbArt }}" onChange="{{ vo.onGaAbArt }}" style="flex: 1 1 180px; width: auto; min-width: 0; font-size: 15px;"><option value="">{{ L.ga_ab_sofort }}</option><option value="zeit">{{ L.ga_ab_zeit }}</option><option value="cd">{{ L.ga_ab_cd }}</option></select>
+                      <sc-if value="{{ vo.gaAbIstZeit }}" hint-placeholder-val="{{ false }}"><input class="input" type="datetime-local" value="{{ vo.gaAbZeit }}" onChange="{{ vo.onGaAbZeit }}" style="flex: 1 1 200px; width: auto; min-width: 0; font-size: 15px;"></sc-if>
+                    </div>
                     <div style="display: grid; gap: var(--space-2); padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-bg);">
                   <sc-if value="{{ vo.hatGaHinweis }}" hint-placeholder-val="{{ false }}">
                     <div style="font-size: 13px; color: var(--color-accent-2-700);">{{ vo.gaHinweis }}</div>
@@ -2683,7 +2681,7 @@
                   </sc-if>
                     </div>
                   </div>
-                  <div style="display: grid; gap: var(--space-2);">
+                  <div style="display: grid; gap: var(--space-2); border-top: 2px solid var(--color-text); padding-top: var(--space-3);">
                     <div style="font-family: var(--font-heading); font-weight: 600; font-size: 17px; line-height: 1.2;">{{ L.ga_g_sicht }}</div>
                     <div style="display: grid; gap: var(--space-2); padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-bg);">
                   <div style="display: flex; gap: 6px; flex-wrap: wrap;">
@@ -2712,7 +2710,7 @@
                     </div>
                   </sc-if>
                   </div>
-                  <div style="display: grid; gap: var(--space-2);">
+                  <div style="display: grid; gap: var(--space-2); border-top: 2px solid var(--color-text); padding-top: var(--space-3);">
                     <div style="font-family: var(--font-heading); font-weight: 600; font-size: 17px; line-height: 1.2;">{{ L.ga_g_look }}</div>
                   <div style="display: grid; gap: var(--space-2); padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-bg);">
                     <button onClick="{{ vo.gaDesignUm }}" aria-expanded="{{ vo.gaDesignAufText }}" style="display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 4px 0; border: 0; background: transparent; color: var(--color-text); font: inherit; text-align: left; cursor: pointer;">
@@ -2748,14 +2746,14 @@
                   </div>
                   </div>
                   <sc-if value="{{ vo.gaRsvp }}" hint-placeholder-val="{{ false }}">
-                  <div style="display: grid; gap: var(--space-2);">
+                  <div style="display: grid; gap: var(--space-2); border-top: 2px solid var(--color-text); padding-top: var(--space-3);">
                     <div style="font-family: var(--font-heading); font-weight: 600; font-size: 17px; line-height: 1.2;">{{ L.gast_rsvp }}</div>
                     <div style="display: grid; gap: var(--space-2); padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-bg);">
                     <div class="field" style="margin: 0;"><label>{{ L.ga_essen }}</label><input class="input" value="{{ vo.gaEssen }}" onChange="{{ vo.onGaEssen }}" placeholder="{{ L.ga_essen_ph }}" style="font-size: 16px;"></div>
                     </div>
                   </div>
                   </sc-if>
-                  <div style="display: grid; gap: var(--space-2);">
+                  <div style="display: grid; gap: var(--space-2); border-top: 2px solid var(--color-text); padding-top: var(--space-3);">
                     <div style="font-family: var(--font-heading); font-weight: 600; font-size: 17px; line-height: 1.2;">{{ L.gf_titel }}</div>
                   <div style="display: grid; gap: var(--space-2); padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-bg);">
                     <div style="font-size: 12.5px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.gf_hinweis }}</div>
@@ -2770,7 +2768,7 @@
                   </div>
                   </div>
                   <sc-if value="{{ vo.gaSitz }}" hint-placeholder-val="{{ false }}">
-                  <div style="display: grid; gap: var(--space-2);">
+                  <div style="display: grid; gap: var(--space-2); border-top: 2px solid var(--color-text); padding-top: var(--space-3);">
                     <div style="font-family: var(--font-heading); font-weight: 600; font-size: 17px; line-height: 1.2;">{{ L.gast_sitz }}</div>
                     <div style="display: grid; gap: var(--space-2); padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-bg);">
                       <div style="font-size: 13px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.sp_hinweis }}</div>
@@ -2968,7 +2966,6 @@
                   </div>
                   </sc-if>
                 </div>
-              </sc-if>
             </sc-if></div>
           </div>
         </sc-if>
@@ -6450,6 +6447,60 @@ class Component extends DCLogic {
     return tx("cd_noch") + " " + (d ? plural(d, tx("cd_tag"), tx("cd_tage")) + " · " : "") + (d || h ? h + " " + tx("cd_std") + " · " : "") + m + " " + tx("cd_min");
   }
 
+  /* Tickende Countdown-Anzeige: ab unter einem Tag mit Sekunden, unter
+     einer Minute mit Millisekunden. Läuft für sich, ohne die Seite neu zu zeichnen. */
+  cdUhr(ziel, art, key, fertig) {
+    if (!window.__ChronikCdUhr) {
+      const h = React.createElement;
+      const p2 = (n) => String(n).padStart(2, "0");
+      const teile = (ms) => {
+        if (ms >= 86400000) { const min = Math.floor(ms / 60000); return [[String(Math.floor(min / 1440)), tx("gast_cd_t")], [String(Math.floor((min % 1440) / 60)), tx("gast_cd_s")], [String(min % 60), tx("gast_cd_m")]]; }
+        const s = Math.floor(ms / 1000);
+        if (ms >= 60000) return [[p2(Math.floor(s / 3600)), tx("gast_cd_s")], [p2(Math.floor((s % 3600) / 60)), tx("gast_cd_m")], [p2(s % 60), tx("cd_sekunden")]];
+        return [[p2(s), tx("cd_sekunden")], [String(Math.floor(ms % 1000)).padStart(3, "0"), tx("cd_millis")]];
+      };
+      const STIL = {
+        karte: { reihe: { display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap" },
+          box: { display: "grid", justifyItems: "center", minWidth: "72px", padding: "10px 8px 8px", borderRadius: "12px", background: "var(--t-card, #eae9e9)", boxShadow: "var(--shadow-sm)" },
+          zahl: { fontFamily: "var(--t-font-head, var(--font-heading))", fontSize: "clamp(30px, 8vw, 44px)", lineHeight: 1, fontVariantNumeric: "tabular-nums", color: "var(--t-accent, #0088b0)" },
+          einheit: { fontSize: "11px", letterSpacing: "0.14em", textTransform: "uppercase", opacity: 0.75 } },
+        gast: { reihe: { display: "flex", gap: "10px", marginTop: "10px", flexWrap: "wrap", justifyContent: "center" },
+          box: { display: "grid", justifyItems: "center", gap: "2px", minWidth: "76px", padding: "12px 10px 10px", borderRadius: "calc(var(--g-radius) + 4px)", background: "color-mix(in srgb, var(--g-card) 88%, transparent)", boxShadow: "var(--g-shadow, 0 8px 24px -16px rgba(0,0,0,0.4))" },
+          zahl: { fontFamily: "var(--g-head)", fontSize: "34px", lineHeight: 1, fontVariantNumeric: "tabular-nums", color: "var(--g-accent)" },
+          einheit: { fontSize: "11px", letterSpacing: "0.16em", textTransform: "uppercase", opacity: 0.75 } }
+      };
+      class CdUhr extends React.Component {
+        constructor(p) { super(p); this.state = { n: 0 }; }
+        componentDidMount() { this.lauf(); }
+        componentDidUpdate(vor) { if (vor.ziel !== this.props.ziel) { this.stopp(); this.lauf(); } }
+        componentWillUnmount() { this.aus = true; this.stopp(); }
+        stopp() { window.clearTimeout(this.t); window.cancelAnimationFrame(this.r); }
+        lauf() {
+          if (this.aus) return;
+          const rest = this.props.ziel - Date.now();
+          this.setState({ n: Date.now() });
+          if (rest <= 0) { if (this.props.fertig) this.props.fertig(); return; }
+          if (rest < 60000) this.r = window.requestAnimationFrame(() => this.lauf());
+          else if (rest < 86400000) this.t = window.setTimeout(() => this.lauf(), 1005 - (Date.now() % 1000));
+          else this.t = window.setTimeout(() => this.lauf(), Math.min(rest - 86400000 + 5, 60005 - (Date.now() % 60000)));
+        }
+        render() {
+          const ms = this.props.ziel - Date.now();
+          if (!(ms > 0)) return null;
+          if (this.props.art === "text") {
+            if (ms >= 86400000) { const min = Math.floor(ms / 60000), dd = Math.floor(min / 1440), hh = Math.floor((min % 1440) / 60); return h("span", null, tx("cd_noch") + " " + plural(dd, tx("cd_tag"), tx("cd_tage")) + " · " + hh + " " + tx("cd_std") + " · " + (min % 60) + " " + tx("cd_min")); }
+            const s = Math.floor(ms / 1000);
+            if (ms >= 60000) return h("span", { style: { fontVariantNumeric: "tabular-nums" } }, tx("cd_noch") + " " + p2(Math.floor(s / 3600)) + ":" + p2(Math.floor((s % 3600) / 60)) + ":" + p2(s % 60));
+            return h("span", { style: { fontVariantNumeric: "tabular-nums" } }, tx("cd_noch") + " " + p2(s) + "," + String(Math.floor(ms % 1000)).padStart(3, "0") + " s");
+          }
+          const st = STIL[this.props.art] || STIL.karte;
+          return h("div", { style: st.reihe }, teile(ms).map((x, k) => h("div", { key: k, style: st.box }, h("span", { style: st.zahl }, x[0]), h("span", { style: st.einheit }, x[1]))));
+        }
+      }
+      window.__ChronikCdUhr = CdUhr;
+    }
+    return React.createElement(window.__ChronikCdUhr, { key: key || "cd", ziel: ziel, art: art, fertig: fertig || null });
+  }
   cdZielMs(date, zeit) {
     if (!date) return 0;
     const z = /^\d\d:\d\d$/.test(zeit || "") ? zeit : "00:00";
@@ -6712,7 +6763,8 @@ class Component extends DCLogic {
       if (st.gast && st.gast.d && !st.gast.laden) {
         const fm = ((st.gast.d.cfg || {}).freiMs) || {};
         const jetzt = Date.now();
-        if (Object.keys(fm).some((k) => fm[k] <= jetzt && fm[k] > (this._gastAm || 0))) { this._gastAm = jetzt; this.gastLaden(); }
+        const w = Number(st.gast.d.wartet) || 0;
+        if (Object.keys(fm).some((k) => fm[k] <= jetzt && fm[k] > (this._gastAm || 0)) || (w && w <= jetzt && w > (this._gastAm || 0))) { this._gastAm = jetzt; this.gastLaden(); }
       }
       if (st.gast || (st.events || []).some((x) => this.exOf(x).countdown)) this.forceUpdate();
     }
@@ -6774,7 +6826,8 @@ class Component extends DCLogic {
     const ex = this.exOf(e);
     const st = this.state;
     const cd = this.cdText(e);
-    const out = { hatCd: !!cd, cdText: cd, voZeigen: false, cdKlein: !!cd && !isOpen, cdGross: !!cd && isOpen, cdTeile: cd ? this.cdTeileFuer(e.date, ex.cdZeit) : [] };
+    const cdZiel = cd ? this.cdZielMs(e.date, ex.cdZeit) : 0;
+    const out = { hatCd: !!cd, cdText: cd, cdUhr: cd ? this.cdUhr(cdZiel, "karte", "cdk" + e.id) : null, cdUhrText: cd ? this.cdUhr(cdZiel, "text", "cdt" + e.id) : null, voZeigen: false, cdKlein: !!cd && !isOpen, cdGross: !!cd && isOpen, cdTeile: cd ? this.cdTeileFuer(e.date, ex.cdZeit) : [] };
     if (!isOpen && this._gastOffen === e.id) this._gastOffen = null;
     const kl = st.zuKlapp || {};
     ["bilder", "gfoto", "gbuch"].forEach((k) => {
@@ -6797,7 +6850,7 @@ class Component extends DCLogic {
     const lv = this.lageVals("k" + e.id, ex.lage, this.lpBildSrc(e), false,
       null, e.place);
     const o = ex.offen || {};
-    const gastAn = !!o.an && !!o.token && !!st.cloud;
+    const gastAn = !!o.token && !!st.cloud;
     if (gastAn && this._gastOffen !== e.id) { this._gastOffen = e.id; this.gastDatenLaden(e.id); }
     const rows = (st.gastDaten || {})[e.id];
     if (gastAn && !rows && !(this._gastL || {})[e.id]) this.gastDatenLaden(e.id);
@@ -7006,7 +7059,23 @@ class Component extends DCLogic {
         };
       }),
       gaStil: this.voPill(!!o.an), gaLabel: (o.an ? "✓ " : "") + tx("ga_anbieten"),
-      gaUm: () => { if (!o.an && !o.token) this.voSet("offen.token", this.neuesToken()); this.voSet("offen.an", !o.an); },
+      gaUm: () => this.voSet("offen", Object.assign({}, o, { an: !o.an, token: o.token || this.neuesToken() })),
+      ...(function (self) {
+        const ab = o.anAb || {};
+        const ms = ab.art === "zeit" && ab.zeit ? (Date.parse(ab.zeit) || 0) : ab.art === "cd" ? self.cdZielMs(d.date, ex.cdZeit || "") : 0;
+        const geplant = !!o.an && ms > Date.now();
+        const fmt = (x) => new Intl.DateTimeFormat(window.CHRONIK_LOCALE || "de-DE", { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(x));
+        const farbe = !o.an ? "accent-2" : "accent";
+        return {
+          gaAktivStil: { display: "flex", alignItems: "flex-start", gap: "14px", padding: "16px 18px", borderRadius: "var(--radius-md)", cursor: "pointer",
+            background: "var(--color-" + farbe + "-100)", color: "var(--color-" + farbe + "-900)", boxShadow: "inset 0 0 0 2px var(--color-" + farbe + ")" },
+          gaAktivTitel: !o.an ? tx("ga_aus") : geplant ? tx("ga_geplant") + " " + fmt(ms) : tx("ga_aktiv"),
+          gaAktivText: !o.an ? tx("ga_aus_text") : geplant ? tx("ga_geplant_text") : tx("ga_aktiv_text"),
+          gaAbArt: ab.art || "", gaAbIstZeit: ab.art === "zeit", gaAbZeit: ab.zeit || "",
+          onGaAbArt: (ev) => self.voSet("offen.anAb", { art: ev.target.value, zeit: ab.zeit || "" }),
+          onGaAbZeit: (ev) => self.voSet("offen.anAb", { art: "zeit", zeit: ev.target.value })
+        };
+      })(this),
       gaAn: !!o.an,
       gaTeile: [["foto", tx("gast_fotowand")], ["buch", tx("gast_buch")], ["sitz", tx("gast_sitz")], ["rsvp", tx("gast_rsvp")]].map((x) => ({
         key: x[0], label: (o[x[0]] ? "✓ " : "") + x[1], stil: this.voPill(!!o[x[0]]), klick: um("offen." + x[0], !!o[x[0]])
@@ -7049,7 +7118,7 @@ class Component extends DCLogic {
           .map((u) => ({ key: u.id, label: "＋ " + (u.username || tx("jemand")), stil: self.voPill(false), klick: () => { self.voSet("offen.sicht", sicht.concat([u.id])); self.setState({ sichtSuche: "" }); } }));
       })(this),
       keinSichtTreffer: !!String(st.sichtSuche || "").trim() && !(st.users || []).some((u) => fids.indexOf(u.id) >= 0 && sicht.indexOf(u.id) < 0 && String(u.username || "").toLowerCase().indexOf(String(st.sichtSuche).trim().toLowerCase()) >= 0),
-      hatFrei: !!o.an && ["foto", "buch", "sitz"].some((k) => o[k]),
+      hatFrei: ["foto", "buch", "sitz"].some((k) => o[k]),
       freiZeilen: [["foto", tx("gast_fotowand")], ["buch", tx("gast_buch")], ["sitz", tx("gast_sitz")], ["lage", tx("lp_titel")]]
         .filter((x) => x[0] === "lage" ? !!(lage.bild || lage.karte || (lage.punkte || []).length) : !!o[x[0]])
         .map((x) => { const f = (o.frei || {})[x[0]] || {}; return { key: x[0], label: x[1], art: f.art || "", istZeit: f.art === "zeit", zeit: f.zeit || "",
@@ -7106,8 +7175,8 @@ class Component extends DCLogic {
       gaOhneTitel: () => this.voSet("offen.titel", ""),
       gaOhneTitelStil: this.voPill(!o.titel),
       gaGruss: o.gruss || "", onGaGruss: set("offen.gruss"),
-      gaLink: link, hatGaLink: !!link && !!o.an,
-      gaHinweis: !st.cloud ? tx("ga_nur_cloud") : (!link ? tx("ga_erst_speichern") : ""), hatGaHinweis: !!o.an && (!st.cloud || !link),
+      gaLink: link, hatGaLink: !!link,
+      gaHinweis: !st.cloud ? tx("ga_nur_cloud") : (!link ? tx("ga_erst_speichern") : ""), hatGaHinweis: !st.cloud || (!!o.an && !link),
       gaTeilen: () => this.linkTeilen(link, d.name),
       gaKopiertText: st.kopiert === link && link ? tx("gast_kopiert") : tx("gast_link_teilen"),
       gaNeuerLink: () => { if (window.confirm(tx("ga_neuer_link_frage"))) this.voSet("offen.token", this.neuesToken()); }
@@ -7394,9 +7463,9 @@ class Component extends DCLogic {
       },
       tabs: tabs.map((t) => ({ key: t.k, label: t.l, g: t.g, d: this.gastSperre(d, t.k) ? "◷ " + this.gastSperre(d, t.k) : t.d, klick: () => this.gastSet({ tab: t.k, info: "" }),
         stil: { display: "grid", gap: "6px", justifyItems: "start", alignContent: "start", textAlign: "left", padding: "16px", minHeight: "112px", cursor: "pointer", font: "inherit",
-          borderRadius: "calc(var(--g-radius) + 6px)", border: 0, color: g.tab === t.k ? "var(--g-bg)" : "var(--g-ink)",
-          background: g.tab === t.k ? "var(--g-accent)" : "var(--g-card)",
-          boxShadow: g.tab === t.k ? "0 14px 30px -16px var(--g-accent)" : "0 1px 2px rgba(0,0,0,0.06), 0 10px 26px -20px rgba(0,0,0,0.35)" } })),
+          borderRadius: "calc(var(--g-radius) + 6px)", border: g.tab === t.k ? 0 : "var(--g-rand, 0)", color: g.tab === t.k ? "var(--g-bg)" : "var(--g-ink)",
+          background: g.tab === t.k ? "var(--g-accent)" : "var(--g-card-bg, var(--g-card))",
+          boxShadow: g.tab === t.k ? "0 14px 30px -16px var(--g-accent)" : "var(--g-shadow)" } })),
       rootStil: (function () {
         const lk = (d.cfg && d.cfg.look) || {};
         const r = lk.radius != null ? Number(lk.radius) : 8;
@@ -7405,8 +7474,29 @@ class Component extends DCLogic {
           "--g-bg": lk.bg || "#f3f2f2", "--g-ink": lk.ink || "#201e1d", "--g-card": lk.card || "#ffffff",
           "--g-accent": lk.accent || "#0088b0", "--g-accent2": lk.accent2 || "#d6006c",
           "--g-head": '"' + (lk.fontHead || "Source Serif 4") + '", Georgia, serif', "--g-radius": Math.max(2, Math.min(24, r)) + "px",
-          "--g-hw": String(lk.headWeight || 600), "--g-ht": lk.headTransform || "none" };
+          "--g-hw": String(lk.headWeight || 600), "--g-ht": lk.headTransform || "none",
+          ...(function () {
+            const dk = lk.deko || {};
+            const card = lk.card || "#ffffff", ink = lk.ink || "#201e1d";
+            const RB = "#e40303 0 16.67%, #ff8c00 16.67% 33.33%, #ffed00 33.33% 50%, #008026 50% 66.67%, #004dff 66.67% 83.33%, #750787 83.33%";
+            const lagen = [];
+            if (dk.regenbogen) lagen.push("linear-gradient(to right, " + RB + ") top / 100% 7px no-repeat padding-box");
+            lagen.push("linear-gradient(" + card + ", " + card + ") padding-box");
+            if (dk.rahmen) lagen.push(dk.rahmen + " border-box");
+            const o = {
+              "--g-card-bg": lagen.join(", "),
+              "--g-rand": dk.rahmen ? dk.rahmenW + "px solid transparent" : dk.hart ? "2px solid " + ink : "0",
+              "--g-shadow": dk.schatten || "0 1px 2px rgba(0,0,0,0.06), 0 12px 32px -18px rgba(0,0,0,0.28)",
+              "--g-band": dk.regenbogen ? "linear-gradient(to bottom, " + RB + ")" : (dk.akzentBand || "none"),
+              "--g-band-h": dk.regenbogen ? "48px" : dk.akzentBand ? "6px" : "0px",
+              "--g-titel-bg": dk.regenbogen ? "linear-gradient(90deg, #e40303, #ff8c00, #e6c800, #008026, #004dff, #750787)" : "none",
+              "--g-titel-farbe": dk.regenbogen ? "transparent" : "inherit"
+            };
+            if (dk.pat && dk.pat !== "none") { o.backgroundImage = dk.pat; o.backgroundSize = dk.patSize || "auto"; o.backgroundAttachment = "fixed"; }
+            return o;
+          })() };
       })(),
+      fxStil: (((d.cfg || {}).look || {}).deko || {}).fx || { display: "none" },
       hatTitelbild: !!(d.cfg && d.cfg.titel),
       titelRef: (el) => { const u = url(d.cfg && d.cfg.titel); if (el && u && el.getAttribute("src") !== u) el.setAttribute("src", u); },
       gruss: (d.cfg && d.cfg.gruss) || "", hatGruss: !!(d.cfg && d.cfg.gruss),
@@ -7422,6 +7512,10 @@ class Component extends DCLogic {
           .map((x, k) => ({ key: "c" + k, zahl: String(x[0]), einheit: x[1] }));
       })(),
       hatCdTeile: !!cd,
+      cdUhr: cd ? this.cdUhr(this.cdZielMs(d.date, (d.countdown || {}).zeit || ""), "gast", "cdg") : null,
+      wartet: !!d.wartet, offenJetzt: !d.wartet,
+      wartetText: d.wartet ? tx("ga_oeffnet_am") + " " + new Intl.DateTimeFormat(window.CHRONIK_LOCALE || "de-DE", { weekday: "long", day: "2-digit", month: "long", hour: "2-digit", minute: "2-digit" }).format(new Date(Number(d.wartet))) : "",
+      wartUhr: d.wartet ? this.cdUhr(Number(d.wartet), "gast", "cdw", () => this.gastLaden()) : null,
       hatTabs: tabs.length > 0,
       zeigKacheln: tabs.length > 0 && !g.tab,
       leiste: [{ k: "", l: tx("gast_uebersicht"), g: "⌂" }].concat(tabs).map((t) => ({ key: t.k || "home", label: t.l, g: t.g,
@@ -7987,6 +8081,234 @@ class Component extends DCLogic {
     };
   }
 
+  skinFxFuer(t, id) {
+        /* Die Ebene spannt die ganze Bahn (inset: 0). Darum echte, einmalige
+           Verläufe über die volle Länge — kein repeating-*, das an jeder
+           Wiederholungsgrenze auf die Anfangsfarbe zurückspringt und dort
+           eine harte Kante zeigt. Nur feine Raster dürfen kacheln. */
+        const base = { position: "absolute", inset: 0, pointerEvents: "none", zIndex: 4 };
+        const voll = (bilder, extra) => Object.assign({}, base, {
+          backgroundImage: bilder.join(", "),
+          backgroundRepeat: bilder.map(() => "no-repeat").join(", "),
+          backgroundSize: bilder.map(() => "100% 100%").join(", ")
+        }, extra || {});
+        /* Feines Raster kachelt bewusst, der Verlauf darüber nicht. */
+        const rasterUndVoll = (raster, rasterMass, bilder, extra) => Object.assign({}, base, {
+          backgroundImage: [raster].concat(bilder).join(", "),
+          backgroundRepeat: ["repeat"].concat(bilder.map(() => "no-repeat")).join(", "),
+          backgroundSize: [rasterMass].concat(bilder.map(() => "100% 100%")).join(", ")
+        }, extra || {});
+
+        if (id === "crt") return rasterUndVoll(
+          "repeating-linear-gradient(to bottom, rgba(0,0,0,0.34) 0 1px, transparent 1px 3px)", "auto",
+          ["linear-gradient(to bottom, rgba(0,0,0,0.42) 0%, transparent 16%, transparent 84%, rgba(0,0,0,0.42) 100%)",
+           "linear-gradient(to right, rgba(0,0,0,0.3) 0%, transparent 4%, transparent 96%, rgba(0,0,0,0.3) 100%)",
+           "linear-gradient(to bottom, " + t.accent + "16, transparent 40%)"],
+          { mixBlendMode: "multiply" });
+
+        if (id === "glow") return voll([
+          "linear-gradient(to bottom, " + t.accent + "26 0%, transparent 46%)",
+          "linear-gradient(105deg, " + t.accent2 + "1c 0%, transparent 38%, transparent 62%, " + t.accent + "18 100%)"
+        ]);
+
+        if (id === "vignette") return voll([
+          "linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 18%, transparent 82%, rgba(0,0,0,0.3) 100%)",
+          "linear-gradient(to right, rgba(0,0,0,0.24) 0%, transparent 5%, transparent 95%, rgba(0,0,0,0.24) 100%)"
+        ]);
+
+        if (id === "grain") return Object.assign({}, base, {
+          backgroundImage: "radial-gradient(" + t.ink + "22 0.6px, transparent 0.7px)",
+          backgroundSize: "3px 3px", opacity: 0.7
+        });
+
+        if (id === "vintage") return voll([
+          "linear-gradient(to bottom, " + t.ink + "1c 0%, transparent 22%, transparent 78%, " + t.ink + "1c 100%)",
+          "linear-gradient(to right, " + t.ink + "16 0%, transparent 6%, transparent 94%, " + t.ink + "16 100%)"
+        ]);
+
+        if (id === "blueprint") return Object.assign({}, base, {
+          backgroundImage: "linear-gradient(" + t.accent + "14 1px, transparent 1px), linear-gradient(90deg, " + t.accent + "14 1px, transparent 1px)",
+          backgroundSize: "22px 22px"
+        });
+
+        if (id === "blocks") return Object.assign({}, base, {
+          backgroundImage: "linear-gradient(135deg, " + t.accent + "1c 0 12px, transparent 12px 24px)",
+          backgroundSize: "24px 24px", opacity: 0.5
+        });
+
+        if (id === "ruled") return Object.assign({}, base, {
+          backgroundImage: "repeating-linear-gradient(to bottom, transparent 0 25px, " + t.accent + "1a 25px 26px)"
+        });
+
+        if (id === "matte") return Object.assign({}, base, {
+          backgroundImage: "repeating-linear-gradient(to bottom, " + t.ink + "0a 0 1px, transparent 1px 190px)"
+        });
+
+        if (id === "paper") return voll([
+          "linear-gradient(to bottom, " + t.ink + "0e 0%, transparent 14%, transparent 86%, " + t.ink + "0e 100%)"
+        ]);
+
+        if (id === "punch") return Object.assign({}, base, {
+          backgroundImage: "radial-gradient(" + t.ink + "1c 2.2px, transparent 2.4px)",
+          backgroundSize: "14px 14px", backgroundPosition: "7px 7px"
+        });
+
+        if (id === "cloth") return Object.assign({}, base, {
+          backgroundImage: "repeating-linear-gradient(90deg, " + t.ink + "0f 0 1px, transparent 1px 3px), repeating-linear-gradient(0deg, " + t.ink + "0d 0 1px, transparent 1px 3px)"
+        });
+
+        if (id === "enamel") return voll([
+          "linear-gradient(168deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.14) 22%, transparent 44%)"
+        ]);
+
+        if (id === "chart") return Object.assign({}, base, {
+          backgroundImage: "linear-gradient(" + t.accent + "12 1px, transparent 1px), linear-gradient(90deg, " + t.accent + "12 1px, transparent 1px)",
+          backgroundSize: "14px 14px, 14px 14px"
+        });
+
+        if (id === "chalk") return rasterUndVoll(
+          "radial-gradient(" + t.ink + "14 0.8px, transparent 1px)", "4px 4px",
+          ["linear-gradient(to bottom, rgba(0,0,0,0.22) 0%, transparent 20%, transparent 80%, rgba(0,0,0,0.22) 100%)"]);
+
+        if (id === "board") return rasterUndVoll(
+          "repeating-linear-gradient(to bottom, rgba(0,0,0,0.3) 0 1px, transparent 1px 4px)", "auto",
+          ["linear-gradient(to bottom, rgba(0,0,0,0.34) 0%, transparent 20%, transparent 80%, rgba(0,0,0,0.34) 100%)"]);
+
+        if (id === "xerox") return rasterUndVoll(
+          "radial-gradient(" + t.ink + "1a 0.7px, transparent 0.9px)", "3px 3px",
+          ["linear-gradient(96deg, transparent 0%, transparent 82%, " + t.ink + "14 100%)"],
+          { opacity: 0.85 });
+
+        if (id === "aurora") return voll([
+          "linear-gradient(to bottom, " + t.accent + "2a 0%, transparent 42%)",
+          "linear-gradient(118deg, " + t.accent2 + "20 0%, transparent 34%, transparent 66%, " + t.accent + "16 100%)",
+          "linear-gradient(to bottom, transparent 62%, rgba(0,0,0,0.26) 100%)"
+        ]);
+
+        if (id === "tile") return Object.assign({}, base, {
+          backgroundImage: "linear-gradient(" + t.accent + "1c 1px, transparent 1px), linear-gradient(90deg, " + t.accent + "1c 1px, transparent 1px), radial-gradient(circle at 50% 50%, " + t.accent + "14 0 3px, transparent 4px)",
+          backgroundSize: "46px 46px, 46px 46px, 46px 46px"
+        });
+
+        if (id === "comic") return Object.assign({}, base, {
+          backgroundImage: "radial-gradient(" + t.accent + "1f 1.6px, transparent 1.9px)",
+          backgroundSize: "8px 8px"
+        });
+
+        if (id === "marble") return voll([
+          "linear-gradient(112deg, transparent 0%, " + t.ink + "0d 26%, transparent 34%, transparent 62%, " + t.ink + "0b 74%, transparent 82%)",
+          "linear-gradient(64deg, transparent 0%, transparent 40%, " + t.ink + "09 52%, transparent 60%)",
+          "linear-gradient(146deg, " + t.card + "88 0%, transparent 48%)"
+        ]);
+
+        /* Die bunten Designs: durchlaufende Verläufe über die ganze Bahn. */
+        if (id === "sunset") return voll([
+          "linear-gradient(112deg, " + t.accent + "2e 0%, " + t.accent + "12 26%, transparent 52%)",
+          "linear-gradient(292deg, " + t.accent2 + "26 0%, " + t.accent2 + "0e 24%, transparent 50%)"
+        ]);
+
+        if (id === "lagoon") return voll([
+          "linear-gradient(112deg, " + t.accent + "22 0%, transparent 34%, transparent 60%, " + t.accent2 + "1c 100%)",
+          "linear-gradient(to bottom, " + t.accent + "14 0%, transparent 44%)"
+        ]);
+
+        if (id === "berry") return voll([
+          "linear-gradient(124deg, " + t.accent + "26 0%, transparent 40%)",
+          "linear-gradient(304deg, " + t.accent2 + "22 0%, transparent 38%)",
+          "linear-gradient(to bottom, transparent 58%, " + t.accent + "10 100%)"
+        ]);
+
+        if (id === "citrus") return voll([
+          "linear-gradient(78deg, " + t.accent + "26 0%, transparent 36%, transparent 62%, " + t.accent2 + "1e 100%)"
+        ]);
+
+        if (id === "galaxy") return rasterUndVoll(
+          "radial-gradient(rgba(255,255,255,0.5) 0.7px, transparent 0.9px)", "83px 97px",
+          ["linear-gradient(126deg, " + t.accent + "34 0%, " + t.accent + "12 28%, transparent 54%)",
+           "linear-gradient(306deg, " + t.accent2 + "24 0%, transparent 36%)"]);
+
+        if (id === "coral") return voll([
+          "linear-gradient(202deg, " + t.accent + "28 0%, transparent 42%)",
+          "linear-gradient(24deg, " + t.accent2 + "22 0%, transparent 38%)"
+        ]);
+
+        if (id === "wedding") return voll([
+          "radial-gradient(ellipse at 0% 0%, " + t.accent2 + "26 0%, transparent 46%)",
+          "radial-gradient(ellipse at 100% 100%, " + t.accent + "1c 0%, transparent 44%)",
+          "linear-gradient(to bottom, " + t.card + "aa 0%, transparent 30%)"
+        ]);
+
+        if (id === "boho") return rasterUndVoll(
+          "radial-gradient(" + t.accent + "14 0.9px, transparent 1.2px)", "7px 7px",
+          ["linear-gradient(160deg, " + t.accent2 + "1e 0%, transparent 40%)", "linear-gradient(340deg, " + t.accent + "1a 0%, transparent 38%)"]);
+
+        if (id === "party") return rasterUndVoll(
+          "radial-gradient(" + t.accent + "55 1.4px, transparent 1.8px), radial-gradient(" + t.accent2 + "44 1.2px, transparent 1.6px)", "61px 53px, 47px 71px",
+          ["linear-gradient(118deg, " + t.accent + "30 0%, transparent 40%)", "linear-gradient(298deg, " + t.accent2 + "26 0%, transparent 40%)"]);
+
+        if (id === "gala") return voll([
+          "linear-gradient(to bottom, " + t.accent + "1c 0%, transparent 22%, transparent 78%, " + t.accent + "14 100%)",
+          "repeating-linear-gradient(90deg, transparent 0 120px, " + t.accent + "0c 120px 121px)"
+        ]);
+
+        if (id === "wristband") return Object.assign({}, base, {
+          backgroundImage: "repeating-linear-gradient(135deg, " + t.accent + "14 0 18px, transparent 18px 36px, " + t.accent2 + "12 36px 54px, transparent 54px 72px)",
+          backgroundSize: "auto"
+        });
+
+        if (id === "fireworks") return rasterUndVoll(
+          "radial-gradient(rgba(255,255,255,0.45) 0.7px, transparent 0.9px)", "71px 89px",
+          ["radial-gradient(circle at 18% 22%, " + t.accent + "26 0%, transparent 16%)",
+           "radial-gradient(circle at 76% 30%, " + t.accent2 + "22 0%, transparent 14%)",
+           "linear-gradient(to bottom, transparent 60%, " + t.accent + "12 100%)"]);
+
+        if (id === "rainbow") return voll([
+          "linear-gradient(96deg, " + t.accent + "1e 0%, " + t.accent2 + "1a 34%, " + t.accent + "16 68%, " + t.accent2 + "12 100%)"
+        ]);
+
+        return { display: "none" };
+      }
+  shellFuer(t, id) {
+        const inner = "inset 0 0 0 1px color-mix(in srgb, " + t.ink + " 16%, transparent)";
+        if (id === "crt") return {
+          padding: "14px", borderRadius: "18px",
+          background: "linear-gradient(#26302a, #141a16)",
+          boxShadow: "0 18px 40px -20px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.08)"
+        };
+        if (id === "sunset") return { padding: "13px", borderRadius: "22px", background: "linear-gradient(128deg, " + t.accent + "44, " + t.accent2 + "33)" };
+        if (id === "lagoon") return { padding: "13px", borderRadius: "26px", background: "linear-gradient(140deg, " + t.accent + "3a, " + t.accent2 + "2e)" };
+        if (id === "berry") return { padding: "13px", borderRadius: "22px", background: "linear-gradient(118deg, " + t.accent + "3a, " + t.accent2 + "34)" };
+        if (id === "citrus") return { padding: "12px", borderRadius: "16px", background: "linear-gradient(102deg, " + t.accent + "40, " + t.accent2 + "34)" };
+        if (id === "galaxy") return { padding: "14px", borderRadius: "24px", background: "linear-gradient(146deg, " + t.accent + "4a, " + t.accent2 + "2e)" };
+        if (id === "coral") return { padding: "13px", borderRadius: "28px", background: "linear-gradient(160deg, " + t.accent + "3e, " + t.accent2 + "30)" };
+        if (id === "wedding") return { padding: "14px", borderRadius: "16px", background: "linear-gradient(140deg, " + t.accent2 + "30, " + t.card + ", " + t.accent + "2a)", boxShadow: "inset 0 0 0 1px " + t.accent + "55" };
+        if (id === "boho") return { padding: "12px", borderRadius: "22px", background: t.accent2 + "26", boxShadow: "inset 0 0 0 1px " + t.accent + "33" };
+        if (id === "party") return { padding: "12px", borderRadius: "20px", background: "linear-gradient(110deg, " + t.accent + "55, " + t.accent2 + "44)", boxShadow: "0 0 28px -6px " + t.accent + "88" };
+        if (id === "gala") return { padding: "14px", borderRadius: "2px", background: "linear-gradient(" + t.card + ", " + t.bg + ")", boxShadow: "inset 0 0 0 1px " + t.accent + "88, inset 0 0 0 4px " + t.bg + ", inset 0 0 0 5px " + t.accent + "44" };
+        if (id === "wristband") return { padding: "10px", borderRadius: "12px", background: "repeating-linear-gradient(90deg, " + t.accent + " 0 14px, " + t.accent2 + " 14px 28px)", boxShadow: "5px 5px 0 0 " + t.ink };
+        if (id === "fireworks") return { padding: "13px", borderRadius: "18px", background: "linear-gradient(150deg, " + t.accent + "40, " + t.accent2 + "26)" };
+        if (id === "rainbow") return { padding: "11px", borderRadius: "18px", background: "linear-gradient(96deg, " + t.accent + "44, " + t.accent2 + "3c, " + t.accent + "30)" };
+        if (id === "board") return {
+          padding: "15px", borderRadius: "8px",
+          background: "linear-gradient(#2b3238, #171c20)",
+          boxShadow: "0 20px 44px -22px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.07)"
+        };
+        if (id === "xerox") return { padding: "7px", borderRadius: "0", background: t.ink, boxShadow: "6px 6px 0 0 " + t.ink + "33" };
+        if (id === "aurora") return { padding: "12px", borderRadius: "20px", background: "linear-gradient(150deg, " + t.accent + "2e, " + t.accent2 + "22)" };
+        if (id === "tile") return { padding: "12px", borderRadius: "3px", background: t.accent + "1f", boxShadow: inner };
+        if (id === "comic") return { padding: "9px", borderRadius: "8px", background: t.accent, boxShadow: "7px 7px 0 0 " + t.ink };
+        if (id === "marble") return { padding: "14px", borderRadius: "1px", background: "linear-gradient(120deg, " + t.ink + "12, " + t.ink + "06)", boxShadow: inner };
+        if (id === "punch") return { padding: "10px", borderRadius: "0", background: t.ink + "18", boxShadow: inner };
+        if (id === "cloth") return { padding: "11px", borderRadius: "3px", background: t.accent + "2a" };
+        if (id === "enamel") return { padding: "12px", borderRadius: "26px", background: "linear-gradient(" + t.accent + ", " + t.accent + "cc)" };
+        if (id === "chart") return { padding: "9px", borderRadius: "2px", background: t.accent + "1f", boxShadow: inner };
+        if (id === "chalk") return { padding: "13px", borderRadius: "6px", background: "linear-gradient(#6b4a2c, #4a3320)", boxShadow: "0 14px 30px -18px rgba(0,0,0,0.6)" };
+        if (id === "glow") return { padding: "10px", borderRadius: "14px", background: "linear-gradient(" + t.accent + "33, " + t.accent2 + "22)" };
+        if (id === "matte") return { padding: "12px", borderRadius: "4px", background: t.ink + "12" };
+        if (id === "blocks") return { padding: "8px", borderRadius: "0", background: t.accent };
+        if (id === "ruled" || id === "vintage") return { padding: "9px", borderRadius: "6px", background: t.ink + "10", boxShadow: inner };
+        return { padding: "0", borderRadius: "var(--radius-md)", background: "transparent" };
+      }
   gastLookAus(id, d) {
     const alle = this.allThemes();
     const t = (id && alle.filter((p) => p.id === id)[0])
@@ -7995,7 +8317,21 @@ class Component extends DCLogic {
       || this.theme() || {};
     return { bg: t.bg || "#f3f2f2", ink: t.ink || "#201e1d", card: t.card || "#ffffff", accent: t.accent || "#0088b0", accent2: t.accent2 || "#d6006c",
       fontHead: t.fontHead || "Source Serif 4", fontBody: t.fontBody || "Source Serif 4", radius: t.radius != null ? Number(t.radius) : 8,
-      headWeight: t.headWeight || 600, headTransform: t.headTransform || "none" };
+      headWeight: t.headWeight || 600, headTransform: t.headTransform || "none", deko: this.gastDeko(t) };
+  }
+  /* Was ein Design auf der Gästeseite zusätzlich mitbringt: Muster, Hautschicht, Rahmen, Schatten, Regenbogen. */
+  gastDeko(t0) {
+    const t = Object.assign({ bg: "#f3f2f2", ink: "#201e1d", card: "#ffffff", accent: "#0088b0", accent2: "#d6006c" }, t0 || {});
+    const pat = (PATTERNS[t.pattern] || PATTERNS.none)(t);
+    let fx = null, shell = null;
+    try { fx = this.skinFxFuer(t, t.skin); } catch (x) { /* ohne */ }
+    try { shell = this.shellFuer(t, t.skin); } catch (x) { /* ohne */ }
+    const rb = !!t.regenbogen || t.skin === "rainbow" || t.pattern === "regenbogen";
+    const rahmen = shell && shell.background && shell.background !== "transparent" ? shell.background : "";
+    return { pat: pat[0], patSize: pat[1], fx: fx && fx.display !== "none" ? Object.assign({}, fx, { position: "fixed", zIndex: 0 }) : null,
+      rahmen: rahmen, rahmenW: rahmen ? Math.max(4, Math.min(8, Math.round((parseInt(shell.padding, 10) || 10) / 2))) : 0,
+      schatten: t.shadow && t.shadow !== "none" ? (SHADOWS[t.shadow] || SHADOWS.md)(t) : "", hart: t.shadow === "hard",
+      regenbogen: rb, akzentBand: "linear-gradient(90deg, " + t.accent + ", " + t.accent2 + ")" };
   }
   gastLookFest(ex, d) {
     if (!ex || !ex.offen) return ex;
@@ -8008,6 +8344,9 @@ class Component extends DCLogic {
       else if (f.art === "zeit" && f.zeit) ms = Date.parse(f.zeit) || 0;
       if (ms > 0) fm[k] = ms;
     });
+    const ab = ex.offen.anAb || {};
+    const abMs = ab.art === "zeit" && ab.zeit ? (Date.parse(ab.zeit) || 0) : ab.art === "cd" ? this.cdZielMs(d && d.date, ex.cdZeit || "") : 0;
+    if (abMs > 0) fm.an = abMs;
     return Object.assign({}, ex, { offen: Object.assign({}, ex.offen, { look: this.gastLookAus(ex.offen.design || "", d), freiMs: fm }) });
   }
 
@@ -16017,234 +16356,8 @@ class Component extends DCLogic {
         any: (st.meta.free || []).length > 0,
         clearAll: () => this.setState({ meta: Object.assign({}, st.meta, { free: [] }), freeSel: null })
       },
-      skinFx: (function (id) {
-        /* Die Ebene spannt die ganze Bahn (inset: 0). Darum echte, einmalige
-           Verläufe über die volle Länge — kein repeating-*, das an jeder
-           Wiederholungsgrenze auf die Anfangsfarbe zurückspringt und dort
-           eine harte Kante zeigt. Nur feine Raster dürfen kacheln. */
-        const base = { position: "absolute", inset: 0, pointerEvents: "none", zIndex: 4 };
-        const voll = (bilder, extra) => Object.assign({}, base, {
-          backgroundImage: bilder.join(", "),
-          backgroundRepeat: bilder.map(() => "no-repeat").join(", "),
-          backgroundSize: bilder.map(() => "100% 100%").join(", ")
-        }, extra || {});
-        /* Feines Raster kachelt bewusst, der Verlauf darüber nicht. */
-        const rasterUndVoll = (raster, rasterMass, bilder, extra) => Object.assign({}, base, {
-          backgroundImage: [raster].concat(bilder).join(", "),
-          backgroundRepeat: ["repeat"].concat(bilder.map(() => "no-repeat")).join(", "),
-          backgroundSize: [rasterMass].concat(bilder.map(() => "100% 100%")).join(", ")
-        }, extra || {});
-
-        if (id === "crt") return rasterUndVoll(
-          "repeating-linear-gradient(to bottom, rgba(0,0,0,0.34) 0 1px, transparent 1px 3px)", "auto",
-          ["linear-gradient(to bottom, rgba(0,0,0,0.42) 0%, transparent 16%, transparent 84%, rgba(0,0,0,0.42) 100%)",
-           "linear-gradient(to right, rgba(0,0,0,0.3) 0%, transparent 4%, transparent 96%, rgba(0,0,0,0.3) 100%)",
-           "linear-gradient(to bottom, " + t.accent + "16, transparent 40%)"],
-          { mixBlendMode: "multiply" });
-
-        if (id === "glow") return voll([
-          "linear-gradient(to bottom, " + t.accent + "26 0%, transparent 46%)",
-          "linear-gradient(105deg, " + t.accent2 + "1c 0%, transparent 38%, transparent 62%, " + t.accent + "18 100%)"
-        ]);
-
-        if (id === "vignette") return voll([
-          "linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 18%, transparent 82%, rgba(0,0,0,0.3) 100%)",
-          "linear-gradient(to right, rgba(0,0,0,0.24) 0%, transparent 5%, transparent 95%, rgba(0,0,0,0.24) 100%)"
-        ]);
-
-        if (id === "grain") return Object.assign({}, base, {
-          backgroundImage: "radial-gradient(" + t.ink + "22 0.6px, transparent 0.7px)",
-          backgroundSize: "3px 3px", opacity: 0.7
-        });
-
-        if (id === "vintage") return voll([
-          "linear-gradient(to bottom, " + t.ink + "1c 0%, transparent 22%, transparent 78%, " + t.ink + "1c 100%)",
-          "linear-gradient(to right, " + t.ink + "16 0%, transparent 6%, transparent 94%, " + t.ink + "16 100%)"
-        ]);
-
-        if (id === "blueprint") return Object.assign({}, base, {
-          backgroundImage: "linear-gradient(" + t.accent + "14 1px, transparent 1px), linear-gradient(90deg, " + t.accent + "14 1px, transparent 1px)",
-          backgroundSize: "22px 22px"
-        });
-
-        if (id === "blocks") return Object.assign({}, base, {
-          backgroundImage: "linear-gradient(135deg, " + t.accent + "1c 0 12px, transparent 12px 24px)",
-          backgroundSize: "24px 24px", opacity: 0.5
-        });
-
-        if (id === "ruled") return Object.assign({}, base, {
-          backgroundImage: "repeating-linear-gradient(to bottom, transparent 0 25px, " + t.accent + "1a 25px 26px)"
-        });
-
-        if (id === "matte") return Object.assign({}, base, {
-          backgroundImage: "repeating-linear-gradient(to bottom, " + t.ink + "0a 0 1px, transparent 1px 190px)"
-        });
-
-        if (id === "paper") return voll([
-          "linear-gradient(to bottom, " + t.ink + "0e 0%, transparent 14%, transparent 86%, " + t.ink + "0e 100%)"
-        ]);
-
-        if (id === "punch") return Object.assign({}, base, {
-          backgroundImage: "radial-gradient(" + t.ink + "1c 2.2px, transparent 2.4px)",
-          backgroundSize: "14px 14px", backgroundPosition: "7px 7px"
-        });
-
-        if (id === "cloth") return Object.assign({}, base, {
-          backgroundImage: "repeating-linear-gradient(90deg, " + t.ink + "0f 0 1px, transparent 1px 3px), repeating-linear-gradient(0deg, " + t.ink + "0d 0 1px, transparent 1px 3px)"
-        });
-
-        if (id === "enamel") return voll([
-          "linear-gradient(168deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.14) 22%, transparent 44%)"
-        ]);
-
-        if (id === "chart") return Object.assign({}, base, {
-          backgroundImage: "linear-gradient(" + t.accent + "12 1px, transparent 1px), linear-gradient(90deg, " + t.accent + "12 1px, transparent 1px)",
-          backgroundSize: "14px 14px, 14px 14px"
-        });
-
-        if (id === "chalk") return rasterUndVoll(
-          "radial-gradient(" + t.ink + "14 0.8px, transparent 1px)", "4px 4px",
-          ["linear-gradient(to bottom, rgba(0,0,0,0.22) 0%, transparent 20%, transparent 80%, rgba(0,0,0,0.22) 100%)"]);
-
-        if (id === "board") return rasterUndVoll(
-          "repeating-linear-gradient(to bottom, rgba(0,0,0,0.3) 0 1px, transparent 1px 4px)", "auto",
-          ["linear-gradient(to bottom, rgba(0,0,0,0.34) 0%, transparent 20%, transparent 80%, rgba(0,0,0,0.34) 100%)"]);
-
-        if (id === "xerox") return rasterUndVoll(
-          "radial-gradient(" + t.ink + "1a 0.7px, transparent 0.9px)", "3px 3px",
-          ["linear-gradient(96deg, transparent 0%, transparent 82%, " + t.ink + "14 100%)"],
-          { opacity: 0.85 });
-
-        if (id === "aurora") return voll([
-          "linear-gradient(to bottom, " + t.accent + "2a 0%, transparent 42%)",
-          "linear-gradient(118deg, " + t.accent2 + "20 0%, transparent 34%, transparent 66%, " + t.accent + "16 100%)",
-          "linear-gradient(to bottom, transparent 62%, rgba(0,0,0,0.26) 100%)"
-        ]);
-
-        if (id === "tile") return Object.assign({}, base, {
-          backgroundImage: "linear-gradient(" + t.accent + "1c 1px, transparent 1px), linear-gradient(90deg, " + t.accent + "1c 1px, transparent 1px), radial-gradient(circle at 50% 50%, " + t.accent + "14 0 3px, transparent 4px)",
-          backgroundSize: "46px 46px, 46px 46px, 46px 46px"
-        });
-
-        if (id === "comic") return Object.assign({}, base, {
-          backgroundImage: "radial-gradient(" + t.accent + "1f 1.6px, transparent 1.9px)",
-          backgroundSize: "8px 8px"
-        });
-
-        if (id === "marble") return voll([
-          "linear-gradient(112deg, transparent 0%, " + t.ink + "0d 26%, transparent 34%, transparent 62%, " + t.ink + "0b 74%, transparent 82%)",
-          "linear-gradient(64deg, transparent 0%, transparent 40%, " + t.ink + "09 52%, transparent 60%)",
-          "linear-gradient(146deg, " + t.card + "88 0%, transparent 48%)"
-        ]);
-
-        /* Die bunten Designs: durchlaufende Verläufe über die ganze Bahn. */
-        if (id === "sunset") return voll([
-          "linear-gradient(112deg, " + t.accent + "2e 0%, " + t.accent + "12 26%, transparent 52%)",
-          "linear-gradient(292deg, " + t.accent2 + "26 0%, " + t.accent2 + "0e 24%, transparent 50%)"
-        ]);
-
-        if (id === "lagoon") return voll([
-          "linear-gradient(112deg, " + t.accent + "22 0%, transparent 34%, transparent 60%, " + t.accent2 + "1c 100%)",
-          "linear-gradient(to bottom, " + t.accent + "14 0%, transparent 44%)"
-        ]);
-
-        if (id === "berry") return voll([
-          "linear-gradient(124deg, " + t.accent + "26 0%, transparent 40%)",
-          "linear-gradient(304deg, " + t.accent2 + "22 0%, transparent 38%)",
-          "linear-gradient(to bottom, transparent 58%, " + t.accent + "10 100%)"
-        ]);
-
-        if (id === "citrus") return voll([
-          "linear-gradient(78deg, " + t.accent + "26 0%, transparent 36%, transparent 62%, " + t.accent2 + "1e 100%)"
-        ]);
-
-        if (id === "galaxy") return rasterUndVoll(
-          "radial-gradient(rgba(255,255,255,0.5) 0.7px, transparent 0.9px)", "83px 97px",
-          ["linear-gradient(126deg, " + t.accent + "34 0%, " + t.accent + "12 28%, transparent 54%)",
-           "linear-gradient(306deg, " + t.accent2 + "24 0%, transparent 36%)"]);
-
-        if (id === "coral") return voll([
-          "linear-gradient(202deg, " + t.accent + "28 0%, transparent 42%)",
-          "linear-gradient(24deg, " + t.accent2 + "22 0%, transparent 38%)"
-        ]);
-
-        if (id === "wedding") return voll([
-          "radial-gradient(ellipse at 0% 0%, " + t.accent2 + "26 0%, transparent 46%)",
-          "radial-gradient(ellipse at 100% 100%, " + t.accent + "1c 0%, transparent 44%)",
-          "linear-gradient(to bottom, " + t.card + "aa 0%, transparent 30%)"
-        ]);
-
-        if (id === "boho") return rasterUndVoll(
-          "radial-gradient(" + t.accent + "14 0.9px, transparent 1.2px)", "7px 7px",
-          ["linear-gradient(160deg, " + t.accent2 + "1e 0%, transparent 40%)", "linear-gradient(340deg, " + t.accent + "1a 0%, transparent 38%)"]);
-
-        if (id === "party") return rasterUndVoll(
-          "radial-gradient(" + t.accent + "55 1.4px, transparent 1.8px), radial-gradient(" + t.accent2 + "44 1.2px, transparent 1.6px)", "61px 53px, 47px 71px",
-          ["linear-gradient(118deg, " + t.accent + "30 0%, transparent 40%)", "linear-gradient(298deg, " + t.accent2 + "26 0%, transparent 40%)"]);
-
-        if (id === "gala") return voll([
-          "linear-gradient(to bottom, " + t.accent + "1c 0%, transparent 22%, transparent 78%, " + t.accent + "14 100%)",
-          "repeating-linear-gradient(90deg, transparent 0 120px, " + t.accent + "0c 120px 121px)"
-        ]);
-
-        if (id === "wristband") return Object.assign({}, base, {
-          backgroundImage: "repeating-linear-gradient(135deg, " + t.accent + "14 0 18px, transparent 18px 36px, " + t.accent2 + "12 36px 54px, transparent 54px 72px)",
-          backgroundSize: "auto"
-        });
-
-        if (id === "fireworks") return rasterUndVoll(
-          "radial-gradient(rgba(255,255,255,0.45) 0.7px, transparent 0.9px)", "71px 89px",
-          ["radial-gradient(circle at 18% 22%, " + t.accent + "26 0%, transparent 16%)",
-           "radial-gradient(circle at 76% 30%, " + t.accent2 + "22 0%, transparent 14%)",
-           "linear-gradient(to bottom, transparent 60%, " + t.accent + "12 100%)"]);
-
-        if (id === "rainbow") return voll([
-          "linear-gradient(96deg, " + t.accent + "1e 0%, " + t.accent2 + "1a 34%, " + t.accent + "16 68%, " + t.accent2 + "12 100%)"
-        ]);
-
-        return { display: "none" };
-      })(),
-      shellStyle: (function (id) {
-        const inner = "inset 0 0 0 1px color-mix(in srgb, " + t.ink + " 16%, transparent)";
-        if (id === "crt") return {
-          padding: "14px", borderRadius: "18px",
-          background: "linear-gradient(#26302a, #141a16)",
-          boxShadow: "0 18px 40px -20px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.08)"
-        };
-        if (id === "sunset") return { padding: "13px", borderRadius: "22px", background: "linear-gradient(128deg, " + t.accent + "44, " + t.accent2 + "33)" };
-        if (id === "lagoon") return { padding: "13px", borderRadius: "26px", background: "linear-gradient(140deg, " + t.accent + "3a, " + t.accent2 + "2e)" };
-        if (id === "berry") return { padding: "13px", borderRadius: "22px", background: "linear-gradient(118deg, " + t.accent + "3a, " + t.accent2 + "34)" };
-        if (id === "citrus") return { padding: "12px", borderRadius: "16px", background: "linear-gradient(102deg, " + t.accent + "40, " + t.accent2 + "34)" };
-        if (id === "galaxy") return { padding: "14px", borderRadius: "24px", background: "linear-gradient(146deg, " + t.accent + "4a, " + t.accent2 + "2e)" };
-        if (id === "coral") return { padding: "13px", borderRadius: "28px", background: "linear-gradient(160deg, " + t.accent + "3e, " + t.accent2 + "30)" };
-        if (id === "wedding") return { padding: "14px", borderRadius: "16px", background: "linear-gradient(140deg, " + t.accent2 + "30, " + t.card + ", " + t.accent + "2a)", boxShadow: "inset 0 0 0 1px " + t.accent + "55" };
-        if (id === "boho") return { padding: "12px", borderRadius: "22px", background: t.accent2 + "26", boxShadow: "inset 0 0 0 1px " + t.accent + "33" };
-        if (id === "party") return { padding: "12px", borderRadius: "20px", background: "linear-gradient(110deg, " + t.accent + "55, " + t.accent2 + "44)", boxShadow: "0 0 28px -6px " + t.accent + "88" };
-        if (id === "gala") return { padding: "14px", borderRadius: "2px", background: "linear-gradient(" + t.card + ", " + t.bg + ")", boxShadow: "inset 0 0 0 1px " + t.accent + "88, inset 0 0 0 4px " + t.bg + ", inset 0 0 0 5px " + t.accent + "44" };
-        if (id === "wristband") return { padding: "10px", borderRadius: "12px", background: "repeating-linear-gradient(90deg, " + t.accent + " 0 14px, " + t.accent2 + " 14px 28px)", boxShadow: "5px 5px 0 0 " + t.ink };
-        if (id === "fireworks") return { padding: "13px", borderRadius: "18px", background: "linear-gradient(150deg, " + t.accent + "40, " + t.accent2 + "26)" };
-        if (id === "rainbow") return { padding: "11px", borderRadius: "18px", background: "linear-gradient(96deg, " + t.accent + "44, " + t.accent2 + "3c, " + t.accent + "30)" };
-        if (id === "board") return {
-          padding: "15px", borderRadius: "8px",
-          background: "linear-gradient(#2b3238, #171c20)",
-          boxShadow: "0 20px 44px -22px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.07)"
-        };
-        if (id === "xerox") return { padding: "7px", borderRadius: "0", background: t.ink, boxShadow: "6px 6px 0 0 " + t.ink + "33" };
-        if (id === "aurora") return { padding: "12px", borderRadius: "20px", background: "linear-gradient(150deg, " + t.accent + "2e, " + t.accent2 + "22)" };
-        if (id === "tile") return { padding: "12px", borderRadius: "3px", background: t.accent + "1f", boxShadow: inner };
-        if (id === "comic") return { padding: "9px", borderRadius: "8px", background: t.accent, boxShadow: "7px 7px 0 0 " + t.ink };
-        if (id === "marble") return { padding: "14px", borderRadius: "1px", background: "linear-gradient(120deg, " + t.ink + "12, " + t.ink + "06)", boxShadow: inner };
-        if (id === "punch") return { padding: "10px", borderRadius: "0", background: t.ink + "18", boxShadow: inner };
-        if (id === "cloth") return { padding: "11px", borderRadius: "3px", background: t.accent + "2a" };
-        if (id === "enamel") return { padding: "12px", borderRadius: "26px", background: "linear-gradient(" + t.accent + ", " + t.accent + "cc)" };
-        if (id === "chart") return { padding: "9px", borderRadius: "2px", background: t.accent + "1f", boxShadow: inner };
-        if (id === "chalk") return { padding: "13px", borderRadius: "6px", background: "linear-gradient(#6b4a2c, #4a3320)", boxShadow: "0 14px 30px -18px rgba(0,0,0,0.6)" };
-        if (id === "glow") return { padding: "10px", borderRadius: "14px", background: "linear-gradient(" + t.accent + "33, " + t.accent2 + "22)" };
-        if (id === "matte") return { padding: "12px", borderRadius: "4px", background: t.ink + "12" };
-        if (id === "blocks") return { padding: "8px", borderRadius: "0", background: t.accent };
-        if (id === "ruled" || id === "vintage") return { padding: "9px", borderRadius: "6px", background: t.ink + "10", boxShadow: inner };
-        return { padding: "0", borderRadius: "var(--radius-md)", background: "transparent" };
-      })(t.skin),
+      skinFx: this.skinFxFuer(t),
+      shellStyle: this.shellFuer(t, t.skin),
       crt: t.skin === "crt",
       printRef: (el) => { this.print = el; },
       onScroll: this.onScroll,

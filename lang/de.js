@@ -1513,6 +1513,20 @@ window.CHRONIK_SPRACHEN.de = {
     ga_g_look: "Aussehen der Gästeseite",
     design_und_deko: "Design und Deko",
     gf_danke: "Danke! Deine Antworten sind angekommen.",
-    gf_keine_wahl: "Bitte kreuze mindestens eine Antwort an."
+    gf_keine_wahl: "Bitte kreuze mindestens eine Antwort an.",
+    ga_aktiv: "Gästelink ist aktiv",
+    ga_aktiv_text: "Gäste können den Link jetzt öffnen. Haken entfernen, um ihn sofort abzuschalten.",
+    ga_aus: "Gästelink ist aus",
+    ga_aus_text: "Gäste sehen nichts. Bereite alles in Ruhe vor und setze dann hier den Haken.",
+    ga_geplant: "Gästelink öffnet am",
+    ga_geplant_text: "Bis dahin sehen Gäste nur, wann es losgeht.",
+    ga_aktiv_ab: "Freischalten",
+    ga_ab_sofort: "Sofort",
+    ga_ab_zeit: "Ab Datum & Uhrzeit",
+    ga_ab_cd: "Nach dem Countdown",
+    ga_oeffnet_am: "Der Gästebereich öffnet am",
+    cd_sekunden: "Sekunden",
+    cd_millis: "Millisek.",
+    ga_checkbox: "Gästelink freischalten"
   }
 };
