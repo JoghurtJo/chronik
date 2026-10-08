@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="lang/de.js?v=b70"></script>
-<script src="lang/en.js?v=b70"></script>
-<script src="lang/sprache.js?v=b70"></script>
-<script src="./support.js?v=b70"></script>
+<script src="lang/de.js?v=b113"></script>
+<script src="lang/en.js?v=b113"></script>
+<script src="lang/sprache.js?v=b113"></script>
+<script src="./support.js?v=b113"></script>
 </head>
 <body>
 <x-dc>
@@ -19,8 +19,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Chronik">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js?v=b104"></script>
-<script src="supabase-bridge.js?v=b104"></script>
+<script src="chronik-config.js?v=b113"></script>
+<script src="supabase-bridge.js?v=b113"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&family=Fredoka:wght@500;600;700&family=Amiri:wght@400;700&display=swap">
@@ -95,6 +95,7 @@
   <sc-if value="{{ gv.an }}" hint-placeholder-val="{{ false }}">
     <div data-screen-label="Gastbereich" style="{{ gv.rootStil }}">
       <div aria-hidden="true" style="{{ gv.fxStil }}"></div>
+      <div aria-hidden="true" style="{{ gv.ornStil }}"></div>
       <sc-if value="{{ gv.laden }}" hint-placeholder-val="{{ true }}">
         <div style="min-height: 100vh; display: grid; place-items: center; font-size: 17px; opacity: 0.7;">{{ L.gast_laedt_seite }}</div>
       </sc-if>
@@ -121,7 +122,7 @@
             <sc-if value="{{ gv.hatKicker }}" hint-placeholder-val="{{ false }}">
               <div style="font-size: 13px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--g-accent2); font-weight: 600;">{{ gv.kicker }}</div>
             </sc-if>
-            <div aria-hidden="true" style="display: flex; align-items: center; gap: 12px; color: var(--g-accent);"><span style="width: 44px; height: 1px; background: currentColor;"></span><span style="font-size: 14px;">✦</span><span style="width: 44px; height: 1px; background: currentColor;"></span></div>
+            <div aria-hidden="true" style="display: flex; align-items: center; gap: 12px; color: var(--g-accent);"><span style="width: 44px; height: 1px; background: currentColor;"></span><span style="font-size: 14px;">{{ gv.zeichen }}</span><span style="width: 44px; height: 1px; background: currentColor;"></span></div>
             <h1 style="margin: 0; font-family: var(--g-head); font-weight: var(--g-hw); text-transform: var(--g-ht); font-size: clamp(40px, 10vw, 84px); line-height: 0.98; letter-spacing: -0.01em; text-wrap: balance; background: var(--g-titel-bg, none); -webkit-background-clip: text; background-clip: text; color: var(--g-titel-farbe, inherit);">{{ gv.titel }}</h1>
             <div style="font-size: clamp(16px, 3.6vw, 20px); letter-spacing: 0.04em;">{{ gv.wann }}</div>
             <sc-if value="{{ gv.hatCdTeile }}" hint-placeholder-val="{{ false }}">
@@ -420,7 +421,7 @@
           </sc-if>
 
           <footer style="display: grid; justify-items: center; gap: 6px; margin-top: 18px; opacity: 0.7;">
-            <div aria-hidden="true" style="color: var(--g-accent);">✦</div>
+            <div aria-hidden="true" style="color: var(--g-accent);">{{ gv.zeichen }}</div>
             <button onClick="{{ gv.zurChronik }}" style="min-height: 44px; border: 0; background: transparent; color: var(--g-ink); font: inherit; font-size: 14px; text-decoration: underline; cursor: pointer;">{{ L.gast_zur_chronik }}</button>
           </footer>
         </main>
@@ -1043,6 +1044,7 @@
       </sc-for>
       <div data-bg="" style="{{ stageStyle }}">
       <div data-bg="" style="{{ skinFx }}"></div>
+      <div data-bg="" style="{{ ornFx }}"></div>
       <div data-bg="" data-muster="" style="position: absolute; inset: 0; background-image: var(--t-pattern, none); background-size: var(--t-pattern-size, auto); background-position: var(--t-parallax, 0) 0; font-family: var(--t-font-body, var(--font-body)); color: var(--t-ink, #201e1d);">
         <sc-if value="{{ hasEvents }}" hint-placeholder-val="{{ true }}">
           <div data-bg="" style="position: absolute; inset: 0;">
@@ -4522,6 +4524,8 @@ const PRESETS = [
   T({ id: "regenbogen", name: tx("regenbogen"), kicker: tx("farbrad"), bg: "#fdfcff", ink: "#231c33", card: "#ffffff", accent: "#e5006e", accent2: "#009fe3", line: "#e5006e", fontHead: "Space Grotesk", fontBody: "DM Sans", headWeight: 700, radius: 14, shadow: "md", lineWidth: 5, marker: "square", pattern: "none", anim: "pop", animDur: 380, density: 1.1, imgShape: "rect", skin: "rainbow" })
 ];
 
+const FEIER_SKINS = ["xmas", "easter", "picado", "chanukka", "ramadan", "diwali", "lunar", "halloween", "rauten", "babyparty", "konfetti", "goldkonfetti", "blumen", "kommunion", "taufe", "abschluss", "gold"];
+
 const PATTERNS = {
   none: function () { return ["none", "auto"]; },
   dots: function (t) { return ["radial-gradient(color-mix(in srgb, " + t.ink + " 20%, transparent) 1px, transparent 1.4px)", "5px 5px"]; },
@@ -7536,14 +7540,16 @@ class Component extends DCLogic {
               "--g-shadow": dk.schatten || "0 1px 2px rgba(0,0,0,0.06), 0 12px 32px -18px rgba(0,0,0,0.28)",
               "--g-band": dk.regenbogen ? "linear-gradient(to bottom, " + RB + ")" : (dk.akzentBand || "none"),
               "--g-band-h": dk.regenbogen ? "48px" : dk.akzentBand ? "6px" : "0px",
-              "--g-titel-bg": dk.regenbogen ? "linear-gradient(90deg, #e40303, #ff8c00, #e6c800, #008026, #004dff, #750787)" : "none",
-              "--g-titel-farbe": dk.regenbogen ? "transparent" : "inherit"
+              "--g-titel-bg": dk.regenbogen ? "linear-gradient(90deg, #e40303, #ff8c00, #e6c800, #008026, #004dff, #750787)" : (dk.titelBg || "none"),
+              "--g-titel-farbe": dk.regenbogen || dk.titelBg ? "transparent" : "inherit"
             };
             if (dk.pat && dk.pat !== "none") { o.backgroundImage = dk.pat; o.backgroundSize = dk.patSize || "auto"; o.backgroundAttachment = "fixed"; }
             return o;
           })() };
       })(),
       fxStil: (((d.cfg || {}).look || {}).deko || {}).fx || { display: "none" },
+      ornStil: (((d.cfg || {}).look || {}).deko || {}).orn || { display: "none" },
+      zeichen: (((d.cfg || {}).look || {}).deko || {}).zeichen || "✦",
       hatTitelbild: !!(d.cfg && d.cfg.titel),
       titelRef: (el) => { const u = url(d.cfg && d.cfg.titel); if (el && u && el.getAttribute("src") !== u) el.setAttribute("src", u); },
       gruss: (d.cfg && d.cfg.gruss) || "", hatGruss: !!(d.cfg && d.cfg.gruss),
@@ -8325,8 +8331,8 @@ class Component extends DCLogic {
           "radial-gradient(#f7a8c4 2px, transparent 2.6px), radial-gradient(#8fd6b9 1.8px, transparent 2.3px), radial-gradient(#ffd66b 1.6px, transparent 2.1px)", "67px 59px, 43px 71px, 89px 47px",
           ["linear-gradient(to top, #9bd77a40 0%, transparent 16%)", "radial-gradient(ellipse at 18% 0%, " + t.accent + "22 0%, transparent 45%)"], { opacity: 0.85 });
         if (id === "picado") return Object.assign({}, base, {
-          backgroundImage: "repeating-linear-gradient(90deg, #e8336f 0 70px, #ff9f1c 70px 140px, #12a37f 140px 210px, #2e86de 210px 280px, #9b5de5 280px 350px), radial-gradient(circle at 50% 0, transparent 9px, " + t.bg + " 9.5px), radial-gradient(" + t.accent + "18 1.5px, transparent 2px)",
-          backgroundSize: "100% 44px, 22px 22px, 24px 24px", backgroundRepeat: "no-repeat, repeat-x, repeat", backgroundPosition: "0 0, 0 33px, 0 0" });
+          backgroundImage: "radial-gradient(" + t.accent + "18 1.5px, transparent 2px), linear-gradient(to bottom, transparent 60%, " + t.accent2 + "14 100%)",
+          backgroundSize: "24px 24px, 100% 100%", backgroundRepeat: "repeat, no-repeat" });
         if (id === "chanukka") return rasterUndVoll("radial-gradient(rgba(255,255,255,0.5) 0.8px, transparent 1px)", "79px 83px",
           Array.from({ length: 9 }, (x, k) => "radial-gradient(circle at " + (10 + k * 10) + "% " + (k === 4 ? 88 : 91) + "%, " + t.accent2 + (k === 4 ? "88" : "55") + " 0%, transparent 2.6%)")
             .concat(["linear-gradient(to top, " + t.accent + "26 0%, transparent 32%)"]));
@@ -8430,6 +8436,128 @@ class Component extends DCLogic {
       fontHead: t.fontHead || "Source Serif 4", fontBody: t.fontBody || "Source Serif 4", radius: t.radius != null ? Number(t.radius) : 8,
       headWeight: t.headWeight || 600, headTransform: t.headTransform || "none", deko: this.gastDeko(t) };
   }
+  /* Feine Motive je Feier-Design (Girlanden, Laternen, Lichter …) als SVG-Ebenen. */
+  feierOrn(t, id) {
+    const a = t.accent, b = t.accent2, c = t.card, k = t.ink, g = t.bg;
+    const u = (w, h, inner) => 'url("data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '">' + inner + '</svg>') + '")';
+    const stern = (cx, cy, r1, r2, n) => { let p = []; for (let i = 0; i < n * 2; i++) { const r = i % 2 ? r2 : r1, w = Math.PI * i / n - Math.PI / 2; p.push((cx + r * Math.cos(w)).toFixed(1) + "," + (cy + r * Math.sin(w)).toFixed(1)); } return p.join(" "); };
+    const funke = (x, y, r, f, o) => '<path d="M' + x + ' ' + (y - r) + ' Q' + x + ' ' + y + ' ' + (x + r) + ' ' + y + ' Q' + x + ' ' + y + ' ' + x + ' ' + (y + r) + ' Q' + x + ' ' + y + ' ' + (x - r) + ' ' + y + ' Q' + x + ' ' + y + ' ' + x + ' ' + (y - r) + 'Z" fill="' + f + '" opacity="' + (o || 1) + '"/>';
+    const flocke = (x, y, r, o) => { let s = ""; for (let i = 0; i < 3; i++) { const w = i * Math.PI / 3, dx = r * Math.cos(w), dy = r * Math.sin(w); s += '<line x1="' + (x - dx) + '" y1="' + (y - dy) + '" x2="' + (x + dx) + '" y2="' + (y + dy) + '"/>'; }
+      return '<g stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" opacity="' + o + '">' + s + '<circle cx="' + x + '" cy="' + y + '" r="' + (r * 0.35) + '" fill="none"/></g>'; };
+    const L = [];
+    const lage = (bild, size, rep, pos) => L.push([bild, size, rep, pos]);
+    if (id === "xmas") {
+      lage(u(200, 110, '<path d="M0 8 Q100 48 200 8" fill="none" stroke="' + a + '" stroke-width="2.5"/>' +
+        '<line x1="50" y1="23" x2="50" y2="50" stroke="' + a + '" stroke-width="1.2"/><rect x="45" y="46" width="10" height="6" rx="1.5" fill="' + a + '"/><circle cx="50" cy="63" r="12" fill="' + b + '"/><circle cx="46" cy="59" r="3.2" fill="#fff" opacity=".55"/>' +
+        '<line x1="100" y1="28" x2="100" y2="40" stroke="' + a + '" stroke-width="1.2"/><polygon points="' + stern(100, 52, 11, 4.5, 5) + '" fill="' + a + '"/>' +
+        '<line x1="150" y1="23" x2="150" y2="66" stroke="' + a + '" stroke-width="1.2"/><rect x="145" y="62" width="10" height="6" rx="1.5" fill="' + a + '"/><circle cx="150" cy="82" r="14" fill="' + a + '"/><path d="M137 80 Q150 74 163 80" stroke="' + b + '" stroke-width="2.5" fill="none"/><circle cx="145" cy="77" r="3.5" fill="#fff" opacity=".55"/>'), "200px 110px", "repeat-x", "0 0");
+      lage(u(170, 170, flocke(40, 40, 11, 0.55) + flocke(125, 115, 7, 0.4) + flocke(150, 30, 5, 0.35)), "170px 170px", "repeat", "0 90px");
+    } else if (id === "easter") {
+      let gras = "M0 92"; for (let x = 0; x <= 240; x += 8) gras += " L" + (x + 4) + " " + (70 + (x * 7) % 16) + " L" + (x + 8) + " 92"; gras += " Z";
+      lage(u(240, 92, '<path d="' + gras + '" fill="#9bd77a" opacity=".7"/>' +
+        '<g transform="translate(46 58) rotate(-12)"><ellipse rx="17" ry="23" fill="#f7a8c4"/><path d="M-17 0 l5.6 -6 5.6 6 5.6 -6 5.6 6 5.6 -6 5.6 6" stroke="#fff" stroke-width="3" fill="none"/></g>' +
+        '<g transform="translate(118 64) rotate(8)"><ellipse rx="15" ry="20" fill="#8fd6b9"/><circle cx="-5" cy="-6" r="2.5" fill="#fff"/><circle cx="5" cy="0" r="2.5" fill="#fff"/><circle cx="-3" cy="8" r="2.5" fill="#fff"/></g>' +
+        '<g transform="translate(190 60) rotate(-4)"><ellipse rx="16" ry="22" fill="#ffd66b"/><rect x="-16" y="-3" width="32" height="6" fill="' + a + '" opacity=".8"/></g>'), "240px 92px", "repeat-x", "0 100%");
+      lage(u(150, 150, '<g fill="' + a + '" opacity=".22"><circle cx="30" cy="30" r="4"/><circle cx="36" cy="24" r="4"/><circle cx="42" cy="30" r="4"/><circle cx="36" cy="36" r="4"/></g><circle cx="36" cy="30" r="2.5" fill="#ffd66b" opacity=".6"/><g fill="#f7a8c4" opacity=".3"><circle cx="110" cy="100" r="3"/><circle cx="115" cy="96" r="3"/><circle cx="120" cy="100" r="3"/><circle cx="115" cy="104" r="3"/></g>'), "150px 150px", "repeat", "0 0");
+    } else if (id === "picado") {
+      const F = ["#e8336f", "#ff9f1c", "#12a37f", "#2e86de", "#9b5de5"];
+      let s = '<path d="M0 6 Q250 14 500 6" stroke="' + k + '" stroke-width="1.5" fill="none" opacity=".6"/>';
+      F.forEach((f, i) => { const x = i * 100 + 6; s += '<rect x="' + x + '" y="8" width="88" height="58" fill="' + f + '"/>';
+        for (let j = 0; j < 7; j++) s += '<circle cx="' + (x + 6 + j * 12.7) + '" cy="66" r="6.3" fill="' + f + '"/>';
+        s += '<circle cx="' + (x + 44) + '" cy="34" r="9" fill="' + g + '"/><polygon points="' + (x + 44) + ',18 ' + (x + 50) + ',24 ' + (x + 44) + ',30 ' + (x + 38) + ',24" fill="' + g + '"/>' +
+          '<circle cx="' + (x + 20) + '" cy="22" r="4" fill="' + g + '"/><circle cx="' + (x + 68) + '" cy="22" r="4" fill="' + g + '"/><circle cx="' + (x + 20) + '" cy="48" r="3" fill="' + g + '"/><circle cx="' + (x + 68) + '" cy="48" r="3" fill="' + g + '"/>' +
+          '<rect x="' + (x + 30) + '" y="50" width="28" height="3" fill="' + g + '"/>'; });
+      lage(u(500, 76, s), "500px 76px", "repeat-x", "0 0");
+    } else if (id === "chanukka") {
+      let s = '<g opacity=".6"><rect x="128" y="186" width="84" height="9" rx="3" fill="' + a + '"/><rect x="165" y="64" width="10" height="124" fill="' + a + '"/>';
+      for (let i = 1; i <= 4; i++) { const r = i * 34; s += '<path d="M' + (170 - r) + ' 64 A' + r + ' ' + (r * 0.85) + ' 0 0 0 ' + (170 + r) + ' 64" fill="none" stroke="' + a + '" stroke-width="6"/>'; }
+      for (let i = -4; i <= 4; i++) { const x = 170 + i * 34, y = i === 0 ? 36 : 46;
+        s += '<rect x="' + (x - 4) + '" y="' + y + '" width="8" height="' + (64 - y) + '" rx="1.5" fill="#f1f5ff"/><circle cx="' + x + '" cy="' + (y - 9) + '" r="11" fill="' + b + '" opacity=".28"/><path d="M' + x + ' ' + (y - 20) + ' q6.5 9 0 15 q-6.5 -6 0 -15z" fill="' + b + '"/>'; }
+      lage(u(340, 200, s + '</g>'), "340px 200px", "no-repeat", "50% 100%");
+      lage(u(180, 180, '<g fill="none" stroke="' + b + '" stroke-width="1.4" opacity=".2"><polygon points="40,24 52,45 28,45"/><polygon points="40,52 52,31 28,31"/></g><g fill="#fff" opacity=".5"><circle cx="140" cy="130" r="1.2"/><circle cx="110" cy="40" r="1"/></g>'), "180px 180px", "repeat", "0 0");
+    } else if (id === "ramadan") {
+      const lat = (x, h, s) => '<g transform="translate(' + x + ' ' + h + ') scale(' + s + ')"><line x1="0" y1="' + (-h / s) + '" x2="0" y2="0" stroke="' + a + '" stroke-width="1.4"/><circle cx="0" cy="2" r="3" fill="none" stroke="' + a + '" stroke-width="1.5"/>' +
+        '<path d="M-10 5 h20 l7 10 h-34z" fill="' + a + '"/><path d="M-17 15 h34 l-5 42 h-24z" fill="' + a + '" fill-opacity=".22" stroke="' + a + '" stroke-width="2"/><path d="M0 15 v42 M-9 15 l2 42 M9 15 l-2 42" stroke="' + a + '" stroke-width="1" opacity=".7"/>' +
+        '<circle cx="0" cy="36" r="9" fill="#ffe9a8" opacity=".85"/><path d="M-12 57 h24 l-6 10 h-12z" fill="' + a + '"/><line x1="0" y1="67" x2="0" y2="76" stroke="' + a + '" stroke-width="2"/></g>';
+      lage(u(380, 230, lat(60, 46, 1) + lat(190, 104, 1.25) + lat(320, 24, 0.85) + '<polygon points="' + stern(125, 40, 5, 2, 5) + '" fill="' + a + '" opacity=".7"/><polygon points="' + stern(260, 160, 4, 1.6, 5) + '" fill="' + a + '" opacity=".6"/>'), "380px 230px", "repeat-x", "0 0");
+    } else if (id === "diwali") {
+      let gar = '<path d="M0 6 Q120 50 240 6" fill="none" stroke="#3f7d3a" stroke-width="1.5"/>';
+      for (let i = 0; i <= 16; i++) { const tt = i / 16, x = 240 * tt, y = (1 - tt) * (1 - tt) * 6 + 2 * (1 - tt) * tt * 50 + tt * tt * 6; gar += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="5.5" fill="' + (i % 2 ? "#ffd166" : "#ff8c1a") + '"/>'; }
+      lage(u(240, 60, gar), "240px 60px", "repeat-x", "0 0");
+      const diya = (x, f) => '<circle cx="' + x + '" cy="44" r="16" fill="#ffd36e" opacity=".22"/><path d="M' + (x - 30) + ' 58 Q' + x + ' 86 ' + (x + 30) + ' 58 Z" fill="' + f + '"/><path d="M' + (x - 30) + ' 58 h60" stroke="#ffd36e" stroke-width="2"/><path d="M' + x + ' 30 q7 11 0 20 q-7 -9 0 -20z" fill="#ffd36e"/><path d="M' + x + ' 38 q3 5 0 10 q-3 -4 0 -10z" fill="#fff6d6"/>';
+      lage(u(200, 84, diya(50, a) + diya(150, b)), "200px 84px", "repeat-x", "0 100%");
+    } else if (id === "lunar") {
+      const lat = (x, y, s) => '<g transform="translate(' + x + ' ' + y + ') scale(' + s + ')"><line x1="0" y1="' + (-y / s) + '" x2="0" y2="-26" stroke="' + a + '" stroke-width="1.5"/><rect x="-10" y="-28" width="20" height="6" rx="1" fill="' + a + '"/>' +
+        '<ellipse rx="28" ry="23" fill="#e0262c" stroke="' + a + '" stroke-width="2"/><ellipse rx="14" ry="23" fill="none" stroke="' + a + '" stroke-width="1.2" opacity=".8"/><ellipse rx="4" ry="23" fill="none" stroke="' + a + '" stroke-width="1.2" opacity=".8"/>' +
+        '<rect x="-10" y="22" width="20" height="6" rx="1" fill="' + a + '"/><g stroke="' + a + '" stroke-width="1.6"><line x1="-4" y1="28" x2="-5" y2="46"/><line x1="0" y1="28" x2="0" y2="48"/><line x1="4" y1="28" x2="5" y2="46"/></g></g>';
+      lage(u(260, 210, lat(70, 64, 1) + lat(190, 120, 1.2)), "260px 210px", "repeat-x", "0 0");
+      lage(u(120, 120, '<g fill="none" stroke="' + a + '" stroke-width="1.2" opacity=".14"><path d="M10 60 a20 20 0 0 1 40 0 a10 10 0 0 1 -20 0"/><path d="M70 110 a20 20 0 0 1 40 0 a10 10 0 0 1 -20 0"/></g>'), "120px 120px", "repeat", "0 0");
+    } else if (id === "halloween") {
+      const fl = (x, y, s) => '<path transform="translate(' + x + ' ' + y + ') scale(' + s + ')" d="M-24 0 Q-14 -10 -6 -4 L-3 -10 L0 -6 L3 -10 L6 -4 Q14 -10 24 0 Q16 -2 12 6 Q6 2 0 8 Q-6 2 -12 6 Q-16 -2 -24 0Z" fill="' + b + '" opacity=".75"/>';
+      lage(u(420, 200, fl(80, 60, 1.2) + fl(190, 30, 0.8) + fl(320, 90, 1) + fl(250, 150, 0.6)), "420px 200px", "repeat-x", "0 20px");
+      const kb = (x, y, rx, ry) => '<rect x="' + (x - 3) + '" y="' + (y - ry - 8) + '" width="6" height="10" rx="2" fill="#5b7a2e"/><ellipse cx="' + x + '" cy="' + y + '" rx="' + rx + '" ry="' + ry + '" fill="' + a + '"/><ellipse cx="' + x + '" cy="' + y + '" rx="' + (rx * 0.45) + '" ry="' + ry + '" fill="none" stroke="#b34f05" stroke-width="2"/><ellipse cx="' + x + '" cy="' + y + '" rx="' + (rx * 0.8) + '" ry="' + ry + '" fill="none" stroke="#b34f05" stroke-width="1.5" opacity=".6"/>';
+      lage(u(240, 96, kb(60, 70, 28, 21) + kb(170, 78, 19, 14)), "240px 96px", "repeat-x", "0 100%");
+      let netz = ""; for (let i = 0; i <= 6; i++) { const w = i * Math.PI / 12; netz += '<line x1="0" y1="0" x2="' + (230 * Math.cos(w)).toFixed(1) + '" y2="' + (230 * Math.sin(w)).toFixed(1) + '"/>'; }
+      for (let r = 40; r <= 200; r += 40) { let p = []; for (let i = 0; i <= 6; i++) { const w = i * Math.PI / 12; p.push((r * Math.cos(w)).toFixed(1) + "," + (r * Math.sin(w)).toFixed(1)); } netz += '<polyline points="' + p.join(" ") + '"/>'; }
+      lage(u(220, 220, '<g fill="none" stroke="' + k + '" stroke-width="1.2" opacity=".22">' + netz + '</g>'), "220px 220px", "no-repeat", "0 0");
+    } else if (id === "rauten") {
+      let s = '<path d="M0 5 Q120 16 240 5" stroke="' + k + '" stroke-width="1.2" fill="none" opacity=".5"/>';
+      for (let i = 0; i < 6; i++) { const x = i * 40; s += '<polygon points="' + (x + 2) + ',7 ' + (x + 38) + ',7 ' + (x + 20) + ',48" fill="' + (i % 2 ? "#ffffff" : a) + '" stroke="' + a + '" stroke-width="1.2"/>' + (i % 2 ? '<polygon points="' + (x + 20) + ',14 ' + (x + 26) + ',22 ' + (x + 20) + ',30 ' + (x + 14) + ',22" fill="' + a + '" opacity=".5"/>' : ''); }
+      lage(u(240, 54, s), "240px 54px", "repeat-x", "0 0");
+    } else if (id === "babyparty") {
+      lage(u(260, 220, '<g fill="#ffffff" stroke="' + a + '" stroke-width="1.5" opacity=".9"><path d="M40 80 a18 18 0 0 1 22 -24 a22 22 0 0 1 40 6 a16 16 0 0 1 6 30 h-62 a14 14 0 0 1 -6 -12z"/></g>' +
+        '<polygon points="' + stern(190, 40, 7, 3, 5) + '" fill="' + b + '" opacity=".7"/><polygon points="' + stern(205, 170, 5, 2, 5) + '" fill="' + a + '" opacity=".6"/><path d="M120 160 a14 14 0 1 0 12 -20 a11 11 0 1 1 -12 20z" fill="' + b + '" opacity=".45"/><circle cx="30" cy="190" r="2.5" fill="' + a + '" opacity=".5"/>'), "260px 220px", "repeat", "0 0");
+    } else if (id === "konfetti") {
+      const C = ["#ff5d8f", "#ffc93c", "#7bd389", "#29b6f6", "#b388ff"];
+      let s = '<path d="M0 4 Q150 14 300 4" stroke="' + k + '" stroke-width="1.2" fill="none" opacity=".5"/>';
+      for (let i = 0; i < 6; i++) { const x = i * 50; s += '<polygon points="' + (x + 3) + ',6 ' + (x + 47) + ',6 ' + (x + 25) + ',46" fill="' + C[i % 5] + '"/>'; }
+      lage(u(300, 50, s), "300px 50px", "repeat-x", "0 0");
+      const bal = (x, y, f) => '<path d="M' + x + ' ' + (y + 30) + ' q-8 20 4 40 q10 18 -2 40" stroke="' + k + '" stroke-width="1" fill="none" opacity=".5"/><ellipse cx="' + x + '" cy="' + y + '" rx="24" ry="30" fill="' + f + '"/><polygon points="' + (x - 4) + ',' + (y + 31) + ' ' + (x + 4) + ',' + (y + 31) + ' ' + x + ',' + (y + 26) + '" fill="' + f + '"/><ellipse cx="' + (x - 8) + '" cy="' + (y - 10) + '" rx="5" ry="9" fill="#fff" opacity=".45" transform="rotate(-20 ' + (x - 8) + ' ' + (y - 10) + ')"/>';
+      lage(u(170, 260, bal(50, 70, C[0]) + bal(115, 100, C[3]) + bal(80, 150, C[1])), "170px 260px", "no-repeat", "100% 60px");
+      lage(u(170, 260, bal(60, 90, C[2]) + bal(120, 60, C[4])), "170px 260px", "no-repeat", "0 60px");
+    } else if (id === "goldkonfetti") {
+      lage(u(190, 190, funke(30, 40, 9, a, 0.8) + funke(140, 30, 5, a, 0.6) + funke(100, 120, 12, a, 0.7) + funke(170, 160, 6, a, 0.5) + funke(40, 160, 4, a, 0.6) +
+        '<path d="M60 80 q10 -14 20 0 t20 0" stroke="' + a + '" stroke-width="1.6" fill="none" opacity=".5"/>'), "190px 190px", "repeat", "0 0");
+      let fan = ""; for (let i = 0; i <= 8; i++) { const w = Math.PI * 1.5 + i * Math.PI / 16; fan += '<line x1="0" y1="220" x2="' + (200 * Math.cos(w + Math.PI)).toFixed(1) + '" y2="' + (220 + 200 * Math.sin(w + Math.PI)).toFixed(1) + '"/>'; }
+      lage(u(220, 220, '<g fill="none" stroke="' + a + '" stroke-width="1.4" opacity=".35"><circle cx="0" cy="220" r="80"/><circle cx="0" cy="220" r="130"/><circle cx="0" cy="220" r="180"/></g>'), "220px 220px", "no-repeat", "0 100%");
+      lage(u(220, 220, '<g fill="none" stroke="' + a + '" stroke-width="1.4" opacity=".35"><circle cx="220" cy="220" r="80"/><circle cx="220" cy="220" r="130"/><circle cx="220" cy="220" r="180"/></g>'), "220px 220px", "no-repeat", "100% 100%");
+    } else if (id === "blumen") {
+      const bl = (x, y, r) => { let s = ""; for (let i = 0; i < 5; i++) { const w = i * Math.PI * 2 / 5; s += '<circle cx="' + (x + r * Math.cos(w)).toFixed(1) + '" cy="' + (y + r * Math.sin(w)).toFixed(1) + '" r="' + (r * 0.9) + '" fill="' + a + '" opacity=".55"/>'; } return s + '<circle cx="' + x + '" cy="' + y + '" r="' + (r * 0.7) + '" fill="#f3d9a4"/>'; };
+      const bt = (x, y, w) => '<ellipse cx="' + x + '" cy="' + y + '" rx="13" ry="5.5" fill="' + b + '" opacity=".6" transform="rotate(' + w + ' ' + x + ' ' + y + ')"/>';
+      const zweig = '<path d="M0 10 Q70 30 110 110 T150 250" stroke="' + b + '" stroke-width="2" fill="none" opacity=".6"/>' + bt(40, 26, 20) + bt(80, 60, 50) + bt(105, 98, 70) + bt(125, 150, 80) + bt(60, 40, -30) + bl(30, 18, 8) + bl(96, 74, 10) + bl(134, 196, 7);
+      lage(u(260, 260, zweig), "260px 260px", "no-repeat", "0 0");
+      lage(u(260, 260, '<g transform="rotate(180 130 130)">' + zweig + '</g>'), "260px 260px", "no-repeat", "100% 100%");
+    } else if (id === "kommunion") {
+      let z = '<path d="M30 70 Q160 30 290 70" stroke="' + b + '" stroke-width="2" fill="none"/>';
+      for (let i = 0; i < 10; i++) { const x = 40 + i * 25, y = 70 - Math.sin(Math.PI * i / 9) * 26; z += '<ellipse cx="' + x + '" cy="' + (y - 9) + '" rx="10" ry="4" fill="' + b + '" transform="rotate(' + (-30 + i * 6) + ' ' + x + ' ' + (y - 9) + ')"/><ellipse cx="' + (x + 8) + '" cy="' + (y + 7) + '" rx="10" ry="4" fill="' + b + '" opacity=".8" transform="rotate(' + (30 - i * 6) + ' ' + (x + 8) + ' ' + (y + 7) + ')"/>'; if (i % 3 === 1) z += '<ellipse cx="' + (x + 4) + '" cy="' + (y + 12) + '" rx="3.5" ry="4.5" fill="#5f6e3f"/>'; }
+      lage(u(320, 120, '<g opacity=".7">' + z + '<path d="M160 6 v26 M150 15 h20" stroke="' + a + '" stroke-width="2.5" stroke-linecap="round"/></g>'), "320px 120px", "no-repeat", "50% 12px");
+    } else if (id === "taufe") {
+      const tr = (x, y, s, o) => '<path transform="translate(' + x + ' ' + y + ') scale(' + s + ')" d="M0 -12 C6 -4 9 1 9 5 A9 9 0 0 1 -9 5 C-9 1 -6 -4 0 -12Z" fill="' + a + '" opacity="' + o + '"/>';
+      lage(u(170, 190, tr(30, 40, 1, 0.22) + tr(120, 90, 0.7, 0.18) + tr(60, 150, 0.55, 0.16) + tr(150, 20, 0.45, 0.15)), "170px 190px", "repeat", "0 0");
+      lage(u(200, 60, '<path d="M0 30 Q25 14 50 30 T100 30 T150 30 T200 30" stroke="' + a + '" stroke-width="2" fill="none" opacity=".35"/><path d="M0 46 Q25 30 50 46 T100 46 T150 46 T200 46" stroke="' + b + '" stroke-width="2" fill="none" opacity=".4"/>'), "200px 60px", "repeat-x", "0 100%");
+    } else if (id === "abschluss") {
+      const hut = (x, y, w) => '<g transform="translate(' + x + ' ' + y + ') rotate(' + w + ')"><path d="M-16 4 v10 q16 9 32 0 v-10z" fill="#0a1222" stroke="' + a + '" stroke-width="1"/><polygon points="-32,0 0,-14 32,0 0,14" fill="#0a1222" stroke="' + a + '" stroke-width="1.5"/><circle r="2.5" fill="' + a + '"/><path d="M0 0 L22 6 v16" stroke="' + a + '" stroke-width="1.8" fill="none"/><rect x="19" y="20" width="6" height="9" rx="1.5" fill="' + a + '"/></g>';
+      lage(u(320, 260, hut(70, 60, -18) + hut(230, 140, 14) + hut(120, 210, -6) + funke(270, 40, 7, a, 0.7) + funke(30, 170, 5, b, 0.6)), "320px 260px", "repeat", "0 30px");
+    } else if (id === "gold") {
+      lage(u(260, 150, '<g fill="none"><circle cx="106" cy="78" r="38" stroke="' + a + '" stroke-width="7"/><circle cx="154" cy="78" r="38" stroke="' + a + '" stroke-width="7"/><path d="M80 52 a38 38 0 0 1 40 -10" stroke="#f6e27a" stroke-width="2.4"/><path d="M128 52 a38 38 0 0 1 40 -10" stroke="#f6e27a" stroke-width="2.4"/></g>' +
+        funke(60, 30, 8, a, 0.8) + funke(206, 26, 6, a, 0.7) + funke(222, 120, 9, a, 0.6) + funke(40, 118, 5, a, 0.6)), "260px 150px", "no-repeat", "50% 14px");
+      lage(u(200, 200, funke(30, 40, 4, a, 0.5) + funke(150, 120, 3, a, 0.4) + funke(90, 170, 5, a, 0.35)), "200px 200px", "repeat", "0 0");
+    }
+    if (!L.length) return { display: "none" };
+    return { position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0,
+      backgroundImage: L.map((x) => x[0]).join(", "), backgroundSize: L.map((x) => x[1]).join(", "),
+      backgroundRepeat: L.map((x) => x[2]).join(", "), backgroundPosition: L.map((x) => x[3]).join(", ") };
+  }
+  /* Zeichen im Kopf der Gästeseite und Titelverlauf je Feier-Design. */
+  feierZeichen(id) {
+    return ({ xmas: "❄", easter: "✿", picado: "✹", chanukka: "✡", ramadan: "☾", diwali: "✺", lunar: "福", halloween: "☾", rauten: "◆", babyparty: "☁", konfetti: "★", goldkonfetti: "✦", blumen: "❀", kommunion: "✝", taufe: "✧", abschluss: "★", gold: "∞" })[id] || "✦";
+  }
+  feierTitel(id) {
+    const gold = "linear-gradient(180deg, #f8e7a0 0%, #d9b54a 50%, #a07a22 100%)";
+    return ({ xmas: gold, goldkonfetti: gold, gold: "linear-gradient(180deg, #e9c95a 0%, #b88c1f 60%, #7a5a14 100%)", abschluss: gold, lunar: gold, ramadan: gold, chanukka: "linear-gradient(180deg, #ffffff 0%, #a9cdff 60%, #e8c35a 100%)",
+      konfetti: "linear-gradient(90deg, #ff5d8f, #ffb000, #2bb673, #29b6f6, #9b6bff)", picado: "linear-gradient(90deg, #e8336f, #ff9f1c, #12a37f, #2e86de)", halloween: "linear-gradient(180deg, #ffb35c, #ff7a1a 55%, #8b5cf6)",
+      diwali: "linear-gradient(180deg, #ffe08a, #ffb238 55%, #ff4f8b)" })[id] || "";
+  }
   /* Was ein Design auf der Gästeseite zusätzlich mitbringt: Muster, Hautschicht, Rahmen, Schatten, Regenbogen. */
   gastDeko(t0) {
     const t = Object.assign({ bg: "#f3f2f2", ink: "#201e1d", card: "#ffffff", accent: "#0088b0", accent2: "#d6006c" }, t0 || {});
@@ -8442,7 +8570,9 @@ class Component extends DCLogic {
     return { pat: pat[0], patSize: pat[1], fx: fx && fx.display !== "none" ? Object.assign({}, fx, { position: "fixed", zIndex: 0 }) : null,
       rahmen: rahmen, rahmenW: rahmen ? Math.max(4, Math.min(8, Math.round((parseInt(shell.padding, 10) || 10) / 2))) : 0,
       schatten: t.shadow && t.shadow !== "none" ? (SHADOWS[t.shadow] || SHADOWS.md)(t) : "", hart: t.shadow === "hard",
-      regenbogen: rb, akzentBand: "linear-gradient(90deg, " + t.accent + ", " + t.accent2 + ")" };
+      regenbogen: rb, akzentBand: "linear-gradient(90deg, " + t.accent + ", " + t.accent2 + ")",
+      orn: (function (o) { return o && o.display !== "none" ? Object.assign({}, o, { position: "fixed" }) : null; })(this.feierOrn(t, t.skin)),
+      zeichen: this.feierZeichen(t.skin), titelBg: this.feierTitel(t.skin) };
   }
   gastLookFest(ex, d) {
     if (!ex || !ex.offen) return ex;
@@ -16486,7 +16616,8 @@ class Component extends DCLogic {
         any: (st.meta.free || []).length > 0,
         clearAll: () => this.setState({ meta: Object.assign({}, st.meta, { free: [] }), freeSel: null })
       },
-      skinFx: this.skinFxFuer(t),
+      skinFx: FEIER_SKINS.indexOf(t.skin) >= 0 ? Object.assign({}, this.skinFxFuer(t, t.skin), { zIndex: 0 }) : this.skinFxFuer(t),
+      ornFx: this.feierOrn(t, t.skin),
       shellStyle: this.shellFuer(t, t.skin),
       crt: t.skin === "crt",
       printRef: (el) => { this.print = el; },

@@ -1,4 +1,4 @@
-/* Chronik · Deutsch  */
+/* Chronik · Deutsch */
 window.CHRONIK_SPRACHEN = window.CHRONIK_SPRACHEN || {};
 window.CHRONIK_SPRACHEN.de = {
   name: "Deutsch",
