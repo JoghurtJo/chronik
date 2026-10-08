@@ -30,7 +30,10 @@
   [data-handy-offen="1"] * { min-width: 0; overflow-wrap: anywhere; }
   a { color: var(--color-accent-700); text-decoration: none; }
   a:hover { color: var(--color-accent); text-decoration: underline; }
-  @keyframes tl-glide { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+  @keyframes tl-float { from { transform: translateY(0); } to { transform: translateY(-7px); } }
+@keyframes tl-drift { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(5%, -4%) scale(1.08); } 100% { transform: translate(-4%, 5%) scale(0.95); } }
+@media (prefers-reduced-motion: reduce) { [data-bewegt] { animation: none !important; } }
+@keyframes tl-glide { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
   @keyframes tl-pop { 0% { opacity: 0; transform: scale(0.78); } 62% { opacity: 1; transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); } }
   @keyframes tl-tilt { from { opacity: 0; transform: translateY(26px) rotate(-3.5deg); } to { opacity: 1; transform: none; } }
   @keyframes tl-rise { from { opacity: 0; transform: translateY(46px); filter: blur(7px); } to { opacity: 1; transform: none; filter: blur(0); } }
@@ -106,6 +109,9 @@
       <sc-if value="{{ gv.bereit }}" hint-placeholder-val="{{ false }}">
         <header style="position: relative; overflow: hidden; display: grid; align-items: end; min-height: clamp(280px, 50vh, 560px); background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--g-accent2) 22%, transparent) 0%, transparent 70%);">
           <div aria-hidden="true" style="position: absolute; left: 0; right: 0; top: 0; z-index: 1; height: var(--g-band-h, 0px); background: var(--g-band, none);"></div>
+          <sc-if value="{{ gv.konto }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ gv.zurChronik }}" style="position: absolute; top: calc(var(--g-band-h, 0px) + 14px); right: 14px; z-index: 3; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 999px; border: 0; background: color-mix(in srgb, var(--g-card) 86%, transparent); color: var(--g-ink); font: inherit; font-size: 14.5px; font-weight: 600; cursor: pointer; box-shadow: var(--g-shadow); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">{{ L.gast_zur_chronik }} <span aria-hidden="true">→</span></button>
+          </sc-if>
           <sc-if value="{{ gv.hatTitelbild }}" hint-placeholder-val="{{ false }}">
             <img ref="{{ gv.titelRef }}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;">
             <div style="position: absolute; inset: 0; background: linear-gradient(to top, var(--g-bg) 0%, color-mix(in srgb, var(--g-bg) 70%, transparent) 38%, color-mix(in srgb, var(--g-bg) 10%, transparent) 75%, transparent 100%);"></div>
@@ -431,9 +437,17 @@
     </div>
   </sc-if>
 
+<sc-if value="{{ gz.an }}" hint-placeholder-val="{{ false }}">
+  <div data-noprint="" style="position: fixed; left: 14px; bottom: calc(14px + env(safe-area-inset-bottom)); z-index: 2600; display: flex; align-items: center; gap: 2px; max-width: calc(100vw - 28px); padding: 4px; border-radius: 999px; background: var(--color-text); color: var(--color-bg); box-shadow: var(--shadow-lg);">
+    <button onClick="{{ gz.los }}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: transparent; color: inherit; font: inherit; font-size: 14.5px; font-weight: 600; cursor: pointer; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" style-hover="background: color-mix(in srgb, var(--color-bg) 14%, transparent);"><i class="ph-duotone ph-arrow-u-up-left" style="font-size: 18px;"></i>{{ gz.text }}</button>
+    <button onClick="{{ gz.weg }}" title="{{ L.schliessen }}" aria-label="{{ L.schliessen }}" style="display: grid; place-items: center; width: 40px; height: 40px; flex: 0 0 40px; border: 0; border-radius: 50%; background: transparent; color: inherit; font-size: 15px; cursor: pointer; opacity: 0.75;" style-hover="opacity: 1; background: color-mix(in srgb, var(--color-bg) 14%, transparent);">✕</button>
+  </div>
+</sc-if>
+
 <sc-if value="{{ locked }}" hint-placeholder-val="{{ true }}">
   <div data-noprint="" data-screen-label="Anmeldung" style="{{ lay.loginWrap }}">
-    <div style="{{ lay.loginPitch }}">
+    {{ loginFx }}
+    <div data-bewegt="" style="{{ lay.loginPitch }}">
       <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.was_ihr_erlebt_habt_in_einer }}</div>
       <h1 style="{{ lay.loginTitle }}">{{ L.chronik }}</h1>
       <div style="height: 5px; background: var(--color-text); margin-top: var(--space-4);"></div>
@@ -453,10 +467,10 @@
       <p style="{{ lay.loginClaim }}">{{ L.aus_vielen_abenden_wird_eine_geschichte }}</p>
 
       <div style="{{ lay.loginArt }}">
-        <div style="position: absolute; left: 0; right: 0; top: 100px; height: 3px; background: var(--ui-saum, var(--color-text));"></div>
+        <div data-bewegt="" style="{{ auth.spur }}"></div>
         <sc-for list="{{ auth.demo }}" as="d" hint-placeholder-count="5">
           <div style="{{ d.wrap }}">
-            <div style="{{ d.card }}">
+            <div data-bewegt="" style="{{ d.card }}">
               <div style="{{ d.yearStyle }}">{{ d.year }}</div>
               <div style="{{ d.bar1 }}"></div>
               <div style="{{ d.bar2 }}"></div>
@@ -467,14 +481,14 @@
         </sc-for>
       </div>
 
-      <div style="display: flex; gap: var(--space-6); flex-wrap: wrap; margin-top: var(--space-6); font-size: 13.5px; line-height: 1.4; color: var(--color-neutral-700);">
-        <span>{{ L.alle_schreiben_mit }}</span>
-        <span>{{ L.du_gibst_frei_wer_was_sieht }}</span>
-        <span>{{ L.achtzehn_gesichter_zur_wahl }}</span>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: var(--space-6); font-size: 13.5px; line-height: 1.3;">
+        <span style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; background: color-mix(in srgb, var(--color-surface) 80%, transparent); box-shadow: inset 0 0 0 1px var(--color-divider), var(--shadow-sm); color: var(--color-text); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);"><i class="ph-duotone ph-users-three" style="font-size: 18px; color: var(--color-accent-700);"></i>{{ L.alle_schreiben_mit }}</span>
+        <span style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; background: color-mix(in srgb, var(--color-surface) 80%, transparent); box-shadow: inset 0 0 0 1px var(--color-divider), var(--shadow-sm); color: var(--color-text); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);"><i class="ph-duotone ph-lock-key" style="font-size: 18px; color: var(--color-accent-700);"></i>{{ L.du_gibst_frei_wer_was_sieht }}</span>
+        <span style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; background: color-mix(in srgb, var(--color-surface) 80%, transparent); box-shadow: inset 0 0 0 1px var(--color-divider), var(--shadow-sm); color: var(--color-text); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);"><i class="ph-duotone ph-palette" style="font-size: 18px; color: var(--color-accent-700);"></i>{{ L.achtzehn_gesichter_zur_wahl }}</span>
       </div>
     </div>
 
-    <div style="{{ lay.loginForm }}">
+    <div data-bewegt="" style="{{ lay.loginForm }}">
       <div class="seg" role="group" style="margin-bottom: var(--space-4);">
         <label class="seg-opt"><input type="radio" name="authmode" checked="{{ auth.isLogin }}" onChange="{{ auth.toLogin }}" style="position: absolute; opacity: 0; pointer-events: none;">{{ L.anmelden }}</label>
         <label class="seg-opt"><input type="radio" name="authmode" checked="{{ auth.isRegister }}" onChange="{{ auth.toRegister }}" style="position: absolute; opacity: 0; pointer-events: none;">{{ L.registrieren }}</label>
@@ -6447,6 +6461,21 @@ class Component extends DCLogic {
     return tx("cd_noch") + " " + (d ? plural(d, tx("cd_tag"), tx("cd_tage")) + " · " : "") + (d || h ? h + " " + tx("cd_std") + " · " : "") + m + " " + tx("cd_min");
   }
 
+  loginFxEl() {
+    if (this._loginFx) return this._loginFx;
+    const h = React.createElement;
+    const blob = (k, l, tp, gr, farbe, dauer, verz) => h("div", { key: k, "data-bewegt": "", style: { position: "absolute", left: l, top: tp, width: gr, height: gr, borderRadius: "50%",
+      background: "radial-gradient(circle at 40% 40%, " + farbe + " 0%, transparent 68%)", filter: "blur(30px)", opacity: 0.9,
+      animation: "tl-drift " + dauer + "s " + verz + "s ease-in-out infinite alternate" } });
+    this._loginFx = h("div", { key: "lfx", "aria-hidden": "true", style: { position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none", zIndex: 0 } },
+      blob("b1", "-12%", "-18%", "min(70vw, 760px)", "color-mix(in srgb, var(--color-accent) 30%, transparent)", 22, 0),
+      blob("b2", "52%", "38%", "min(62vw, 680px)", "color-mix(in srgb, var(--color-accent-2) 24%, transparent)", 26, -6),
+      blob("b3", "30%", "-24%", "min(44vw, 460px)", "color-mix(in srgb, #f2c500 26%, transparent)", 30, -12),
+      h("div", { key: "dots", style: { position: "absolute", right: 0, top: 0, width: "58%", height: "100%",
+        backgroundImage: "radial-gradient(color-mix(in srgb, var(--color-text) 16%, transparent) 1.1px, transparent 1.5px)", backgroundSize: "14px 14px",
+        WebkitMaskImage: "radial-gradient(ellipse at 85% 20%, #000 0%, transparent 65%)", maskImage: "radial-gradient(ellipse at 85% 20%, #000 0%, transparent 65%)" } }));
+    return this._loginFx;
+  }
   /* Tickende Countdown-Anzeige: ab unter einem Tag mit Sekunden, unter
      einer Minute mit Millisekunden. Läuft für sich, ohne die Seite neu zu zeichnen. */
   cdUhr(ziel, art, key, fertig) {
@@ -7584,7 +7613,12 @@ class Component extends DCLogic {
       notiz: r.notiz || "", onNotiz: (ev) => this.gastRsvpSet({ notiz: ev.target.value }),
       rsvpSenden: () => this.gastRsvpSenden(),
       lp: lv,
-      zurChronik: () => { try { history.replaceState(null, "", location.pathname + location.search); } catch (x) { location.hash = ""; } this.setState({ gast: null }); }
+      zurChronik: () => {
+        const zr = { hash: location.hash, name: d.name || "" };
+        try { sessionStorage.setItem("chronik-gast-zurueck", JSON.stringify(zr)); } catch (x) { /* privat */ }
+        try { history.replaceState(null, "", location.pathname + location.search); } catch (x) { location.hash = ""; }
+        this.setState({ gast: null, gastZurueck: zr });
+      }
     }, this.notfallVals(d.notfall));
   }
 
@@ -15162,17 +15196,22 @@ class Component extends DCLogic {
       panelEinst: { width: phone ? "100%" : "min(560px, 100%)", height: phone ? "100%" : "auto", maxHeight: phone ? "100%" : "88vh", overflowY: "auto", boxSizing: "border-box", background: "var(--color-bg)", borderRadius: phone ? 0 : "var(--radius-lg)", boxShadow: "var(--shadow-lg)", padding: phone ? "var(--space-4)" : "var(--space-6)", display: "grid", gap: "var(--space-4)", alignContent: "start" },
       panelEing: { width: phone ? "100%" : "min(1040px, 100%)", height: phone ? "100%" : "auto", maxHeight: phone ? "100%" : "90vh", overflowY: "auto", boxSizing: "border-box", background: "var(--color-bg)", borderRadius: phone ? 0 : "var(--radius-lg)", boxShadow: "var(--shadow-lg)", padding: "var(--space-4)", display: "grid", gap: "var(--space-3)", alignContent: "start" },
       loginWrap: {
+        position: "relative", overflow: "hidden",
         minHeight: "100vh", background: "var(--color-bg)", color: "var(--color-text)",
         fontFamily: "var(--font-body)", display: "grid",
         gridTemplateColumns: phone ? "minmax(0, 1fr)" : tablet ? "minmax(0, 1fr)" : "1.05fr 0.95fr",
         gap: phone ? "var(--space-6)" : "var(--space-8)",
         alignItems: "start", padding: pad
       },
-      loginPitch: { order: small ? 2 : 1, minWidth: 0 },
-      loginForm: { order: small ? 1 : 2, width: "100%", maxWidth: phone ? "none" : "430px", justifySelf: tablet ? "start" : "auto" },
+      loginPitch: { order: small ? 2 : 1, minWidth: 0, position: "relative", zIndex: 1, animation: "tl-rise 900ms cubic-bezier(0.16, 1, 0.3, 1) both" },
+      loginForm: { order: small ? 1 : 2, width: "100%", maxWidth: phone ? "none" : "430px", justifySelf: tablet ? "start" : "auto", position: "relative", zIndex: 1, boxSizing: "border-box",
+        padding: phone ? "var(--space-4)" : "var(--space-6)", borderRadius: "var(--radius-lg)", background: "color-mix(in srgb, var(--color-bg) 74%, transparent)",
+        backdropFilter: "blur(14px) saturate(1.2)", WebkitBackdropFilter: "blur(14px) saturate(1.2)", boxShadow: "var(--shadow-lg), inset 0 0 0 1px color-mix(in srgb, var(--color-text) 8%, transparent)",
+        animation: "tl-rise 900ms 140ms cubic-bezier(0.16, 1, 0.3, 1) both" },
       loginTitle: {
         margin: "8px 0 0", fontSize: phone ? "54px" : tablet ? "72px" : "92px",
-        lineHeight: 0.88, letterSpacing: "-0.038em"
+        lineHeight: 0.88, letterSpacing: "-0.038em",
+        textShadow: "0.045em 0.03em 0 color-mix(in srgb, var(--color-accent) 55%, transparent), -0.03em -0.02em 0 color-mix(in srgb, var(--color-accent-2) 45%, transparent)"
       },
       loginClaim: {
         maxWidth: "26ch", fontSize: phone ? "26px" : tablet ? "32px" : "40px",
@@ -15180,7 +15219,7 @@ class Component extends DCLogic {
       },
       loginArt: {
         display: phone ? "none" : "block", marginTop: "var(--space-8)", position: "relative",
-        height: "196px", maxWidth: "560px", overflow: "hidden"
+        height: "220px", maxWidth: "560px", overflow: "hidden"
       },
       headerPad: { padding: phone ? "var(--space-4) var(--space-4) 0" : tablet ? "var(--space-4) var(--space-6) 0" : "var(--space-6) var(--space-8) 0" },
       ribbon: {
@@ -15329,6 +15368,14 @@ class Component extends DCLogic {
             }
           }))
         };
+      })(this),
+      loginFx: this.loginFxEl(),
+      gz: (function (self) {
+        if (st.gastZurueck === undefined && !self._gzGelesen) { self._gzGelesen = true; try { const v = JSON.parse(sessionStorage.getItem("chronik-gast-zurueck") || "null"); if (v && v.hash) window.setTimeout(() => self.setState({ gastZurueck: v }), 0); } catch (x) { /* privat */ } }
+        const v = st.gastZurueck;
+        return { an: !!(v && v.hash) && !st.gast, text: tx("gast_zurueck") + (v && v.name ? " · " + v.name : ""),
+          los: () => { if (v && v.hash) location.hash = v.hash; },
+          weg: () => { try { sessionStorage.removeItem("chronik-gast-zurueck"); } catch (x) { /* privat */ } self.setState({ gastZurueck: null }); } };
       })(this),
       tour: (function (self) {
         const i = st.tour;
@@ -16064,16 +16111,17 @@ class Component extends DCLogic {
             key: "dm" + i,
             wrap: { position: "absolute", left: left + "%", top: "0", bottom: "0", width: "1px" },
             marker: {
-              position: "absolute", left: "0", top: "94px", width: "11px", height: "11px",
-              marginLeft: "-5px", background: d.a ? ac : "var(--color-text)",
+              position: "absolute", left: "0", top: "106px", width: "11px", height: "11px",
+              marginLeft: "-5px", background: d.a ? ac : "var(--color-text)", boxShadow: d.a ? "0 0 0 5px color-mix(in srgb, " + ac + " 22%, transparent)" : "none",
               transform: i % 2 ? "rotate(45deg)" : "none",
               borderRadius: i % 2 ? "1px" : "50%"
             },
             card: {
               position: "absolute", left: "0", width: d.w + "px",
-              top: d.up ? "6px" : "auto", bottom: d.up ? "auto" : "6px",
+              top: d.up ? "18px" : "auto", bottom: d.up ? "auto" : "6px",
               padding: "9px 10px 10px", background: "var(--color-surface)",
-              boxShadow: "inset 0 0 0 1px var(--color-divider)", borderRadius: "var(--radius-md)"
+              boxShadow: "inset 0 0 0 1px var(--color-divider), var(--shadow-md)", borderRadius: "var(--radius-md)",
+              animation: "tl-rise 700ms " + (300 + i * 120) + "ms cubic-bezier(0.16, 1, 0.3, 1) both, tl-float " + (4.6 + i * 0.7) + "s " + (1.1 + i * 0.4) + "s ease-in-out infinite alternate"
             },
             yearStyle: { fontSize: "15px", letterSpacing: "0.02em", lineHeight: 1, color: "var(--color-text)" },
             year: d.y,
@@ -16084,7 +16132,9 @@ class Component extends DCLogic {
               ? { position: "absolute", right: "-7px", top: "-7px", width: "19px", height: "19px", borderRadius: "50%", display: "grid", placeItems: "center", fontSize: "10px", background: ac, color: "var(--color-bg)" }
               : { display: "none" }
           };
-        }),        rules: pwRules(st.authForm.pw).map((r) => ({
+        }),        spur: { position: "absolute", left: 0, right: 0, top: "112px", height: "3px", borderRadius: "2px", transformOrigin: "left center",
+          background: "linear-gradient(90deg, var(--color-text), var(--color-accent) 55%, var(--color-accent-2))", animation: "tl-draw 1200ms 200ms cubic-bezier(0.16, 1, 0.3, 1) both" },
+        rules: pwRules(st.authForm.pw).map((r) => ({
           key: r.key, label: r.label, mark: r.ok ? "✓" : "·",
           style: { fontSize: "11.5px", letterSpacing: "0.02em", color: r.ok ? "var(--color-accent-700)" : "var(--color-neutral-600)" }
         })),

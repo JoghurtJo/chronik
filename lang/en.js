@@ -1527,6 +1527,7 @@ window.CHRONIK_SPRACHEN.en = {
     ga_oeffnet_am: "The guest area opens on",
     cd_sekunden: "Seconds",
     cd_millis: "Millisec.",
-    ga_checkbox: "Activate guest link"
+    ga_checkbox: "Activate guest link",
+    gast_zurueck: "Back to the guest page"
   }
 };

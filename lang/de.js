@@ -1527,6 +1527,7 @@ window.CHRONIK_SPRACHEN.de = {
     ga_oeffnet_am: "Der Gästebereich öffnet am",
     cd_sekunden: "Sekunden",
     cd_millis: "Millisek.",
-    ga_checkbox: "Gästelink freischalten"
+    ga_checkbox: "Gästelink freischalten",
+    gast_zurueck: "Zurück zur Gästeseite"
   }
 };
