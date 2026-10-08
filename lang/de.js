@@ -1562,6 +1562,24 @@ window.CHRONIK_SPRACHEN.de = {
     f_abschluss: "Abschluss",
     f_abschluss_k: "Geschafft",
     f_goldhochzeit: "Goldene Hochzeit",
-    f_goldhochzeit_k: "Jubiläum"
+    f_goldhochzeit_k: "Jubiläum",
+    fg_xmas: "Frohe Weihnachten!",
+    fg_easter: "Frohe Ostern – Ei gefunden!",
+    fg_picado: "¡Viva la fiesta!",
+    fg_chanukka: "Chag Chanukka Sameach!",
+    fg_ramadan: "Ramadan Kareem · Eid Mubarak",
+    fg_diwali: "Shubh Deepavali!",
+    fg_lunar: "新年快乐 – Frohes neues Jahr!",
+    fg_halloween: "Buh!",
+    fg_rauten: "O’zapft is!",
+    fg_babyparty: "Willkommen, kleiner Mensch!",
+    fg_konfetti: "Hipp, hipp, hurra!",
+    fg_goldkonfetti: "Auf die nächsten Jahre!",
+    fg_blumen: "Alles Liebe zum Geburtstag!",
+    fg_kommunion: "Gottes Segen!",
+    fg_taufe: "Herzlich willkommen!",
+    fg_abschluss: "Geschafft – Hut ab!",
+    fg_gold: "Auf die goldene Liebe!",
+    feier_tipp: "Überraschung – antippen"
   }
 };

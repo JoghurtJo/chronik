@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="lang/de.js?v=b113"></script>
-<script src="lang/en.js?v=b113"></script>
-<script src="lang/sprache.js?v=b113"></script>
-<script src="./support.js?v=b113"></script>
+<script src="lang/de.js?v=b114"></script>
+<script src="lang/en.js?v=b114"></script>
+<script src="lang/sprache.js?v=b114"></script>
+<script src="./support.js?v=b114"></script>
 </head>
 <body>
 <x-dc>
@@ -19,8 +19,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Chronik">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js?v=b113"></script>
-<script src="supabase-bridge.js?v=b113"></script>
+<script src="chronik-config.js?v=b114"></script>
+<script src="supabase-bridge.js?v=b114"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&family=Fredoka:wght@500;600;700&family=Amiri:wght@400;700&display=swap">
@@ -30,7 +30,15 @@
   [data-handy-offen="1"] * { min-width: 0; overflow-wrap: anywhere; }
   a { color: var(--color-accent-700); text-decoration: none; }
   a:hover { color: var(--color-accent); text-decoration: underline; }
-  @keyframes tl-dreh { to { transform: rotate(360deg); } }
+  @keyframes ff-fall { from { transform: translate(0, -8vh) rotate(0deg); } to { transform: translate(var(--drift, 0px), 112vh) rotate(var(--rot, 0deg)); } }
+@keyframes ff-rise { 0% { transform: translate(0, 0); opacity: 0; } 8% { opacity: var(--o, 1); } 85% { opacity: var(--o, 1); } 100% { transform: translate(var(--drift, 0px), -118vh); opacity: 0; } }
+@keyframes ff-twinkle { 0%, 100% { opacity: 0.08; transform: scale(0.55); } 50% { opacity: var(--o, 1); transform: scale(1); } }
+@keyframes ff-fly { 0% { transform: translate(-12vw, 0); } 25% { transform: translate(18vw, -26px); } 50% { transform: translate(50vw, 12px); } 75% { transform: translate(82vw, -18px); } 100% { transform: translate(115vw, 0); } }
+@keyframes ff-schnuppe { 0%, 70% { opacity: 0; transform: translate(0, 0) rotate(-28deg); } 72% { opacity: 1; } 82% { opacity: 0; transform: translate(-46vw, 26vh) rotate(-28deg); } 100% { opacity: 0; transform: translate(-46vw, 26vh) rotate(-28deg); } }
+@keyframes ff-burst { 0% { transform: translate(-50%, -50%) scale(0.4); opacity: 1; } 70% { opacity: 1; } 100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1) rotate(var(--rot, 0deg)); opacity: 0; } }
+@keyframes ff-gruss { 0% { transform: translate(-50%, 16px) scale(0.8); opacity: 0; } 12% { transform: translate(-50%, 0) scale(1.06); opacity: 1; } 20% { transform: translate(-50%, 0) scale(1); } 85% { opacity: 1; } 100% { transform: translate(-50%, -12px); opacity: 0; } }
+@keyframes ff-wipp { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+@keyframes tl-dreh { to { transform: rotate(360deg); } }
 @keyframes tl-float { from { transform: translateY(0); } to { transform: translateY(-7px); } }
 @keyframes tl-drift { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(5%, -4%) scale(1.08); } 100% { transform: translate(-4%, 5%) scale(0.95); } }
 @media (prefers-reduced-motion: reduce) { [data-bewegt] { animation: none !important; } }
@@ -96,6 +104,7 @@
     <div data-screen-label="Gastbereich" style="{{ gv.rootStil }}">
       <div aria-hidden="true" style="{{ gv.fxStil }}"></div>
       <div aria-hidden="true" style="{{ gv.ornStil }}"></div>
+      {{ gv.feierFx }}
       <sc-if value="{{ gv.laden }}" hint-placeholder-val="{{ true }}">
         <div style="min-height: 100vh; display: grid; place-items: center; font-size: 17px; opacity: 0.7;">{{ L.gast_laedt_seite }}</div>
       </sc-if>
@@ -122,7 +131,7 @@
             <sc-if value="{{ gv.hatKicker }}" hint-placeholder-val="{{ false }}">
               <div style="font-size: 13px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--g-accent2); font-weight: 600;">{{ gv.kicker }}</div>
             </sc-if>
-            <div aria-hidden="true" style="display: flex; align-items: center; gap: 12px; color: var(--g-accent);"><span style="width: 44px; height: 1px; background: currentColor;"></span><span style="font-size: 14px;">{{ gv.zeichen }}</span><span style="width: 44px; height: 1px; background: currentColor;"></span></div>
+            <div style="display: flex; align-items: center; gap: 12px; color: var(--g-accent);"><span aria-hidden="true" style="width: 44px; height: 1px; background: currentColor;"></span><button onClick="{{ gv.zeichenTipp }}" aria-label="{{ L.feier_tipp }}" title="{{ L.feier_tipp }}" style="font-size: 14px; display: inline-grid; place-items: center; min-width: 44px; min-height: 44px; padding: 0; border: 0; background: transparent; color: inherit; cursor: pointer; font-family: inherit;" style-active="transform: scale(0.88);">{{ gv.zeichen }}</button><span aria-hidden="true" style="width: 44px; height: 1px; background: currentColor;"></span></div>
             <h1 style="margin: 0; font-family: var(--g-head); font-weight: var(--g-hw); text-transform: var(--g-ht); font-size: clamp(40px, 10vw, 84px); line-height: 0.98; letter-spacing: -0.01em; text-wrap: balance; background: var(--g-titel-bg, none); -webkit-background-clip: text; background-clip: text; color: var(--g-titel-farbe, inherit);">{{ gv.titel }}</h1>
             <div style="font-size: clamp(16px, 3.6vw, 20px); letter-spacing: 0.04em;">{{ gv.wann }}</div>
             <sc-if value="{{ gv.hatCdTeile }}" hint-placeholder-val="{{ false }}">
@@ -1045,6 +1054,7 @@
       <div data-bg="" style="{{ stageStyle }}">
       <div data-bg="" style="{{ skinFx }}"></div>
       <div data-bg="" style="{{ ornFx }}"></div>
+      {{ feierFx }}
       <div data-bg="" data-muster="" style="position: absolute; inset: 0; background-image: var(--t-pattern, none); background-size: var(--t-pattern-size, auto); background-position: var(--t-parallax, 0) 0; font-family: var(--t-font-body, var(--font-body)); color: var(--t-ink, #201e1d);">
         <sc-if value="{{ hasEvents }}" hint-placeholder-val="{{ true }}">
           <div data-bg="" style="position: absolute; inset: 0;">
@@ -7470,6 +7480,7 @@ class Component extends DCLogic {
   }
 
   gastVals() {
+    const st0 = this.state;
     const g = this.state.gast;
     if (!g) return { an: false };
     const d = g.d || {};
@@ -7550,6 +7561,8 @@ class Component extends DCLogic {
       fxStil: (((d.cfg || {}).look || {}).deko || {}).fx || { display: "none" },
       ornStil: (((d.cfg || {}).look || {}).deko || {}).orn || { display: "none" },
       zeichen: (((d.cfg || {}).look || {}).deko || {}).zeichen || "✦",
+      feierFx: this.feierFxEl((((d.cfg || {}).look || {}).deko || {}).skin || "", "gast", st0.feierTipp),
+      zeichenTipp: (ev) => { const el = ev && ev.currentTarget; const r = el ? el.getBoundingClientRect() : { left: window.innerWidth / 2, top: 120, width: 0, height: 0 }; this.setState((s) => ({ feierTipp: { n: ((s.feierTipp || {}).n || 0) + 1, x: r.left + r.width / 2, y: r.top + r.height / 2 } })); },
       hatTitelbild: !!(d.cfg && d.cfg.titel),
       titelRef: (el) => { const u = url(d.cfg && d.cfg.titel); if (el && u && el.getAttribute("src") !== u) el.setAttribute("src", u); },
       gruss: (d.cfg && d.cfg.gruss) || "", hatGruss: !!(d.cfg && d.cfg.gruss),
@@ -8426,12 +8439,22 @@ class Component extends DCLogic {
         if (id === "gold") return { padding: "11px", borderRadius: "6px", background: "linear-gradient(135deg, #f3dd8d, " + t.accent + " 45%, #8c6d2f 75%, #f0d27a)" };
         return { padding: "0", borderRadius: "var(--radius-md)", background: "transparent" };
       }
+  /* Das allgemeine Design der Person, die das Ereignis angelegt hat. */
+  erstellerTheme(d) {
+    const me = this.me() || {};
+    const by = (d && d.by) || me.id || "";
+    if (!by || by === me.id) return this.theme();
+    const u = (this.state.users || []).filter((x) => x.id === by)[0];
+    const l = (u && u.look) || {};
+    const base = PRESETS.concat(Array.isArray(l.custom) ? l.custom : []).filter((x) => x.id === (l.themeId || "zeitung"))[0];
+    return base ? Object.assign({}, base, l.override || {}) : null;
+  }
   gastLookAus(id, d) {
     const alle = this.allThemes();
     const t = (id && alle.filter((p) => p.id === id)[0])
       || (d && d.themeSnap && d.themeSnap.bg ? d.themeSnap : null)
       || (d && d.themeId ? alle.filter((p) => p.id === d.themeId)[0] : null)
-      || this.theme() || {};
+      || this.erstellerTheme(d) || this.theme() || {};
     return { bg: t.bg || "#f3f2f2", ink: t.ink || "#201e1d", card: t.card || "#ffffff", accent: t.accent || "#0088b0", accent2: t.accent2 || "#d6006c",
       fontHead: t.fontHead || "Source Serif 4", fontBody: t.fontBody || "Source Serif 4", radius: t.radius != null ? Number(t.radius) : 8,
       headWeight: t.headWeight || 600, headTransform: t.headTransform || "none", deko: this.gastDeko(t) };
@@ -8548,6 +8571,108 @@ class Component extends DCLogic {
       backgroundImage: L.map((x) => x[0]).join(", "), backgroundSize: L.map((x) => x[1]).join(", "),
       backgroundRepeat: L.map((x) => x[2]).join(", "), backgroundPosition: L.map((x) => x[3]).join(", ") };
   }
+  /* Kleine Gimmicks je Feier-Design: Schnee, Laternen, Konfetti, Fledermäuse …
+     und ein Überraschungseffekt, wenn man das Zeichen im Kopf antippt. */
+  feierFxEl(skin, modus, tipp) {
+    if (FEIER_SKINS.indexOf(skin) < 0) return null;
+    if (!window.__ChronikFeierFx) {
+      const h = React.createElement;
+      const W = ["#ff5d8f", "#ffc93c", "#7bd389", "#29b6f6", "#b388ff"], GOLD = ["#f6dc8c", "#e2b857", "#c9a227", "#fff3c4"];
+      const CFG = {
+        xmas: { sets: [{ art: "fall", n: 20, z: ["❄", "❅", "❆", "•"], f: ["#ffffff"], gr: [8, 18], d: [9, 18], o: 0.85 }], burst: { z: ["★", "✦", "❄"], f: ["#e0b04c", "#ffffff", "#d2343c"] } },
+        easter: { sets: [{ art: "fall", n: 10, z: [".blatt"], f: ["#f7a8c4", "#ffd66b", "#8fd6b9", "#cbb8f5"], gr: [7, 12], d: [12, 20], o: 0.8 }], burst: { z: [".ei"], f: ["#f7a8c4", "#ffd66b", "#8fd6b9", "#cbb8f5"] } },
+        picado: { sets: [{ art: "fall", n: 16, z: [".rechteck"], f: ["#e8336f", "#ff9f1c", "#12a37f", "#2e86de", "#9b5de5"], gr: [6, 10], d: [7, 13], o: 0.85 }], burst: { z: ["✹", "★", ".rechteck"], f: ["#e8336f", "#ff9f1c", "#12a37f", "#2e86de"] } },
+        chanukka: { sets: [{ art: "rise", n: 12, z: [".licht"], f: ["#e8c35a", "#ffffff"], gr: [3, 8], d: [9, 15], o: 0.75 }, { art: "twinkle", n: 10, z: ["✦", "·"], f: ["#ffffff", "#a9cdff"], gr: [6, 12], d: [3, 6], o: 0.8 }], burst: { z: ["✡", "✦"], f: ["#e8c35a", "#5aa9ff", "#ffffff"] } },
+        ramadan: { sets: [{ art: "twinkle", n: 22, z: ["✦", "✧", "·"], f: ["#ffe9a8", "#ffffff"], gr: [6, 14], d: [2.5, 5.5], o: 0.9 }, { art: "schnuppe", n: 1, d: [11, 11] }], burst: { z: ["☾", "✦", "✧"], f: ["#e3b75c", "#ffffff", "#3fb6a8"] } },
+        diwali: { sets: [{ art: "rise", n: 8, z: [".laterne"], f: ["#ffb238", "#ff8c1a"], gr: [10, 18], d: [16, 26], o: 0.85 }, { art: "twinkle", n: 12, z: ["✦", "·"], f: ["#ffd36e", "#ff4f8b"], gr: [5, 11], d: [2, 4], o: 0.9 }], burst: { z: ["✺", "✦", ".kreis"], f: ["#ffd36e", "#ff4f8b", "#ffb238"] } },
+        lunar: { sets: [{ art: "fall", n: 12, z: [".blatt"], f: ["#ffc0cb", "#ffd6e0", "#f6c453"], gr: [6, 11], d: [11, 18], o: 0.85 }], burst: { z: ["福", "✦", ".kreis"], f: ["#f6c453", "#ffe9b0", "#ff4d4d"] } },
+        halloween: { sets: [{ art: "fly", n: 3, z: [".fledermaus"], f: ["#8b5cf6", "#2a1d3a"], gr: [16, 26], d: [12, 20], o: 0.85 }, { art: "twinkle", n: 8, z: ["·", "✦"], f: ["#ff7a1a"], gr: [6, 10], d: [3, 6], o: 0.7 }], burst: { z: [".geist", ".fledermaus"], f: ["#f6ead8", "#8b5cf6"] } },
+        rauten: { sets: [{ art: "rise", n: 12, z: [".blase"], f: ["#f4d58d", "#ffffff"], gr: [5, 12], d: [8, 14], o: 0.7 }], burst: { z: ["◆", "♥"], f: ["#1f6fc5", "#ffffff", "#c8963e"] } },
+        babyparty: { sets: [{ art: "rise", n: 12, z: [".blase"], f: ["#6aa9d8", "#f2a7b8"], gr: [8, 22], d: [12, 20], o: 0.55 }], burst: { z: ["★", "♥", "☁"], f: ["#6aa9d8", "#f2a7b8", "#ffd66b"] } },
+        konfetti: { sets: [{ art: "fall", n: 22, z: [".rechteck", ".kreis"], f: W, gr: [5, 10], d: [6, 12], o: 0.9 }, { art: "rise", n: 3, z: [".ballon"], f: W, gr: [20, 28], d: [14, 22], o: 0.9 }], burst: { z: ["★", ".rechteck", ".kreis"], f: W, hoch: true } },
+        goldkonfetti: { sets: [{ art: "fall", n: 18, z: [".rechteck", "✦"], f: GOLD, gr: [4, 9], d: [8, 14], o: 0.9 }], burst: { z: ["✦", ".rechteck"], f: GOLD, hoch: true } },
+        blumen: { sets: [{ art: "fall", n: 10, z: [".blatt"], f: ["#e7b3a5", "#c7d4b6", "#f3d9a4"], gr: [7, 12], d: [13, 20], o: 0.85 }], burst: { z: ["❀", "✿"], f: ["#9c4f3c", "#6f8a5a", "#e7b3a5"] } },
+        kommunion: { sets: [{ art: "rise", n: 10, z: [".licht"], f: ["#e6d29a", "#ffffff"], gr: [4, 10], d: [14, 22], o: 0.6 }], burst: { z: ["✦", "❀"], f: ["#b89a4d", "#8aa37b", "#ffffff"] } },
+        taufe: { sets: [{ art: "rise", n: 12, z: [".blase"], f: ["#5d9bcf", "#a9b8c6"], gr: [6, 16], d: [12, 20], o: 0.5 }], burst: { z: ["✧", ".kreis"], f: ["#5d9bcf", "#ffffff", "#a9b8c6"] } },
+        abschluss: { sets: [{ art: "fall", n: 16, z: [".rechteck", "★"], f: ["#f2c14e", "#8fb3ff", "#ffffff"], gr: [5, 10], d: [7, 12], o: 0.85 }], burst: { z: [".hut", "★"], f: ["#f2c14e", "#ffffff"], hoch: true } },
+        gold: { sets: [{ art: "twinkle", n: 16, z: ["✦", "✧"], f: GOLD, gr: [8, 16], d: [2, 4.5], o: 0.9 }], burst: { z: ["♥", "✦"], f: ["#c9a227", "#e7a7a0", "#f6e27a"] } }
+      };
+      const svgForm = (z, f, s) => {
+        if (z === ".fledermaus") return h("svg", { width: s * 2, height: s, viewBox: "-26 -12 52 24" }, h("path", { d: "M-24 0 Q-14 -10 -6 -4 L-3 -10 L0 -6 L3 -10 L6 -4 Q14 -10 24 0 Q16 -2 12 6 Q6 2 0 8 Q-6 2 -12 6 Q-16 -2 -24 0Z", fill: f }));
+        if (z === ".geist") return h("svg", { width: s, height: s * 1.2, viewBox: "0 0 40 48" }, h("path", { d: "M4 46 V20 A16 16 0 0 1 36 20 V46 L30 40 L24 46 L18 40 L12 46 L8 42Z", fill: f, opacity: 0.92 }), h("circle", { cx: 15, cy: 20, r: 3, fill: "#16110c" }), h("circle", { cx: 25, cy: 20, r: 3, fill: "#16110c" }), h("ellipse", { cx: 20, cy: 30, rx: 3, ry: 4, fill: "#16110c" }));
+        if (z === ".hut") return h("svg", { width: s * 1.6, height: s, viewBox: "-34 -16 68 44" }, h("path", { d: "M-16 4 v10 q16 9 32 0 v-10z", fill: "#0a1222" }), h("polygon", { points: "-32,0 0,-14 32,0 0,14", fill: "#0a1222", stroke: f, strokeWidth: 1.5 }), h("path", { d: "M0 0 L22 6 v16", stroke: f, strokeWidth: 2, fill: "none" }), h("rect", { x: 19, y: 20, width: 6, height: 8, fill: f }));
+        return null;
+      };
+      const form = (z, f, s, key, stil) => {
+        const svg = svgForm(z, f, s);
+        if (svg) return h("div", { key: key, "data-bewegt": "", style: stil }, svg);
+        if (z.charAt(0) !== ".") return h("div", { key: key, "data-bewegt": "", style: Object.assign({ fontSize: s + "px", lineHeight: 1, color: f, textShadow: "0 1px 3px rgba(0,0,0,0.18)" }, stil) }, z);
+        const S = { ".kreis": { width: s, height: s, borderRadius: "50%", background: f },
+          ".rechteck": { width: s, height: s * 0.45, borderRadius: "1px", background: f },
+          ".blatt": { width: s, height: s * 0.62, borderRadius: "70% 0 70% 0", background: f },
+          ".blase": { width: s, height: s, borderRadius: "50%", border: "1.5px solid " + f, background: "radial-gradient(circle at 32% 30%, rgba(255,255,255,0.7) 0 14%, transparent 18%)", boxSizing: "border-box" },
+          ".licht": { width: s, height: s, borderRadius: "50%", background: "radial-gradient(circle, #ffffff 0%, " + f + " 45%, transparent 72%)", boxShadow: "0 0 " + (s * 1.6) + "px " + f },
+          ".laterne": { width: s, height: s * 1.3, borderRadius: "42% 42% 30% 30%", background: "linear-gradient(#ffe08a, " + f + ")", boxShadow: "0 0 " + (s * 1.4) + "px " + f },
+          ".ei": { width: s * 0.8, height: s, borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%", background: f, boxShadow: "inset -3px -4px 0 rgba(0,0,0,0.08)" },
+          ".ballon": { width: s, height: s * 1.25, borderRadius: "50%", background: "radial-gradient(circle at 34% 28%, rgba(255,255,255,0.6) 0 10%, " + f + " 24%)" } }[z] || { width: s, height: s, background: f };
+        const kids = z === ".ballon" ? [h("div", { key: "s", style: { position: "absolute", left: "50%", top: "100%", width: "1px", height: s * 1.6 + "px", background: "rgba(0,0,0,0.3)" } })] : null;
+        return h("div", { key: key, "data-bewegt": "", style: Object.assign({ position: "absolute" }, S, stil, { width: S.width + "px", height: S.height + "px" }) }, kids);
+      };
+      const zuf = (a, b) => a + Math.random() * (b - a);
+      class FeierFx extends React.Component {
+        constructor(p) { super(p); this.state = { burst: [], gruss: 0 }; this.teile = this.bauen(p); this.zaehl = 0; }
+        bauen(p) {
+          const c = CFG[p.skin]; if (!c) return [];
+          const halb = p.modus !== "gast";
+          const out = [];
+          c.sets.forEach((s, si) => {
+            const n = halb ? Math.ceil(s.n / 2) : s.n;
+            for (let i = 0; i < n; i++) {
+              const z = s.z ? s.z[i % s.z.length] : "", f = s.f ? s.f[Math.floor(Math.random() * s.f.length)] : "#fff";
+              const gr = s.gr ? zuf(s.gr[0], s.gr[1]) : 10, d = zuf(s.d[0], s.d[1]), del = -Math.random() * d;
+              const key = "p" + si + "-" + i;
+              if (s.art === "schnuppe") { out.push(h("div", { key: key, "data-bewegt": "", style: { position: "absolute", right: "6%", top: "8%", width: "140px", height: "2px", borderRadius: "2px", background: "linear-gradient(90deg, #ffffff, rgba(255,255,255,0))", opacity: 0, animation: "ff-schnuppe " + d + "s linear " + (-2) + "s infinite" } })); continue; }
+              const stil = { position: "absolute", "--o": s.o, opacity: s.art === "fall" ? s.o : undefined, "--drift": zuf(-60, 60).toFixed(0) + "px", "--rot": zuf(-540, 540).toFixed(0) + "deg" };
+              if (s.art === "fall") Object.assign(stil, { left: zuf(0, 100) + "%", top: 0, animation: "ff-fall " + d.toFixed(1) + "s linear " + del.toFixed(1) + "s infinite" });
+              if (s.art === "rise") Object.assign(stil, { left: zuf(0, 100) + "%", top: "100%", animation: "ff-rise " + d.toFixed(1) + "s ease-in " + del.toFixed(1) + "s infinite" });
+              if (s.art === "twinkle") Object.assign(stil, { left: zuf(2, 98) + "%", top: zuf(2, 70) + "%", animation: "ff-twinkle " + d.toFixed(1) + "s ease-in-out " + del.toFixed(1) + "s infinite" });
+              if (s.art === "fly") Object.assign(stil, { left: 0, top: zuf(6, 38) + "%", animation: "ff-fly " + d.toFixed(1) + "s linear " + del.toFixed(1) + "s infinite" });
+              out.push(form(z, f, gr, key, stil));
+            }
+          });
+          return out;
+        }
+        componentDidUpdate(vor) {
+          if (vor.skin !== this.props.skin) { this.teile = this.bauen(this.props); this.forceUpdate(); }
+          const tp = this.props.tipp;
+          if (tp && (!vor.tipp || vor.tipp.n !== tp.n)) this.knall(tp);
+        }
+        componentWillUnmount() { this.aus = true; window.clearTimeout(this.tg); }
+        knall(tp) {
+          const c = CFG[this.props.skin]; if (!c || !c.burst) return;
+          const b = c.burst, id = Date.now();
+          const neu = Array.from({ length: 22 }, (x, i) => {
+            const w = c.burst.hoch ? zuf(-Math.PI * 0.95, -Math.PI * 0.05) : zuf(0, Math.PI * 2), r = zuf(70, 220);
+            const z = b.z[i % b.z.length], f = b.f[i % b.f.length], s = zuf(12, 24);
+            return form(z, f, s, id + "-" + i, { position: "fixed", left: tp.x + "px", top: tp.y + "px", zIndex: 2100, pointerEvents: "none", "--dx": (Math.cos(w) * r).toFixed(0) + "px", "--dy": (Math.sin(w) * r + (c.burst.hoch ? 0 : 30)).toFixed(0) + "px", "--rot": zuf(-200, 200).toFixed(0) + "deg", animation: "ff-burst " + zuf(0.9, 1.5).toFixed(2) + "s cubic-bezier(0.16, 1, 0.3, 1) both" });
+          });
+          this.zaehl++;
+          this.setState((s) => ({ burst: s.burst.concat([{ id: id, teile: neu }]), gruss: this.zaehl % 5 === 0 ? id : s.gruss }));
+          window.setTimeout(() => { if (!this.aus) this.setState((s) => ({ burst: s.burst.filter((x) => x.id !== id) })); }, 1700);
+          if (this.zaehl % 5 === 0) { window.clearTimeout(this.tg); this.tg = window.setTimeout(() => { if (!this.aus) this.setState({ gruss: 0 }); }, 2800); }
+        }
+        render() {
+          const kinder = [h("div", { key: "ebene", style: { position: "fixed", inset: 0, overflow: "hidden", pointerEvents: "none", zIndex: 0 } }, this.teile)];
+          this.state.burst.forEach((b) => kinder.push(h(React.Fragment, { key: b.id }, b.teile)));
+          if (this.state.gruss) kinder.push(h("div", { key: "g" + this.state.gruss, "data-bewegt": "", role: "status", style: { position: "fixed", left: "50%", top: "22vh", zIndex: 2101, pointerEvents: "none", padding: "14px 26px", borderRadius: "999px",
+            background: "var(--g-card, #fff)", color: "var(--g-accent, #0088b0)", fontFamily: "var(--g-head, serif)", fontWeight: 700, fontSize: "clamp(20px, 5vw, 30px)", whiteSpace: "nowrap", boxShadow: "0 18px 40px -16px rgba(0,0,0,0.45)", animation: "ff-gruss 2.6s cubic-bezier(0.16, 1, 0.3, 1) both" } }, this.props.gruss));
+          return h(React.Fragment, null, kinder);
+        }
+      }
+      window.__ChronikFeierFx = FeierFx;
+    }
+    return React.createElement(window.__ChronikFeierFx, { key: "ffx-" + modus, skin: skin, modus: modus, tipp: tipp || null, gruss: tx("fg_" + skin) });
+  }
   /* Zeichen im Kopf der Gästeseite und Titelverlauf je Feier-Design. */
   feierZeichen(id) {
     return ({ xmas: "❄", easter: "✿", picado: "✹", chanukka: "✡", ramadan: "☾", diwali: "✺", lunar: "福", halloween: "☾", rauten: "◆", babyparty: "☁", konfetti: "★", goldkonfetti: "✦", blumen: "❀", kommunion: "✝", taufe: "✧", abschluss: "★", gold: "∞" })[id] || "✦";
@@ -8572,7 +8697,7 @@ class Component extends DCLogic {
       schatten: t.shadow && t.shadow !== "none" ? (SHADOWS[t.shadow] || SHADOWS.md)(t) : "", hart: t.shadow === "hard",
       regenbogen: rb, akzentBand: "linear-gradient(90deg, " + t.accent + ", " + t.accent2 + ")",
       orn: (function (o) { return o && o.display !== "none" ? Object.assign({}, o, { position: "fixed" }) : null; })(this.feierOrn(t, t.skin)),
-      zeichen: this.feierZeichen(t.skin), titelBg: this.feierTitel(t.skin) };
+      zeichen: this.feierZeichen(t.skin), titelBg: this.feierTitel(t.skin), skin: t.skin || "" };
   }
   gastLookFest(ex, d) {
     if (!ex || !ex.offen) return ex;
@@ -16618,6 +16743,7 @@ class Component extends DCLogic {
       },
       skinFx: FEIER_SKINS.indexOf(t.skin) >= 0 ? Object.assign({}, this.skinFxFuer(t, t.skin), { zIndex: 0 }) : this.skinFxFuer(t),
       ornFx: this.feierOrn(t, t.skin),
+      feierFx: this.feierFxEl(t.skin, "chronik", null),
       shellStyle: this.shellFuer(t, t.skin),
       crt: t.skin === "crt",
       printRef: (el) => { this.print = el; },

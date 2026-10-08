@@ -1562,6 +1562,24 @@ window.CHRONIK_SPRACHEN.en = {
     f_abschluss: "Graduation",
     f_abschluss_k: "Made it",
     f_goldhochzeit: "Golden anniversary",
-    f_goldhochzeit_k: "Jubilee"
+    f_goldhochzeit_k: "Jubilee",
+    fg_xmas: "Merry Christmas!",
+    fg_easter: "Happy Easter – egg found!",
+    fg_picado: "¡Viva la fiesta!",
+    fg_chanukka: "Happy Hanukkah!",
+    fg_ramadan: "Ramadan Kareem · Eid Mubarak",
+    fg_diwali: "Happy Diwali!",
+    fg_lunar: "新年快乐 – Happy New Year!",
+    fg_halloween: "Boo!",
+    fg_rauten: "O’zapft is!",
+    fg_babyparty: "Welcome, little one!",
+    fg_konfetti: "Hip hip hooray!",
+    fg_goldkonfetti: "Here’s to the next years!",
+    fg_blumen: "Happy birthday, with love!",
+    fg_kommunion: "God bless!",
+    fg_taufe: "A warm welcome!",
+    fg_abschluss: "You made it – hats off!",
+    fg_gold: "To golden love!",
+    feier_tipp: "Surprise – tap me"
   }
 };
