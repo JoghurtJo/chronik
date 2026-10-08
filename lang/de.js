@@ -1507,6 +1507,12 @@ window.CHRONIK_SPRACHEN.de = {
     kom_einer: "Kommentar",
     kom_mehrere: "Kommentare",
     kom_f_senden: "Der Kommentar ließ sich nicht senden (supabase-update-29.sql ausgeführt?).",
-    gast_weg_f: "Löschen hat nicht geklappt – fehlt die Berechtigung, oder wurde supabase-update-29.sql noch nicht ausgeführt?"
+    gast_weg_f: "Löschen hat nicht geklappt – fehlt die Berechtigung, oder wurde supabase-update-29.sql noch nicht ausgeführt?",
+    ga_g_link: "Gästelink",
+    ga_g_sicht: "Was Gäste sehen",
+    ga_g_look: "Aussehen der Gästeseite",
+    design_und_deko: "Design und Deko",
+    gf_danke: "Danke! Deine Antworten sind angekommen.",
+    gf_keine_wahl: "Bitte kreuze mindestens eine Antwort an."
   }
 };

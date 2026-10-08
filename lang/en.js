@@ -1507,6 +1507,12 @@ window.CHRONIK_SPRACHEN.en = {
     kom_einer: "comment",
     kom_mehrere: "comments",
     kom_f_senden: "Couldn't send the comment (was supabase-update-29.sql run?).",
-    gast_weg_f: "Deleting failed – missing permission, or supabase-update-29.sql not run yet?"
+    gast_weg_f: "Deleting failed – missing permission, or supabase-update-29.sql not run yet?",
+    ga_g_link: "Guest link",
+    ga_g_sicht: "What guests see",
+    ga_g_look: "Guest page look",
+    design_und_deko: "Design and decoration",
+    gf_danke: "Thanks! Your answers have arrived.",
+    gf_keine_wahl: "Please tick at least one answer."
   }
 };

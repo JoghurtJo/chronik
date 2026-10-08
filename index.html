@@ -358,14 +358,27 @@
                     </label>
                   </sc-if>
                 </sc-if>
+                <label style="display: grid; gap: 8px;"><span style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: color-mix(in srgb, var(--g-ink) 62%, transparent);">{{ L.gast_notiz }}</span><textarea value="{{ gv.notiz }}" onChange="{{ gv.onNotiz }}" rows="2" placeholder="{{ L.gast_notiz_ph }}" style="width: 100%; box-sizing: border-box; padding: 13px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px; resize: vertical;"></textarea></label>
+                <button style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 24px; border-radius: 999px; border: 0; background: var(--g-accent); color: var(--g-bg); font: inherit; font-size: 16px; font-weight: 600; cursor: pointer; justify-self: start;" onClick="{{ gv.rsvpSenden }}">{{ L.gast_absenden }}</button>
+              </sc-if>
+            </section>
+          </sc-if>
+
+          <sc-if value="{{ gv.istFragen }}" hint-placeholder-val="{{ false }}">
+            <section style="display: grid; gap: 16px; padding: clamp(18px, 4vw, 28px); border-radius: calc(var(--g-radius) + 6px); background: var(--g-card); box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 12px 32px -18px rgba(0,0,0,0.28);">
+              <h2 style="margin: 0; font-family: var(--g-head); font-weight: var(--g-hw); font-size: clamp(24px, 5vw, 32px); line-height: 1.1; text-transform: var(--g-ht);">{{ L.gf_titel }}</h2>
+              <sc-if value="{{ gv.fragenFertig }}" hint-placeholder-val="{{ false }}">
+                <p style="margin: 0; font-family: var(--g-head); font-size: 22px; line-height: 1.4;">{{ L.gf_danke }}</p>
+                <button style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 22px; border-radius: 999px; border: 1.5px solid var(--g-accent); background: transparent; color: var(--g-accent); font: inherit; font-size: 16px; font-weight: 600; cursor: pointer; justify-self: start;" onClick="{{ gv.fragenNeu }}">{{ L.gast_nochmal }}</button>
+              </sc-if>
+              <sc-if value="{{ gv.fragenOffen }}" hint-placeholder-val="{{ true }}">
                 <sc-for list="{{ gv.fragen }}" as="fq" hint-placeholder-count="0">
                   <div style="display: grid; gap: 10px;">
                     <div style="display: grid; gap: 2px;"><span style="font-family: var(--g-head); font-weight: var(--g-hw); font-size: 20px; line-height: 1.25; overflow-wrap: anywhere;">{{ fq.frage }}</span><span style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: color-mix(in srgb, var(--g-ink) 62%, transparent);">{{ fq.art }}</span></div>
                     <div style="display: grid; gap: 8px;"><sc-for list="{{ fq.opts }}" as="fo" hint-placeholder-count="0"><button onClick="{{ fo.klick }}" aria-pressed="{{ fo.an }}" style="{{ fo.stil }}"><span style="{{ fo.boxStil }}">{{ fo.zeichen }}</span><span style="overflow-wrap: anywhere;">{{ fo.label }}</span></button></sc-for></div>
                   </div>
                 </sc-for>
-                <label style="display: grid; gap: 8px;"><span style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: color-mix(in srgb, var(--g-ink) 62%, transparent);">{{ L.gast_notiz }}</span><textarea value="{{ gv.notiz }}" onChange="{{ gv.onNotiz }}" rows="2" placeholder="{{ L.gast_notiz_ph }}" style="width: 100%; box-sizing: border-box; padding: 13px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--g-ink) 18%, transparent); background: var(--g-bg); color: var(--g-ink); font: inherit; font-size: 16px; resize: vertical;"></textarea></label>
-                <button style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 24px; border-radius: 999px; border: 0; background: var(--g-accent); color: var(--g-bg); font: inherit; font-size: 16px; font-weight: 600; cursor: pointer; justify-self: start;" onClick="{{ gv.rsvpSenden }}">{{ L.gast_absenden }}</button>
+                <button style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 24px; border-radius: 999px; border: 0; background: var(--g-accent); color: var(--g-bg); font: inherit; font-size: 16px; font-weight: 600; cursor: pointer; justify-self: start;" onClick="{{ gv.fragenSenden }}">{{ L.gast_absenden }}</button>
               </sc-if>
             </section>
           </sc-if>
@@ -2648,12 +2661,59 @@
               <div style="font-size: 13px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.ga_hinweis }}</div>
               <div><button onClick="{{ vo.gaUm }}" style="{{ vo.gaStil }}">{{ vo.gaLabel }}</button></div>
               <sc-if value="{{ vo.gaAn }}" hint-placeholder-val="{{ false }}">
-                <div style="display: grid; gap: var(--space-3);">
+                <div style="display: grid; gap: var(--space-5);">
+                  <div style="display: grid; gap: var(--space-2);">
+                    <div style="font-family: var(--font-heading); font-weight: 600; font-size: 17px; line-height: 1.2;">{{ L.ga_g_link }}</div>
+                    <div style="display: grid; gap: var(--space-2); padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-bg);">
+                  <sc-if value="{{ vo.hatGaHinweis }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size: 13px; color: var(--color-accent-2-700);">{{ vo.gaHinweis }}</div>
+                  </sc-if>
+                  <sc-if value="{{ vo.hatGaLink }}" hint-placeholder-val="{{ false }}">
+                    <div style="display: grid; gap: 6px;">
+                      <input class="input" readonly="" value="{{ vo.gaLink }}" style="font-size: 14px;">
+                      <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
+                        <button class="btn btn-primary" style="min-height: 40px;" onClick="{{ vo.gaTeilen }}">{{ vo.gaKopiertText }}</button>
+                        <button class="btn btn-ghost" style="min-height: 40px;" onClick="{{ vo.gaNeuerLink }}">{{ L.ga_neuer_link }}</button>
+                        <button class="btn btn-ghost" style="min-height: 40px;" onClick="{{ vo.gaPruefen }}">{{ L.ga_pruefen }}</button>
+                      </div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ vo.hatGaPruef }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size: 13px; line-height: 1.45; color: var(--color-accent-700);">{{ vo.gaPruef }}</div>
+                  </sc-if>
+                    </div>
+                  </div>
+                  <div style="display: grid; gap: var(--space-2);">
+                    <div style="font-family: var(--font-heading); font-weight: 600; font-size: 17px; line-height: 1.2;">{{ L.ga_g_sicht }}</div>
+                    <div style="display: grid; gap: var(--space-2); padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-bg);">
                   <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                     <sc-for list="{{ vo.gaTeile }}" as="gt" hint-placeholder-count="0">
                       <button onClick="{{ gt.klick }}" style="{{ gt.stil }}">{{ gt.label }}</button>
                     </sc-for>
                   </div>
+                    </div>
+                  <sc-if value="{{ vo.hatFrei }}" hint-placeholder-val="{{ false }}">
+                    <div style="display: grid; gap: 8px; padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-bg);">
+                      <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.ga_frei_titel }}</div>
+                      <div style="font-size: 12.5px; color: var(--color-neutral-700);">{{ L.ga_frei_hinweis }}</div>
+                      <sc-for list="{{ vo.freiZeilen }}" as="fz" hint-placeholder-count="0">
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                          <span style="flex: 0 0 110px; font-size: 14px; font-weight: 600;">{{ fz.label }}</span>
+                          <select class="input" value="{{ fz.art }}" onChange="{{ fz.onArt }}" style="flex: 1 1 180px; width: auto; min-width: 0; font-size: 15px;">
+                            <option value="">{{ L.ga_frei_sofort }}</option>
+                            <option value="cd">{{ L.ga_frei_nach_cd }}</option>
+                            <option value="zeit">{{ L.ga_frei_ab_zeit }}</option>
+                          </select>
+                          <sc-if value="{{ fz.istZeit }}" hint-placeholder-val="{{ false }}">
+                            <input class="input" type="datetime-local" value="{{ fz.zeit }}" onChange="{{ fz.onZeit }}" style="flex: 1 1 200px; width: auto; min-width: 0; font-size: 15px;">
+                          </sc-if>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                  </div>
+                  <div style="display: grid; gap: var(--space-2);">
+                    <div style="font-family: var(--font-heading); font-weight: 600; font-size: 17px; line-height: 1.2;">{{ L.ga_g_look }}</div>
                   <div style="display: grid; gap: var(--space-2); padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-bg);">
                     <button onClick="{{ vo.gaDesignUm }}" aria-expanded="{{ vo.gaDesignAufText }}" style="display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 4px 0; border: 0; background: transparent; color: var(--color-text); font: inherit; text-align: left; cursor: pointer;">
                       <span style="{{ vo.gaDesignSign }}">▸</span>
@@ -2686,46 +2746,18 @@
                     </sc-if>
                     <div class="field" style="margin: 6px 0 0;"><label>{{ L.ga_gruss }}</label><textarea class="input" value="{{ vo.gaGruss }}" onChange="{{ vo.onGaGruss }}" rows="3" placeholder="{{ L.ga_gruss_ph }}" style="font-size: 16px;"></textarea></div>
                   </div>
-                  <sc-if value="{{ vo.hatFrei }}" hint-placeholder-val="{{ false }}">
-                    <div style="display: grid; gap: 8px; padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-bg);">
-                      <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.ga_frei_titel }}</div>
-                      <div style="font-size: 12.5px; color: var(--color-neutral-700);">{{ L.ga_frei_hinweis }}</div>
-                      <sc-for list="{{ vo.freiZeilen }}" as="fz" hint-placeholder-count="0">
-                        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-                          <span style="flex: 0 0 110px; font-size: 14px; font-weight: 600;">{{ fz.label }}</span>
-                          <select class="input" value="{{ fz.art }}" onChange="{{ fz.onArt }}" style="flex: 1 1 180px; width: auto; min-width: 0; font-size: 15px;">
-                            <option value="">{{ L.ga_frei_sofort }}</option>
-                            <option value="cd">{{ L.ga_frei_nach_cd }}</option>
-                            <option value="zeit">{{ L.ga_frei_ab_zeit }}</option>
-                          </select>
-                          <sc-if value="{{ fz.istZeit }}" hint-placeholder-val="{{ false }}">
-                            <input class="input" type="datetime-local" value="{{ fz.zeit }}" onChange="{{ fz.onZeit }}" style="flex: 1 1 200px; width: auto; min-width: 0; font-size: 15px;">
-                          </sc-if>
-                        </div>
-                      </sc-for>
-                    </div>
-                  </sc-if>
-                  <sc-if value="{{ vo.hatGaHinweis }}" hint-placeholder-val="{{ false }}">
-                    <div style="font-size: 13px; color: var(--color-accent-2-700);">{{ vo.gaHinweis }}</div>
-                  </sc-if>
-                  <sc-if value="{{ vo.hatGaLink }}" hint-placeholder-val="{{ false }}">
-                    <div style="display: grid; gap: 6px;">
-                      <input class="input" readonly="" value="{{ vo.gaLink }}" style="font-size: 14px;">
-                      <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
-                        <button class="btn btn-primary" style="min-height: 40px;" onClick="{{ vo.gaTeilen }}">{{ vo.gaKopiertText }}</button>
-                        <button class="btn btn-ghost" style="min-height: 40px;" onClick="{{ vo.gaNeuerLink }}">{{ L.ga_neuer_link }}</button>
-                        <button class="btn btn-ghost" style="min-height: 40px;" onClick="{{ vo.gaPruefen }}">{{ L.ga_pruefen }}</button>
-                      </div>
-                    </div>
-                  </sc-if>
-                  <sc-if value="{{ vo.hatGaPruef }}" hint-placeholder-val="{{ false }}">
-                    <div style="font-size: 13px; line-height: 1.45; color: var(--color-accent-700);">{{ vo.gaPruef }}</div>
-                  </sc-if>
+                  </div>
                   <sc-if value="{{ vo.gaRsvp }}" hint-placeholder-val="{{ false }}">
+                  <div style="display: grid; gap: var(--space-2);">
+                    <div style="font-family: var(--font-heading); font-weight: 600; font-size: 17px; line-height: 1.2;">{{ L.gast_rsvp }}</div>
+                    <div style="display: grid; gap: var(--space-2); padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-bg);">
                     <div class="field" style="margin: 0;"><label>{{ L.ga_essen }}</label><input class="input" value="{{ vo.gaEssen }}" onChange="{{ vo.onGaEssen }}" placeholder="{{ L.ga_essen_ph }}" style="font-size: 16px;"></div>
+                    </div>
+                  </div>
                   </sc-if>
+                  <div style="display: grid; gap: var(--space-2);">
+                    <div style="font-family: var(--font-heading); font-weight: 600; font-size: 17px; line-height: 1.2;">{{ L.gf_titel }}</div>
                   <div style="display: grid; gap: var(--space-2); padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-bg);">
-                    <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.gf_titel }}</div>
                     <div style="font-size: 12.5px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.gf_hinweis }}</div>
                     <sc-for list="{{ vo.gFragen }}" as="gq" hint-placeholder-count="0">
                       <div style="display: grid; gap: 6px; padding-top: var(--space-2);">
@@ -2736,9 +2768,11 @@
                     </sc-for>
                     <button class="btn btn-secondary" style="justify-self: start; min-height: 40px;" onClick="{{ vo.gFrageNeu }}">＋ {{ L.gf_neu }}</button>
                   </div>
+                  </div>
                   <sc-if value="{{ vo.gaSitz }}" hint-placeholder-val="{{ false }}">
-                    <div style="display: grid; gap: var(--space-2);">
-                      <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.gast_sitz }}</div>
+                  <div style="display: grid; gap: var(--space-2);">
+                    <div style="font-family: var(--font-heading); font-weight: 600; font-size: 17px; line-height: 1.2;">{{ L.gast_sitz }}</div>
+                    <div style="display: grid; gap: var(--space-2); padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-bg);">
                       <div style="font-size: 13px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.sp_hinweis }}</div>
                       <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                         <sc-for list="{{ vo.spFormen }}" as="sf" hint-placeholder-count="0">
@@ -2931,6 +2965,7 @@
                         </div>
                       </sc-if>
                     </div>
+                  </div>
                   </sc-if>
                 </div>
               </sc-if>
@@ -2941,7 +2976,7 @@
         <div style="margin: var(--space-6) 0 2px; font-family: var(--font-heading); font-size: 18px; font-weight: 600;">{{ L.ed_g_aussehen }}</div>
         <button data-sec="deko" onClick="{{ form.sec.deko.toggle }}" style="{{ form.sec.head }}">
           <span style="{{ form.sec.deko.sign }}">▸</span>
-          <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.deko }}</span>
+          <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.design_und_deko }}</span>
           <span style="flex: 1; height: 1px; background: var(--color-divider);"></span>
           <span style="font-size: 11px; color: var(--color-neutral-700); white-space: nowrap;">{{ form.sec.deko.badge }}</span>
         </button>
@@ -6701,7 +6736,7 @@ class Component extends DCLogic {
     if (!CC || !CC.gastWeg) return;
     if (!window.confirm(tx("gast_weg_frage"))) return;
     try {
-      await CC.gastWeg(row.id);
+      if (row._alle) { for (const r0 of row._alle) await CC.gastWeg(r0.id); } else await CC.gastWeg(row.id);
       if (row.img && CC.deleteImages) { try { await CC.deleteImages([row.img]); } catch (x) { /* Datei bleibt */ } }
       if (row.kind === "foto") this.setState((s) => ({ gfSel: Object.assign({}, s.gfSel, { [eid]: "" }) }));
     } catch (x) { window.alert(tx("gast_weg_f")); }
@@ -6772,7 +6807,22 @@ class Component extends DCLogic {
     const kom = alle.filter((r) => r.kind === "kom");
     const komZu = (id) => kom.filter((k) => (k.data || {}).zu === id).sort((a, b) => String(a.created || "").localeCompare(String(b.created || "")));
     const selId = (st.gfSel || {})[e.id] || "";
-    const rsvp = lvl >= 3 ? alle.filter((r) => r.kind === "rsvp") : [];
+    /* Zusage und Abfrage-Antworten einer Person zu einer Zeile zusammenführen (neueste Angabe zählt). */
+    const rsvp = (function () {
+      if (lvl < 3) return [];
+      const m = {}, liste = [];
+      alle.filter((r) => r.kind === "rsvp").forEach((r) => {
+        const k = String(r.name || "").trim().toLowerCase();
+        const d0 = r.data || {};
+        let z = m[k];
+        if (!z) { z = m[k] = { id: r.id, name: r.name, text: "", created: r.created, data: { antw: {} }, _alle: [] }; liste.push(z); }
+        z._alle.push(r);
+        if (d0.kommt && !z.data.kommt) Object.assign(z.data, { kommt: d0.kommt, plus: d0.plus, plusListe: d0.plusListe, plusNamen: d0.plusNamen, essen: d0.essen });
+        if (!z.text && r.text) z.text = r.text;
+        Object.keys(d0.antw || {}).forEach((q) => { if (!(q in z.data.antw)) z.data.antw[q] = d0.antw[q]; });
+      });
+      return liste;
+    })();
     const rf = Object.assign({ antwort: "", essen: "", suche: "", plus: "", q: {}, sort: "" }, (st.rsvpF || {})[e.id] || {});
     const setRf = (p) => this.setState((s) => ({ rsvpF: Object.assign({}, s.rsvpF, { [e.id]: Object.assign({}, rf, p) }) }));
     const essenVon = (r) => { const d0 = r.data || {}; return [d0.essen].concat((d0.plusListe || []).map((p) => p && p.essen)).filter(Boolean); };
@@ -6781,7 +6831,7 @@ class Component extends DCLogic {
     const antwVon = (r, i) => { const a = (((r.data || {}).antw || {})[i]); return Array.isArray(a) ? a : []; };
     const passtR = (r) => {
       const d0 = r.data || {};
-      if (rf.antwort === "ja" && d0.kommt === "nein") return false;
+      if (rf.antwort === "ja" && d0.kommt !== "ja") return false;
       if (rf.antwort === "nein" && d0.kommt !== "nein") return false;
       if (rf.essen && essenVon(r).indexOf(rf.essen) < 0) return false;
       if (rf.plus === "mit" && !(Number(d0.plus) > 0)) return false;
@@ -6800,7 +6850,7 @@ class Component extends DCLogic {
       const rk = (r) => { const l = antwVon(r, f.i).map((x) => f.opts.indexOf(x)).filter((n) => n >= 0); return l.length ? Math.min.apply(null, l) : 999; };
       return rk(a) - rk(b) || String(a.name || "").localeCompare(String(b.name || ""));
     });
-    const pers = (l) => l.filter((r) => (r.data || {}).kommt !== "nein").reduce((s, r) => s + 1 + (Number((r.data || {}).plus) || 0), 0);
+    const pers = (l) => l.filter((r) => (r.data || {}).kommt === "ja").reduce((s, r) => s + 1 + (Number((r.data || {}).plus) || 0), 0);
     const rChip = (an) => ({ font: "inherit", fontSize: "12.5px", padding: "4px 11px", minHeight: "34px", borderRadius: "99px", cursor: "pointer", whiteSpace: "nowrap",
       maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis",
       border: "1px solid " + (an ? "var(--t-accent, #0088b0)" : "var(--t-border, rgba(32,30,29,0.2))"), background: an ? "var(--t-accent, #0088b0)" : "transparent", color: an ? "var(--t-card, #eae9e9)" : "inherit" });
@@ -6832,7 +6882,7 @@ class Component extends DCLogic {
       }),
       rLeer: rsvp.length > 0 && !gefiltert.length
     };
-    const ja = rsvp.filter((r) => (r.data || {}).kommt !== "nein");
+    const ja = rsvp.filter((r) => (r.data || {}).kommt === "ja");
     const personen = ja.reduce((s, r) => s + 1 + (Number((r.data || {}).plus) || 0), 0);
     const essen = {};
     ja.forEach((r) => { const k = (r.data || {}).essen; if (k) essen[k] = (essen[k] || 0) + 1; });
@@ -6880,7 +6930,7 @@ class Component extends DCLogic {
       }),
       hatGRsvp: rsvp.length > 0,
       ...rsvpVals,
-      gRsvpSumme: plural(ja.length, tx("gast_zusage"), tx("gast_zusagen")) + " · " + plural(rsvp.length - ja.length, tx("gast_absage"), tx("gast_absagen")) + " · " + plural(personen, tx("person"), tx("personen")) +
+      gRsvpSumme: plural(ja.length, tx("gast_zusage"), tx("gast_zusagen")) + " · " + plural(rsvp.filter((r) => (r.data || {}).kommt === "nein").length, tx("gast_absage"), tx("gast_absagen")) + " · " + plural(personen, tx("person"), tx("personen")) +
         (Object.keys(essen).length ? " · " + Object.keys(essen).map((k) => essen[k] + "× " + k).join(", ") : ""),
       gTische: (o.sitz ? (o.tische || []) : []).map((t, n) => ({ key: t.i || "t" + n, name: t.name || tx("gast_tisch") + " " + (n + 1), namen: String(t.gaeste || "").split(/\n|,/).map((s) => s.trim()).filter(Boolean).join(", ") })),
       hatGTische: !!o.sitz && (o.tische || []).length > 0,
@@ -7139,10 +7189,10 @@ class Component extends DCLogic {
   gastStart = () => {
     const m = String(location.hash || "").match(/gast=([0-9a-f-]{36})\.([A-Za-z0-9_-]{16,64})/i);
     if (!m) { if (this.state.gast) this.setState({ gast: null }); return; }
-    let name = "", fertig = false;
-    try { name = localStorage.getItem("chronik-gast-name") || ""; fertig = !!localStorage.getItem("chronik-gast-rsvp-" + m[1]); } catch (x) { /* privat */ }
+    let name = "", fertig = false, fFertig = false;
+    try { name = localStorage.getItem("chronik-gast-name") || ""; fertig = !!localStorage.getItem("chronik-gast-rsvp-" + m[1]); fFertig = !!localStorage.getItem("chronik-gast-fragen-" + m[1]); } catch (x) { /* privat */ }
     this.setState({ gast: { ev: m[1], tk: m[2], laden: true, err: "", d: null, tab: "", name: name, text: "", busy: "", info: "",
-      rsvp: { kommt: "ja", plus: "0", plusNamen: "", essen: "", notiz: "", antw: {} }, rsvpFertig: fertig, suche: null } });
+      rsvp: { kommt: "ja", plus: "0", plusNamen: "", essen: "", notiz: "", antw: {} }, rsvpFertig: fertig, fragenFertig: fFertig, suche: null } });
     this._gastSucheGesetzt = false;
     this.gastLaden();
   };
@@ -7190,14 +7240,15 @@ class Component extends DCLogic {
   gastTabs(d) {
     const c = (d && d.cfg) || {};
     const out = [];
-    if (c.rsvp || this.gfNorm(c.fragen).length) out.push({ k: "rsvp", l: c.rsvp ? tx("gast_rsvp") : tx("gf_titel"), g: "✓", d: c.rsvp ? tx("gast_d_rsvp") : tx("gf_d") });
+    if (c.rsvp) out.push({ k: "rsvp", l: tx("gast_rsvp"), g: "✓", d: tx("gast_d_rsvp") });
+    if (this.gfNorm(c.fragen).length) out.push({ k: "fragen", l: tx("gf_titel"), g: "☰", d: tx("gf_d") });
     if (c.foto) out.push({ k: "foto", l: tx("gast_fotowand"), g: "◫", d: tx("gast_d_foto") });
     if (c.buch) out.push({ k: "buch", l: tx("gast_buch"), g: "✎", d: tx("gast_d_buch") });
     if (c.sitz) out.push({ k: "sitz", l: tx("gast_sitz"), g: "◎", d: tx("gast_d_sitz") });
     const L0 = (d && d.lage) || {};
     if ((L0.punkte || []).length || L0.bild || L0.karte) out.push({ k: "lage", l: tx("lp_titel"), g: "⌖", d: tx("gast_d_lage") });
     /* Noch nicht freigegebene Bereiche sehen Gäste gar nicht. */
-    return out.filter((t) => t.k === "rsvp" || !this.gastSperre(d, t.k));
+    return out.filter((t) => t.k === "rsvp" || t.k === "fragen" || !this.gastSperre(d, t.k));
   }
   gastNameFest() {
     const g = this.state.gast || {};
@@ -7258,6 +7309,22 @@ class Component extends DCLogic {
     this.gastSet({ busy: tx("gast_sendet"), info: "" });
     try { await window.ChronikCloud.gastAdd(g.ev, g.tk, "buch", name, text, {}, null); this.gastSet({ busy: "", text: "", info: tx("gast_danke_buch") }); this.gastLaden(); }
     catch (e) { this.gastSet({ busy: "", info: tx("gast_f_senden") }); }
+  }
+  async gastFragenSenden() {
+    const g = this.state.gast;
+    if (!g) return;
+    const name = this.gastName();
+    if (!name) { this.gastSet({ info: tx("gast_name_fehlt") }); return; }
+    const r = g.rsvp || {};
+    const antw = {};
+    this.gfNorm(((g.d || {}).cfg || {}).fragen).forEach((f) => { const l = (((r.antw || {})[f.i]) || []).filter((x) => f.opts.indexOf(x) >= 0).slice(0, 20); if (l.length) antw[f.i] = l; });
+    if (!Object.keys(antw).length) { this.gastSet({ info: tx("gf_keine_wahl") }); return; }
+    this.gastSet({ busy: tx("gast_sendet"), info: "" });
+    try {
+      await window.ChronikCloud.gastAdd(g.ev, g.tk, "rsvp", name, "", { kommt: "", antw: antw, plus: 0, plusListe: [], plusNamen: "", essen: "" }, null);
+      try { localStorage.setItem("chronik-gast-fragen-" + g.ev, "1"); } catch (x) { /* privat */ }
+      this.gastSet({ busy: "", fragenFertig: true, info: "" });
+    } catch (e) { this.gastSet({ busy: "", info: tx("gast_f_senden") }); }
   }
   async gastRsvpSenden() {
     const g = this.state.gast;
@@ -7366,7 +7433,7 @@ class Component extends DCLogic {
       nameAendern: () => this.gastSet({ nameEdit: true, nameEntwurf: g.name || "" }),
       nameFertig: () => this.gastNameFest(),
       istFoto: g.tab === "foto" && !this.gastSperre(d, "foto"), istBuch: g.tab === "buch" && !this.gastSperre(d, "buch"), istSitz: g.tab === "sitz" && !this.gastSperre(d, "sitz"), istRsvp: g.tab === "rsvp", istLage: g.tab === "lage" && !this.gastSperre(d, "lage"),
-      istGesperrt: !!g.tab && g.tab !== "rsvp" && !!this.gastSperre(d, g.tab),
+      istGesperrt: !!g.tab && g.tab !== "rsvp" && g.tab !== "fragen" && !!this.gastSperre(d, g.tab),
       sperrText: g.tab ? this.gastSperre(d, g.tab) : "",
       sperrTitel: (tabs.filter((t) => t.k === g.tab)[0] || {}).l || "",
       busy: g.busy || "", hatBusy: !!g.busy, info: g.info || "", hatInfo: !!g.info && !g.busy,
@@ -7393,7 +7460,9 @@ class Component extends DCLogic {
       jaStil: { minHeight: "64px", padding: "10px 14px", borderRadius: "calc(var(--g-radius) + 6px)", cursor: "pointer", font: "inherit", fontSize: "16px", fontWeight: 600, border: ja ? "2px solid var(--g-accent)" : "1px solid color-mix(in srgb, var(--g-ink) 18%, transparent)", background: ja ? "var(--g-accent)" : "var(--g-bg)", color: ja ? "var(--g-bg)" : "var(--g-ink)" },
       neinStil: { minHeight: "64px", padding: "10px 14px", borderRadius: "calc(var(--g-radius) + 6px)", cursor: "pointer", font: "inherit", fontSize: "16px", fontWeight: 600, border: !ja ? "2px solid var(--g-ink)" : "1px solid color-mix(in srgb, var(--g-ink) 18%, transparent)", background: !ja ? "var(--g-ink)" : "var(--g-bg)", color: !ja ? "var(--g-bg)" : "var(--g-ink)" }, setJa: () => this.gastRsvpSet({ kommt: "ja" }), setNein: () => this.gastRsvpSet({ kommt: "nein" }),
       kommtJa: ja && !!c.rsvp,
-      mitRsvp: !!c.rsvp, rsvpTitel: c.rsvp ? tx("gast_rsvp") : tx("gf_titel"),
+      mitRsvp: !!c.rsvp, rsvpTitel: tx("gast_rsvp"),
+      istFragen: g.tab === "fragen", fragenFertig: !!g.fragenFertig, fragenOffen: !g.fragenFertig,
+      fragenNeu: () => this.gastSet({ fragenFertig: false }), fragenSenden: () => this.gastFragenSenden(),
       fragen: this.gfNorm(c.fragen).map((f) => ({ key: f.i, frage: f.frage, art: f.mehr ? tx("gf_mehr_moeglich") : tx("gf_eine_waehlen"),
         opts: f.opts.map((x, j) => {
           const sel = ((r.antw || {})[f.i]) || [];
@@ -9467,7 +9536,7 @@ class Component extends DCLogic {
       { k: "sitz", sec: "vorort", klapp: "ga", titel: tx("gast_sitz"), text: tx("h_sitz") },
       { k: "frei", sec: "vorort", klapp: "ga", titel: tx("ga_frei_titel"), text: tx("h_frei") },
       { k: "rueck", sec: "vorort", klapp: "ga", titel: tx("h_rueck_titel"), text: tx("h_rueck") },
-      { k: "deko", sec: "deko", titel: tx("deko_und_design"),
+      { k: "deko", sec: "deko", titel: tx("design_und_deko"),
         text: tx("sticker_ziehst_du_auf_die_vorschau") },
       { k: "sicht", sec: "sicht", titel: tx("sichtbarkeit"),
         text: tx("drei_stufen_privat_ausgewaehlte_kontakte_o") },
