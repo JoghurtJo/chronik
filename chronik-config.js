@@ -1,4 +1,14 @@
 window.CHRONIK_CONFIG = {
+  
+  /* --- 0. Name und Bilder der Anwendung -------------------*/
+  appName: "Chronik",
+  appNamePlural: "Chroniken",
+  bilder: {
+    wortmarke: "",
+    icon192: "icon-192.png",
+    icon180: "icon-180.png",
+    icon512: "icon-512.png"
+  },
 
   /* --- 1. Supabase: Konten, Ereignisse, Kommentare -------- */
   url: "https://mhdjmuyfccyfeoffplbk.supabase.co",
