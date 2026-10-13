@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="chronik-config.js?v=b114"></script>
 <script src="lang/de.js?v=b114"></script>
 <script src="lang/en.js?v=b114"></script>
 <script src="lang/sprache.js?v=b114"></script>
@@ -19,8 +20,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Chronik">
 <link rel="stylesheet" href="broadsheet.css">
-<script src="chronik-config.js?v=b114"></script>
 <script src="supabase-bridge.js?v=b114"></script>
+<script src="xlsx-export.js?v=b114"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&family=Fredoka:wght@500;600;700&family=Amiri:wght@400;700&display=swap">
@@ -395,7 +396,7 @@
                 <sc-for list="{{ gv.fragen }}" as="fq" hint-placeholder-count="0">
                   <div style="display: grid; gap: 10px;">
                     <div style="display: grid; gap: 2px;"><span style="font-family: var(--g-head); font-weight: var(--g-hw); font-size: 20px; line-height: 1.25; overflow-wrap: anywhere;">{{ fq.frage }}</span><span style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: color-mix(in srgb, var(--g-ink) 62%, transparent);">{{ fq.art }}</span></div>
-                    <div style="display: grid; gap: 8px;"><sc-for list="{{ fq.opts }}" as="fo" hint-placeholder-count="0"><button onClick="{{ fo.klick }}" aria-pressed="{{ fo.an }}" style="{{ fo.stil }}"><span style="{{ fo.boxStil }}">{{ fo.zeichen }}</span><span style="overflow-wrap: anywhere;">{{ fo.label }}</span></button></sc-for></div>
+                    <div style="display: grid; gap: 8px;"><sc-for list="{{ fq.opts }}" as="fo" hint-placeholder-count="0"><button onClick="{{ fo.klick }}" aria-pressed="{{ fo.an }}" aria-disabled="{{ fo.voll }}" style="{{ fo.stil }}"><span style="{{ fo.boxStil }}">{{ fo.zeichen }}</span><span style="flex: 1; min-width: 0; overflow-wrap: anywhere;">{{ fo.label }}</span><span style="font-size: 12.5px; opacity: 0.75; white-space: nowrap;">{{ fo.rest }}</span></button></sc-for></div>
                   </div>
                 </sc-for>
                 <button style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 24px; border-radius: 999px; border: 0; background: var(--g-accent); color: var(--g-bg); font: inherit; font-size: 16px; font-weight: 600; cursor: pointer; justify-self: start;" onClick="{{ gv.fragenSenden }}">{{ L.gast_absenden }}</button>
@@ -464,7 +465,7 @@
     <sc-if value="{{ lay.loginKlein }}" hint-placeholder-val="{{ false }}">
     <div data-bewegt="" style="order: 0; min-width: 0; position: relative; z-index: 1;">
       <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.was_ihr_erlebt_habt_in_einer }}</div>
-      <h1 aria-label="{{ L.chronik }}" style="{{ lay.loginTitle }}"><svg viewBox="96 80 310 352" aria-hidden="true" style="{{ lay.loginC }}"><defs><linearGradient id="wmC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c4ad8"></stop><stop offset="0.42" stop-color="#3d63d9"></stop><stop offset="0.62" stop-color="#1f84cf"></stop><stop offset="0.82" stop-color="#10a0a8"></stop><stop offset="1" stop-color="#13a77c"></stop></linearGradient><linearGradient id="wmS" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity="0.3"></stop><stop offset="0.5" stop-color="#ffffff" stop-opacity="0"></stop><stop offset="1" stop-color="#0a0a28" stop-opacity="0.22"></stop></linearGradient><radialGradient id="wmP" cx="0.35" cy="0.3" r="0.75"><stop offset="0" stop-color="#ffffff"></stop><stop offset="0.7" stop-color="#f1f1f8"></stop><stop offset="1" stop-color="#d4d4e2"></stop></radialGradient><radialGradient id="wmK" cx="0.35" cy="0.3" r="0.8"><stop offset="0" stop-color="#a77bf0"></stop><stop offset="1" stop-color="#5d38c4"></stop></radialGradient></defs><path d="M 368.4 145.8 A 147 147 0 1 0 368.4 364.2" fill="none" stroke="url(#wmC)" stroke-width="46" stroke-linecap="round"></path><path d="M 368.4 145.8 A 147 147 0 1 0 368.4 364.2" fill="none" stroke="url(#wmS)" stroke-width="46" stroke-linecap="round"></path><path d="M 148.8 325 A 140 140 0 0 1 240.9 118.1" fill="none" stroke="#ffffff" stroke-opacity="0.55" stroke-width="7" stroke-linecap="round"></path><circle cx="160.8" cy="156.6" r="10.5" fill="url(#wmP)"></circle><circle cx="152.6" cy="343.5" r="10.5" fill="url(#wmP)"></circle><circle cx="368.4" cy="145.8" r="33" fill="url(#wmP)"></circle><circle cx="368.4" cy="145.8" r="27" fill="none" stroke="#7446d6" stroke-width="8"></circle><circle cx="368.4" cy="145.8" r="14" fill="url(#wmK)"></circle></svg><span style="{{ lay.loginWort }}">{{ wortRest }}</span></h1>
+      <h1 aria-label="{{ L.chronik }}" style="{{ lay.loginTitle }}"><sc-if value="{{ wortMitC }}" hint-placeholder-val="{{ true }}"><svg viewBox="96 80 310 352" aria-hidden="true" style="{{ lay.loginC }}"><defs><linearGradient id="wmC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c4ad8"></stop><stop offset="0.42" stop-color="#3d63d9"></stop><stop offset="0.62" stop-color="#1f84cf"></stop><stop offset="0.82" stop-color="#10a0a8"></stop><stop offset="1" stop-color="#13a77c"></stop></linearGradient><linearGradient id="wmS" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity="0.3"></stop><stop offset="0.5" stop-color="#ffffff" stop-opacity="0"></stop><stop offset="1" stop-color="#0a0a28" stop-opacity="0.22"></stop></linearGradient><radialGradient id="wmP" cx="0.35" cy="0.3" r="0.75"><stop offset="0" stop-color="#ffffff"></stop><stop offset="0.7" stop-color="#f1f1f8"></stop><stop offset="1" stop-color="#d4d4e2"></stop></radialGradient><radialGradient id="wmK" cx="0.35" cy="0.3" r="0.8"><stop offset="0" stop-color="#a77bf0"></stop><stop offset="1" stop-color="#5d38c4"></stop></radialGradient></defs><path d="M 368.4 145.8 A 147 147 0 1 0 368.4 364.2" fill="none" stroke="url(#wmC)" stroke-width="46" stroke-linecap="round"></path><path d="M 368.4 145.8 A 147 147 0 1 0 368.4 364.2" fill="none" stroke="url(#wmS)" stroke-width="46" stroke-linecap="round"></path><path d="M 148.8 325 A 140 140 0 0 1 240.9 118.1" fill="none" stroke="#ffffff" stroke-opacity="0.55" stroke-width="7" stroke-linecap="round"></path><circle cx="160.8" cy="156.6" r="10.5" fill="url(#wmP)"></circle><circle cx="152.6" cy="343.5" r="10.5" fill="url(#wmP)"></circle><circle cx="368.4" cy="145.8" r="33" fill="url(#wmP)"></circle><circle cx="368.4" cy="145.8" r="27" fill="none" stroke="#7446d6" stroke-width="8"></circle><circle cx="368.4" cy="145.8" r="14" fill="url(#wmK)"></circle></svg><span style="{{ lay.loginWort }}">{{ wortRest }}</span></sc-if><sc-if value="{{ wortOhneC }}" hint-placeholder-val="{{ false }}"><span style="{{ lay.loginWort }}">{{ wortGanz }}</span></sc-if><sc-if value="{{ wortBild }}" hint-placeholder-val="{{ false }}"><img src="{{ wortBild }}" alt="{{ L.chronik }}" style="display: block; height: 1em; width: auto; max-width: 100%;"></sc-if></h1>
       <div style="height: 4px; border-radius: 4px; background: linear-gradient(90deg, #7c4ad8, #3d63d9 40%, #1f84cf 65%, #13a77c); margin-top: var(--space-5);"></div>
       <div style="display: flex; justify-content: space-between; gap: var(--space-4); padding: 7px 0; font-size: 11.5px; letter-spacing: 0.13em; text-transform: uppercase;">
         <span>{{ L.ereignisse_bilder_menschen }}</span>
@@ -476,7 +477,7 @@
     <div data-bewegt="" style="{{ lay.loginPitch }}">
       <sc-if value="{{ lay.loginGross }}" hint-placeholder-val="{{ true }}">
       <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-700);">{{ L.was_ihr_erlebt_habt_in_einer }}</div>
-      <h1 aria-label="{{ L.chronik }}" style="{{ lay.loginTitle }}"><svg viewBox="96 80 310 352" aria-hidden="true" style="{{ lay.loginC }}"><defs><linearGradient id="wmC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c4ad8"></stop><stop offset="0.42" stop-color="#3d63d9"></stop><stop offset="0.62" stop-color="#1f84cf"></stop><stop offset="0.82" stop-color="#10a0a8"></stop><stop offset="1" stop-color="#13a77c"></stop></linearGradient><linearGradient id="wmS" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity="0.3"></stop><stop offset="0.5" stop-color="#ffffff" stop-opacity="0"></stop><stop offset="1" stop-color="#0a0a28" stop-opacity="0.22"></stop></linearGradient><radialGradient id="wmP" cx="0.35" cy="0.3" r="0.75"><stop offset="0" stop-color="#ffffff"></stop><stop offset="0.7" stop-color="#f1f1f8"></stop><stop offset="1" stop-color="#d4d4e2"></stop></radialGradient><radialGradient id="wmK" cx="0.35" cy="0.3" r="0.8"><stop offset="0" stop-color="#a77bf0"></stop><stop offset="1" stop-color="#5d38c4"></stop></radialGradient></defs><path d="M 368.4 145.8 A 147 147 0 1 0 368.4 364.2" fill="none" stroke="url(#wmC)" stroke-width="46" stroke-linecap="round"></path><path d="M 368.4 145.8 A 147 147 0 1 0 368.4 364.2" fill="none" stroke="url(#wmS)" stroke-width="46" stroke-linecap="round"></path><path d="M 148.8 325 A 140 140 0 0 1 240.9 118.1" fill="none" stroke="#ffffff" stroke-opacity="0.55" stroke-width="7" stroke-linecap="round"></path><circle cx="160.8" cy="156.6" r="10.5" fill="url(#wmP)"></circle><circle cx="152.6" cy="343.5" r="10.5" fill="url(#wmP)"></circle><circle cx="368.4" cy="145.8" r="33" fill="url(#wmP)"></circle><circle cx="368.4" cy="145.8" r="27" fill="none" stroke="#7446d6" stroke-width="8"></circle><circle cx="368.4" cy="145.8" r="14" fill="url(#wmK)"></circle></svg><span style="{{ lay.loginWort }}">{{ wortRest }}</span></h1>
+      <h1 aria-label="{{ L.chronik }}" style="{{ lay.loginTitle }}"><sc-if value="{{ wortMitC }}" hint-placeholder-val="{{ true }}"><svg viewBox="96 80 310 352" aria-hidden="true" style="{{ lay.loginC }}"><defs><linearGradient id="wmC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c4ad8"></stop><stop offset="0.42" stop-color="#3d63d9"></stop><stop offset="0.62" stop-color="#1f84cf"></stop><stop offset="0.82" stop-color="#10a0a8"></stop><stop offset="1" stop-color="#13a77c"></stop></linearGradient><linearGradient id="wmS" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity="0.3"></stop><stop offset="0.5" stop-color="#ffffff" stop-opacity="0"></stop><stop offset="1" stop-color="#0a0a28" stop-opacity="0.22"></stop></linearGradient><radialGradient id="wmP" cx="0.35" cy="0.3" r="0.75"><stop offset="0" stop-color="#ffffff"></stop><stop offset="0.7" stop-color="#f1f1f8"></stop><stop offset="1" stop-color="#d4d4e2"></stop></radialGradient><radialGradient id="wmK" cx="0.35" cy="0.3" r="0.8"><stop offset="0" stop-color="#a77bf0"></stop><stop offset="1" stop-color="#5d38c4"></stop></radialGradient></defs><path d="M 368.4 145.8 A 147 147 0 1 0 368.4 364.2" fill="none" stroke="url(#wmC)" stroke-width="46" stroke-linecap="round"></path><path d="M 368.4 145.8 A 147 147 0 1 0 368.4 364.2" fill="none" stroke="url(#wmS)" stroke-width="46" stroke-linecap="round"></path><path d="M 148.8 325 A 140 140 0 0 1 240.9 118.1" fill="none" stroke="#ffffff" stroke-opacity="0.55" stroke-width="7" stroke-linecap="round"></path><circle cx="160.8" cy="156.6" r="10.5" fill="url(#wmP)"></circle><circle cx="152.6" cy="343.5" r="10.5" fill="url(#wmP)"></circle><circle cx="368.4" cy="145.8" r="33" fill="url(#wmP)"></circle><circle cx="368.4" cy="145.8" r="27" fill="none" stroke="#7446d6" stroke-width="8"></circle><circle cx="368.4" cy="145.8" r="14" fill="url(#wmK)"></circle></svg><span style="{{ lay.loginWort }}">{{ wortRest }}</span></sc-if><sc-if value="{{ wortOhneC }}" hint-placeholder-val="{{ false }}"><span style="{{ lay.loginWort }}">{{ wortGanz }}</span></sc-if><sc-if value="{{ wortBild }}" hint-placeholder-val="{{ false }}"><img src="{{ wortBild }}" alt="{{ L.chronik }}" style="display: block; height: 1em; width: auto; max-width: 100%;"></sc-if></h1>
       <div style="height: 4px; border-radius: 4px; background: linear-gradient(90deg, #7c4ad8, #3d63d9 40%, #1f84cf 65%, #13a77c); margin-top: var(--space-5);"></div>
       <div style="display: flex; justify-content: space-between; gap: var(--space-4); padding: 7px 0; font-size: 11.5px; letter-spacing: 0.13em; text-transform: uppercase;">
         <span>{{ L.ereignisse_bilder_menschen }}</span>
@@ -510,9 +511,9 @@
       </div>
 
       <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: var(--space-6); font-size: 13.5px; line-height: 1.3;">
-        <span style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; background: color-mix(in srgb, var(--color-surface) 80%, transparent); box-shadow: inset 0 0 0 1px var(--color-divider), var(--shadow-sm); color: var(--color-text); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);"><i class="ph-duotone ph-user" style="font-size: 18px; color: var(--color-accent-700);"></i>{{ L.alle_schreiben_mit }}</span>
-        <span style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; background: color-mix(in srgb, var(--color-surface) 80%, transparent); box-shadow: inset 0 0 0 1px var(--color-divider), var(--shadow-sm); color: var(--color-text); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);"><i class="ph-duotone ph-users-three" style="font-size: 18px; color: var(--color-accent-700);"></i>{{ L.du_gibst_frei_wer_was_sieht }}</span>
-        <span style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; background: color-mix(in srgb, var(--color-surface) 80%, transparent); box-shadow: inset 0 0 0 1px var(--color-divider), var(--shadow-sm); color: var(--color-text); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);"><i class="ph-duotone ph-orange" style="font-size: 18px; color: var(--color-accent-700);"></i>{{ L.achtzehn_gesichter_zur_wahl }}</span>
+        <span style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; background: color-mix(in srgb, var(--color-surface) 80%, transparent); box-shadow: inset 0 0 0 1px var(--color-divider), var(--shadow-sm); color: var(--color-text); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);"><i class="ph-duotone ph-users-three" style="font-size: 18px; color: var(--color-accent-700);"></i>{{ L.alle_schreiben_mit }}</span>
+        <span style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; background: color-mix(in srgb, var(--color-surface) 80%, transparent); box-shadow: inset 0 0 0 1px var(--color-divider), var(--shadow-sm); color: var(--color-text); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);"><i class="ph-duotone ph-lock-key" style="font-size: 18px; color: var(--color-accent-700);"></i>{{ L.du_gibst_frei_wer_was_sieht }}</span>
+        <span style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; background: color-mix(in srgb, var(--color-surface) 80%, transparent); box-shadow: inset 0 0 0 1px var(--color-divider), var(--shadow-sm); color: var(--color-text); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);"><i class="ph-duotone ph-palette" style="font-size: 18px; color: var(--color-accent-700);"></i>{{ L.achtzehn_gesichter_zur_wahl }}</span>
       </div>
     </div>
 
@@ -1462,7 +1463,12 @@
                                   <sc-if value="{{ c.rHatEssen }}" hint-placeholder-val="{{ false }}"><div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;"><span style="font-size: 12px; opacity: 0.7; min-width: 70px;">{{ L.sp_i_essen }}</span><sc-for list="{{ c.rEssenChips }}" as="x" hint-placeholder-count="0"><button onClick="{{ x.klick }}" style="{{ x.stil }}">{{ x.label }}</button></sc-for></div></sc-if>
                                   <sc-for list="{{ c.rFragen }}" as="rq" hint-placeholder-count="0"><div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;"><span style="font-size: 12px; opacity: 0.7; min-width: 70px; max-width: 100%; overflow-wrap: anywhere;">{{ rq.frage }}</span><sc-for list="{{ rq.chips }}" as="rx" hint-placeholder-count="0"><button onClick="{{ rx.klick }}" style="{{ rx.stil }}">{{ rx.label }}</button></sc-for></div></sc-for>
                                   <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;"><span style="font-size: 12px; opacity: 0.7; min-width: 70px;">{{ L.rf_sortieren }}</span><sc-for list="{{ c.rSortChips }}" as="sx" hint-placeholder-count="0"><button onClick="{{ sx.klick }}" style="{{ sx.stil }}">{{ sx.label }}</button></sc-for></div>
-                                  <div style="font-size: 12.5px; font-weight: 600; opacity: 0.8;">{{ c.rZahl }}</div>
+                                  <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: space-between;">
+                                    <div style="font-size: 12.5px; font-weight: 600; opacity: 0.8;">{{ c.rZahl }}</div>
+                                    <sc-if value="{{ c.rHatExcel }}" hint-placeholder-val="{{ false }}">
+                                      <button onClick="{{ c.rExcel }}" style="display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border-radius: 99px; cursor: pointer; font: inherit; font-size: 13.5px; font-weight: 600; white-space: nowrap; border: 1px solid var(--t-accent, #0088b0); background: transparent; color: var(--t-accent, #0088b0);"><i class="ph-duotone ph-microsoft-excel-logo" style="font-size: 18px;"></i>{{ L.rf_excel }}</button>
+                                    </sc-if>
+                                  </div>
                                   <div style="display: grid; gap: 0;">
                                     <sc-for list="{{ c.rZeilen }}" as="gr" hint-placeholder-count="0">
                                       <div style="display: grid; gap: 3px; padding: 8px 0; border-bottom: 1px solid var(--t-border, rgba(32, 30, 29, 0.12)); font-size: 14px; line-height: 1.4;">
@@ -2585,6 +2591,7 @@
             <div style="display: grid; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-md); background: var(--color-neutral-100);">
               <button data-vo="cd" onClick="{{ vo.klapp.cd.um }}" aria-expanded="{{ vo.klapp.cd.text }}" style="display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--color-text); font: inherit; text-align: left; cursor: pointer;"><span style="font-family: var(--font-heading); font-size: 13px; color: var(--color-accent-700); font-variant-numeric: tabular-nums;">{{ vo.nr.cd }}</span><span style="font-family: var(--font-heading); font-weight: 600; font-size: 19px;">{{ L.cd_titel }}</span><span style="flex: 1;"></span><span style="{{ vo.klapp.cd.zeichen }}">▸</span></button><sc-if value="{{ vo.klapp.cd.auf }}" hint-placeholder-val="{{ false }}">
               <div style="font-size: 13px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.cd_sub }}</div>
+              <div style="font-size: 13px; line-height: 1.45; color: var(--color-accent-700);">{{ L.cd_nur_zukunft }}</div>
               <div style="display: flex; gap: var(--space-2); flex-wrap: wrap; align-items: center;">
                 <button onClick="{{ vo.cdUm }}" style="{{ vo.cdStil }}">{{ vo.cdLabel }}</button>
                 <sc-if value="{{ vo.cdAn }}" hint-placeholder-val="{{ false }}">
@@ -2817,6 +2824,15 @@
                       <div style="display: grid; gap: 6px; padding-top: var(--space-2);">
                         <div style="display: flex; gap: 8px; align-items: center;"><input class="input" value="{{ gq.frage }}" onChange="{{ gq.onFrage }}" placeholder="{{ L.gf_frage_ph }}" style="flex: 1 1 200px; min-width: 0; font-size: 16px;"><button class="btn btn-ghost btn-icon" title="{{ L.entfernen }}" aria-label="{{ L.entfernen }}" style="min-height: 40px; color: var(--color-accent-2-700);" onClick="{{ gq.weg }}">✕</button></div>
                         <textarea class="input" rows="3" value="{{ gq.antworten }}" onChange="{{ gq.onAntworten }}" placeholder="{{ L.gf_antw_ph }}" style="font-size: 16px;"></textarea>
+                        <sc-if value="{{ gq.hatOpts }}" hint-placeholder-val="{{ false }}">
+                          <div style="display: grid; gap: 6px; padding: 4px 0 2px;">
+                            <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">{{ L.gf_max_titel }}</div>
+                            <sc-for list="{{ gq.maxListe }}" as="gm" hint-placeholder-count="0">
+                              <label style="display: grid; grid-template-columns: minmax(0, 1fr) 88px; gap: 10px; align-items: center; font-size: 14.5px;"><span style="overflow-wrap: anywhere;">{{ gm.label }}</span><input class="input" inputmode="numeric" value="{{ gm.wert }}" onChange="{{ gm.onWert }}" placeholder="∞" aria-label="{{ L.gf_max_titel }}" style="font-size: 16px; text-align: center; padding-left: 6px; padding-right: 6px;"></label>
+                            </sc-for>
+                            <div style="font-size: 12.5px; line-height: 1.45; color: var(--color-neutral-700);">{{ L.gf_max_hinweis }}</div>
+                          </div>
+                        </sc-if>
                         <div style="display: flex; gap: 6px; flex-wrap: wrap;"><sc-for list="{{ gq.artChips }}" as="qa" hint-placeholder-count="0"><button onClick="{{ qa.klick }}" style="{{ qa.stil }}">{{ qa.label }}</button></sc-for></div>
                       </div>
                     </sc-for>
@@ -6880,6 +6896,37 @@ class Component extends DCLogic {
       this.setState((s) => ({ gastDaten: Object.assign({}, s.gastDaten, { [eid]: [] }) }));
     }
   }
+  /* Alle Rückmeldungen als Excel: eine Zeile je Gast und je Begleitperson,
+     jede Abfrage eine eigene Spalte — Filter und Sortierung macht Excel. */
+  rsvpExcel(e, rsvp, fragen) {
+    if (!window.ChronikXlsx) return;
+    const loc = window.CHRONIK_LOCALE || "de-DE";
+    const zeit = (c) => { if (!c) return ""; const d = new Date(c); return isNaN(d) ? String(c) : d.toLocaleString(loc, { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }); };
+    const kopf = [{ titel: tx("x_art"), breite: 13 }, { titel: tx("x_rueck"), breite: 13 }, { titel: tx("name"), breite: 24 }, { titel: tx("x_gehoert"), breite: 22 },
+      { titel: tx("gast_essen"), breite: 18 }, { titel: tx("x_begl_anz"), breite: 14 }]
+      .concat(fragen.map((f) => ({ titel: f.frage, breite: Math.min(40, Math.max(16, f.frage.length * 0.9)) })))
+      .concat([{ titel: tx("x_nachricht"), breite: 36 }, { titel: tx("x_eingang"), breite: 18 }]);
+    const zeilen = [];
+    rsvp.forEach((r) => {
+      const d0 = r.data || {};
+      const nein = d0.kommt === "nein";
+      const status = !d0.kommt ? "" : nein ? tx("x_absage") : tx("x_zusage");
+      const plus = nein ? 0 : (Number(d0.plus) || 0);
+      const antw = fragen.map((f) => { const a = ((d0.antw || {})[f.i]); return Array.isArray(a) ? a.join(", ") : ""; });
+      zeilen.push({ stil: !d0.kommt ? 0 : nein ? 3 : 2, werte: [tx("x_gast"), status, r.name || "", "", nein ? "" : (d0.essen || ""), plus].concat(antw, [r.text || "", zeit(r.created)]) });
+      if (!nein) {
+        const pl = (d0.plusListe || []).filter((p) => p && (p.name || p.essen));
+        const n = Math.max(plus, pl.length);
+        for (let k = 0; k < n; k++) {
+          const p = pl[k] || {};
+          zeilen.push({ stil: 4, werte: [tx("x_begleitung"), tx("x_zusage"), p.name || tx("rf_ohne_name"), r.name || "", p.essen || "", ""].concat(fragen.map(() => ""), ["", zeit(r.created)]) });
+        }
+      }
+    });
+    const datei = (String(e.name || tx("gast_rsvp")).replace(/[\\/:*?"<>|]+/g, " ").trim().slice(0, 60) || "Rueckmeldungen") + " – " + tx("x_datei") + ".xlsx";
+    window.ChronikXlsx.herunterladen(window.ChronikXlsx.erstelle(tx("gast_rsvp"), kopf, zeilen), datei);
+  }
+
   async gastEintragWeg(eid, row) {
     const CC = window.ChronikCloud;
     if (!CC || !CC.gastWeg) return;
@@ -6910,7 +6957,7 @@ class Component extends DCLogic {
   }
   linkTeilen(link, titel) {
     if (!link) return;
-    if (navigator.share) { navigator.share({ title: titel || "Chronik", url: link }).catch(() => {}); return; }
+    if (navigator.share) { navigator.share({ title: titel || tx("chronik"), url: link }).catch(() => {}); return; }
     try { navigator.clipboard.writeText(link); this.setState({ kopiert: link }); window.setTimeout(() => this.setState({ kopiert: "" }), 2200); } catch (x) { window.prompt("", link); }
   }
   neuesToken() {
@@ -7030,7 +7077,9 @@ class Component extends DCLogic {
           hatText: !!r.text, text: r.text || "",
           darfWeg: darfWeg, weg: weg(r) };
       }),
-      rLeer: rsvp.length > 0 && !gefiltert.length
+      rLeer: rsvp.length > 0 && !gefiltert.length,
+      rHatExcel: rsvp.length > 0,
+      rExcel: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.rsvpExcel(e, rsvp, fragen); }
     };
     const ja = rsvp.filter((r) => (r.data || {}).kommt === "ja");
     const personen = ja.reduce((s, r) => s + 1 + (Number((r.data || {}).plus) || 0), 0);
@@ -7181,7 +7230,12 @@ class Component extends DCLogic {
       gaEssen: o.essen || "", onGaEssen: set("offen.essen"),
       gFragen: (o.fragen || []).map((q, k) => {
         const setQ = (p) => this.voSet("offen.fragen", (o.fragen || []).map((x, j) => (j === k ? Object.assign({}, x, p) : x)));
+        const optsQ = Array.from(new Set(String(q.antworten || "").split(/\n|,|;/).map((s) => s.trim().slice(0, 80)).filter(Boolean))).slice(0, 20);
+        const mx = (q.max && typeof q.max === "object") ? q.max : {};
         return { key: q.i || "q" + k, frage: q.frage || "", antworten: q.antworten || "",
+          hatOpts: optsQ.length > 0,
+          maxListe: optsQ.map((x, j) => ({ key: "m" + j, label: x, wert: mx[x] ? String(mx[x]) : "",
+            onWert: (ev) => { const n = Math.max(0, Math.min(9999, parseInt(String(ev.target.value).replace(/\D/g, ""), 10) || 0)); const neu = {}; optsQ.forEach((y) => { if (y !== x && mx[y]) neu[y] = mx[y]; }); if (n) neu[x] = n; setQ({ max: neu }); } })),
           onFrage: (ev) => setQ({ frage: ev.target.value }), onAntworten: (ev) => setQ({ antworten: ev.target.value }),
           artChips: [[false, tx("gf_eine")], [true, tx("gf_mehr")]].map((x) => ({ key: x[0] ? "m" : "e", label: (!!q.mehr === x[0] ? "✓ " : "") + x[1], stil: this.voPill(!!q.mehr === x[0]), klick: () => setQ({ mehr: x[0] }) })),
           weg: () => this.voSet("offen.fragen", (o.fragen || []).filter((x, j) => j !== k)) };
@@ -7231,7 +7285,8 @@ class Component extends DCLogic {
         dot: { width: "24px", height: "24px", borderRadius: "50%", display: "grid", placeItems: "center", background: x.tisch, color: x.akz, boxShadow: "inset 0 0 0 2px " + x.rand, fontSize: "12px" }, orn: x.orn || "○" })); })(this),
       spObjWahl: [{ key: "-", value: "", label: tx("sp_element_neu") }].concat(this.spObjTypen().map((t) => ({ key: t.k, value: t.k, label: t.g + "  " + t.l }))),
       onSpObj: (ev) => { const v = ev.target.value; try { ev.target.value = ""; } catch (x) { /* egal */ } this.spObjNeu(v); },
-      cdZukunft: !!d.date && String(d.date) >= new Date().toISOString().slice(0, 10),
+      /* In der Hilfe immer zeigen — der Beispielentwurf liegt in der Vergangenheit. */
+      cdZukunft: st.lehr != null || (!!d.date && String(d.date) >= new Date().toISOString().slice(0, 10)),
       klapp: (function (self) {
         const auf = st.voKlapp || {};
         const o2 = {};
@@ -7395,7 +7450,8 @@ class Component extends DCLogic {
   gfNorm(list) {
     return (Array.isArray(list) ? list : []).slice(0, 12).map((q, k) => ({
       i: String((q && q.i) || "q" + k).slice(0, 20), frage: String((q && q.frage) || "").trim().slice(0, 200), mehr: !!(q && q.mehr),
-      opts: Array.from(new Set(String((q && q.antworten) || "").split(/\n|,|;/).map((s) => s.trim().slice(0, 80)).filter(Boolean))).slice(0, 20)
+      opts: Array.from(new Set(String((q && q.antworten) || "").split(/\n|,|;/).map((s) => s.trim().slice(0, 80)).filter(Boolean))).slice(0, 20),
+      max: (q && q.max && typeof q.max === "object") ? q.max : {}
     })).filter((q) => q.frage && q.opts.length);
   }
   gastSperre(d, k) {
@@ -7502,7 +7558,10 @@ class Component extends DCLogic {
       await window.ChronikCloud.gastAdd(g.ev, g.tk, "rsvp", name, "", { kommt: "", antw: antw, plus: 0, plusListe: [], plusNamen: "", essen: "" }, null);
       try { localStorage.setItem("chronik-gast-fragen-" + g.ev, "1"); } catch (x) { /* privat */ }
       this.gastSet({ busy: "", fragenFertig: true, info: "" });
-    } catch (e) { this.gastSet({ busy: "", info: tx("gast_f_senden") }); }
+    } catch (e) {
+      if (e && e.code === "D-29") { this.gastSet({ busy: "", info: tx("gf_voll") }); this.gastLaden(); return; }
+      this.gastSet({ busy: "", info: tx("gast_f_senden") });
+    }
   }
   async gastRsvpSenden() {
     const g = this.state.gast;
@@ -7524,7 +7583,10 @@ class Component extends DCLogic {
       await window.ChronikCloud.gastAdd(g.ev, g.tk, "rsvp", name, String(r.notiz || "").slice(0, 800), data, null);
       try { localStorage.setItem("chronik-gast-rsvp-" + g.ev, "1"); } catch (x) { /* privat */ }
       this.gastSet({ busy: "", rsvpFertig: true, info: "" });
-    } catch (e) { this.gastSet({ busy: "", info: tx("gast_f_senden") }); }
+    } catch (e) {
+      if (e && e.code === "D-29") { this.gastSet({ busy: "", info: tx("gf_voll") }); this.gastLaden(); return; }
+      this.gastSet({ busy: "", info: tx("gast_f_senden") });
+    }
   }
 
   gastVals() {
@@ -7675,9 +7737,15 @@ class Component extends DCLogic {
         opts: f.opts.map((x, j) => {
           const sel = ((r.antw || {})[f.i]) || [];
           const an = sel.indexOf(x) >= 0;
+          /* Höchstmenge: belegt zählt die anderen Gäste; voll = ausgegraut. */
+          const grenze = Number((f.max || {})[x]) || 0;
+          const belegt = Number((((d.belegt || {})[f.i]) || {})[x]) || 0;
+          const voll = grenze > 0 && belegt >= grenze && !an;
           return { key: "o" + j, label: x, an: an ? "true" : "false", zeichen: an ? "✓" : "",
-            klick: () => this.gastSet((g2) => { const a0 = Object.assign({}, (g2.rsvp || {}).antw); const cur = a0[f.i] || []; a0[f.i] = f.mehr ? (cur.indexOf(x) >= 0 ? cur.filter((y) => y !== x) : cur.concat([x])) : (cur[0] === x ? [] : [x]); return { rsvp: Object.assign({}, g2.rsvp, { antw: a0 }) }; }),
-            stil: { display: "flex", alignItems: "center", gap: "12px", width: "100%", minHeight: "52px", padding: "10px 14px", boxSizing: "border-box", borderRadius: "14px", cursor: "pointer", font: "inherit", fontSize: "16px", textAlign: "left", color: "var(--g-ink)",
+            voll: voll ? "true" : "false",
+            rest: grenze > 0 ? (voll ? tx("gf_voll_kurz") : tx("gf_noch_frei").replace("{n}", String(Math.max(0, grenze - belegt)))) : "",
+            klick: voll ? () => {} : () => this.gastSet((g2) => { const a0 = Object.assign({}, (g2.rsvp || {}).antw); const cur = a0[f.i] || []; a0[f.i] = f.mehr ? (cur.indexOf(x) >= 0 ? cur.filter((y) => y !== x) : cur.concat([x])) : (cur[0] === x ? [] : [x]); return { rsvp: Object.assign({}, g2.rsvp, { antw: a0 }) }; }),
+            stil: { display: "flex", alignItems: "center", gap: "12px", width: "100%", minHeight: "52px", padding: "10px 14px", boxSizing: "border-box", borderRadius: "14px", cursor: voll ? "not-allowed" : "pointer", opacity: voll ? 0.45 : 1, font: "inherit", fontSize: "16px", textAlign: "left", color: "var(--g-ink)",
               border: an ? "2px solid var(--g-accent)" : "1px solid color-mix(in srgb, var(--g-ink) 18%, transparent)", background: an ? "color-mix(in srgb, var(--g-accent) 12%, var(--g-bg))" : "var(--g-bg)" },
             boxStil: { display: "grid", placeItems: "center", flex: "0 0 24px", width: "24px", height: "24px", boxSizing: "border-box", borderRadius: f.mehr ? "6px" : "50%", fontSize: "14px", fontWeight: 700, color: "var(--g-bg)",
               border: "2px solid " + (an ? "var(--g-accent)" : "color-mix(in srgb, var(--g-ink) 40%, transparent)"), background: an ? "var(--g-accent)" : "transparent" } };
@@ -9515,6 +9583,7 @@ class Component extends DCLogic {
 
   handleCloudError(e) {
     if (e && e.block) this.noteLimit(e.block);
+    else if (e && e.code === "D-30") this.setState({ cloudErr: tx("d30_kein_recht"), cloudBusy: false });
     else this.setState({ cloudErr: String((e && e.message) || e), cloudBusy: false });
   }
 
@@ -15813,7 +15882,12 @@ class Component extends DCLogic {
         };
       })(this),
       loginFx: this.loginFxEl(),
+      /* Wortmarke: eigenes Bild aus der Konfiguration, sonst C-Bogen + Rest — passt der Anfangsbuchstabe nicht, nur der Name. */
+      wortBild: ((window.CHRONIK_CONFIG || {}).bilder || {}).wortmarke || "",
+      wortMitC: !((window.CHRONIK_CONFIG || {}).bilder || {}).wortmarke && /^c/i.test(String(tx("chronik") || "")),
+      wortOhneC: !((window.CHRONIK_CONFIG || {}).bilder || {}).wortmarke && !/^c/i.test(String(tx("chronik") || "")),
       wortRest: String(tx("chronik") || "Chronik").slice(1),
+      wortGanz: String(tx("chronik") || "Chronik"),
       gz: (function (self) {
         if (st.gastZurueck === undefined && !self._gzGelesen) { self._gzGelesen = true; try { const v = JSON.parse(sessionStorage.getItem("chronik-gast-zurueck") || "null"); if (v && v.hash) window.setTimeout(() => self.setState({ gastZurueck: v }), 0); } catch (x) { /* privat */ } }
         const v = st.gastZurueck;
