@@ -1,7 +1,4 @@
-/* Chronik ↔ Supabase (Konten, Ereignisse) + Cloudflare R2 (Bilder).
-   Stellt window.ChronikCloud bereit. Kein Build, kein npm.
-   Fehler tragen ihren Code selbst; die Bedeutung steht ausschließlich
-   in Fehlercodes.dc.html. */
+/* Chronik ↔ Supabase  */
 (function () {
   var CFG = window.CHRONIK_CONFIG || {};
   var APPNAME = String(CFG.appName || "Chronik");
