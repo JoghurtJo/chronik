@@ -1,4 +1,6 @@
-/* Echte Excel-Datei (.xlsx) */
+/* Echte Excel-Datei (.xlsx) ohne Bibliothek: ein kleines ZIP mit den
+   nötigen XML-Teilen. Kopfzeile mit Filter, fixierte erste Zeile,
+   farbig markierte Zusagen, Absagen und Begleitpersonen. */
 (function () {
   var CRC = (function () {
     var t = [];

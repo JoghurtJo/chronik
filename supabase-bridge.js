@@ -1,6 +1,11 @@
-/* Chronik ↔ Supabase */
+/* Chronik ↔ Supabase (Konten, Ereignisse) + Cloudflare R2 (Bilder).
+   Stellt window.ChronikCloud bereit. Kein Build, kein npm.
+   Fehler tragen ihren Code selbst; die Bedeutung steht ausschließlich
+   in Fehlercodes.dc.html. */
 (function () {
   var CFG = window.CHRONIK_CONFIG || {};
+  var APPNAME = String(CFG.appName || "Chronik");
+  function absolut(p) { try { return new URL(p, location.href).href; } catch (e) { return ""; } }
   /* Die Adresszeile sofort sichern: der Supabase-Client räumt den
      Wiederherstellungs-Link beim Start weg, danach wäre er nicht mehr erkennbar. */
   var START_HASH = String(location.hash || "");
@@ -134,13 +139,13 @@
     var day = s.day || {}, month = s.month || {};
     var rows = Number(s.rows || 0);
     if (kind === "row" && rows >= LIM.dbRows) {
-      return { scope: "ereignisse", message: "Die Chronik hat mit " + rows + " Ereignissen ihr Gratis-Fassungsvermögen erreicht. Neue Ereignisse gehen erst wieder, wenn alte gelöscht werden — oder wenn der Speicher erweitert wird.", again: "" };
+      return { scope: "ereignisse", message: "Die " + APPNAME + " hat mit " + rows + " Ereignissen ihr Gratis-Fassungsvermögen erreicht. Neue Ereignisse gehen erst wieder, wenn alte gelöscht werden — oder wenn der Speicher erweitert wird.", again: "" };
     }
     if ((kind === "write" || kind === "row") && Number(day.writes || 0) >= LIM.writesPerDay) {
       return { scope: "speichern", message: "Für heute wurde schon sehr viel gespeichert (" + day.writes + " Änderungen). Das ist die Tagesgrenze des Gratis-Tarifs.", again: "Ab morgen, " + tomorrow() + ", geht es wieder." };
     }
     if (kind === "read" && Number(day.reads || 0) >= LIM.readsPerDay) {
-      return { scope: "laden", message: "Die Chronik wurde heute außergewöhnlich oft geladen. Damit keine Kosten entstehen, macht sie jetzt Pause.", again: "Ab morgen, " + tomorrow() + ", ist alles wie gewohnt da." };
+      return { scope: "laden", message: "Die " + APPNAME + " wurde heute außergewöhnlich oft geladen. Damit keine Kosten entstehen, macht sie jetzt Pause.", again: "Ab morgen, " + tomorrow() + ", ist alles wie gewohnt da." };
     }
     if (kind === "upload") {
       if (Number(s.bytes || 0) + Number(extraBytes || 0) > LIM.storageBytes) {
@@ -151,10 +156,10 @@
       }
     }
     if (kind === "get" && Number(day.gets || 0) >= LIM.getsPerDay) {
-      return { scope: "bilder-anzeigen", message: "Heute wurden sehr viele Bilder angezeigt. Die Chronik zeigt bis morgen nur noch Texte.", again: "Ab morgen, " + tomorrow() + ", sind die Bilder wieder da." };
+      return { scope: "bilder-anzeigen", message: "Heute wurden sehr viele Bilder angezeigt. Die " + APPNAME + " zeigt bis morgen nur noch Texte.", again: "Ab morgen, " + tomorrow() + ", sind die Bilder wieder da." };
     }
     if (Number(month.bytes_out || 0) >= LIM.egressPerMonth) {
-      return { scope: "datenverkehr", message: "Der Datenverkehr dieses Monats ist aufgebraucht (" + fmtBytes(month.bytes_out) + "). Damit nichts kostet, ruht die Chronik bis zum Monatswechsel.", again: "Ab " + nextMonth(s) + " geht es weiter." };
+      return { scope: "datenverkehr", message: "Der Datenverkehr dieses Monats ist aufgebraucht (" + fmtBytes(month.bytes_out) + "). Damit nichts kostet, ruht die " + APPNAME + " bis zum Monatswechsel.", again: "Ab " + nextMonth(s) + " geht es weiter." };
     }
     return null;
   }
@@ -464,7 +469,7 @@
       var res = await fetch(R2 + "/notify", {
         method: "POST",
         headers: { Authorization: "Bearer " + tk, "content-type": "application/json" },
-        body: JSON.stringify({ to: empfaengerId, kind: art, subject: betreff, text: text, app: location.origin + location.pathname })
+        body: JSON.stringify({ to: empfaengerId, kind: art, subject: betreff, text: text, app: location.origin + location.pathname, name: APPNAME, logo: absolut(((CFG.bilder || {}).icon192) || "icon-192.png") })
       });
       var out = await res.json().catch(function () { return {}; });
       return { ok: !!res.ok && !!out.ok && !out.skipped, reason: out.error || out.skipped || "", detail: out.detail || "", status: res.status };
@@ -690,6 +695,8 @@
       r = await push(flat);
     }
     if (r.error) throw fail(code(r.error));
+    /* Ohne Recht lehnt die Datenbank still ab (0 Zeilen) — das muss sichtbar werden. */
+    if (!isNew && !(r.data && r.data.length)) throw fail("D-30");
     bump({ p_writes: 1 });
     return (r.data && r.data[0] && r.data[0].id) || e.id;
   }
@@ -941,6 +948,26 @@
     if (r.error) throw fail(code(r.error));
     if (!r.data || !r.data.length) throw fail("D-30");
   }
+  /* Feedback: senden, eigene Meldungen samt Antworten, Nachtrag. */
+  function fbFehler(r) { var m = String((r.error && r.error.message) || ""); var k = /F-\d\d/.exec(m); if (/PGRST202|42883|feedback_/.test(m + " " + (r.error.code || "")) && !k) return fail("F-06"); return fail(k ? k[0] : code(r.error)); }
+  async function feedbackSenden(art, text, seite, geraet, email) {
+    var c = await client();
+    var r = await c.rpc("feedback_senden", { p_kind: art, p_text: text, p_seite: seite || "", p_geraet: geraet || "", p_email: email || "" });
+    if (r.error) throw fbFehler(r);
+    return r.data;
+  }
+  async function feedbackMeine() {
+    var c = await client();
+    var r = await c.rpc("feedback_meine");
+    if (r.error) throw fbFehler(r);
+    return r.data || [];
+  }
+  async function feedbackGesehen() { var c = await client(); await c.rpc("feedback_gesehen"); }
+  async function feedbackNachtrag(id, text) {
+    var c = await client();
+    var r = await c.rpc("feedback_nachtrag", { p_id: id, p_text: text });
+    if (r.error) throw fbFehler(r);
+  }
   /* Timetable-Foto von der KI im eigenen Worker lesen lassen. */
   async function ttKi(bild) {
     if (!R2) { var e0 = new Error("kein worker"); e0.code = "D-20"; throw e0; }
@@ -978,6 +1005,7 @@
     addComment: addComment, removeComment: removeComment, reactComment: reactComment,
     deleteMe: deleteMe, sweepUnconfirmed: sweepUnconfirmed, deleteImages: deleteImages, setPolls: setPolls, moveComments: moveComments, uploadImage: uploadImage, imageUrl: imageUrl, storeCheck: storeCheck, onChange: onChange,
     snapshot: snapshot, budget: budget, guard: guard,
+    feedbackSenden: feedbackSenden, feedbackMeine: feedbackMeine, feedbackGesehen: feedbackGesehen, feedbackNachtrag: feedbackNachtrag,
     isLegacy: function () { return legacySchema; },
     lastR2Error: function () { return lastR2Error; }
   };
